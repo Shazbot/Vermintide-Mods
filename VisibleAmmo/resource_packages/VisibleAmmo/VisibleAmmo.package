@@ -1,0 +1,12 @@
+mod =  [
+	"VisibleAmmo"
+]
+
+package = [
+	"resource_packages/VisibleAmmo/VisibleAmmo"
+]
+
+lua = [
+	"localization/*"
+	"scripts/mods/VisibleAmmo/*"
+]

@@ -1,0 +1,12 @@
+mod =  [
+	"WeaponKillCounter"
+]
+
+package = [
+	"resource_packages/WeaponKillCounter/WeaponKillCounter"
+]
+
+lua = [
+	"localization/*"
+	"scripts/mods/WeaponKillCounter/*"
+]

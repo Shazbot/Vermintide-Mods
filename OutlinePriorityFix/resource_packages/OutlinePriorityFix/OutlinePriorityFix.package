@@ -1,0 +1,12 @@
+mod =  [
+	"OutlinePriorityFix"
+]
+
+package = [
+	"resource_packages/OutlinePriorityFix/OutlinePriorityFix"
+]
+
+lua = [
+	"localization/*"
+	"scripts/mods/OutlinePriorityFix/*"
+]

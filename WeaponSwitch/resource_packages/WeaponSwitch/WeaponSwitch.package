@@ -1,0 +1,12 @@
+mod =  [
+	"WeaponSwitch"
+]
+
+package = [
+	"resource_packages/WeaponSwitch/WeaponSwitch"
+]
+
+lua = [
+	"localization/*"
+	"scripts/mods/WeaponSwitch/*"
+]

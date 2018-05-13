@@ -1,0 +1,12 @@
+mod =  [
+	"NeuterUltEffects"
+]
+
+package = [
+	"resource_packages/NeuterUltEffects/NeuterUltEffects"
+]
+
+lua = [
+	"localization/*"
+	"scripts/mods/NeuterUltEffects/*"
+]

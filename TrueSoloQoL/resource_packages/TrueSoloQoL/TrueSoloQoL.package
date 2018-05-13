@@ -1,0 +1,12 @@
+mod =  [
+	"TrueSoloQoL"
+]
+
+package = [
+	"resource_packages/TrueSoloQoL/TrueSoloQoL"
+]
+
+lua = [
+	"localization/*"
+	"scripts/mods/TrueSoloQoL/*"
+]

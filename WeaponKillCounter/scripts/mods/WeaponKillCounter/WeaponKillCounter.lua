@@ -76,7 +76,9 @@ mod:hook("StatisticsUtil.register_kill", function(func, victim_unit, damage_data
 			if inventory_extension then
 				local slot_name = inventory_extension:get_wielded_slot_name()
 				local slot_data = inventory_extension:get_slot_data(slot_name)
-				increase_kill_counter(slot_data.item_data.backend_id)
+				if slot_data.item_data.key == damage_data[DamageDataIndex.DAMAGE_SOURCE_NAME] then
+					increase_kill_counter(slot_data.item_data.backend_id)
+				end
 			end
 		end
 	end)

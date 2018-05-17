@@ -41,12 +41,33 @@ mod:hook("UnitFrameUI._create_ui_elements", function (func, self, frame_index)
 	func(self, frame_index)
 end)
 
---- Hide UI of dead bots.
+--- Make sure bots UI doesn't reappear.
 mod:hook("UnitFrameUI.update", function (func, self, ...)
 	mod:pcall(function()
-		if self._frame_index and self._is_visible and self.data.is_dead and self.data.level_text == "BOT" then
+		if self._mod_stay_hidden then
 			self:set_visible(false)
 		end
 	end)
 	func(self, ...)
 end)
+
+--- Hook the kill_bots function of Killbots and add UI hiding code after we run /killbots.
+local mod = get_mod("Killbots")
+if mod then
+	mod.original_kill_bots = mod.original_kill_bots or mod.kill_bots
+	mod.kill_bots = function(self)
+		mod:original_kill_bots()
+		mod:pcall(function()
+			local unit_frames_handler = rawget(_G, "unit_frames_handler")
+			for _, unit_frame in ipairs( unit_frames_handler._unit_frames ) do
+				local unit_frame_ui = unit_frame.widget
+				if unit_frame_ui._frame_index
+				  and unit_frame_ui._is_visible
+				  and unit_frame_ui.data.level_text == "BOT" then
+					unit_frame_ui:set_visible(false)
+					unit_frame_ui._mod_stay_hidden = true
+				end
+			end
+		end)
+	end
+end

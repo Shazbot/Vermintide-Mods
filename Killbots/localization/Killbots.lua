@@ -3,6 +3,6 @@ return {
 		en = "Killbots description"
 	},
 	kill_bots_command_description = {
-		en = "Killbots description"
+		en = "Kill the bots."
 	},
 }

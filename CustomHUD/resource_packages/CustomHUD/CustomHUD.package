@@ -1,0 +1,12 @@
+mod =  [
+	"CustomHUD"
+]
+
+package = [
+	"resource_packages/CustomHUD/CustomHUD"
+]
+
+lua = [
+	"localization/*"
+	"scripts/mods/CustomHUD/*"
+]

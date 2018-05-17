@@ -1,10 +1,13 @@
 local mod = get_mod("CustomHUD")
 
+-- luacheck: globals UIRenderer ScriptUnit Managers BackendUtils UIWidget UnitFrameUI
+-- luacheck: globals UILayer UISceneGraph EquipmentUI ButtonTextureByName Colors
+
 local custom_player_widget
 
 -- DEBUG
 local debug_favs = false
-RETAINED_MODE_ENABLED = not debug_favs
+local RETAINED_MODE_ENABLED = not debug_favs
 
 local my_scale_x = 0.45
 
@@ -77,9 +80,6 @@ mod.unit_frame_ui_scenegraph_definition = {
 	}
 }
 
-local SIZE_X = 1920
-local SIZE_Y = 1080
-local RETAINED_MODE_ENABLED = true
 local portrait_scale = 1
 local slot_scale = 1
 local health_bar_size_fraction = 2
@@ -1187,11 +1187,6 @@ mod.create_dynamic_health_widget = function(self)
 	}
 end
 
-mod:hook("UnitFrameUI.set_position", function (func, self, x, y)
-	-- EchoConsole(tostring(x).." "..tostring(y))
-	return func(self, x, y)
-end)
-
 local settings = {
 	hp_bar = {
 		z = -8,
@@ -2274,9 +2269,8 @@ mod:hook("AbilityUI.draw", function (func, self, dt)
 end)
 
 local SLOTS_LIST = InventorySettings.weapon_slots
-local GAMEPAD_SLOTS_LIST = {}
 
-local custom_player_widget_def =
+mod.custom_player_widget_def =
 {
 	scenegraph_id = "background_panel_bg",
 	offset = { player_offset_x - 0 + global_offset_x, player_offset_y + global_offset_y, 1 },
@@ -2664,7 +2658,7 @@ end
 
 mod:hook("EquipmentUI.draw", function (func, self, dt)
 	if not custom_player_widget then
-		custom_player_widget = UIWidget.init(custom_player_widget_def)
+		custom_player_widget = UIWidget.init(mod.custom_player_widget_def)
 	end
 
 	mod:pcall(function()
@@ -2742,7 +2736,7 @@ mod:hook("EquipmentUI.draw", function (func, self, dt)
 		end
 	end
 
-	pcall(function()
+	mod:pcall(function()
 		for _, widget in ipairs( self._slot_widgets ) do
 			if not widget.offset_original then
 				widget.offset_original = table.clone(widget.offset)
@@ -2755,5 +2749,134 @@ mod:hook("EquipmentUI.draw", function (func, self, dt)
 	func(self, dt)
 
 	UIRenderer.draw_widget = original_draw_widget
-	-- pdump(self._slot_widgets, "EquipmentUI._slot_widgets3")
+end)
+
+--- BuffUI stuff ---
+
+local buff_ui_definitions = local_require("scripts/ui/hud_ui/buff_ui_definitions")
+local ALIGNMENT_DURATION_TIME = 0--0.3
+local MAX_NUMBER_OF_BUFFS = buff_ui_definitions.MAX_NUMBER_OF_BUFFS
+local BUFF_SIZE = buff_ui_definitions.BUFF_SIZE
+local BUFF_SPACING = buff_ui_definitions.BUFF_SPACING
+mod:hook("BuffUI._align_widgets", function (func, self) -- luacheck: ignore func
+	local horizontal_spacing = BUFF_SIZE[1] + BUFF_SPACING
+
+	for index, data in ipairs(self._active_buffs) do
+		local widget = data.widget
+		local widget_offset = widget.offset
+		local target_position = (index - 1)*horizontal_spacing + 20
+		data.target_position = target_position
+		data.target_distance = math.abs(widget_offset[1] - target_position)
+
+		widget.offset[2] = -15
+
+		self:_set_widget_dirty(widget)
+	end
+
+	self:set_dirty()
+
+	self._alignment_duration = 0
+end)
+
+mod:hook("BuffUI._add_buff", function (func, self, buff, ...)
+	mod:pcall(function()
+		-- pprint(buff)
+	end)
+	if buff.buff_type == "victor_bountyhunter_passive_infinite_ammo_buff"
+		or buff.buff_type == "grimoire_health_debuff" then
+		return false
+	end
+	return func(self, buff, ...)
+end)
+
+mod:hook("BuffUI._update_pivot_alignment", function (func, self, dt)
+	-- return func(self, dt)
+	local alignment_duration = self._alignment_duration
+
+	if not alignment_duration then
+		return
+	end
+
+	-- alignment_duration = math.min(alignment_duration + dt, ALIGNMENT_DURATION_TIME)
+	local progress = 1--alignment_duration/ALIGNMENT_DURATION_TIME
+	local anim_progress = math.easeOutCubic(progress, 0, 1)
+
+	if progress == 1 then
+		self._alignment_duration = nil
+	else
+		self._alignment_duration = alignment_duration
+	end
+
+	for _, data in ipairs(self._active_buffs) do
+		local widget = data.widget
+		local widget_offset = widget.offset
+		local widget_target_position = data.target_position
+		local widget_target_distance = data.target_distance
+
+		if widget_target_distance then
+			widget_offset[1] = widget_target_position + widget_target_distance*(anim_progress - 1)
+		end
+
+		self:_set_widget_dirty(widget)
+	end
+
+	self:set_dirty()
+end)
+
+mod:hook("BuffUI.update", function (func, self, ...)
+	-- self:_align_widgets()
+	-- self:set_dirty()
+	return func(self, ...)
+end)
+
+mod.buff_ui_scenegraph_definition = {
+	screen = {
+		scale = "fit",
+		position = {
+			0,
+			0,
+			UILayer.hud
+		},
+		size = {
+			SIZE_X,
+			SIZE_Y
+		}
+	},
+	pivot = {
+		vertical_alignment = "bottom",
+		parent = "screen",
+		horizontal_alignment = "center",
+		position = {
+			150,
+			18,
+			1
+		},
+		size = {
+			0,
+			0
+		}
+	},
+	buff_pivot = {
+		vertical_alignment = "center",
+		parent = "pivot",
+		horizontal_alignment = "center",
+		position = {
+			0,
+			0,
+			1
+		},
+		size = {
+			0,
+			0
+		}
+	}
+}
+
+mod:hook("BuffUI._create_ui_elements", function (func, ...)
+	local original_init_scenegraph = UISceneGraph.init_scenegraph
+	UISceneGraph.init_scenegraph = function(scenegraph_definition) -- luacheck: ignore scenegraph_definition
+		return original_init_scenegraph(mod.buff_ui_scenegraph_definition)
+	end
+	func(...)
+	UISceneGraph.init_scenegraph = original_init_scenegraph
 end)

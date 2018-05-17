@@ -89,8 +89,8 @@ mod_data.options_widgets = {
 		["widget_type"] = "numeric",
 		["text"] = mod:localize("enlarge"),
 		["tooltip"] = mod:localize("enlarge_tooltip"),
-		["range"] = {0, 3},
-	    ["decimals_number"] = 1,
+		["range"] = {0, 300},
+		["unit_text"] = "%",
 	    ["default_value"] = 1,
 	},
 	{
@@ -158,7 +158,7 @@ local widget_names = pl.List{
 	"crosshair_circle",
 }
 local function change_crosshair_size(crosshair_ui)
-	local scale_by = mod:get(SETTING_NAMES.ENLARGE)
+	local scale_by = mod:get(SETTING_NAMES.ENLARGE) / 100
 
 	widget_names:foreach(function(widget_name)
 		local widget = crosshair_ui.ui_scenegraph[widget_name]

@@ -48,7 +48,7 @@ return {
 		en = "Enlarge"
 	},
 	enlarge_tooltip = {
-		en = "Increases the size of your crosshair."
+		en = "Scales crosshair size."
 	},
 	dot = {
 		en = "Dot Only"

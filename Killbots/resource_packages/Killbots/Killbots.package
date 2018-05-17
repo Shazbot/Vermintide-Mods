@@ -1,0 +1,12 @@
+mod =  [
+	"Killbots"
+]
+
+package = [
+	"resource_packages/Killbots/Killbots"
+]
+
+lua = [
+	"localization/*"
+	"scripts/mods/Killbots/*"
+]

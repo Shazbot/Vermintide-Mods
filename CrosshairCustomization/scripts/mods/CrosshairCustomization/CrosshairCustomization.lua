@@ -91,7 +91,7 @@ mod_data.options_widgets = {
 		["tooltip"] = mod:localize("enlarge_tooltip"),
 		["range"] = {0, 300},
 		["unit_text"] = "%",
-	    ["default_value"] = 1,
+	    ["default_value"] = 100,
 	},
 	{
 		["setting_name"] = SETTING_NAMES.DOT,

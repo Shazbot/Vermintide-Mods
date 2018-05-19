@@ -2235,9 +2235,9 @@ mod:hook("AbilityUI.draw", function (func, self, dt)
 	end
 	mod:pcall(function()
 		self._widgets[1].style.ability_effect_left.offset[1] = 105 - ability_ui_offset_x
-			self._widgets[1].style.ability_effect_left.offset[2] = -8 - ability_ui_offset_y
-			self._widgets[1].style.ability_effect_top_left.offset[1] = 105 - ability_ui_offset_x
-			self._widgets[1].style.ability_effect_top_left.offset[2] = -8 - ability_ui_offset_y
+		self._widgets[1].style.ability_effect_left.offset[2] = -8 - ability_ui_offset_y
+		self._widgets[1].style.ability_effect_top_left.offset[1] = 105 - ability_ui_offset_x
+		self._widgets[1].style.ability_effect_top_left.offset[2] = -8 - ability_ui_offset_y
 	end)
 
 	self._widgets[1].offset[1]= player_offset_x - 125 - 1 + global_offset_x + ability_ui_offset_x

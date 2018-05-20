@@ -5,9 +5,10 @@ local tablex = require'pl.tablex'
 
 -- luacheck: globals UIRenderer ScriptUnit Managers BackendUtils UIWidget UnitFrameUI
 -- luacheck: globals UILayer UISceneGraph EquipmentUI ButtonTextureByName Colors
--- luacheck: globals ChatGui
+-- luacheck: globals ChatGui Vector2 Gui Color unpack
+-- luacheck: globals math local_require World
 
-local custom_player_widget
+mod.custom_player_widget = nil
 
 -- DEBUG
 local debug_favs = true
@@ -859,19 +860,9 @@ mod.create_dynamic_portait_widget = function(self, health_bar_size, health_bar_o
 						return
 					end
 				},
-				{
-					pass_type = "texture",
-					style_id = "glow",
-					texture_id = "glow",
-					content_check_function = function (content)
-						return content.display_warning_overlay
-					end
-				},
 			}
 		},
 		content = {
-			display_warning_overlay = false,
-			glow = "hud_player_ability_bar_glow",
 			display_portrait_overlay = false,
 			connecting = false,
 			display_portrait_icon = false,
@@ -895,25 +886,6 @@ mod.create_dynamic_portait_widget = function(self, health_bar_size, health_bar_o
 			}
 		},
 		style = {
-			glow = {
-				-- vertical_alignment = "bottom",
-				-- horizontal_alignment = "center",
-				texture_size = {
-					health_bar_size[1]+20,
-					250
-				},
-				color = {
-					255,
-					255,
-					0,
-					0
-				},
-				offset = {
-					-124,
-					-100,
-					-10
-				}
-			},
 			talk_indicator_highlight = {
 				size = {
 					40,
@@ -1341,7 +1313,6 @@ mod.create_player_dynamic_health_widget = function(self, player_health_bar_size)
 						uvs[1][1] = grim_progress
 						size[1] = bar_length*(grim_progress - 1)
 						offset[1] = settings.hp_bar.x + grim_progress * player_health_bar_size[1] - size[1]
-						-- offset[2] = 20
 					end
 				}
 			}
@@ -1380,8 +1351,8 @@ mod.create_player_dynamic_health_widget = function(self, player_health_bar_size)
 			total_health_bar = {
 				gradient_threshold = 1,
 				size = {
-					player_health_bar_size[1], --464*my_scale_x,
-					player_health_bar_size[2] + 1--19
+					player_health_bar_size[1],
+					player_health_bar_size[2] + 1
 				},
 				color = {
 					255,
@@ -1398,8 +1369,8 @@ mod.create_player_dynamic_health_widget = function(self, player_health_bar_size)
 			hp_bar = {
 				gradient_threshold = 1,
 				size = {
-					player_health_bar_size[1], --464*my_scale_x,
-					player_health_bar_size[2] + 1 --19
+					player_health_bar_size[1],
+					player_health_bar_size[2] + 1
 				},
 				color = {
 					255,
@@ -1415,8 +1386,8 @@ mod.create_player_dynamic_health_widget = function(self, player_health_bar_size)
 			},
 			grimoire_bar = {
 				size = {
-					player_health_bar_size[1], --464*my_scale_x,
-					player_health_bar_size[2] + 1 --19
+					player_health_bar_size[1],
+					player_health_bar_size[2] + 1
 				},
 				color = {
 					255,
@@ -1449,8 +1420,7 @@ mod.create_player_dynamic_health_widget = function(self, player_health_bar_size)
 			},
 			hp_bar_highlight = {
 				size = {
-					player_health_bar_size[1], --464*my_scale_x,
-					-- player_health_bar_size[2]
+					player_health_bar_size[1],
 					30
 				},
 				offset = {
@@ -1490,7 +1460,7 @@ mod.create_dynamic_ability_widget = function(self, health_bar_size)
 						local size = style.size
 						local uvs = content.uvs
 						local offset = style.offset
-						local bar_length = health_bar_size[1] + 1--468*my_scale_x+2-4--health_bar_size[1] +20--488*my_scale_x
+						local bar_length = health_bar_size[1] + 1
 						uvs[2][2] = ability_progress
 						size[1] = bar_length*ability_progress
 					end
@@ -1682,28 +1652,11 @@ UnitFrameUI.customhud_update = function (self, is_wounded)
 			self._default_widgets.default_static.style.ult_bar_rect.color = is_wounded and {255, 255, 255, 255} or {255, 105, 105, 105}
 			self._default_widgets.default_static.style.ammo_bar_rect.color = is_wounded and {255, 255, 255, 255} or {255, 105, 105, 105}
 		else
-			if custom_player_widget then
-				custom_player_widget.style.hp_bar_rect.color = is_wounded and {255, 255, 255, 255} or {255, 105, 105, 105}
-				-- custom_player_widget.style.hp_bar_rect2.color = is_wounded and {255, 255, 255, 255} or {255, 0, 0, 0}
-				custom_player_widget.style.ult_bar_rect.color = is_wounded and {255, 255, 255, 255} or {255, 105, 105, 105}
-				custom_player_widget.style.ammo_bar_rect.color = is_wounded and {255, 255, 255, 255} or {255, 105, 105, 105}
-			end
-		end
-
-		local default_dynamic = self._default_widgets.default_dynamic
-		if self._frame_index then --self._frame_index and default_dynamic.content.display_warning_overlay then
-			-- start warning animation
-			if not UIWidget.has_animation(default_dynamic) then
-				UIWidget.animate(default_dynamic, UIAnimation.init(
-						UIAnimation.function_by_time, default_dynamic.style.glow.color, 1, 255, 100, 0.5, math.easeCubic,
-						UIAnimation.function_by_time, default_dynamic.style.glow.color, 1, 100, 255, 0.5, math.easeCubic
-					)
-				)
-			end
-		else
-			-- stop warning animation
-			if UIWidget.has_animation(default_dynamic) then
-				UIWidget.stop_animations(default_dynamic)
+			if mod.custom_player_widget then
+				mod.custom_player_widget.style.hp_bar_rect.color = is_wounded and {255, 255, 255, 255} or {255, 105, 105, 105}
+				-- mod.custom_player_widget.style.hp_bar_rect2.color = is_wounded and {255, 255, 255, 255} or {255, 0, 0, 0}
+				mod.custom_player_widget.style.ult_bar_rect.color = is_wounded and {255, 255, 255, 255} or {255, 105, 105, 105}
+				mod.custom_player_widget.style.ammo_bar_rect.color = is_wounded and {255, 255, 255, 255} or {255, 105, 105, 105}
 			end
 		end
 	end)
@@ -1719,33 +1672,6 @@ mod:hook("UnitFrameUI.set_ability_percentage", function (func, self, ability_per
 	end)
 	return func(self, ability_percent)
 end)
-
--- CareerExtension._update_game_object_field = function (self, unit)
--- 	if (not self.is_server or not self.player.bot_player) and not self.player.local_player then
--- 		return
--- 	end
-
--- 	local ability_cooldown, max_cooldown = self:current_ability_cooldown()
--- 	local ability_percentage = 1
-
--- 	if ability_cooldown then
--- 		ability_percentage = ability_cooldown/max_cooldown
--- 	end
-
--- 	local network_manager = Managers.state.network
--- 	local game = network_manager:game()
--- 	local go_id = Managers.state.unit_storage:go_id(unit)
--- 	ability_percentage = math.min(1, ability_percentage)
-
--- 	GameSession.set_game_object_field(game, go_id, "ability_percentage", ability_percentage)
-
--- 	mod:pcall(function()
--- 		-- pout(1,2,3)
--- 		-- pprint(ability_percentage)
--- 	end)
-
--- 	return
--- end
 
 mod:hook("UnitFramesHandler._sync_player_stats", function (func, self, unit_frame)
 	local is_wounded = false
@@ -1773,8 +1699,7 @@ mod:hook("UnitFramesHandler._sync_player_stats", function (func, self, unit_fram
 
 	local original_set_portrait_status = UnitFrameUI.set_portrait_status
 	UnitFrameUI.set_portrait_status = function (self, is_knocked_down, needs_help, is_dead, assisted_respawn)
-		unit_frame_ui._default_widgets.default_dynamic.content.display_warning_overlay = true
-			-- not is_dead and (is_knocked_down or (needs_help and not assisted_respawn))
+		self._mod_display_warning_overlay = not is_dead and (is_knocked_down or (needs_help and not assisted_respawn))
 		return original_set_portrait_status(self, is_knocked_down, needs_help, is_dead, assisted_respawn)
 	end
 
@@ -1790,23 +1715,21 @@ mod:hook("UnitFrameUI.update", function (func, self, dt, t)
 end)
 
 local function ufUI_update(self, dt, t, player_unit)
-	-- self:on_resolution_modified()
-
 	-- self:_set_widget_dirty(self._default_widgets.default_dynamic)
 	-- self:_set_widget_dirty(self._default_widgets.default_static)
 	-- self:_set_widget_dirty(self._health_widgets.health_dynamic)
 
 	if self._frame_index then
-
-		mod:pcall(function()
-			local widget = self:_widget_by_feature("ability", "dynamic")
-			local widget_style = widget.style
-			local widget_content = widget.content
+		-- DEBUG ability bar
+		-- mod:pcall(function()
+			-- local widget = self:_widget_by_feature("ability", "dynamic")
+			-- local widget_style = widget.style
+			-- local widget_content = widget.content
 			-- widget_content.actual_ability_percent = ability_percent
 			-- pprint(widget.content)
 			-- EchoConsole(tostring(widget_content.bar_value))
 			-- EchoConsole(tostring(self._default_widgets.default_static.content.ability_bar.bar_value))
-		end)
+		-- end)
 
 		mod:pcall(function()
 			-- self:_set_widget_dirty(self._equipment_widgets.loadout_dynamic)
@@ -1820,7 +1743,8 @@ local function ufUI_update(self, dt, t, player_unit)
 
 			local health_bar_size, health_bar_offset = get_hp_bar_size_and_offset(player_unit)
 
-			-- pout(my_scale_x)
+			self._mod_health_bar_size = health_bar_size
+			self._mod_health_bar_offset = health_bar_offset
 
 			self._default_widgets = {
 				default_dynamic = UIWidget.init(mod:create_dynamic_portait_widget(health_bar_size, health_bar_offset)),
@@ -1841,12 +1765,12 @@ local function ufUI_update(self, dt, t, player_unit)
 			-- self.slot_equip_animations = {}
 			-- self.bar_animations = {}
 
-			self:reset()
-
 			-- if self._frame_index then
 			-- 	self:_widget_by_name("health_dynamic").content.hp_bar.texture_id = "teammate_hp_bar_color_tint_" .. self._frame_index
 			-- 	self:_widget_by_name("health_dynamic").content.total_health_bar.texture_id = "teammate_hp_bar_" .. self._frame_index
 			-- end
+
+			self:reset()
 
 			self:_set_widget_dirty(self._default_widgets.default_dynamic)
 			self:_set_widget_dirty(self._default_widgets.default_static)
@@ -1857,8 +1781,6 @@ local function ufUI_update(self, dt, t, player_unit)
 			self:set_dirty()
 		end)
 	else
-
-		-- local result, error = pcall(function()
 			self:_set_widget_dirty(self._default_widgets.default_dynamic)
 			self:_set_widget_dirty(self._default_widgets.default_static)
 			self:_set_widget_dirty(self._health_widgets.health_dynamic)
@@ -1869,28 +1791,21 @@ local function ufUI_update(self, dt, t, player_unit)
 		-- 		UIWidget.destroy(self.ui_renderer, self._ability_widgets.ability_dynamic)
 		-- 	end
 
-		local hp_scale = 1
-		-- local player_unit = Managers.player:local_player().player_unit
-		if player_unit and Unit.alive(player_unit) then
-			local health_system = ScriptUnit.extension(player_unit, "health_system")
-			hp_scale = health_system:get_max_health() / 100
-		end
-
-		local health_bar_size = {
-			default_hp_bar_size_x*my_scale_x*hp_scale,
-			17
-		}
+		local health_bar_size, health_bar_offset = get_hp_bar_size_and_offset(player_unit)
 
 		player_health_bar_size = {
 			health_bar_size[1]-1,
 			health_bar_size[2]
 		}
 
+		self._mod_health_bar_size = health_bar_size
+		self._mod_health_bar_offset = health_bar_offset
+
 		self._health_widgets = {
 			health_dynamic = UIWidget.init(mod:create_player_dynamic_health_widget(health_bar_size))
 		}
 		self._ability_widgets = {
-			ability_dynamic = UIWidget.init(mod:create_dynamic_ability_widget(player_health_bar_size))
+			ability_dynamic = UIWidget.init(mod:create_dynamic_ability_widget(health_bar_size))
 		}
 
 		self._widgets.health_dynamic = self._health_widgets.health_dynamic
@@ -1901,16 +1816,9 @@ local function ufUI_update(self, dt, t, player_unit)
 		-- 	self:_set_widget_dirty(self._health_widgets.health_dynamic)
 		-- 	self:_set_widget_dirty(self._ability_widgets.ability_dynamic)
 		-- 	self:set_dirty()
-		-- end)
-		-- if not result then
-		-- 	EchoConsole(tostring(error))
-		-- end
 	end
 
 	if self._frame_index then
-		mod:pcall(function()
-			-- pdump(self._default_widgets.default_static.style, "def_static_debug")
-		end)
 	-- if self._frame_index and not self._repositioned then
 		-- self._portrait_widgets.portrait_static.content.scale = 1
 		self._portrait_widgets.portrait_static.style.texture_1.size = { 0, 0 }
@@ -1938,7 +1846,7 @@ local function ufUI_update(self, dt, t, player_unit)
 			player_name_offset_x = 55
 			player_name_offset_y = -100
 
-			player_name_offset_x = 0 -50 --+ (get_hp_bar_size_and_offset(player_unit)[1] - default_hp_bar_size_x*my_scale_x)/2 - 25
+			player_name_offset_x = -50
 			player_name_offset_y = -95
 		end
 		default_static_style.player_name.offset[1] = player_name_offset_x
@@ -1954,21 +1862,7 @@ local function ufUI_update(self, dt, t, player_unit)
 		-- self._default_widgets.default_static.content.player_level = "100"
 		self._portrait_widgets.portrait_static.content.level = ""
 
-		self._default_widgets.default_static.content.player_name = "Big McLarge Huge"
-
-		-- local player_name_widget = self:_widget_by_feature("player_name", "static")
-		-- if player_name_widget then
-		-- 	player_name_widget
-			-- self:_set_widget_dirty(player_name_widget)
-		-- end
-
-		-- local pos = self.ui_scenegraph.pivot.local_position
-		-- EchoConsole(tostring(pos[1]).." "..tostring(pos[2]))
-		-- self:set_position(pos[1], pos[2])
-		-- self:set_position(150+(self._frame_index-1)*265, 140)
-
-		-- self:set_position(90+(self._frame_index-1)*150, 140)
-		-- did_once = true
+		-- self._default_widgets.default_static.content.player_name = "Big McLarge Huge"
 	else
 		self:set_position(0, 0)
 	end
@@ -2008,14 +1902,8 @@ mod:hook("UnitFramesHandler.update", function(func, self, dt, t, ignore_own_play
 		end
 	end
 
-	-- local original_ufUI_update = UnitFrameUI.update
-	-- UnitFrameUI.update = ufUI_update
 	func(self, dt, t, ignore_own_player)
-	-- UnitFrameUI.update = original_ufUI_update
 end)
-
--- mod:hook("UnitFrameUI.update",
--- end)
 
 local did_once = false
 mod:hook("UnitFrameUI.draw", function (func, self, dt)
@@ -2077,12 +1965,57 @@ mod:hook("UnitFrameUI.draw", function (func, self, dt)
 
 	UIRenderer.end_pass(ui_renderer)
 
+	if not self.ufUI_draw_warning_icon then
+		self.ufUI_draw_warning_icon = mod.ufUI_draw_warning_icon
+	end
+
+	-- if true then
+	if self._mod_display_warning_overlay then
+		self:ufUI_draw_warning_icon(dt)
+	end
+
 	-- self._dirty = true
 
 	return
 end)
 
-local SLOTS_LIST = InventorySettings.weapon_slots
+mod.warning_icon_alpha_up = false
+mod.warning_icon_color = {255, 255, 0, 0}
+mod.ufUI_draw_warning_icon = function(self, dt)
+	if not mod.gui and Managers.world:world("top_ingame_view") then
+		mod:create_gui()
+	end
+
+	if not mod.gui then
+		return
+	end
+
+	local color = mod.warning_icon_color
+	color[1] = color[1] + 100*dt*(mod.warning_icon_alpha_u and 1 or -1)
+	if color[1] < 150 then
+		mod.warning_icon_alpha_u = true
+		color[1] = 150
+	end
+	if color[1] > 255 then
+		mod.warning_icon_alpha_u = false
+		color[1] = 255
+	end
+
+	local black = Color(color[1], 0, 0, 0)
+	local draw_color = Color(unpack(color))
+
+	local position2dt = self.ui_scenegraph.pivot.world_position
+	position2dt[1] = position2dt[1] + self._mod_health_bar_size[1] - 95
+	position2dt[2] = position2dt[2] - 123
+	local offset_vis = {0, 0, 0}
+
+	local font_name, font_material, font_size = mod:fonts(60)
+	Gui.text(mod.gui, "!", font_material, font_size, font_name, Vector2(position2dt[1]+1+offset_vis[1], position2dt[2]-1+offset_vis[2]), black)
+	Gui.text(mod.gui, "!", font_material, font_size, font_name, Vector2(position2dt[1]+1+offset_vis[1], position2dt[2]+1+offset_vis[2]), black)
+	Gui.text(mod.gui, "!", font_material, font_size, font_name, Vector2(position2dt[1]-1+offset_vis[1], position2dt[2]-1+offset_vis[2]), black)
+	Gui.text(mod.gui, "!", font_material, font_size, font_name, Vector2(position2dt[1]-1+offset_vis[1], position2dt[2]+1+offset_vis[2]), black)
+	Gui.text(mod.gui, "!", font_material, font_size, font_name, Vector2(position2dt[1]+offset_vis[1], position2dt[2]+offset_vis[2]), draw_color)
+end
 
 mod.get_custom_player_widget_def = function(self, player_health_bar_size)
 	return {
@@ -2090,11 +2023,6 @@ mod.get_custom_player_widget_def = function(self, player_health_bar_size)
 		offset = { player_offset_x - 1 + global_offset_x, player_offset_y + global_offset_y, 1 },
 		element = {
 			passes = {
-				{
-					pass_type = "texture",
-					style_id = "glow",
-					texture_id = "glow",
-				},
 				{
 					pass_type = "texture",
 					style_id = "bg_slot_1",
@@ -2159,7 +2087,6 @@ mod.get_custom_player_widget_def = function(self, player_health_bar_size)
 						local ammo_progress = content.bar_value
 						local size = style.size
 						local uvs = content.uvs
-						local offset = style.offset
 						local bar_length = player_health_bar_size[1]
 						uvs[2][2] = ammo_progress
 						size[1] = bar_length*ammo_progress
@@ -2183,7 +2110,6 @@ mod.get_custom_player_widget_def = function(self, player_health_bar_size)
 			},
 		},
 		content = {
-			glow = "hud_player_ability_bar_glow",
 			item_slot_bg_1 = "hud_inventory_slot_bg_01",
 			item_slot_bg_2 = "hud_inventory_slot_bg_02",
 			item_slot_1 = {
@@ -2228,29 +2154,6 @@ mod.get_custom_player_widget_def = function(self, player_health_bar_size)
 			},
 		},
 		style = {
-			glow = {
-				-- vertical_alignment = "bottom",
-				-- horizontal_alignment = "center",
-				texture_size = {
-					300+134+5,
-					270+20
-				},
-				size = {
-					300,
-					170
-				},
-				color = {
-					255,
-					255,
-					0,
-					0
-				},
-				offset = {
-					-400-320-4,
-					-40-5,
-					-10
-				}
-			},
 			bg_slot_1 = {
 				size = {
 					64,
@@ -2357,7 +2260,7 @@ mod.get_custom_player_widget_def = function(self, player_health_bar_size)
 				offset = {-2, -2, 0},
 				size = {
 					player_health_bar_size[1]+4,
-					player_health_bar_size[2]+4,--22
+					player_health_bar_size[2]+4,
 				},
 				color = {255, 105, 105, 105},
 			},
@@ -2365,22 +2268,20 @@ mod.get_custom_player_widget_def = function(self, player_health_bar_size)
 				offset = {0, 0, 10+500+1},
 				size = {
 					player_health_bar_size[1],
-					player_health_bar_size[2],--22
+					player_health_bar_size[2],
 				},
-				-- color = {255, 115, 150, 65},
-				color = {0--[[150]], 255, 255, 51}--255,0,51},
+				color = {0, 255, 255, 51}
 			},
 			hp_bar_rect2 = {
 				offset = {-1, -1, 0},
 				size = {
 					player_health_bar_size[1]+2,
-					player_health_bar_size[2]+2,--22-2
+					player_health_bar_size[2]+2,
 				},
 				color = {255, 0, 0, 0},
 			},
 			ult_bar_rect = {
 				offset = {6-8 + ability_ui_offset_x, 21-2-1 + ability_ui_offset_y, 0},
-				-- size = {450*my_scale_x, 8},
 				size = {
 					player_health_bar_size[1]+4,
 					ult_bar_height + 4
@@ -2389,38 +2290,12 @@ mod.get_custom_player_widget_def = function(self, player_health_bar_size)
 			},
 			ult_bar_rect2 = {
 				offset = {7-8 + ability_ui_offset_x, 22-2-1 + ability_ui_offset_y, 0},
-				-- size = {450*my_scale_x-2, 8-2},
 				size = {
 					player_health_bar_size[1]+2,
 					ult_bar_height + 2,
 				},
 				color = {255, 0, 0, 0},
 			},
-			-- ammo_bar = {
-			-- 	size = {
-			-- 		health_bar_size[1],
-			-- 		health_bar_size[2]
-			-- 		-- ammo_bar_height +
-			-- 	},
-			-- 	offset = {
-			-- 		0,
-			-- 		-- -2,
-			-- 		player_ammo_bar_offset_y+ 8+2,--health_bar_offset[2] - 9 - 50,
-			-- 		10+500
-			-- 	},
-			-- 	-- color = {
-			-- 	-- 	50,
-			-- 	-- 	255,
-			-- 	-- 	0,
-			-- 	-- 	0
-			-- 	-- },
-			-- 	color = {
-			-- 		255,
-			-- 		255,
-			-- 		255,
-			-- 		255
-			-- 	},
-			-- },
 			ammo_bar = {
 				size = {
 					health_bar_size[1],
@@ -2496,7 +2371,7 @@ EquipmentUI._customhud_update_ammo = function (self, left_hand_wielded_unit, rig
 	local remaining_ammo = ammo_extension:total_remaining_ammo()
 
 	if max_ammo and remaining_ammo then
-	    custom_player_widget.content.ammo_bar.bar_value = remaining_ammo / max_ammo
+	    mod.custom_player_widget.content.ammo_bar.bar_value = remaining_ammo / max_ammo
 	end
 end
 
@@ -2512,7 +2387,7 @@ mod:hook("EquipmentUI._create_ui_elements", function (func, ...)
 end)
 
 mod:hook("EquipmentUI.draw", function (func, self, dt)
-	if not custom_player_widget then
+	if not mod.custom_player_widget then
 		local hp_scale = 1
 		local player_unit = Managers.player:local_player().player_unit
 		if player_unit and Unit.alive(player_unit) then
@@ -2527,18 +2402,14 @@ mod:hook("EquipmentUI.draw", function (func, self, dt)
 			17
 		}
 
-		-- pout(health_bar_size)
-
 		player_offset_x = -health_bar_size[1]/2
 		player_offset_y = 0
 
-		-- player_offset_x = player_offset_x - 400
 		player_offset_y = player_offset_y - 9 - 10
-		-- player_offset_y = player_offset_y + 5
 
-		global_offset_x = 0---SIZE_X/2
+		global_offset_x = 0
 
-		custom_player_widget = UIWidget.init(mod:get_custom_player_widget_def(health_bar_size))
+		mod.custom_player_widget = UIWidget.init(mod:get_custom_player_widget_def(health_bar_size))
 	end
 
 	mod:pcall(function()
@@ -2549,31 +2420,12 @@ mod:hook("EquipmentUI.draw", function (func, self, dt)
 			local item_data = slot_data.item_data
 			self:_customhud_update_ammo(slot_data.left_unit_1p, slot_data.right_unit_1p, BackendUtils.get_item_template(item_data))
 		end
-
-		-- update the player warning overlay
-		-- if custom_player_widget.content.display_custom_portrait_overlay then
-		if true then
-			-- start warning animation
-			if not UIWidget.has_animation(custom_player_widget) then
-				UIWidget.animate(custom_player_widget, UIAnimation.init(
-						UIAnimation.function_by_time, custom_player_widget.style.glow.color, 1, 255, 150, 0.5, math.easeCubic,
-						UIAnimation.function_by_time, custom_player_widget.style.glow.color, 1, 150, 255, 0.5, math.easeCubic
-					)
-				)
-			end
-		else
-			-- stop warning animation
-			if UIWidget.has_animation(custom_player_widget) then
-				UIWidget.stop_animations(custom_player_widget)
-			end
-		end
 	end)
 
 	local ui_renderer = self.ui_renderer
 	local ui_scenegraph = self.ui_scenegraph
 	local input_service = self.input_manager:get_service("ingame_menu")
 	local render_settings = self.render_settings
-	local alpha_multiplier = render_settings.alpha_multiplier
 
 	UIRenderer.begin_pass(ui_renderer, ui_scenegraph, input_service, dt, nil, render_settings)
 
@@ -2584,29 +2436,29 @@ mod:hook("EquipmentUI.draw", function (func, self, dt)
 		local slot_data = self._slot_widgets[i+2]
 		local orig_slot_style = slot_data.style
 		if slot_data.content.visible and orig_slot_style.texture_icon.color[1] ~= 0  then
-			custom_player_widget.content[widget_slot_name].texture_id = slot_data.content.texture_icon
-			custom_player_widget.style[widget_slot_name].color[1] = 255
-			custom_player_widget.style[widget_slot_name].color[2] = 255
-			custom_player_widget.style[widget_slot_name].color[3] =	255
-			custom_player_widget.style[widget_slot_name].color[4] = 255
-			-- custom_player_widget.style[widget_slot_name].color = {255, 138,43,226}
+			mod.custom_player_widget.content[widget_slot_name].texture_id = slot_data.content.texture_icon
+			mod.custom_player_widget.style[widget_slot_name].color[1] = 255
+			mod.custom_player_widget.style[widget_slot_name].color[2] = 255
+			mod.custom_player_widget.style[widget_slot_name].color[3] =	255
+			mod.custom_player_widget.style[widget_slot_name].color[4] = 255
+			-- mod.custom_player_widget.style[widget_slot_name].color = {255, 138,43,226}
 		else
-			custom_player_widget.content[widget_slot_name].texture_id = empty_slot_icons[slot_name]
-			custom_player_widget.style[widget_slot_name].color[1] = 75
-			custom_player_widget.style[slot_bg_name].color[1] = 75
+			mod.custom_player_widget.content[widget_slot_name].texture_id = empty_slot_icons[slot_name]
+			mod.custom_player_widget.style[widget_slot_name].color[1] = 75
+			mod.custom_player_widget.style[slot_bg_name].color[1] = 75
 		end
 
-			custom_player_widget.style[widget_slot_name].color[1] = 0
-			custom_player_widget.style[slot_bg_name].color[1] = 0
+			mod.custom_player_widget.style[widget_slot_name].color[1] = 0
+			mod.custom_player_widget.style[slot_bg_name].color[1] = 0
 	end
-	UIRenderer.draw_widget(ui_renderer, custom_player_widget)
+	UIRenderer.draw_widget(ui_renderer, mod.custom_player_widget)
 
 	UIRenderer.end_pass(ui_renderer)
 
 	mod:pcall(function()
 		for _, widget in ipairs( self._ammo_widgets ) do
-			widget.offset[1] = 0 -- -1200
-			widget.offset[2] = 0 -- -75
+			widget.offset[1] = 0
+			widget.offset[2] = 0
 		end
 	end)
 
@@ -2657,7 +2509,6 @@ mod:hook("EquipmentUI.draw", function (func, self, dt)
 end)
 
 --- BuffUI stuff ---
-
 local buff_ui_definitions = local_require("scripts/ui/hud_ui/buff_ui_definitions")
 local ALIGNMENT_DURATION_TIME = 0--0.3
 local MAX_NUMBER_OF_BUFFS = buff_ui_definitions.MAX_NUMBER_OF_BUFFS
@@ -2684,14 +2535,12 @@ mod:hook("BuffUI._align_widgets", function (func, self) -- luacheck: ignore func
 end)
 
 mod:hook("BuffUI._add_buff", function (func, self, buff, ...)
-	mod:pcall(function()
-		-- pout(buff)
-	end)
 	if buff.buff_type == "victor_bountyhunter_passive_infinite_ammo_buff"
 	  or buff.buff_type == "grimoire_health_debuff"
 	  or buff.buff_type == "markus_huntsman_passive_crit_aura_buff" then
 		return false
 	end
+
 	return func(self, buff, ...)
 end)
 
@@ -2731,8 +2580,11 @@ end)
 
 -- DEBUG
 mod:hook("BuffUI.update", function (func, self, ...)
-	self:_align_widgets()
-	self:set_dirty()
+	if self._mod_player_health_bar_size_backup ~= player_health_bar_size then
+		self._mod_player_health_bar_size_backup = player_health_bar_size
+		self:_align_widgets()
+	end
+	-- self:set_dirty()
 	-- for _, buff in ipairs( self._active_buffs ) do
 	-- 	-- pout(buff)
 	-- end
@@ -2791,359 +2643,6 @@ mod:hook("BuffUI._create_ui_elements", function (func, ...)
 	UISceneGraph.init_scenegraph = original_init_scenegraph
 end)
 
-local function create_ability_widget()
-	return {
-		scenegraph_id = "ability_root",
-		element = {
-			passes = {
-				{
-					pass_type = "texture",
-					style_id = "ability_effect_right",
-					texture_id = "texture_id",
-					content_id = "ability_effect",
-					retained_mode = RETAINED_MODE_ENABLED,
-					content_check_function = function (content)
-						return not content.parent.on_cooldown
-					end
-				},
-				{
-					pass_type = "texture",
-					style_id = "ability_effect_top_right",
-					texture_id = "texture_id",
-					content_id = "ability_effect_top",
-					retained_mode = RETAINED_MODE_ENABLED,
-					content_check_function = function (content)
-						return not content.parent.on_cooldown
-					end
-				},
-				{
-					style_id = "ability_effect_left",
-					pass_type = "texture_uv",
-					content_id = "ability_effect",
-					retained_mode = RETAINED_MODE_ENABLED,
-					content_check_function = function (content)
-						return not content.parent.on_cooldown
-					end
-				},
-				{
-					style_id = "ability_effect_top_left",
-					pass_type = "texture_uv",
-					content_id = "ability_effect_top",
-					retained_mode = RETAINED_MODE_ENABLED,
-					content_check_function = function (content)
-						return not content.parent.on_cooldown
-					end
-				},
-				{
-					pass_type = "texture",
-					style_id = "ability_bar_highlight",
-					texture_id = "ability_bar_highlight",
-					retained_mode = RETAINED_MODE_ENABLED,
-					content_check_function = function (content)
-						return not content.on_cooldown
-					end
-				},
-				{
-					style_id = "input_text",
-					pass_type = "text",
-					text_id = "input_text",
-					retained_mode = RETAINED_MODE_ENABLED,
-					content_check_function = function (content, style)
-						return not Managers.input:is_device_active("gamepad")
-					end
-				},
-				{
-					style_id = "input_text_shadow",
-					pass_type = "text",
-					text_id = "input_text",
-					retained_mode = RETAINED_MODE_ENABLED,
-					content_check_function = function (content, style)
-						return not Managers.input:is_device_active("gamepad")
-					end
-				},
-				{
-					style_id = "input_text_gamepad",
-					pass_type = "text",
-					text_id = "input_text_gamepad",
-					retained_mode = RETAINED_MODE_ENABLED,
-					content_check_function = function (content, style)
-						return Managers.input:is_device_active("gamepad") and not content.on_cooldown
-					end
-				},
-				{
-					style_id = "input_text_shadow_gamepad",
-					pass_type = "text",
-					text_id = "input_text_gamepad",
-					retained_mode = RETAINED_MODE_ENABLED,
-					content_check_function = function (content, style)
-						return Managers.input:is_device_active("gamepad") and not content.on_cooldown
-					end
-				},
-				{
-					pass_type = "texture",
-					style_id = "input_texture_left_shoulder",
-					texture_id = "input_texture_left_shoulder",
-					retained_mode = RETAINED_MODE_ENABLED,
-					content_check_function = function (content, style)
-						return Managers.input:is_device_active("gamepad") and not content.on_cooldown
-					end
-				},
-				{
-					pass_type = "texture",
-					style_id = "input_texture_right_shoulder",
-					texture_id = "input_texture_right_shoulder",
-					retained_mode = RETAINED_MODE_ENABLED,
-					content_check_function = function (content, style)
-						return Managers.input:is_device_active("gamepad") and not content.on_cooldown
-					end
-				}
-			}
-		},
-		content = {
-			input_text_gamepad = "+",
-			ability_bar_highlight = "hud_player_ability_bar_glow",
-			input_text = "",
-			on_cooldown = true,
-			ability_effect = {
-				texture_id = "ability_effect",
-				uvs = {
-					{
-						0,
-						0
-					},
-					{
-						1,
-						1
-					}
-				}
-			},
-			ability_effect_top = {
-				texture_id = "hud_player_ability_icon_glow",
-				uvs = {
-					{
-						0,
-						0
-					},
-					{
-						1,
-						1
-					}
-				}
-			},
-			input_texture_left_shoulder = ButtonTextureByName("left_shoulder", "xb1").texture,
-			input_texture_right_shoulder = ButtonTextureByName("right_shoulder", "xb1").texture
-		},
-		style = {
-			input_text = {
-				word_wrap = false,
-				font_size = 16,
-				localize = false,
-				horizontal_alignment = "center",
-				vertical_alignment = "center",
-				font_type = "hell_shark",
-				text_color = Colors.get_color_table_with_alpha("white", 255),
-				size = {
-					22,
-					18
-				},
-				offset = {
-					38,
-					78,
-					2
-				}
-			},
-			input_text_shadow = {
-				word_wrap = false,
-				font_size = 16,
-				localize = false,
-				horizontal_alignment = "center",
-				vertical_alignment = "center",
-				font_type = "hell_shark",
-				text_color = Colors.get_color_table_with_alpha("black", 255),
-				size = {
-					22,
-					18
-				},
-				offset = {
-					40,
-					76,
-					1
-				}
-			},
-			input_text_gamepad = {
-				vertical_alignment = "center",
-				font_size = 32,
-				localize = false,
-				horizontal_alignment = "center",
-				word_wrap = false,
-				font_type = "hell_shark",
-				text_color = {
-					0,
-					255,
-					255,
-					255
-				},
-				offset = {
-					0,
-					85,
-					20
-				}
-			},
-			input_text_shadow_gamepad = {
-				vertical_alignment = "center",
-				font_size = 32,
-				localize = false,
-				horizontal_alignment = "center",
-				word_wrap = false,
-				font_type = "hell_shark",
-				text_color = {
-					0,
-					0,
-					0,
-					0
-				},
-				offset = {
-					0,
-					83,
-					19
-				}
-			},
-			input_texture_left_shoulder = {
-				vertical_alignment = "center",
-				horizontal_alignment = "center",
-				color = {
-					0,
-					255,
-					255,
-					255
-				},
-				offset = {
-					-40,
-					85,
-					20
-				},
-				texture_size = ButtonTextureByName("left_shoulder", "xb1").size
-			},
-			input_texture_right_shoulder = {
-				vertical_alignment = "center",
-				horizontal_alignment = "center",
-				color = {
-					0,
-					255,
-					255,
-					255
-				},
-				offset = {
-					30,
-					85,
-					20
-				},
-				texture_size = ButtonTextureByName("right_shoulder", "xb1").size
-			},
-			ability_effect_right = {
-				vertical_alignment = "bottom",
-				horizontal_alignment = "right",
-				texture_size = {
-					110,
-					170
-				},
-				offset = {
-					0,
-					-2,
-					0
-				},
-				color = {
-					0,
-					255,
-					255,
-					255
-				}
-			},
-			ability_effect_top_right = {
-				vertical_alignment = "bottom",
-				horizontal_alignment = "right",
-				texture_size = {
-					110,
-					170
-				},
-				offset = {
-					0,
-					-2,
-					1
-				},
-				color = {
-					0,
-					255,
-					255,
-					255
-				}
-			},
-			ability_effect_left = {
-				vertical_alignment = "bottom",
-				horizontal_alignment = "left",
-				texture_size = {
-					110,
-					170
-				},
-				offset = {
-					-9,
-					-2,
-					0
-				},
-				color = {
-					0,
-					255,
-					255,
-					255
-				}
-			},
-			ability_effect_top_left = {
-				vertical_alignment = "bottom",
-				horizontal_alignment = "left",
-				texture_size = {
-					110,
-					170
-				},
-				offset = {
-					-9,
-					-2,
-					1
-				},
-				color = {
-					0,
-					255,
-					255,
-					255
-				}
-			},
-			ability_bar_highlight = {
-				vertical_alignment = "bottom",
-				horizontal_alignment = "center",
-				texture_size = {
-					player_health_bar_size[1],
-					70
-				},
-				color = {
-					0,
-					255,
-					255,
-					255
-				},
-				offset = {
-					0,
-					22,
-					2
-				}
-			}
-		},
-		offset = {
-			0,
-			0,
-			0
-		}
-	}
-end
-
 local abilityUI_scenegraph_definition = {
 	screen = {
 		scale = "fit",
@@ -3193,21 +2692,19 @@ mod:hook("AbilityUI.draw", function (func, self, dt)
 		end
 	end
 	mod:pcall(function()
-		local skull_offsets = { 12, -15 }
 		local skull_offsets = { 0, -15 }
-		self._widgets[1].style.ability_effect_left.offset[1] = -player_health_bar_size[1]/2 - 50--skull_offsets[1] - ability_ui_offset_x
+		self._widgets[1].style.ability_effect_left.offset[1] = -player_health_bar_size[1]/2 - 50
 		self._widgets[1].style.ability_effect_left.horizontal_alignment = "center"
 		self._widgets[1].style.ability_effect_left.offset[2] = skull_offsets[2] - ability_ui_offset_y
 		self._widgets[1].style.ability_effect_top_left.horizontal_alignment = "center"
-		self._widgets[1].style.ability_effect_top_left.offset[1] = -player_health_bar_size[1]/2 - 50 --skull_offsets[1] - ability_ui_offset_x
+		self._widgets[1].style.ability_effect_top_left.offset[1] = -player_health_bar_size[1]/2 - 50
 		self._widgets[1].style.ability_effect_top_left.offset[2] = skull_offsets[2] - ability_ui_offset_y
 
 		-- mod:dtf(self._widgets[1], "AbilityUI._widgets[1]", 8)
 	end)
 
-	self._widgets[1].offset[1]= -1--player_offset_x + global_offset_x + ability_ui_offset_x
+	self._widgets[1].offset[1]= -1
 	self._widgets[1].offset[2]= 56 + global_offset_y + ability_ui_offset_y + player_offset_y
-	-- self._widgets[1].style.ability_bar_highlight.texture_size[1] = 488 * my_scale_x - 3
 	self._widgets[1].style.ability_bar_highlight.texture_size[1] = player_health_bar_size[1]*1.09
 	self._widgets[1].style.ability_bar_highlight.texture_size[2] = 50
 	self._widgets[1].style.ability_bar_highlight.offset[2] = 22 + 4
@@ -3222,7 +2719,6 @@ mod:hook("AbilityUI.draw", function (func, self, dt)
 	local ui_renderer = self.ui_renderer
 	local ui_scenegraph = self.ui_scenegraph
 	local input_service = self.input_manager:get_service("ingame_menu")
-	local render_settings = self.render_settings
 
 	UIRenderer.begin_pass(ui_renderer, ui_scenegraph, input_service, dt, nil, self.render_settings)
 
@@ -3238,8 +2734,6 @@ mod.ChatGui_mod_set_position = function(self, x, y)
 		local position = self.ui_scenegraph.chat_window_root.local_position
 		position[1] = x
 		position[2] = y
-
-		self:set_dirty()
 	end)
 end
 
@@ -3256,32 +2750,29 @@ mod:hook("ChatGui.update", function(func, self, ...)
 	return func(self, ...)
 end)
 
---[[
-	Create GUI
---]]
+mod.fonts = function(self, size)
+	if size == nil then size = 20 end
+	if size >= 32 then
+		return "gw_head_32", "materials/fonts/gw_head_32", size
+	else
+		return "gw_head_20", "materials/fonts/gw_head_32", size
+	end
+end
+
+--- ingame GUI ---
 mod.gui = nil
 mod.create_gui = function(self)
 	local top_world = Managers.world:world("top_ingame_view")
 	self.gui = World.create_screen_gui(top_world, "immediate", "material", "materials/fonts/gw_fonts")
 end
+
 mod.destroy_gui = function(self)
 	local top_world = Managers.world:world("top_ingame_view")
 	World.destroy_gui(top_world, self.gui)
 	self.gui = nil
 end
 
---[[
-	Mod Update - create gui
---]]
-mod.update = function(dt)
-	if not mod.gui and Managers.world:world("top_ingame_view") then
-		mod:create_gui()
-	end
-end
---[[
-	Delete gui on unload
---]]
-mod.on_unload = function(exit_game)
+mod.on_unload = function(exit_game) -- luacheck: ignore exit_game
 	if mod.gui and Managers.world:world("top_ingame_view") then
 		mod:destroy_gui()
 	end

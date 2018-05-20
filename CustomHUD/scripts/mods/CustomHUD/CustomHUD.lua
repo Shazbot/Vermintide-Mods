@@ -1568,6 +1568,8 @@ mod:hook("UnitFrameUI._create_ui_elements", function (func, self, frame_index)
 			local player_unit = Managers.player:local_player().player_unit
 			local health_bar_size, health_bar_offset = get_hp_bar_size_and_offset(player_unit)
 
+			self._mod_health_bar_size_cached = health_bar_size
+
 			self._default_widgets = {
 				default_dynamic = UIWidget.init(mod:create_dynamic_portait_widget(health_bar_size, health_bar_offset)),
 				default_static = UIWidget.init(mod:create_static_widget(health_bar_size, health_bar_offset))
@@ -1610,7 +1612,7 @@ mod:hook("UnitFrameUI._create_ui_elements", function (func, self, frame_index)
 			end
 
 			local health_bar_size = get_player_hp_bar_size()
-			-- pout(health_bar_size)
+			self._mod_health_bar_size_cached = health_bar_size
 
 			self._health_widgets = {
 				health_dynamic = UIWidget.init(mod:create_player_dynamic_health_widget(health_bar_size))
@@ -1710,10 +1712,6 @@ mod:hook("UnitFramesHandler._sync_player_stats", function (func, self, unit_fram
 	UnitFrameUI.set_portrait_status = original_set_portrait_status
 end)
 
-mod:hook("UnitFrameUI.update", function (func, self, dt, t)
-	return func(self, dt, t)
-end)
-
 local function ufUI_update(self, dt, t, player_unit)
 	-- self:_set_widget_dirty(self._default_widgets.default_dynamic)
 	-- self:_set_widget_dirty(self._default_widgets.default_static)
@@ -1746,19 +1744,19 @@ local function ufUI_update(self, dt, t, player_unit)
 			self._mod_health_bar_size = health_bar_size
 			self._mod_health_bar_offset = health_bar_offset
 
-			self._default_widgets = {
-				default_dynamic = UIWidget.init(mod:create_dynamic_portait_widget(health_bar_size, health_bar_offset)),
-				default_static = UIWidget.init(mod:create_static_widget(health_bar_size, health_bar_offset))
-			}
-			self._health_widgets = {
-				health_dynamic = UIWidget.init(mod:create_dynamic_health_widget(health_bar_size, health_bar_offset))
-			}
-			self._equipment_widgets.loadout_dynamic = UIWidget.init(mod:create_dynamic_loadout_widget())
+			-- self._default_widgets = {
+			-- 	default_dynamic = UIWidget.init(mod:create_dynamic_portait_widget(health_bar_size, health_bar_offset)),
+			-- 	default_static = UIWidget.init(mod:create_static_widget(health_bar_size, health_bar_offset))
+			-- }
+			-- self._health_widgets = {
+			-- 	health_dynamic = UIWidget.init(mod:create_dynamic_health_widget(health_bar_size, health_bar_offset))
+			-- }
+			-- self._equipment_widgets.loadout_dynamic = UIWidget.init(mod:create_dynamic_loadout_widget())
 
-			self._widgets.default_dynamic = self._default_widgets.default_dynamic
-			self._widgets.default_static = self._default_widgets.default_static
-			self._widgets.health_dynamic = self._health_widgets.health_dynamic
-			self._widgets.loadout_dynamic = self._equipment_widgets.loadout_dynamic
+			-- self._widgets.default_dynamic = self._default_widgets.default_dynamic
+			-- self._widgets.default_static = self._default_widgets.default_static
+			-- self._widgets.health_dynamic = self._health_widgets.health_dynamic
+			-- self._widgets.loadout_dynamic = self._equipment_widgets.loadout_dynamic
 
 			-- UIRenderer.clear_scenegraph_queue(self.ui_renderer)
 
@@ -1770,21 +1768,21 @@ local function ufUI_update(self, dt, t, player_unit)
 			-- 	self:_widget_by_name("health_dynamic").content.total_health_bar.texture_id = "teammate_hp_bar_" .. self._frame_index
 			-- end
 
-			self:reset()
+			-- self:reset()
 
-			self:_set_widget_dirty(self._default_widgets.default_dynamic)
-			self:_set_widget_dirty(self._default_widgets.default_static)
-			self:_set_widget_dirty(self._health_widgets.health_dynamic)
-			self:_set_widget_dirty(self._equipment_widgets.loadout_dynamic)
+			-- self:_set_widget_dirty(self._default_widgets.default_dynamic)
+			-- self:_set_widget_dirty(self._default_widgets.default_static)
+			-- self:_set_widget_dirty(self._health_widgets.health_dynamic)
+			-- self:_set_widget_dirty(self._equipment_widgets.loadout_dynamic)
 
-			self:set_visible(true)
-			self:set_dirty()
+			-- self:set_visible(true)
+			-- self:set_dirty()
 		end)
 	else
-			self:_set_widget_dirty(self._default_widgets.default_dynamic)
-			self:_set_widget_dirty(self._default_widgets.default_static)
-			self:_set_widget_dirty(self._health_widgets.health_dynamic)
-			self:_set_widget_dirty(self._ability_widgets.ability_dynamic)
+			-- self:_set_widget_dirty(self._default_widgets.default_dynamic)
+			-- self:_set_widget_dirty(self._default_widgets.default_static)
+			-- self:_set_widget_dirty(self._health_widgets.health_dynamic)
+			-- self:_set_widget_dirty(self._ability_widgets.ability_dynamic)
 
 		-- 	if self._health_widgets then
 		-- 		UIWidget.destroy(self.ui_renderer, self._health_widgets.health_dynamic)
@@ -1801,20 +1799,31 @@ local function ufUI_update(self, dt, t, player_unit)
 		self._mod_health_bar_size = health_bar_size
 		self._mod_health_bar_offset = health_bar_offset
 
-		self._health_widgets = {
-			health_dynamic = UIWidget.init(mod:create_player_dynamic_health_widget(health_bar_size))
-		}
-		self._ability_widgets = {
-			ability_dynamic = UIWidget.init(mod:create_dynamic_ability_widget(health_bar_size))
-		}
+		if mod.do_reload or not tablex.deepcompare(self._mod_health_bar_size_cached, health_bar_size) then
+			self._mod_health_bar_size_cached = health_bar_size
 
-		self._widgets.health_dynamic = self._health_widgets.health_dynamic
-		self._widgets.ability_dynamic = self._ability_widgets.ability_dynamic
+			self._health_widgets = {
+				health_dynamic = UIWidget.init(mod:create_player_dynamic_health_widget(health_bar_size))
+			}
+			self._widgets.health_dynamic = self._health_widgets.health_dynamic
+			self:_set_widget_dirty(self._health_widgets.health_dynamic)
+
+			self._ability_widgets = {
+				ability_dynamic = UIWidget.init(mod:create_dynamic_ability_widget(health_bar_size))
+			}
+			self._widgets.ability_dynamic = self._ability_widgets.ability_dynamic
+			self:_set_widget_dirty(self._ability_widgets.ability_dynamic)
+
+			player_offset_x = -health_bar_size[1]/2
+			player_offset_y = 0
+			player_offset_y = player_offset_y - 9 - 10
+			global_offset_x = 0
+
+			mod.custom_player_widget = UIWidget.init(mod:get_custom_player_widget_def(health_bar_size))
+		end
 
 		-- 	self:_set_widget_dirty(self._default_widgets.default_dynamic)
 		-- 	self:_set_widget_dirty(self._default_widgets.default_static)
-		-- 	self:_set_widget_dirty(self._health_widgets.health_dynamic)
-		-- 	self:_set_widget_dirty(self._ability_widgets.ability_dynamic)
 		-- 	self:set_dirty()
 	end
 
@@ -1843,9 +1852,6 @@ local function ufUI_update(self, dt, t, player_unit)
 		local player_name_offset_y = -92
 
 		if portrait_left then
-			player_name_offset_x = 55
-			player_name_offset_y = -100
-
 			player_name_offset_x = -50
 			player_name_offset_y = -95
 		end
@@ -1975,8 +1981,6 @@ mod:hook("UnitFrameUI.draw", function (func, self, dt)
 	end
 
 	-- self._dirty = true
-
-	return
 end)
 
 mod.warning_icon_alpha_up = false
@@ -2388,25 +2392,11 @@ end)
 
 mod:hook("EquipmentUI.draw", function (func, self, dt)
 	if not mod.custom_player_widget then
-		local hp_scale = 1
-		local player_unit = Managers.player:local_player().player_unit
-		if player_unit and Unit.alive(player_unit) then
-			local health_system = ScriptUnit.has_extension(player_unit, "health_system")
-			if health_system then
-				hp_scale = health_system:get_max_health() / 100
-			end
-		end
-
-		local health_bar_size = {
-			default_hp_bar_size_x*my_scale_x*hp_scale,
-			17
-		}
+		local health_bar_size = get_player_hp_bar_size()
 
 		player_offset_x = -health_bar_size[1]/2
 		player_offset_y = 0
-
 		player_offset_y = player_offset_y - 9 - 10
-
 		global_offset_x = 0
 
 		mod.custom_player_widget = UIWidget.init(mod:get_custom_player_widget_def(health_bar_size))
@@ -2520,7 +2510,7 @@ mod:hook("BuffUI._align_widgets", function (func, self) -- luacheck: ignore func
 	for index, data in ipairs(self._active_buffs) do
 		local widget = data.widget
 		local widget_offset = widget.offset
-		local target_position = (index - 1)*horizontal_spacing + player_health_bar_size[1]/2 + 20
+		local target_position = (index - 1)*horizontal_spacing + get_player_hp_bar_size()[1]/2 + 20
 		data.target_position = target_position
 		data.target_distance = math.abs(widget_offset[1] - target_position)
 
@@ -2578,17 +2568,13 @@ mod:hook("BuffUI._update_pivot_alignment", function (func, self, dt)
 	self:set_dirty()
 end)
 
--- DEBUG
-mod:hook("BuffUI.update", function (func, self, ...)
-	if self._mod_player_health_bar_size_backup ~= player_health_bar_size then
-		self._mod_player_health_bar_size_backup = player_health_bar_size
+mod:hook("BuffUI.draw", function(func, self, dt)
+	local player_hp_bar_size = get_player_hp_bar_size()
+	if mod.do_reload or not tablex.deepcompare(self._mod_player_health_bar_size_cached, player_hp_bar_size) then
+		self._mod_player_health_bar_size_cached = player_hp_bar_size
 		self:_align_widgets()
 	end
-	-- self:set_dirty()
-	-- for _, buff in ipairs( self._active_buffs ) do
-	-- 	-- pout(buff)
-	-- end
-	return func(self, ...)
+	return func(self, dt)
 end)
 
 mod.buff_ui_scenegraph_definition = {
@@ -2775,5 +2761,11 @@ end
 mod.on_unload = function(exit_game) -- luacheck: ignore exit_game
 	if mod.gui and Managers.world:world("top_ingame_view") then
 		mod:destroy_gui()
+	end
+end
+
+mod.on_enabled = function(is_first_call) -- luacheck: ignore is_first_call
+	if not is_first_call then
+		mod.do_reload = true
 	end
 end

@@ -3248,11 +3248,41 @@ mod:hook("ChatGui.update", function(func, self, ...)
 		ChatGui.mod_set_position = mod.ChatGui_mod_set_position
 	end
 
-	-- self:_mod_set_position(0, 1080/2-100)
-	if not self._mod_repositioned and self._widgets then
+	if not self._mod_repositioned then
 		self._mod_repositioned = true
 		self:mod_set_position(0, 1080/2-200)
 	end
-	-- self:_mod_set_position(0, 0)
+
 	return func(self, ...)
 end)
+
+--[[
+	Create GUI
+--]]
+mod.gui = nil
+mod.create_gui = function(self)
+	local top_world = Managers.world:world("top_ingame_view")
+	self.gui = World.create_screen_gui(top_world, "immediate", "material", "materials/fonts/gw_fonts")
+end
+mod.destroy_gui = function(self)
+	local top_world = Managers.world:world("top_ingame_view")
+	World.destroy_gui(top_world, self.gui)
+	self.gui = nil
+end
+
+--[[
+	Mod Update - create gui
+--]]
+mod.update = function(dt)
+	if not mod.gui and Managers.world:world("top_ingame_view") then
+		mod:create_gui()
+	end
+end
+--[[
+	Delete gui on unload
+--]]
+mod.on_unload = function(exit_game)
+	if mod.gui and Managers.world:world("top_ingame_view") then
+		mod:destroy_gui()
+	end
+end

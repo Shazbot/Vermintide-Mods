@@ -10,3 +10,7 @@ lua = [
 	"localization/*"
 	"scripts/mods/CustomHUD/*"
 ]
+
+material = [
+	"materials/CustomHUD/*"
+]

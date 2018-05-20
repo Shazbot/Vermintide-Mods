@@ -1,12 +1,16 @@
 local mod = get_mod("CustomHUD")
 
+local pl = require'pl.import_into'()
+local tablex = require'pl.tablex'
+
 -- luacheck: globals UIRenderer ScriptUnit Managers BackendUtils UIWidget UnitFrameUI
 -- luacheck: globals UILayer UISceneGraph EquipmentUI ButtonTextureByName Colors
+-- luacheck: globals ChatGui
 
 local custom_player_widget
 
 -- DEBUG
-local debug_favs = false
+local debug_favs = true
 local RETAINED_MODE_ENABLED = not debug_favs
 
 local my_scale_x = 0.45
@@ -18,8 +22,8 @@ local SIZE_Y = 1080
 local player_offset_x = SIZE_X/2-100
 local player_offset_y = 20
 
-local global_offset_x = -750
-local global_offset_y = 0 + 5
+local global_offset_x = 0---750
+local global_offset_y = -5
 
 local ability_ui_offset_x = 0
 local ability_ui_offset_y = -28 - 8
@@ -83,9 +87,11 @@ mod.unit_frame_ui_scenegraph_definition = {
 local portrait_scale = 1
 local slot_scale = 1
 local health_bar_size_fraction = 2
+local default_hp_bar_size_x = 400
 local health_bar_size = {
 	-- health_bar_size_fraction*92,
-	468*my_scale_x,
+	-- 468*my_scale_x,
+	default_hp_bar_size_x*my_scale_x,
 	17--health_bar_size_fraction*9
 }
 local player_health_bar_size = {
@@ -95,6 +101,22 @@ local player_health_bar_size = {
 local health_bar_offset = {
 	-(health_bar_size[1]/2),
 	health_bar_size_fraction*-25,
+	0
+}
+
+-- local others_items_offsets = {
+-- 	160,
+-- 	-37,
+-- 	0
+-- }
+local others_items_offsets = {
+	-103,
+	-75,
+	0
+}
+local others_items_offsets = {
+	-103,
+	-0,
 	0
 }
 
@@ -431,14 +453,14 @@ mod.create_dynamic_loadout_widget = function(self)
 			}
 		},
 		offset = {
-			-15 + 35,
-			health_bar_offset[2] - 96 + 65,
-			0
+			-15 + 35 + others_items_offsets[1],
+			health_bar_offset[2] - 96 + 65 + others_items_offsets[2],
+			0 + others_items_offsets[3]
 		}
 	}
 end
 
-mod.create_static_widget = function(self)
+mod.create_static_widget = function(self, health_bar_size, health_bar_offset)
 	return {
 		scenegraph_id = "pivot",
 		element = {
@@ -544,7 +566,7 @@ mod.create_static_widget = function(self)
 						local size = style.size
 						local uvs = content.uvs
 						local offset = style.offset
-						local bar_length = health_bar_size[1] - 1
+						local bar_length = health_bar_size[1]
 						uvs[2][2] = ability_progress
 						size[1] = bar_length*ability_progress
 					end
@@ -614,7 +636,8 @@ mod.create_static_widget = function(self)
 				vertical_alignment = "top",
 				font_type = "hell_shark",
 				font_size = 14,
-				horizontal_alignment = "center",
+				-- horizontal_alignment = "center",
+				horizontal_alignment = "left",
 				text_color = Colors.get_table("cheeseburger"),
 				offset = {
 					health_bar_offset[1],
@@ -790,7 +813,7 @@ mod.create_static_widget = function(self)
 	}
 end
 
-mod.create_dynamic_portait_widget = function(self)
+mod.create_dynamic_portait_widget = function(self, health_bar_size, health_bar_offset)
 	return {
 		scenegraph_id = "pivot",
 		element = {
@@ -829,16 +852,26 @@ mod.create_dynamic_portait_widget = function(self)
 						local size = style.size
 						local uvs = content.uvs
 						local offset = style.offset
-						local bar_length = health_bar_size[1] - 1
+						local bar_length = health_bar_size[1]
 						uvs[2][2] = ammo_progress
 						size[1] = bar_length*ammo_progress
 
 						return
 					end
-				}
+				},
+				{
+					pass_type = "texture",
+					style_id = "glow",
+					texture_id = "glow",
+					content_check_function = function (content)
+						return content.display_warning_overlay
+					end
+				},
 			}
 		},
 		content = {
+			display_warning_overlay = false,
+			glow = "hud_player_ability_bar_glow",
 			display_portrait_overlay = false,
 			connecting = false,
 			display_portrait_icon = false,
@@ -862,6 +895,25 @@ mod.create_dynamic_portait_widget = function(self)
 			}
 		},
 		style = {
+			glow = {
+				-- vertical_alignment = "bottom",
+				-- horizontal_alignment = "center",
+				texture_size = {
+					health_bar_size[1]+20,
+					250
+				},
+				color = {
+					255,
+					255,
+					0,
+					0
+				},
+				offset = {
+					-124,
+					-100,
+					-10
+				}
+			},
 			talk_indicator_highlight = {
 				size = {
 					40,
@@ -945,7 +997,7 @@ mod.create_dynamic_portait_widget = function(self)
 	}
 end
 
-mod.create_dynamic_health_widget = function(self)
+mod.create_dynamic_health_widget = function(self, health_bar_size, health_bar_offset)
 	return {
 		scenegraph_id = "pivot",
 		element = {
@@ -1199,11 +1251,23 @@ local settings = {
 		y = 33
 	}
 }
+local settings = {
+	hp_bar = {
+		z = 0,
+		x = -1,
+		y = 69
+	},
+	ability_bar = {
+		z = 0,
+		x = -1+8,
+		y = 92
+	}
+}
 local portrait_area = {
 	86,
 	108
 }
-mod.create_player_dynamic_health_widget = function(self)
+mod.create_player_dynamic_health_widget = function(self, player_health_bar_size)
 	return {
 		scenegraph_id = "pivot",
 		element = {
@@ -1410,7 +1474,7 @@ mod.create_player_dynamic_health_widget = function(self)
 	}
 end
 
-mod.create_dynamic_ability_widget = function(self)
+mod.create_dynamic_ability_widget = function(self, health_bar_size)
 	return {
 		scenegraph_id = "pivot",
 		element = {
@@ -1426,7 +1490,7 @@ mod.create_dynamic_ability_widget = function(self)
 						local size = style.size
 						local uvs = content.uvs
 						local offset = style.offset
-						local bar_length = health_bar_size[1]--468*my_scale_x+2-4--health_bar_size[1] +20--488*my_scale_x
+						local bar_length = health_bar_size[1] + 1--468*my_scale_x+2-4--health_bar_size[1] +20--488*my_scale_x
 						uvs[2][2] = ability_progress
 						size[1] = bar_length*ability_progress
 					end
@@ -1453,7 +1517,7 @@ mod.create_dynamic_ability_widget = function(self)
 		style = {
 			ability_bar = {
 				size = {
-					health_bar_size[1]+2,
+					health_bar_size[1]+1,
 					4+1
 				},
 				color = {
@@ -1477,6 +1541,42 @@ mod.create_dynamic_ability_widget = function(self)
 	}
 end
 
+local function get_player_hp_bar_size()
+	local hp_scale = 1
+	local player_unit = Managers.player:local_player().player_unit
+	if player_unit and Unit.alive(player_unit) then
+		local health_system = ScriptUnit.extension(player_unit, "health_system")
+		hp_scale = health_system:get_max_health() / 100
+	end
+
+	local health_bar_size = {
+		default_hp_bar_size_x*my_scale_x*hp_scale,
+		17
+	}
+
+	return health_bar_size
+end
+
+local function get_hp_bar_size_and_offset(player_unit)
+	local hp_scale = 1
+	if player_unit and Unit.alive(player_unit) then
+		local health_system = ScriptUnit.extension(player_unit, "health_system")
+		hp_scale = health_system:get_max_health() / 100
+	end
+
+	local health_bar_size = {
+		default_hp_bar_size_x*my_scale_x*hp_scale,
+		17
+	}
+	local health_bar_offset = {
+		-115,
+		health_bar_size_fraction*-25,
+		0
+	}
+
+	return health_bar_size, health_bar_offset
+end
+
 mod:hook("UnitFrameUI._create_ui_elements", function (func, self, frame_index)
 	self._frame_index = frame_index
 
@@ -1495,12 +1595,15 @@ mod:hook("UnitFrameUI._create_ui_elements", function (func, self, frame_index)
 				UIWidget.destroy(self.ui_renderer, self._equipment_widgets.loadout_dynamic)
 			end
 
+			local player_unit = Managers.player:local_player().player_unit
+			local health_bar_size, health_bar_offset = get_hp_bar_size_and_offset(player_unit)
+
 			self._default_widgets = {
-				default_dynamic = UIWidget.init(mod:create_dynamic_portait_widget()),
-				default_static = UIWidget.init(mod:create_static_widget())
+				default_dynamic = UIWidget.init(mod:create_dynamic_portait_widget(health_bar_size, health_bar_offset)),
+				default_static = UIWidget.init(mod:create_static_widget(health_bar_size, health_bar_offset))
 			}
 			self._health_widgets = {
-				health_dynamic = UIWidget.init(mod:create_dynamic_health_widget())
+				health_dynamic = UIWidget.init(mod:create_dynamic_health_widget(health_bar_size, health_bar_offset))
 			}
 			self._equipment_widgets.loadout_dynamic = UIWidget.init(mod:create_dynamic_loadout_widget())
 
@@ -1536,11 +1639,14 @@ mod:hook("UnitFrameUI._create_ui_elements", function (func, self, frame_index)
 				UIWidget.destroy(self.ui_renderer, self._ability_widgets.ability_dynamic)
 			end
 
+			local health_bar_size = get_player_hp_bar_size()
+			-- pout(health_bar_size)
+
 			self._health_widgets = {
-				health_dynamic = UIWidget.init(mod:create_player_dynamic_health_widget())
+				health_dynamic = UIWidget.init(mod:create_player_dynamic_health_widget(health_bar_size))
 			}
 			self._ability_widgets = {
-				ability_dynamic = UIWidget.init(mod:create_dynamic_ability_widget())
+				ability_dynamic = UIWidget.init(mod:create_dynamic_ability_widget(health_bar_size))
 			}
 
 			self._widgets.health_dynamic = self._health_widgets.health_dynamic
@@ -1581,6 +1687,23 @@ UnitFrameUI.customhud_update = function (self, is_wounded)
 				-- custom_player_widget.style.hp_bar_rect2.color = is_wounded and {255, 255, 255, 255} or {255, 0, 0, 0}
 				custom_player_widget.style.ult_bar_rect.color = is_wounded and {255, 255, 255, 255} or {255, 105, 105, 105}
 				custom_player_widget.style.ammo_bar_rect.color = is_wounded and {255, 255, 255, 255} or {255, 105, 105, 105}
+			end
+		end
+
+		local default_dynamic = self._default_widgets.default_dynamic
+		if self._frame_index then --self._frame_index and default_dynamic.content.display_warning_overlay then
+			-- start warning animation
+			if not UIWidget.has_animation(default_dynamic) then
+				UIWidget.animate(default_dynamic, UIAnimation.init(
+						UIAnimation.function_by_time, default_dynamic.style.glow.color, 1, 255, 100, 0.5, math.easeCubic,
+						UIAnimation.function_by_time, default_dynamic.style.glow.color, 1, 100, 255, 0.5, math.easeCubic
+					)
+				)
+			end
+		else
+			-- stop warning animation
+			if UIWidget.has_animation(default_dynamic) then
+				UIWidget.stop_animations(default_dynamic)
 			end
 		end
 	end)
@@ -1625,12 +1748,12 @@ end)
 -- end
 
 mod:hook("UnitFramesHandler._sync_player_stats", function (func, self, unit_frame)
-	mod:pcall(function()
+	local is_wounded = false
+	local unit_frame_ui = unit_frame.widget
 
-		local unit_frame_ui = unit_frame.widget
+	mod:pcall(function()
 		local player_data = unit_frame.player_data
 		local player_unit = player_data.player_unit
-		local is_wounded = false
 
 		local go_id = Managers.state.unit_storage:go_id(player_unit)
 		local network_manager = Managers.state.network
@@ -1646,13 +1769,27 @@ mod:hook("UnitFramesHandler._sync_player_stats", function (func, self, unit_fram
 				is_wounded = player_data.extensions.status:is_wounded()
 			end
 		end
-
-		unit_frame_ui:customhud_update(is_wounded)
 	end)
-	return func(self, unit_frame)
+
+	local original_set_portrait_status = UnitFrameUI.set_portrait_status
+	UnitFrameUI.set_portrait_status = function (self, is_knocked_down, needs_help, is_dead, assisted_respawn)
+		unit_frame_ui._default_widgets.default_dynamic.content.display_warning_overlay = true
+			-- not is_dead and (is_knocked_down or (needs_help and not assisted_respawn))
+		return original_set_portrait_status(self, is_knocked_down, needs_help, is_dead, assisted_respawn)
+	end
+
+	func(self, unit_frame)
+
+	unit_frame_ui:customhud_update(is_wounded)
+
+	UnitFrameUI.set_portrait_status = original_set_portrait_status
 end)
 
 mod:hook("UnitFrameUI.update", function (func, self, dt, t)
+	return func(self, dt, t)
+end)
+
+local function ufUI_update(self, dt, t, player_unit)
 	-- self:on_resolution_modified()
 
 	-- self:_set_widget_dirty(self._default_widgets.default_dynamic)
@@ -1671,74 +1808,93 @@ mod:hook("UnitFrameUI.update", function (func, self, dt, t)
 			-- EchoConsole(tostring(self._default_widgets.default_static.content.ability_bar.bar_value))
 		end)
 
-		-- local result, error = pcall(function()
-		-- 	self:_set_widget_dirty(self._equipment_widgets.loadout_dynamic)
+		mod:pcall(function()
+			-- self:_set_widget_dirty(self._equipment_widgets.loadout_dynamic)
 
-		-- 	if self._default_widgets then
-		-- 		UIWidget.destroy(self.ui_renderer, self._default_widgets.default_dynamic)
-		-- 		UIWidget.destroy(self.ui_renderer, self._default_widgets.default_static)
-		-- 		UIWidget.destroy(self.ui_renderer, self._health_widgets.health_dynamic)
-		-- 		UIWidget.destroy(self.ui_renderer, self._equipment_widgets.loadout_dynamic)
-		-- 	end
+			if self._default_widgets then
+				-- UIWidget.destroy(self.ui_renderer, self._default_widgets.default_dynamic)
+				-- UIWidget.destroy(self.ui_renderer, self._default_widgets.default_static)
+				-- UIWidget.destroy(self.ui_renderer, self._health_widgets.health_dynamic)
+				-- UIWidget.destroy(self.ui_renderer, self._equipment_widgets.loadout_dynamic)
+			end
 
-		-- 	self._default_widgets = {
-		-- 		default_dynamic = UIWidget.init(mod:create_dynamic_portait_widget()),
-		-- 		default_static = UIWidget.init(mod:create_static_widget())
-		-- 	}
-		-- 	self._health_widgets = {
-		-- 		health_dynamic = UIWidget.init(mod:create_dynamic_health_widget())
-		-- 	}
-		-- 	self._equipment_widgets.loadout_dynamic = UIWidget.init(mod:create_dynamic_loadout_widget())
+			local health_bar_size, health_bar_offset = get_hp_bar_size_and_offset(player_unit)
 
-		-- 	self._widgets.default_dynamic = self._default_widgets.default_dynamic
-		-- 	self._widgets.default_static = self._default_widgets.default_static
-		-- 	self._widgets.health_dynamic = self._health_widgets.health_dynamic
-		-- 	self._widgets.loadout_dynamic = self._equipment_widgets.loadout_dynamic
+			-- pout(my_scale_x)
 
-		-- 	UIRenderer.clear_scenegraph_queue(self.ui_renderer)
+			self._default_widgets = {
+				default_dynamic = UIWidget.init(mod:create_dynamic_portait_widget(health_bar_size, health_bar_offset)),
+				default_static = UIWidget.init(mod:create_static_widget(health_bar_size, health_bar_offset))
+			}
+			self._health_widgets = {
+				health_dynamic = UIWidget.init(mod:create_dynamic_health_widget(health_bar_size, health_bar_offset))
+			}
+			self._equipment_widgets.loadout_dynamic = UIWidget.init(mod:create_dynamic_loadout_widget())
 
-		-- 	self.slot_equip_animations = {}
-		-- 	self.bar_animations = {}
+			self._widgets.default_dynamic = self._default_widgets.default_dynamic
+			self._widgets.default_static = self._default_widgets.default_static
+			self._widgets.health_dynamic = self._health_widgets.health_dynamic
+			self._widgets.loadout_dynamic = self._equipment_widgets.loadout_dynamic
 
-		-- 	self:reset()
+			-- UIRenderer.clear_scenegraph_queue(self.ui_renderer)
 
-		-- 	if self._frame_index then
-		-- 		self:_widget_by_name("health_dynamic").content.hp_bar.texture_id = "teammate_hp_bar_color_tint_" .. self._frame_index
-		-- 		self:_widget_by_name("health_dynamic").content.total_health_bar.texture_id = "teammate_hp_bar_" .. self._frame_index
-		-- 	end
+			-- self.slot_equip_animations = {}
+			-- self.bar_animations = {}
 
-		-- 	self:_set_widget_dirty(self._default_widgets.default_dynamic)
-		-- 	self:_set_widget_dirty(self._default_widgets.default_static)
-		-- 	self:_set_widget_dirty(self._health_widgets.health_dynamic)
-		-- 	self:_set_widget_dirty(self._equipment_widgets.loadout_dynamic)
+			self:reset()
 
-		-- 	self:set_visible(true)
-		-- 	self:set_dirty()
-		-- end)
-		-- if not result then
-		-- 	EchoConsole(tostring(error))
-		-- end
+			-- if self._frame_index then
+			-- 	self:_widget_by_name("health_dynamic").content.hp_bar.texture_id = "teammate_hp_bar_color_tint_" .. self._frame_index
+			-- 	self:_widget_by_name("health_dynamic").content.total_health_bar.texture_id = "teammate_hp_bar_" .. self._frame_index
+			-- end
+
+			self:_set_widget_dirty(self._default_widgets.default_dynamic)
+			self:_set_widget_dirty(self._default_widgets.default_static)
+			self:_set_widget_dirty(self._health_widgets.health_dynamic)
+			self:_set_widget_dirty(self._equipment_widgets.loadout_dynamic)
+
+			self:set_visible(true)
+			self:set_dirty()
+		end)
 	else
+
 		-- local result, error = pcall(function()
-		-- 	self:_set_widget_dirty(self._default_widgets.default_dynamic)
-		-- 	self:_set_widget_dirty(self._default_widgets.default_static)
-		-- 	self:_set_widget_dirty(self._health_widgets.health_dynamic)
-		-- 	self:_set_widget_dirty(self._ability_widgets.ability_dynamic)
+			self:_set_widget_dirty(self._default_widgets.default_dynamic)
+			self:_set_widget_dirty(self._default_widgets.default_static)
+			self:_set_widget_dirty(self._health_widgets.health_dynamic)
+			self:_set_widget_dirty(self._ability_widgets.ability_dynamic)
 
 		-- 	if self._health_widgets then
 		-- 		UIWidget.destroy(self.ui_renderer, self._health_widgets.health_dynamic)
 		-- 		UIWidget.destroy(self.ui_renderer, self._ability_widgets.ability_dynamic)
 		-- 	end
 
-		-- 	self._health_widgets = {
-		-- 		health_dynamic = UIWidget.init(mod:create_player_dynamic_health_widget())
-		-- 	}
-		-- 	self._ability_widgets = {
-		-- 		ability_dynamic = UIWidget.init(mod:create_dynamic_ability_widget())
-		-- 	}
+		local hp_scale = 1
+		-- local player_unit = Managers.player:local_player().player_unit
+		if player_unit and Unit.alive(player_unit) then
+			local health_system = ScriptUnit.extension(player_unit, "health_system")
+			hp_scale = health_system:get_max_health() / 100
+		end
 
-		-- 	self._widgets.health_dynamic = self._health_widgets.health_dynamic
-		-- 	self._widgets.ability_dynamic = self._ability_widgets.ability_dynamic
+		local health_bar_size = {
+			default_hp_bar_size_x*my_scale_x*hp_scale,
+			17
+		}
+
+		player_health_bar_size = {
+			health_bar_size[1]-1,
+			health_bar_size[2]
+		}
+
+		self._health_widgets = {
+			health_dynamic = UIWidget.init(mod:create_player_dynamic_health_widget(health_bar_size))
+		}
+		self._ability_widgets = {
+			ability_dynamic = UIWidget.init(mod:create_dynamic_ability_widget(player_health_bar_size))
+		}
+
+		self._widgets.health_dynamic = self._health_widgets.health_dynamic
+		self._widgets.ability_dynamic = self._ability_widgets.ability_dynamic
 
 		-- 	self:_set_widget_dirty(self._default_widgets.default_dynamic)
 		-- 	self:_set_widget_dirty(self._default_widgets.default_static)
@@ -1761,6 +1917,12 @@ mod:hook("UnitFrameUI.update", function (func, self, dt, t)
 		self._default_widgets.default_static.style.character_portrait.texture_size = { 86*0.55, 108*0.55 }
 		self._default_widgets.default_static.style.character_portrait.offset = { -80, -32, 1 }
 
+		local portrait_left = true
+		if portrait_left then
+			-- self._default_widgets.default_static.style.character_portrait.offset = { -180, -80, 1 }
+			self._default_widgets.default_static.style.character_portrait.offset = { -180, -75, 1 }
+		end
+
 		self._default_widgets.default_dynamic.style.portrait_icon.size = { 86*0.55, 108*0.55 }
 		self._default_widgets.default_dynamic.style.portrait_icon.offset = { -80, -32, 10 }
 
@@ -1769,11 +1931,21 @@ mod:hook("UnitFrameUI.update", function (func, self, dt, t)
 		-- self._dirty=true
 
 		local default_static_style = self._default_widgets.default_static.style
-		default_static_style.player_name.offset[1] = 0
-		default_static_style.player_name_shadow.offset[1] = 0+1
-		local player_name_offset = -89
-		default_static_style.player_name.offset[2] = player_name_offset
-		default_static_style.player_name_shadow.offset[2] = player_name_offset-1
+		local player_name_offset_x = 0
+		local player_name_offset_y = -92
+
+		if portrait_left then
+			player_name_offset_x = 55
+			player_name_offset_y = -100
+
+			player_name_offset_x = 0 -50 --+ (get_hp_bar_size_and_offset(player_unit)[1] - default_hp_bar_size_x*my_scale_x)/2 - 25
+			player_name_offset_y = -95
+		end
+		default_static_style.player_name.offset[1] = player_name_offset_x
+		default_static_style.player_name_shadow.offset[1] = player_name_offset_x+1
+
+		default_static_style.player_name.offset[2] = player_name_offset_y
+		default_static_style.player_name_shadow.offset[2] = player_name_offset_y-1
 
 		default_static_style.player_level.offset[1] = -55
 		default_static_style.player_level.offset[2] = -15
@@ -1781,6 +1953,8 @@ mod:hook("UnitFrameUI.update", function (func, self, dt, t)
 		-- default_static_style.player_level.offset = { 0,0,1 }
 		-- self._default_widgets.default_static.content.player_level = "100"
 		self._portrait_widgets.portrait_static.content.level = ""
+
+		self._default_widgets.default_static.content.player_name = "Big McLarge Huge"
 
 		-- local player_name_widget = self:_widget_by_feature("player_name", "static")
 		-- if player_name_widget then
@@ -1791,9 +1965,12 @@ mod:hook("UnitFrameUI.update", function (func, self, dt, t)
 		-- local pos = self.ui_scenegraph.pivot.local_position
 		-- EchoConsole(tostring(pos[1]).." "..tostring(pos[2]))
 		-- self:set_position(pos[1], pos[2])
-		self:set_position(125+(self._frame_index-1)*230, 140)
+		-- self:set_position(150+(self._frame_index-1)*265, 140)
+
 		-- self:set_position(90+(self._frame_index-1)*150, 140)
 		-- did_once = true
+	else
+		self:set_position(0, 0)
 	end
 
 	-- DEBUG
@@ -1801,9 +1978,44 @@ mod:hook("UnitFrameUI.update", function (func, self, dt, t)
 		self:set_visible(true)
 		self._dirty = true
 	end
+end
 
-	return func(self, dt, t)
+mod:hook("UnitFramesHandler.update", function(func, self, dt, t, ignore_own_player)
+	if not self._is_visible then
+		return
+	end
+
+	local function uf_comparison(uf_first, uf_second)
+		local health_system_first = ScriptUnit.has_extension(uf_first.player_data.player_unit, "health_system")
+		local health_system_second = ScriptUnit.has_extension(uf_second.player_data.player_unit, "health_system")
+		if health_system_first and health_system_second then
+			return health_system_first:get_max_health() > health_system_second:get_max_health()
+		end
+		return not not health_system_first
+	end
+
+	for index, unit_frame in ipairs(self._unit_frames) do
+		if index ~= 1 or not ignore_own_player then
+			ufUI_update(unit_frame.widget, dt, t, unit_frame.player_data.player_unit)
+		end
+	end
+
+	local i = 1
+	for index, unit_frame in tablex.sortv(self._unit_frames, uf_comparison) do
+		if index ~= 1 then
+			unit_frame.widget:set_position(205, 160+(i-1)*110)
+			i = i + 1
+		end
+	end
+
+	-- local original_ufUI_update = UnitFrameUI.update
+	-- UnitFrameUI.update = ufUI_update
+	func(self, dt, t, ignore_own_player)
+	-- UnitFrameUI.update = original_ufUI_update
 end)
+
+-- mod:hook("UnitFrameUI.update",
+-- end)
 
 local did_once = false
 mod:hook("UnitFrameUI.draw", function (func, self, dt)
@@ -1868,6 +2080,715 @@ mod:hook("UnitFrameUI.draw", function (func, self, dt)
 	-- self._dirty = true
 
 	return
+end)
+
+local SLOTS_LIST = InventorySettings.weapon_slots
+
+mod.get_custom_player_widget_def = function(self, player_health_bar_size)
+	return {
+		scenegraph_id = "pivot",
+		offset = { player_offset_x - 1 + global_offset_x, player_offset_y + global_offset_y, 1 },
+		element = {
+			passes = {
+				{
+					pass_type = "texture",
+					style_id = "glow",
+					texture_id = "glow",
+				},
+				{
+					pass_type = "texture",
+					style_id = "bg_slot_1",
+					texture_id = "bg_slot",
+				},
+				{
+					pass_type = "texture_uv",
+					style_id = "item_slot_1",
+					content_id = "item_slot_1",
+				},
+				{
+					pass_type = "texture",
+					style_id = "bg_slot_2",
+					texture_id = "bg_slot",
+				},
+				{
+					pass_type = "texture_uv",
+					style_id = "item_slot_2",
+					content_id = "item_slot_2",
+				},
+				{
+					pass_type = "texture",
+					style_id = "bg_slot_3",
+					texture_id = "bg_slot",
+				},
+				{
+					pass_type = "texture_uv",
+					style_id = "item_slot_3",
+					content_id = "item_slot_3",
+				},
+				{
+					pass_type = "rect",
+					style_id = "hp_bar_rect",
+					content_check_function = function(content) return content.show end,
+				},
+				{
+					pass_type = "rect",
+					style_id = "hp_bar_rect2",
+					content_check_function = function(content) return content.show end,
+				},
+				{
+					pass_type = "rect",
+					style_id = "ult_bar_rect",
+					content_check_function = function(content) return content.show end,
+				},
+				{
+					pass_type = "rect",
+					style_id = "ult_bar_rect2",
+					content_check_function = function(content) return content.show end,
+				},
+				{
+					pass_type = "texture",
+					style_id = "host_icon",
+					texture_id = "host_icon",
+					content_check_function = function(content) return content.is_host end,
+				},
+				{
+					style_id = "ammo_bar",
+					pass_type = "texture_uv",
+					content_id = "ammo_bar",
+					content_change_function = function (content, style)
+						local ammo_progress = content.bar_value
+						local size = style.size
+						local uvs = content.uvs
+						local offset = style.offset
+						local bar_length = player_health_bar_size[1]
+						uvs[2][2] = ammo_progress
+						size[1] = bar_length*ammo_progress
+					end
+				},
+				{
+					pass_type = "rect",
+					style_id = "ammo_bar_rect",
+					-- content_check_function = function(content) return content.show end,
+				},
+				{
+					pass_type = "rect",
+					style_id = "ammo_bar_rect2",
+					-- content_check_function = function(content) return content.show end,
+				},
+				{
+					pass_type = "rect",
+					style_id = "player_hp_bar_rect",
+					-- content_check_function = function(content) return content.show end,
+				},
+			},
+		},
+		content = {
+			glow = "hud_player_ability_bar_glow",
+			item_slot_bg_1 = "hud_inventory_slot_bg_01",
+			item_slot_bg_2 = "hud_inventory_slot_bg_02",
+			item_slot_1 = {
+				texture_id = "teammate_consumable_icon_medpack_empty",
+				uvs = {
+					{ 0.15, 0.15 },
+					{ 0.85, 0.85 }
+				},
+			},
+			item_slot_2 = {
+				texture_id = "teammate_consumable_icon_potion_empty",
+				uvs = {
+					{ 0.15, 0.15 },
+					{ 0.85, 0.85 }
+				},
+			},
+			item_slot_3 = {
+				texture_id = "teammate_consumable_icon_grenade_empty",
+				uvs = {
+					{ 0.15, 0.15 },
+					{ 0.85, 0.85 }
+				},
+			},
+			bg_slot = "consumables_frame_bg_lit",
+			show_reload_reminder = false,
+			show = true,
+			is_host = false,
+			host_icon = "host_icon",
+			ammo_bar = {
+				bar_value = 1,
+				texture_id = "hud_teammate_ammo_bar_fill",
+				uvs = {
+					{
+						0,
+						0
+					},
+					{
+						1,
+						1
+					}
+				}
+			},
+		},
+		style = {
+			glow = {
+				-- vertical_alignment = "bottom",
+				-- horizontal_alignment = "center",
+				texture_size = {
+					300+134+5,
+					270+20
+				},
+				size = {
+					300,
+					170
+				},
+				color = {
+					255,
+					255,
+					0,
+					0
+				},
+				offset = {
+					-400-320-4,
+					-40-5,
+					-10
+				}
+			},
+			bg_slot_1 = {
+				size = {
+					64,
+					64
+				},
+				offset = {
+					4+2+0,
+					30,
+					1
+				},
+				color = {
+					100,
+					255,
+					255,
+					255
+				},
+			},
+			item_slot_1 = {
+				size = {
+					48,
+					48
+				},
+				offset = {
+					8+6+0,
+					38,
+					2,
+				},
+				color = {
+					50,
+					255,
+					255,
+					255
+				},
+			},
+			bg_slot_2 = {
+				size = {
+					64,
+					64
+				},
+				offset = {
+					64+3+0,
+					30,
+					1
+				},
+				color = {
+					100,
+					255,
+					255,
+					255
+				},
+			},
+			item_slot_2 = {
+				size = {
+					48,
+					48
+				},
+				offset = {
+					64+8+3+0,
+					38,
+					2,
+				},
+				color = {
+					50,
+					255,
+					255,
+					255
+				},
+			},
+			bg_slot_3 = {
+				size = {
+					64,
+					64
+				},
+				offset = {
+					64*2+0,
+					30,
+					1
+				},
+				color = {
+					100,
+					255,
+					255,
+					255
+				},
+			},
+			item_slot_3 = {
+				size = {
+					48,
+					48
+				},
+				offset = {
+					64*2+8+0,
+					38,
+					2,
+				},
+				color = {
+					50,
+					255,
+					255,
+					255
+				},
+			},
+			hp_bar_rect = {
+				offset = {-2, -2, 0},
+				size = {
+					player_health_bar_size[1]+4,
+					player_health_bar_size[2]+4,--22
+				},
+				color = {255, 105, 105, 105},
+			},
+			player_hp_bar_rect = {
+				offset = {0, 0, 10+500+1},
+				size = {
+					player_health_bar_size[1],
+					player_health_bar_size[2],--22
+				},
+				-- color = {255, 115, 150, 65},
+				color = {0--[[150]], 255, 255, 51}--255,0,51},
+			},
+			hp_bar_rect2 = {
+				offset = {-1, -1, 0},
+				size = {
+					player_health_bar_size[1]+2,
+					player_health_bar_size[2]+2,--22-2
+				},
+				color = {255, 0, 0, 0},
+			},
+			ult_bar_rect = {
+				offset = {6-8 + ability_ui_offset_x, 21-2-1 + ability_ui_offset_y, 0},
+				-- size = {450*my_scale_x, 8},
+				size = {
+					player_health_bar_size[1]+4,
+					ult_bar_height + 4
+				},
+				color = {255, 105, 105, 105},
+			},
+			ult_bar_rect2 = {
+				offset = {7-8 + ability_ui_offset_x, 22-2-1 + ability_ui_offset_y, 0},
+				-- size = {450*my_scale_x-2, 8-2},
+				size = {
+					player_health_bar_size[1]+2,
+					ult_bar_height + 2,
+				},
+				color = {255, 0, 0, 0},
+			},
+			-- ammo_bar = {
+			-- 	size = {
+			-- 		health_bar_size[1],
+			-- 		health_bar_size[2]
+			-- 		-- ammo_bar_height +
+			-- 	},
+			-- 	offset = {
+			-- 		0,
+			-- 		-- -2,
+			-- 		player_ammo_bar_offset_y+ 8+2,--health_bar_offset[2] - 9 - 50,
+			-- 		10+500
+			-- 	},
+			-- 	-- color = {
+			-- 	-- 	50,
+			-- 	-- 	255,
+			-- 	-- 	0,
+			-- 	-- 	0
+			-- 	-- },
+			-- 	color = {
+			-- 		255,
+			-- 		255,
+			-- 		255,
+			-- 		255
+			-- 	},
+			-- },
+			ammo_bar = {
+				size = {
+					health_bar_size[1],
+					ammo_bar_height
+				},
+				offset = {
+					0,
+					player_ammo_bar_offset_y+2,
+					10
+				},
+				color = {
+					255,
+					255,
+					255,
+					255
+				},
+			},
+			ammo_bar_rect = {
+				offset = {-2, player_ammo_bar_offset_y+0, 0},
+				size = { player_health_bar_size[1]+4, ammo_bar_height+4 },
+				color = {255, 105, 105, 105},
+			},
+			ammo_bar_rect2 = {
+				offset = {
+					-1,
+					player_ammo_bar_offset_y+1,
+					1
+				},
+				size = { player_health_bar_size[1]+2, ammo_bar_height+2 },
+				color = {255, 0, 0, 0},
+			},
+		},
+	}
+end
+
+-- compatibility with the no ammo bar patch change
+mod:hook("UnitFrameUI.set_ammo_percentage", function (func, self, ammo_percent)
+	mod:pcall(function()
+		local widget = self:_widget_by_feature("ammo", "dynamic")
+		local widget_content = widget.content
+		widget_content.actual_ammo_percent = ammo_percent
+
+		self:_on_player_ammo_changed("ammo", widget, ammo_percent)
+	end)
+
+	return func(self, ammo_percent)
+end)
+
+local empty_slot_icons = {
+	slot_healthkit = "default_heal_icon",
+	slot_potion = "default_potion_icon",
+	slot_grenade = "default_grenade_icon",
+}
+
+EquipmentUI._customhud_update_ammo = function (self, left_hand_wielded_unit, right_hand_wielded_unit, item_template)
+	local ammo_extension = nil
+
+	if not item_template.ammo_data then
+		return
+	end
+
+	local ammo_unit_hand = item_template.ammo_data.ammo_hand
+
+	if ammo_unit_hand == "right" then
+		ammo_extension = ScriptUnit.extension(right_hand_wielded_unit, "ammo_system")
+	elseif ammo_unit_hand == "left" then
+		ammo_extension = ScriptUnit.extension(left_hand_wielded_unit, "ammo_system")
+	else
+		return
+	end
+
+	local max_ammo = ammo_extension:get_max_ammo()
+	local remaining_ammo = ammo_extension:total_remaining_ammo()
+
+	if max_ammo and remaining_ammo then
+	    custom_player_widget.content.ammo_bar.bar_value = remaining_ammo / max_ammo
+	end
+end
+
+mod:hook("EquipmentUI._create_ui_elements", function (func, ...)
+	local original_init_scenegraph = UISceneGraph.init_scenegraph
+	UISceneGraph.init_scenegraph = function(scenegraph_definition)
+		scenegraph_definition.slot.horizontal_alignment = "center"
+		scenegraph_definition.slot.position = { 0, 0, -8 }
+		return original_init_scenegraph(scenegraph_definition)
+	end
+	func(...)
+	UISceneGraph.init_scenegraph = original_init_scenegraph
+end)
+
+mod:hook("EquipmentUI.draw", function (func, self, dt)
+	if not custom_player_widget then
+		local hp_scale = 1
+		local player_unit = Managers.player:local_player().player_unit
+		if player_unit and Unit.alive(player_unit) then
+			local health_system = ScriptUnit.has_extension(player_unit, "health_system")
+			if health_system then
+				hp_scale = health_system:get_max_health() / 100
+			end
+		end
+
+		local health_bar_size = {
+			default_hp_bar_size_x*my_scale_x*hp_scale,
+			17
+		}
+
+		-- pout(health_bar_size)
+
+		player_offset_x = -health_bar_size[1]/2
+		player_offset_y = 0
+
+		-- player_offset_x = player_offset_x - 400
+		player_offset_y = player_offset_y - 9 - 10
+		-- player_offset_y = player_offset_y + 5
+
+		global_offset_x = 0---SIZE_X/2
+
+		custom_player_widget = UIWidget.init(mod:get_custom_player_widget_def(health_bar_size))
+	end
+
+	mod:pcall(function()
+		local inventory_extension = ScriptUnit.extension(Managers.player:local_player().player_unit, "inventory_system")
+		local equipment = inventory_extension:equipment()
+		local slot_data = equipment.slots["slot_ranged"]
+		if slot_data then
+			local item_data = slot_data.item_data
+			self:_customhud_update_ammo(slot_data.left_unit_1p, slot_data.right_unit_1p, BackendUtils.get_item_template(item_data))
+		end
+
+		-- update the player warning overlay
+		-- if custom_player_widget.content.display_custom_portrait_overlay then
+		if true then
+			-- start warning animation
+			if not UIWidget.has_animation(custom_player_widget) then
+				UIWidget.animate(custom_player_widget, UIAnimation.init(
+						UIAnimation.function_by_time, custom_player_widget.style.glow.color, 1, 255, 150, 0.5, math.easeCubic,
+						UIAnimation.function_by_time, custom_player_widget.style.glow.color, 1, 150, 255, 0.5, math.easeCubic
+					)
+				)
+			end
+		else
+			-- stop warning animation
+			if UIWidget.has_animation(custom_player_widget) then
+				UIWidget.stop_animations(custom_player_widget)
+			end
+		end
+	end)
+
+	local ui_renderer = self.ui_renderer
+	local ui_scenegraph = self.ui_scenegraph
+	local input_service = self.input_manager:get_service("ingame_menu")
+	local render_settings = self.render_settings
+	local alpha_multiplier = render_settings.alpha_multiplier
+
+	UIRenderer.begin_pass(ui_renderer, ui_scenegraph, input_service, dt, nil, render_settings)
+
+	-- update player consumables slots
+	for i,slot_name in ipairs({"slot_healthkit", "slot_potion", "slot_grenade"}) do
+		local widget_slot_name = "item_slot_"..i
+		local slot_bg_name = "bg_slot_"..i
+		local slot_data = self._slot_widgets[i+2]
+		local orig_slot_style = slot_data.style
+		if slot_data.content.visible and orig_slot_style.texture_icon.color[1] ~= 0  then
+			custom_player_widget.content[widget_slot_name].texture_id = slot_data.content.texture_icon
+			custom_player_widget.style[widget_slot_name].color[1] = 255
+			custom_player_widget.style[widget_slot_name].color[2] = 255
+			custom_player_widget.style[widget_slot_name].color[3] =	255
+			custom_player_widget.style[widget_slot_name].color[4] = 255
+			-- custom_player_widget.style[widget_slot_name].color = {255, 138,43,226}
+		else
+			custom_player_widget.content[widget_slot_name].texture_id = empty_slot_icons[slot_name]
+			custom_player_widget.style[widget_slot_name].color[1] = 75
+			custom_player_widget.style[slot_bg_name].color[1] = 75
+		end
+
+			custom_player_widget.style[widget_slot_name].color[1] = 0
+			custom_player_widget.style[slot_bg_name].color[1] = 0
+	end
+	UIRenderer.draw_widget(ui_renderer, custom_player_widget)
+
+	UIRenderer.end_pass(ui_renderer)
+
+	mod:pcall(function()
+		for _, widget in ipairs( self._ammo_widgets ) do
+			widget.offset[1] = 0 -- -1200
+			widget.offset[2] = 0 -- -75
+		end
+	end)
+
+	-- self._dirty = true
+
+	self._show_ammo_meter = true
+
+	local original_draw_widget = UIRenderer.draw_widget
+	UIRenderer.draw_widget = function(ui_renderer, ui_widget)
+		local match = false
+		for i, widget in ipairs(self._slot_widgets) do
+			if ui_widget == widget then
+				if i == 1 or i == 2 then
+					match = true
+				end
+			end
+			for _, pass in ipairs( widget.element.passes ) do
+				if pass.style_id == "input_text"
+					or pass.style_id == "input_text_shadow"
+					then
+						pass.content_check_function = function() return false end
+				end
+			end
+		end
+		for _, widget in ipairs(self._static_widgets) do
+			if ui_widget == widget then
+				match = true
+			end
+		end
+		if not match then
+			return original_draw_widget(ui_renderer, ui_widget)
+		end
+	end
+
+	mod:pcall(function()
+		for _, widget in ipairs( self._slot_widgets ) do
+			if not widget.offset_original then
+				widget.offset_original = table.clone(widget.offset)
+			end
+			widget.offset[1] = widget.offset_original[1] - 140 - 70 + global_offset_x--+ 90 + 575 + global_offset_x
+			widget.offset[2] = widget.offset_original[2] + 68 + global_offset_y
+		end
+	end)
+
+	func(self, dt)
+
+	UIRenderer.draw_widget = original_draw_widget
+end)
+
+--- BuffUI stuff ---
+
+local buff_ui_definitions = local_require("scripts/ui/hud_ui/buff_ui_definitions")
+local ALIGNMENT_DURATION_TIME = 0--0.3
+local MAX_NUMBER_OF_BUFFS = buff_ui_definitions.MAX_NUMBER_OF_BUFFS
+local BUFF_SIZE = buff_ui_definitions.BUFF_SIZE
+local BUFF_SPACING = buff_ui_definitions.BUFF_SPACING
+mod:hook("BuffUI._align_widgets", function (func, self) -- luacheck: ignore func
+	local horizontal_spacing = BUFF_SIZE[1] + BUFF_SPACING
+
+	for index, data in ipairs(self._active_buffs) do
+		local widget = data.widget
+		local widget_offset = widget.offset
+		local target_position = (index - 1)*horizontal_spacing + player_health_bar_size[1]/2 + 20
+		data.target_position = target_position
+		data.target_distance = math.abs(widget_offset[1] - target_position)
+
+		widget.offset[2] = -8
+
+		self:_set_widget_dirty(widget)
+	end
+
+	self:set_dirty()
+
+	self._alignment_duration = 0
+end)
+
+mod:hook("BuffUI._add_buff", function (func, self, buff, ...)
+	mod:pcall(function()
+		-- pout(buff)
+	end)
+	if buff.buff_type == "victor_bountyhunter_passive_infinite_ammo_buff"
+	  or buff.buff_type == "grimoire_health_debuff"
+	  or buff.buff_type == "markus_huntsman_passive_crit_aura_buff" then
+		return false
+	end
+	return func(self, buff, ...)
+end)
+
+mod:hook("BuffUI._update_pivot_alignment", function (func, self, dt)
+	-- return func(self, dt)
+	local alignment_duration = self._alignment_duration
+
+	if not alignment_duration then
+		return
+	end
+
+	-- alignment_duration = math.min(alignment_duration + dt, ALIGNMENT_DURATION_TIME)
+	local progress = 1--alignment_duration/ALIGNMENT_DURATION_TIME
+	local anim_progress = math.easeOutCubic(progress, 0, 1)
+
+	if progress == 1 then
+		self._alignment_duration = nil
+	else
+		self._alignment_duration = alignment_duration
+	end
+
+	for _, data in ipairs(self._active_buffs) do
+		local widget = data.widget
+		local widget_offset = widget.offset
+		local widget_target_position = data.target_position
+		local widget_target_distance = data.target_distance
+
+		if widget_target_distance then
+			widget_offset[1] = widget_target_position + widget_target_distance*(anim_progress - 1)
+		end
+
+		self:_set_widget_dirty(widget)
+	end
+
+	self:set_dirty()
+end)
+
+-- DEBUG
+mod:hook("BuffUI.update", function (func, self, ...)
+	self:_align_widgets()
+	self:set_dirty()
+	-- for _, buff in ipairs( self._active_buffs ) do
+	-- 	-- pout(buff)
+	-- end
+	return func(self, ...)
+end)
+
+mod.buff_ui_scenegraph_definition = {
+	screen = {
+		scale = "fit",
+		position = {
+			0,
+			0,
+			UILayer.hud
+		},
+		size = {
+			SIZE_X,
+			SIZE_Y
+		}
+	},
+	pivot = {
+		vertical_alignment = "bottom",
+		parent = "screen",
+		horizontal_alignment = "center",
+		position = {
+			0,--150,
+			18,
+			1
+		},
+		size = {
+			0,
+			0
+		}
+	},
+	buff_pivot = {
+		vertical_alignment = "center",
+		parent = "pivot",
+		horizontal_alignment = "center",
+		position = {
+			0,
+			0,
+			1
+		},
+		size = {
+			0,
+			0
+		}
+	}
+}
+
+mod:hook("BuffUI._create_ui_elements", function (func, ...)
+	local original_init_scenegraph = UISceneGraph.init_scenegraph
+	UISceneGraph.init_scenegraph = function(scenegraph_definition) -- luacheck: ignore scenegraph_definition
+		return original_init_scenegraph(mod.buff_ui_scenegraph_definition)
+	end
+	func(...)
+	UISceneGraph.init_scenegraph = original_init_scenegraph
 end)
 
 local function create_ability_widget()
@@ -2223,6 +3144,44 @@ local function create_ability_widget()
 	}
 end
 
+local abilityUI_scenegraph_definition = {
+	screen = {
+		scale = "fit",
+		position = {
+			0,
+			0,
+			UILayer.hud
+		},
+		size = {
+			SIZE_X,
+			SIZE_Y
+		}
+	},
+	ability_root = {
+		vertical_alignment = "bottom",
+		parent = "screen",
+		horizontal_alignment = "center",
+		position = {
+			0,
+			0,
+			10
+		},
+		size = {
+			0,
+			0
+		}
+	}
+}
+
+mod:hook("AbilityUI._create_ui_elements", function (func, ...)
+	local original_init_scenegraph = UISceneGraph.init_scenegraph
+	UISceneGraph.init_scenegraph = function(scenegraph_definition) -- luacheck: ignore scenegraph_definition
+		return original_init_scenegraph(abilityUI_scenegraph_definition)
+	end
+	func(...)
+	UISceneGraph.init_scenegraph = original_init_scenegraph
+end)
+
 mod:hook("AbilityUI.draw", function (func, self, dt)
 	-- pdump(self._widgets, "AbilityUI._widgets")
 	for _, pass in ipairs( self._widgets[1].element.passes ) do
@@ -2234,16 +3193,22 @@ mod:hook("AbilityUI.draw", function (func, self, dt)
 		end
 	end
 	mod:pcall(function()
-		self._widgets[1].style.ability_effect_left.offset[1] = 105 - ability_ui_offset_x
-		self._widgets[1].style.ability_effect_left.offset[2] = -8 - ability_ui_offset_y
-		self._widgets[1].style.ability_effect_top_left.offset[1] = 105 - ability_ui_offset_x
-		self._widgets[1].style.ability_effect_top_left.offset[2] = -8 - ability_ui_offset_y
+		local skull_offsets = { 12, -15 }
+		local skull_offsets = { 0, -15 }
+		self._widgets[1].style.ability_effect_left.offset[1] = -player_health_bar_size[1]/2 - 50--skull_offsets[1] - ability_ui_offset_x
+		self._widgets[1].style.ability_effect_left.horizontal_alignment = "center"
+		self._widgets[1].style.ability_effect_left.offset[2] = skull_offsets[2] - ability_ui_offset_y
+		self._widgets[1].style.ability_effect_top_left.horizontal_alignment = "center"
+		self._widgets[1].style.ability_effect_top_left.offset[1] = -player_health_bar_size[1]/2 - 50 --skull_offsets[1] - ability_ui_offset_x
+		self._widgets[1].style.ability_effect_top_left.offset[2] = skull_offsets[2] - ability_ui_offset_y
+
+		-- mod:dtf(self._widgets[1], "AbilityUI._widgets[1]", 8)
 	end)
 
-	self._widgets[1].offset[1]= player_offset_x - 125 - 1 + global_offset_x + ability_ui_offset_x
-	self._widgets[1].offset[2]= 17 + global_offset_y + ability_ui_offset_y
+	self._widgets[1].offset[1]= -1--player_offset_x + global_offset_x + ability_ui_offset_x
+	self._widgets[1].offset[2]= 56 + global_offset_y + ability_ui_offset_y + player_offset_y
 	-- self._widgets[1].style.ability_bar_highlight.texture_size[1] = 488 * my_scale_x - 3
-	self._widgets[1].style.ability_bar_highlight.texture_size[1] = player_health_bar_size[1]+20
+	self._widgets[1].style.ability_bar_highlight.texture_size[1] = player_health_bar_size[1]*1.09
 	self._widgets[1].style.ability_bar_highlight.texture_size[2] = 50
 	self._widgets[1].style.ability_bar_highlight.offset[2] = 22 + 4
 	-- UIWidget.destroy(self.ui_renderer, self._widgets[1])
@@ -2268,615 +3233,26 @@ mod:hook("AbilityUI.draw", function (func, self, dt)
 	UIRenderer.end_pass(ui_renderer)
 end)
 
-local SLOTS_LIST = InventorySettings.weapon_slots
-
-mod.custom_player_widget_def =
-{
-	scenegraph_id = "background_panel_bg",
-	offset = { player_offset_x - 0 + global_offset_x, player_offset_y + global_offset_y, 1 },
-	element = {
-		passes = {
-			{
-				pass_type = "texture",
-				style_id = "bg_slot_1",
-				texture_id = "bg_slot",
-			},
-			{
-				pass_type = "texture_uv",
-				style_id = "item_slot_1",
-				content_id = "item_slot_1",
-			},
-			{
-				pass_type = "texture",
-				style_id = "bg_slot_2",
-				texture_id = "bg_slot",
-			},
-			{
-				pass_type = "texture_uv",
-				style_id = "item_slot_2",
-				content_id = "item_slot_2",
-			},
-			{
-				pass_type = "texture",
-				style_id = "bg_slot_3",
-				texture_id = "bg_slot",
-			},
-			{
-				pass_type = "texture_uv",
-				style_id = "item_slot_3",
-				content_id = "item_slot_3",
-			},
-			{
-				pass_type = "rect",
-				style_id = "hp_bar_rect",
-				content_check_function = function(content) return content.show end,
-			},
-			{
-				pass_type = "rect",
-				style_id = "hp_bar_rect2",
-				content_check_function = function(content) return content.show end,
-			},
-			{
-				pass_type = "rect",
-				style_id = "ult_bar_rect",
-				content_check_function = function(content) return content.show end,
-			},
-			{
-				pass_type = "rect",
-				style_id = "ult_bar_rect2",
-				content_check_function = function(content) return content.show end,
-			},
-			{
-				pass_type = "texture",
-				style_id = "host_icon",
-				texture_id = "host_icon",
-				content_check_function = function(content) return content.is_host end,
-			},
-			{
-				style_id = "ammo_bar",
-				pass_type = "texture_uv",
-				content_id = "ammo_bar",
-				content_change_function = function (content, style)
-					local ammo_progress = content.bar_value
-					local size = style.size
-					local uvs = content.uvs
-					local offset = style.offset
-					local bar_length = player_health_bar_size[1]
-					uvs[2][2] = ammo_progress
-					size[1] = bar_length*ammo_progress
-				end
-			},
-			{
-				pass_type = "rect",
-				style_id = "ammo_bar_rect",
-				-- content_check_function = function(content) return content.show end,
-			},
-			{
-				pass_type = "rect",
-				style_id = "ammo_bar_rect2",
-				-- content_check_function = function(content) return content.show end,
-			},
-			{
-				pass_type = "rect",
-				style_id = "player_hp_bar_rect",
-				-- content_check_function = function(content) return content.show end,
-			},
-		},
-	},
-	content = {
-		item_slot_bg_1 = "hud_inventory_slot_bg_01",
-		item_slot_bg_2 = "hud_inventory_slot_bg_02",
-		item_slot_1 = {
-			texture_id = "teammate_consumable_icon_medpack_empty",
-			uvs = {
-				{ 0.15, 0.15 },
-				{ 0.85, 0.85 }
-			},
-		},
-		item_slot_2 = {
-			texture_id = "teammate_consumable_icon_potion_empty",
-			uvs = {
-				{ 0.15, 0.15 },
-				{ 0.85, 0.85 }
-			},
-		},
-		item_slot_3 = {
-			texture_id = "teammate_consumable_icon_grenade_empty",
-			uvs = {
-				{ 0.15, 0.15 },
-				{ 0.85, 0.85 }
-			},
-		},
-		bg_slot = "consumables_frame_bg_lit",
-		show_reload_reminder = false,
-		show = true,
-		is_host = false,
-		host_icon = "host_icon",
-		ammo_bar = {
-			bar_value = 1,
-			texture_id = "hud_teammate_ammo_bar_fill",
-			uvs = {
-				{
-					0,
-					0
-				},
-				{
-					1,
-					1
-				}
-			}
-		},
-	},
-	style = {
-		bg_slot_1 = {
-			size = {
-				64,
-				64
-			},
-			offset = {
-				4+2+0,
-				30,
-				1
-			},
-			color = {
-				100,
-				255,
-				255,
-				255
-			},
-		},
-		item_slot_1 = {
-			size = {
-				48,
-				48
-			},
-			offset = {
-				8+6+0,
-				38,
-				2,
-			},
-			color = {
-				50,
-				255,
-				255,
-				255
-			},
-		},
-		bg_slot_2 = {
-			size = {
-				64,
-				64
-			},
-			offset = {
-				64+3+0,
-				30,
-				1
-			},
-			color = {
-				100,
-				255,
-				255,
-				255
-			},
-		},
-		item_slot_2 = {
-			size = {
-				48,
-				48
-			},
-			offset = {
-				64+8+3+0,
-				38,
-				2,
-			},
-			color = {
-				50,
-				255,
-				255,
-				255
-			},
-		},
-		bg_slot_3 = {
-			size = {
-				64,
-				64
-			},
-			offset = {
-				64*2+0,
-				30,
-				1
-			},
-			color = {
-				100,
-				255,
-				255,
-				255
-			},
-		},
-		item_slot_3 = {
-			size = {
-				48,
-				48
-			},
-			offset = {
-				64*2+8+0,
-				38,
-				2,
-			},
-			color = {
-				50,
-				255,
-				255,
-				255
-			},
-		},
-		hp_bar_rect = {
-			offset = {-2, -2, 0},
-			size = {
-				player_health_bar_size[1]+4,
-				player_health_bar_size[2]+4,--22
-			},
-			color = {255, 105, 105, 105},
-		},
-		player_hp_bar_rect = {
-			offset = {0, 0, 10+500+1},
-			size = {
-				player_health_bar_size[1],
-				player_health_bar_size[2],--22
-			},
-			-- color = {255, 115, 150, 65},
-			color = {0--[[150]], 255, 255, 51}--255,0,51},
-		},
-		hp_bar_rect2 = {
-			offset = {-1, -1, 0},
-			size = {
-				player_health_bar_size[1]+2,
-				player_health_bar_size[2]+2,--22-2
-			},
-			color = {255, 0, 0, 0},
-		},
-		ult_bar_rect = {
-			offset = {6-8 + ability_ui_offset_x, 21-2-1 + ability_ui_offset_y, 0},
-			-- size = {450*my_scale_x, 8},
-			size = {
-				player_health_bar_size[1]+4,
-				ult_bar_height + 4
-			},
-			color = {255, 105, 105, 105},
-		},
-		ult_bar_rect2 = {
-			offset = {7-8 + ability_ui_offset_x, 22-2-1 + ability_ui_offset_y, 0},
-			-- size = {450*my_scale_x-2, 8-2},
-			size = {
-				player_health_bar_size[1]+2,
-				ult_bar_height + 2,
-			},
-			color = {255, 0, 0, 0},
-		},
-		-- ammo_bar = {
-		-- 	size = {
-		-- 		health_bar_size[1],
-		-- 		health_bar_size[2]
-		-- 		-- ammo_bar_height +
-		-- 	},
-		-- 	offset = {
-		-- 		0,
-		-- 		-- -2,
-		-- 		player_ammo_bar_offset_y+ 8+2,--health_bar_offset[2] - 9 - 50,
-		-- 		10+500
-		-- 	},
-		-- 	-- color = {
-		-- 	-- 	50,
-		-- 	-- 	255,
-		-- 	-- 	0,
-		-- 	-- 	0
-		-- 	-- },
-		-- 	color = {
-		-- 		255,
-		-- 		255,
-		-- 		255,
-		-- 		255
-		-- 	},
-		-- },
-		ammo_bar = {
-			size = {
-				health_bar_size[1],
-				ammo_bar_height
-			},
-			offset = {
-				0,
-				player_ammo_bar_offset_y+2,
-				10
-			},
-			color = {
-				255,
-				255,
-				255,
-				255
-			},
-		},
-		ammo_bar_rect = {
-			offset = {-2, player_ammo_bar_offset_y+0, 0},
-			size = { player_health_bar_size[1]+4, ammo_bar_height+4 },
-			color = {255, 105, 105, 105},
-		},
-		ammo_bar_rect2 = {
-			offset = {
-				-1,
-				player_ammo_bar_offset_y+1,
-				1
-			},
-			size = { player_health_bar_size[1]+2, ammo_bar_height+2 },
-			color = {255, 0, 0, 0},
-		},
-	},
-}
-
--- compatibility with the no ammo bar patch change
-mod:hook("UnitFrameUI.set_ammo_percentage", function (func, self, ammo_percent)
+mod.ChatGui_mod_set_position = function(self, x, y)
 	mod:pcall(function()
-		local widget = self:_widget_by_feature("ammo", "dynamic")
-		local widget_content = widget.content
-		widget_content.actual_ammo_percent = ammo_percent
+		local position = self.ui_scenegraph.chat_window_root.local_position
+		position[1] = x
+		position[2] = y
 
-		self:_on_player_ammo_changed("ammo", widget, ammo_percent)
+		self:set_dirty()
 	end)
-
-	return func(self, ammo_percent)
-end)
-
-local empty_slot_icons = {
-	slot_healthkit = "default_heal_icon",
-	slot_potion = "default_potion_icon",
-	slot_grenade = "default_grenade_icon",
-}
-
-EquipmentUI._customhud_update_ammo = function (self, left_hand_wielded_unit, right_hand_wielded_unit, item_template)
-	local ammo_extension = nil
-
-	if not item_template.ammo_data then
-		return
-	end
-
-	local ammo_unit_hand = item_template.ammo_data.ammo_hand
-
-	if ammo_unit_hand == "right" then
-		ammo_extension = ScriptUnit.extension(right_hand_wielded_unit, "ammo_system")
-	elseif ammo_unit_hand == "left" then
-		ammo_extension = ScriptUnit.extension(left_hand_wielded_unit, "ammo_system")
-	else
-		return
-	end
-
-	local max_ammo = ammo_extension:get_max_ammo()
-	local remaining_ammo = ammo_extension:total_remaining_ammo()
-
-	if max_ammo and remaining_ammo then
-	    custom_player_widget.content.ammo_bar.bar_value = remaining_ammo / max_ammo
-	end
 end
 
-mod:hook("EquipmentUI.draw", function (func, self, dt)
-	if not custom_player_widget then
-		custom_player_widget = UIWidget.init(mod.custom_player_widget_def)
+mod:hook("ChatGui.update", function(func, self, ...)
+	if not ChatGui.mod_set_position then
+		ChatGui.mod_set_position = mod.ChatGui_mod_set_position
 	end
 
-	mod:pcall(function()
-		local inventory_extension = ScriptUnit.extension(Managers.player:local_player().player_unit, "inventory_system")
-		local equipment = inventory_extension:equipment()
-		local slot_data = equipment.slots["slot_ranged"]
-		if slot_data then
-			local item_data = slot_data.item_data
-			self:_customhud_update_ammo(slot_data.left_unit_1p, slot_data.right_unit_1p, BackendUtils.get_item_template(item_data))
-		end
-	end)
-
-	local ui_renderer = self.ui_renderer
-	local ui_scenegraph = self.ui_scenegraph
-	local input_service = self.input_manager:get_service("ingame_menu")
-	local render_settings = self.render_settings
-	local alpha_multiplier = render_settings.alpha_multiplier
-
-	UIRenderer.begin_pass(ui_renderer, ui_scenegraph, input_service, dt, nil, render_settings)
-
-	-- update player consumables slots
-	for i,slot_name in ipairs({"slot_healthkit", "slot_potion", "slot_grenade"}) do
-		local widget_slot_name = "item_slot_"..i
-		local slot_bg_name = "bg_slot_"..i
-		local slot_data = self._slot_widgets[i+2]
-		local orig_slot_style = slot_data.style
-		if slot_data.content.visible and orig_slot_style.texture_icon.color[1] ~= 0  then
-			custom_player_widget.content[widget_slot_name].texture_id = slot_data.content.texture_icon
-			custom_player_widget.style[widget_slot_name].color[1] = 255
-			custom_player_widget.style[widget_slot_name].color[2] = 255
-			custom_player_widget.style[widget_slot_name].color[3] =	255
-			custom_player_widget.style[widget_slot_name].color[4] = 255
-			-- custom_player_widget.style[widget_slot_name].color = {255, 138,43,226}
-		else
-			custom_player_widget.content[widget_slot_name].texture_id = empty_slot_icons[slot_name]
-			custom_player_widget.style[widget_slot_name].color[1] = 75
-			custom_player_widget.style[slot_bg_name].color[1] = 75
-		end
-
-			custom_player_widget.style[widget_slot_name].color[1] = 0
-			custom_player_widget.style[slot_bg_name].color[1] = 0
+	-- self:_mod_set_position(0, 1080/2-100)
+	if not self._mod_repositioned and self._widgets then
+		self._mod_repositioned = true
+		self:mod_set_position(0, 1080/2-200)
 	end
-	UIRenderer.draw_widget(ui_renderer, custom_player_widget)
-
-	UIRenderer.end_pass(ui_renderer)
-
-	-- self._dirty = true
-
-	self._show_ammo_meter = true
-
-	local original_draw_widget = UIRenderer.draw_widget
-	UIRenderer.draw_widget = function(ui_renderer, ui_widget)
-		local match = false
-		for i, widget in ipairs(self._slot_widgets) do
-			if ui_widget == widget then
-				if i == 1 or i == 2 then
-					match = true
-				end
-			end
-			for _, pass in ipairs( widget.element.passes ) do
-				if pass.style_id == "input_text"
-					or pass.style_id == "input_text_shadow"
-					then
-						pass.content_check_function = function() return false end
-				end
-			end
-		end
-		for _, widget in ipairs(self._static_widgets) do
-			if ui_widget == widget then
-				match = true
-			end
-		end
-		if not match then
-			return original_draw_widget(ui_renderer, ui_widget)
-		end
-	end
-
-	mod:pcall(function()
-		for _, widget in ipairs( self._slot_widgets ) do
-			if not widget.offset_original then
-				widget.offset_original = table.clone(widget.offset)
-			end
-			widget.offset[1] = widget.offset_original[1] + 90 + 575 + global_offset_x
-			widget.offset[2] = widget.offset_original[2] + 12 + global_offset_y
-		end
-	end)
-
-	func(self, dt)
-
-	UIRenderer.draw_widget = original_draw_widget
-end)
-
---- BuffUI stuff ---
-
-local buff_ui_definitions = local_require("scripts/ui/hud_ui/buff_ui_definitions")
-local ALIGNMENT_DURATION_TIME = 0--0.3
-local MAX_NUMBER_OF_BUFFS = buff_ui_definitions.MAX_NUMBER_OF_BUFFS
-local BUFF_SIZE = buff_ui_definitions.BUFF_SIZE
-local BUFF_SPACING = buff_ui_definitions.BUFF_SPACING
-mod:hook("BuffUI._align_widgets", function (func, self) -- luacheck: ignore func
-	local horizontal_spacing = BUFF_SIZE[1] + BUFF_SPACING
-
-	for index, data in ipairs(self._active_buffs) do
-		local widget = data.widget
-		local widget_offset = widget.offset
-		local target_position = (index - 1)*horizontal_spacing + 20
-		data.target_position = target_position
-		data.target_distance = math.abs(widget_offset[1] - target_position)
-
-		widget.offset[2] = -15
-
-		self:_set_widget_dirty(widget)
-	end
-
-	self:set_dirty()
-
-	self._alignment_duration = 0
-end)
-
-mod:hook("BuffUI._add_buff", function (func, self, buff, ...)
-	mod:pcall(function()
-		-- pprint(buff)
-	end)
-	if buff.buff_type == "victor_bountyhunter_passive_infinite_ammo_buff"
-		or buff.buff_type == "grimoire_health_debuff" then
-		return false
-	end
-	return func(self, buff, ...)
-end)
-
-mod:hook("BuffUI._update_pivot_alignment", function (func, self, dt)
-	-- return func(self, dt)
-	local alignment_duration = self._alignment_duration
-
-	if not alignment_duration then
-		return
-	end
-
-	-- alignment_duration = math.min(alignment_duration + dt, ALIGNMENT_DURATION_TIME)
-	local progress = 1--alignment_duration/ALIGNMENT_DURATION_TIME
-	local anim_progress = math.easeOutCubic(progress, 0, 1)
-
-	if progress == 1 then
-		self._alignment_duration = nil
-	else
-		self._alignment_duration = alignment_duration
-	end
-
-	for _, data in ipairs(self._active_buffs) do
-		local widget = data.widget
-		local widget_offset = widget.offset
-		local widget_target_position = data.target_position
-		local widget_target_distance = data.target_distance
-
-		if widget_target_distance then
-			widget_offset[1] = widget_target_position + widget_target_distance*(anim_progress - 1)
-		end
-
-		self:_set_widget_dirty(widget)
-	end
-
-	self:set_dirty()
-end)
-
-mod:hook("BuffUI.update", function (func, self, ...)
-	-- self:_align_widgets()
-	-- self:set_dirty()
+	-- self:_mod_set_position(0, 0)
 	return func(self, ...)
-end)
-
-mod.buff_ui_scenegraph_definition = {
-	screen = {
-		scale = "fit",
-		position = {
-			0,
-			0,
-			UILayer.hud
-		},
-		size = {
-			SIZE_X,
-			SIZE_Y
-		}
-	},
-	pivot = {
-		vertical_alignment = "bottom",
-		parent = "screen",
-		horizontal_alignment = "center",
-		position = {
-			150,
-			18,
-			1
-		},
-		size = {
-			0,
-			0
-		}
-	},
-	buff_pivot = {
-		vertical_alignment = "center",
-		parent = "pivot",
-		horizontal_alignment = "center",
-		position = {
-			0,
-			0,
-			1
-		},
-		size = {
-			0,
-			0
-		}
-	}
-}
-
-mod:hook("BuffUI._create_ui_elements", function (func, ...)
-	local original_init_scenegraph = UISceneGraph.init_scenegraph
-	UISceneGraph.init_scenegraph = function(scenegraph_definition) -- luacheck: ignore scenegraph_definition
-		return original_init_scenegraph(mod.buff_ui_scenegraph_definition)
-	end
-	func(...)
-	UISceneGraph.init_scenegraph = original_init_scenegraph
 end)

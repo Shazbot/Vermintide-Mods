@@ -89,11 +89,10 @@ local portrait_scale = 1
 local slot_scale = 1
 local health_bar_size_fraction = 2
 local default_hp_bar_size_x = 400
+local default_hp_bar_size_y = 17
 local health_bar_size = {
-	-- health_bar_size_fraction*92,
-	-- 468*my_scale_x,
 	default_hp_bar_size_x*my_scale_x,
-	17--health_bar_size_fraction*9
+	default_hp_bar_size_y
 }
 local player_health_bar_size = {
 	health_bar_size[1]-1,
@@ -105,16 +104,6 @@ local health_bar_offset = {
 	0
 }
 
--- local others_items_offsets = {
--- 	160,
--- 	-37,
--- 	0
--- }
-local others_items_offsets = {
-	-103,
-	-75,
-	0
-}
 local others_items_offsets = {
 	-103,
 	-0,
@@ -563,7 +552,6 @@ mod.create_static_widget = function(self, health_bar_size, health_bar_offset)
 					retained_mode = RETAINED_MODE_ENABLED,
 					content_change_function = function (content, style)
 						local ability_progress = content.bar_value
-						-- EchoConsole(tostring(ability_progress))
 						local size = style.size
 						local uvs = content.uvs
 						local offset = style.offset
@@ -672,10 +660,8 @@ mod.create_static_widget = function(self, health_bar_size, health_bar_offset)
 			},
 			hp_bar_bg = {
 				size = {
-					0,--health_bar_size[1]+6,
-					0,--health_bar_size[2]+6,
-					--100,
-					--17
+					0,
+					0,
 				},
 				offset = {
 					(health_bar_offset[1])-3,
@@ -691,18 +677,13 @@ mod.create_static_widget = function(self, health_bar_size, health_bar_offset)
 			},
 			hp_bar_fg = {
 				size = {
-					0,--health_bar_size[1]+6,
-					0,--health_bar_size[2]+6,
-					-- 100,
-					-- 24
+					0,
+					0,
 				},
 				offset = {
 					(health_bar_offset[1])-3,
 					(health_bar_offset[2] + health_bar_size[2]/2) - 12,
 					health_bar_offset[3] + 15
-					-- (health_bar_offset[1] + health_bar_size[1]/2) - 50,
-					-- (health_bar_offset[2] + health_bar_size[2]/2) - 8.5,
-					-- health_bar_offset[3] + 20
 				},
 				color = {
 					255,
@@ -784,19 +765,13 @@ mod.create_static_widget = function(self, health_bar_size, health_bar_offset)
 			},
 			ammo_bar_bg = {
 				size = {
-					0,--health_bar_size[1],
-					0,--5,
-					-- 92,
-					-- 5
+					0,
+					0,
 				},
 				offset = {
 					(health_bar_offset[1])-3 +3,
 					(health_bar_offset[2] + health_bar_size[2]/2) - 12 - 5,
-					--(health_bar_offset[2] + health_bar_size[2]/2) - 12 - 50,
 					health_bar_offset[3] + 15
-					-- (health_bar_offset[1] + health_bar_size[1]/2) - 46,
-					-- health_bar_offset[2] - 9,
-					-- health_bar_offset[3] + 15
 				},
 				color = {
 					255,
@@ -1462,7 +1437,7 @@ mod.create_dynamic_ability_widget = function(self, health_bar_size)
 						local offset = style.offset
 						local bar_length = health_bar_size[1] + 1
 						uvs[2][2] = ability_progress
-						size[1] = bar_length*ability_progress
+						size[1] = bar_length*ability_progress - 1
 					end
 				}
 			}
@@ -1487,8 +1462,8 @@ mod.create_dynamic_ability_widget = function(self, health_bar_size)
 		style = {
 			ability_bar = {
 				size = {
-					health_bar_size[1]+1,
-					4+1
+					health_bar_size[1] - 1,
+					5
 				},
 				color = {
 					255,
@@ -2022,9 +1997,10 @@ mod.ufUI_draw_warning_icon = function(self, dt)
 end
 
 mod.get_custom_player_widget_def = function(self, player_health_bar_size)
+	local even_hp_offset = player_health_bar_size[1] % 2 == 0 and -1 or 0
 	return {
 		scenegraph_id = "pivot",
-		offset = { player_offset_x - 1 + global_offset_x, player_offset_y + global_offset_y, 1 },
+		offset = { player_offset_x + global_offset_x + even_hp_offset, player_offset_y + global_offset_y, 1 },
 		element = {
 			passes = {
 				{
@@ -2302,11 +2278,11 @@ mod.get_custom_player_widget_def = function(self, player_health_bar_size)
 			},
 			ammo_bar = {
 				size = {
-					health_bar_size[1],
+					player_health_bar_size[1],
 					ammo_bar_height
 				},
 				offset = {
-					0,
+					-1 + even_hp_offset*-1,
 					player_ammo_bar_offset_y+2,
 					10
 				},

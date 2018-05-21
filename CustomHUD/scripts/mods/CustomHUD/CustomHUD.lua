@@ -70,7 +70,8 @@ mod.get_player_hp_bar_size = function(self) -- luacheck: ignore self
 	local player_unit = Managers.player:local_player().player_unit
 	if player_unit and Unit.alive(player_unit) then
 		local health_system = ScriptUnit.extension(player_unit, "health_system")
-		if health_system.state == "knocked_down" then
+
+		if health_system.state == "knocked_down" or health_system.state == "dead" then
 			if mod.cached_player_hp_bars[player_unit] then
 				return mod.cached_player_hp_bars[player_unit]
 			end
@@ -97,7 +98,8 @@ mod.get_hp_bar_size_and_offset = function(self, player_unit) -- luacheck: ignore
 	local hp_scale = 1
 	if player_unit and Unit.alive(player_unit) then
 		local health_system = ScriptUnit.extension(player_unit, "health_system")
-		if health_system.state == "knocked_down" then
+
+		if health_system.state == "knocked_down" or health_system.state == "dead" then
 			if mod.cached_player_hp_bars[player_unit] then
 				return mod.cached_player_hp_bars[player_unit]
 			end
@@ -418,11 +420,11 @@ local function ufUI_update(self, dt, t, player_unit) -- luacheck: ignore dt t
 
 		local portrait_left = true
 		if portrait_left then
-			self._default_widgets.default_static.style.character_portrait.offset = { -180, -75, 1 }
+			self._default_widgets.default_static.style.character_portrait.offset = { -180, -80, 1 }
 		end
 
 		self._default_widgets.default_dynamic.style.portrait_icon.size = { 86*0.55, 108*0.55 }
-		self._default_widgets.default_dynamic.style.portrait_icon.offset = { -180, -75, 10 }
+		self._default_widgets.default_dynamic.style.portrait_icon.offset = { -180, -80, 10 }
 
 		self._default_widgets.default_dynamic.style.connecting_icon.offset = { -25, -70, 20 }
 

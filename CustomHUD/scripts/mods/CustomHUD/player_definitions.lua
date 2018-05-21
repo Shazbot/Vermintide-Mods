@@ -363,17 +363,17 @@ mod.get_custom_player_widget_def = function(self, player_health_bar_size) -- lua
 				{
 					pass_type = "rect",
 					style_id = "ammo_bar_rect",
-					-- content_check_function = function(content) return content.show end,
+					content_check_function = function(content) return content.show end,
 				},
 				{
 					pass_type = "rect",
 					style_id = "ammo_bar_rect2",
-					-- content_check_function = function(content) return content.show end,
+					content_check_function = function(content) return content.show end,
 				},
 				{
 					pass_type = "rect",
 					style_id = "player_hp_bar_rect",
-					-- content_check_function = function(content) return content.show end,
+					content_check_function = function(content) return content.show end,
 				},
 			},
 		},

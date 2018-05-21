@@ -40,7 +40,7 @@ mod.default_hp_bar_size_x = 400
 mod.default_hp_bar_size_y = 17
 
 mod.others_items_offsets = {
-	-103,
+	-101,
 	-0,
 	0
 }
@@ -381,11 +381,10 @@ local function ufUI_update(self, dt, t, player_unit) -- luacheck: ignore dt t
 
 		-- 	self:_set_widget_dirty(self._default_widgets.default_dynamic)
 		-- 	self:_set_widget_dirty(self._default_widgets.default_static)
-			-- self:set_dirty()
+		-- self:set_dirty()
 	end
 
 	if self._frame_index then
-	-- if self._frame_index and not self._repositioned then
 		-- self._portrait_widgets.portrait_static.content.scale = 1
 		self._portrait_widgets.portrait_static.style.texture_1.size = { 0, 0 }
 		self._default_widgets.default_static.style.character_portrait.texture_size = { 86*0.55, 108*0.55 }
@@ -393,7 +392,6 @@ local function ufUI_update(self, dt, t, player_unit) -- luacheck: ignore dt t
 
 		local portrait_left = true
 		if portrait_left then
-			-- self._default_widgets.default_static.style.character_portrait.offset = { -180, -80, 1 }
 			self._default_widgets.default_static.style.character_portrait.offset = { -180, -75, 1 }
 		end
 
@@ -402,7 +400,7 @@ local function ufUI_update(self, dt, t, player_unit) -- luacheck: ignore dt t
 
 		self._default_widgets.default_dynamic.style.connecting_icon.offset = { -25, -70, 20 }
 
-		-- self._dirty=true
+		-- self._dirty = true
 
 		local default_static_style = self._default_widgets.default_static.style
 		local player_name_offset_x = 0

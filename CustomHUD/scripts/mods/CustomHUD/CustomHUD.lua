@@ -5,7 +5,7 @@ local tablex = require'pl.tablex'
 
 -- luacheck: globals UIRenderer ScriptUnit Managers BackendUtils UIWidget UnitFrameUI
 -- luacheck: globals UILayer UISceneGraph EquipmentUI ButtonTextureByName Colors
--- luacheck: globals ChatGui Vector2 Gui Color unpack table
+-- luacheck: globals ChatGui Vector2 Gui Color unpack table PlayerUnitHealthExtension
 -- luacheck: globals math local_require World Unit
 
 mod.custom_player_widget = nil
@@ -51,12 +51,32 @@ mod:dofile("scripts/mods/CustomHUD/party_definitions")
 
 mod.cached_player_hp_bars = mod:persistent_table("hp_bars_cache")
 
+PlayerUnitHealthExtension._mod_get_max_health_without_grims = function (self)
+	local buff_extension = self.buff_extension
+	local health_state = self.state
+	local max_health_alive, max_health_kd = self:_get_base_max_health()
+	local max_health
+
+	max_health = buff_extension:apply_buffs_to_value(max_health_alive, StatBuffIndex.MAX_HEALTH_ALIVE)
+
+	max_health = buff_extension:apply_buffs_to_value(max_health, StatBuffIndex.MAX_HEALTH)
+	max_health = DamageUtils.networkify_health(max_health)
+
+	return max_health
+end
+
 mod.get_player_hp_bar_size = function(self) -- luacheck: ignore self
 	local hp_scale = 1
 	local player_unit = Managers.player:local_player().player_unit
 	if player_unit and Unit.alive(player_unit) then
 		local health_system = ScriptUnit.extension(player_unit, "health_system")
-		hp_scale = health_system:get_max_health() / 100
+		if health_system.state == "knocked_down" then
+			if mod.cached_player_hp_bars[player_unit] then
+				return mod.cached_player_hp_bars[player_unit]
+			end
+		else
+			hp_scale = health_system:_mod_get_max_health_without_grims() / 100
+		end
 	elseif mod.cached_player_hp_bars[player_unit] then
 		return mod.cached_player_hp_bars[player_unit]
 	end
@@ -77,7 +97,13 @@ mod.get_hp_bar_size_and_offset = function(self, player_unit) -- luacheck: ignore
 	local hp_scale = 1
 	if player_unit and Unit.alive(player_unit) then
 		local health_system = ScriptUnit.extension(player_unit, "health_system")
-		hp_scale = health_system:get_max_health() / 100
+		if health_system.state == "knocked_down" then
+			if mod.cached_player_hp_bars[player_unit] then
+				return mod.cached_player_hp_bars[player_unit]
+			end
+		else
+			hp_scale = health_system:_mod_get_max_health_without_grims() / 100
+		end
 	elseif mod.cached_player_hp_bars[player_unit] then
 		return mod.cached_player_hp_bars[player_unit]
 	end
@@ -444,7 +470,7 @@ mod:hook("UnitFramesHandler.update", function(func, self, dt, t, ignore_own_play
 		local health_system_first = ScriptUnit.has_extension(uf_first.player_data.player_unit, "health_system")
 		local health_system_second = ScriptUnit.has_extension(uf_second.player_data.player_unit, "health_system")
 		if health_system_first and health_system_second then
-			return health_system_first:get_max_health() > health_system_second:get_max_health()
+			return health_system_first:_mod_get_max_health_without_grims() > health_system_second:_mod_get_max_health_without_grims()
 		end
 		return not not health_system_first
 	end

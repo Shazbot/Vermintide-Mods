@@ -343,7 +343,7 @@ mod.create_static_widget = function(self, health_bar_size, health_bar_offset) --
 				vertical_alignment = "bottom",
 				font_type = "hell_shark",
 				font_size = 18,
-				horizontal_alignment = "center",
+				horizontal_alignment = "left",
 				text_color = Colors.get_table("white"),
 				offset = {
 					0,
@@ -355,7 +355,7 @@ mod.create_static_widget = function(self, health_bar_size, health_bar_offset) --
 				vertical_alignment = "bottom",
 				font_type = "hell_shark",
 				font_size = 18,
-				horizontal_alignment = "center",
+				horizontal_alignment = "left",
 				text_color = Colors.get_table("black"),
 				offset = {
 					2,

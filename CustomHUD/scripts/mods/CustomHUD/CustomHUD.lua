@@ -187,10 +187,6 @@ mod:hook("UnitFrameUI._create_ui_elements", function (func, self, frame_index)
 	end
 end)
 
-mod:hook("UnitFrameUI.set_inventory_slot_data", function (func, self, ...)
-	return func(self, ...)
-end)
-
 UnitFrameUI.customhud_update = function (self, is_wounded)
 	-- local function set_level_and_name_text_color(color)
 	-- 	self._other_players_widget.style.custom_player_name.text_color = color
@@ -269,7 +265,7 @@ local function ufUI_update(self, dt, t, player_unit) -- luacheck: ignore dt t
 	-- self:_set_widget_dirty(self._default_widgets.default_static)
 	-- self:_set_widget_dirty(self._health_widgets.health_dynamic)
 
-	if self._mod_reloaded_t and t - self._mod_reloaded_t > 3 then
+	if self._mod_reloaded_t and t - self._mod_reloaded_t > 1.5 then
 		self._mod_reloaded_t = nil
 		mod.do_reload = false
 	end
@@ -333,6 +329,9 @@ local function ufUI_update(self, dt, t, player_unit) -- luacheck: ignore dt t
 				self:_set_widget_dirty(self._equipment_widgets.loadout_dynamic)
 
 				self:reset()
+
+				table.clear(self.data)
+				self:set_dirty()
 			end
 			-- self:set_visible(true)
 			-- self:set_dirty()
@@ -358,6 +357,8 @@ local function ufUI_update(self, dt, t, player_unit) -- luacheck: ignore dt t
 			end
 			self._mod_health_bar_size_cached = health_bar_size
 
+			mod.player_offset_x = -health_bar_size[1]/2
+
 			self._health_widgets = {
 				health_dynamic = UIWidget.init(mod:create_player_dynamic_health_widget(health_bar_size))
 			}
@@ -370,11 +371,12 @@ local function ufUI_update(self, dt, t, player_unit) -- luacheck: ignore dt t
 			self._widgets.ability_dynamic = self._ability_widgets.ability_dynamic
 			self:_set_widget_dirty(self._ability_widgets.ability_dynamic)
 
-			mod.player_offset_x = -health_bar_size[1]/2
-
 			mod.custom_player_widget = UIWidget.init(mod:get_custom_player_widget_def(health_bar_size))
 
 			self:reset()
+
+			table.clear(self.data)
+			self:set_dirty()
 		end
 
 		-- 	self:_set_widget_dirty(self._default_widgets.default_dynamic)
@@ -396,7 +398,7 @@ local function ufUI_update(self, dt, t, player_unit) -- luacheck: ignore dt t
 		end
 
 		self._default_widgets.default_dynamic.style.portrait_icon.size = { 86*0.55, 108*0.55 }
-		self._default_widgets.default_dynamic.style.portrait_icon.offset = { -80, -32, 10 }
+		self._default_widgets.default_dynamic.style.portrait_icon.offset = { -180, -75, 10 }
 
 		self._default_widgets.default_dynamic.style.connecting_icon.offset = { -25, -70, 20 }
 
@@ -407,8 +409,8 @@ local function ufUI_update(self, dt, t, player_unit) -- luacheck: ignore dt t
 		local player_name_offset_y = -92
 
 		if portrait_left then
-			player_name_offset_x = -50
-			player_name_offset_y = -95
+			player_name_offset_x = -117
+			player_name_offset_y = -94
 		end
 		default_static_style.player_name.offset[1] = player_name_offset_x
 		default_static_style.player_name_shadow.offset[1] = player_name_offset_x+1

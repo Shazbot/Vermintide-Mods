@@ -199,8 +199,13 @@ function (func, t, unit, input_extension, inventory_extension, health_extension)
 		if not new_action then
 			local action_reload_action_name = "weapon_reload"
 			if (
-					item_template and item_template.actions[action_reload_action_name]
-					and ( input_extension:get("weapon_reload", false) or input_extension:get("weapon_reload_hold", false) )
+					item_template
+					and item_template.actions[action_reload_action_name]
+					and item_template.actions[action_reload_action_name]["default"]
+					and (
+							input_extension:get("weapon_reload", false)
+							or input_extension:get("weapon_reload_hold", false)
+						)
 				) then
 				new_action = action_reload_action_name
 				new_sub_action = "default"
@@ -233,8 +238,7 @@ function (func, t, unit, input_extension, inventory_extension, health_extension)
 
 	if new_action and new_sub_action then
 		local career_ext = ScriptUnit.extension(unit, "career_system")
-		local base_power_level = career_ext:get_career_power_level()
-		local power_level = ActionUtils.apply_buffs_to_power_level(unit, base_power_level)
+		local power_level = career_ext:get_career_power_level()
 		local actions = item_template.actions
 		local new_action_settings = actions[new_action][new_sub_action]
 		local weapon_action_hand = new_action_settings.weapon_action_hand or "right"
@@ -246,9 +250,10 @@ function (func, t, unit, input_extension, inventory_extension, health_extension)
 
 			if current_action_hand == "left" then
 				left_hand_weapon_extension:stop_action("new_interupting_action", interupting_action_data)
-			end
-
-			if current_action_hand == "right" then
+			elseif current_action_hand == "right" then
+				right_hand_weapon_extension:stop_action("new_interupting_action", interupting_action_data)
+			elseif current_action_hand == "both" then
+				left_hand_weapon_extension:stop_action("new_interupting_action", interupting_action_data)
 				right_hand_weapon_extension:stop_action("new_interupting_action", interupting_action_data)
 			end
 
@@ -265,6 +270,7 @@ function (func, t, unit, input_extension, inventory_extension, health_extension)
 
 			left_hand_weapon_extension:start_action(new_action, new_sub_action, item_template.actions, t, power_level, left_action_init_data)
 			right_hand_weapon_extension:start_action(new_action, new_sub_action, item_template.actions, t, power_level, right_action_init_data)
+
 			return
 		end
 
@@ -281,9 +287,13 @@ function (func, t, unit, input_extension, inventory_extension, health_extension)
 
 			if current_action_hand == "right" then
 				right_hand_weapon_extension:stop_action("new_interupting_action", interupting_action_data)
+			elseif current_action_hand == "both" then
+				left_hand_weapon_extension:stop_action("new_interupting_action", interupting_action_data)
+				right_hand_weapon_extension:stop_action("new_interupting_action", interupting_action_data)
 			end
 
 			left_hand_weapon_extension:start_action(new_action, new_sub_action, item_template.actions, t, power_level, next_action_init_data)
+
 			return
 		end
 
@@ -291,6 +301,9 @@ function (func, t, unit, input_extension, inventory_extension, health_extension)
 
 		if current_action_hand == "left" then
 			left_hand_weapon_extension:stop_action("new_interupting_action", interupting_action_data)
+		elseif current_action_hand == "both" then
+			left_hand_weapon_extension:stop_action("new_interupting_action", interupting_action_data)
+			right_hand_weapon_extension:stop_action("new_interupting_action", interupting_action_data)
 		end
 
 		right_hand_weapon_extension:start_action(new_action, new_sub_action, item_template.actions, t, power_level, next_action_init_data)

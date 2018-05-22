@@ -272,7 +272,7 @@ mod:hook("UnitFramesHandler._sync_player_stats", function (func, self, unit_fram
 end)
 
 local function ufUI_update(self, dt, t, player_unit) -- luacheck: ignore dt t
-	if self._mod_reloaded_t and t - self._mod_reloaded_t > 1.5 then
+	if self._mod_reloaded_t and t - self._mod_reloaded_t > 0.5 then
 		self._mod_reloaded_t = nil
 		mod.do_reload = false
 	end
@@ -283,7 +283,7 @@ local function ufUI_update(self, dt, t, player_unit) -- luacheck: ignore dt t
 
 	if self._frame_index then
 		mod:pcall(function()
-			if true --not self._mod_reloaded_t
+			if not self._mod_reloaded_t
 			and (mod.do_reload or not tablex.deepcompare(self._mod_health_bar_size_cached, health_bar_size)) then
 				if not self._mod_reloaded_t then
 					self._mod_reloaded_t = t
@@ -312,12 +312,12 @@ local function ufUI_update(self, dt, t, player_unit) -- luacheck: ignore dt t
 				self._widgets.health_dynamic = self._health_widgets.health_dynamic
 				self._widgets.loadout_dynamic = self._equipment_widgets.loadout_dynamic
 
-				-- UIRenderer.clear_scenegraph_queue(self.ui_renderer)
-				-- self.slot_equip_animations = {}
-				-- self.bar_animations = {}
+				UIRenderer.clear_scenegraph_queue(self.ui_renderer)
+				self.slot_equip_animations = {}
+				self.bar_animations = {}
 
-				-- self:_widget_by_name("health_dynamic").content.hp_bar.texture_id = "teammate_hp_bar_color_tint_" .. self._frame_index
-				-- self:_widget_by_name("health_dynamic").content.total_health_bar.texture_id = "teammate_hp_bar_" .. self._frame_index
+				self:_widget_by_name("health_dynamic").content.hp_bar.texture_id = "teammate_hp_bar_color_tint_" .. self._frame_index
+				self:_widget_by_name("health_dynamic").content.total_health_bar.texture_id = "teammate_hp_bar_" .. self._frame_index
 
 				self:_set_widget_dirty(self._default_widgets.default_dynamic)
 				self:_set_widget_dirty(self._default_widgets.default_static)
@@ -326,20 +326,13 @@ local function ufUI_update(self, dt, t, player_unit) -- luacheck: ignore dt t
 
 				self:reset()
 
-				table.clear(self.data)
 				self:set_dirty()
 			end
 			-- self:set_visible(true)
 			-- self:set_dirty()
 		end)
 	else
-			-- self:_set_widget_dirty(self._default_widgets.default_dynamic)
-			-- self:_set_widget_dirty(self._default_widgets.default_static)
-			-- self:_set_widget_dirty(self._health_widgets.health_dynamic)
-			-- self:_set_widget_dirty(self._ability_widgets.ability_dynamic)
-
-		-- mod.do_reload =true
-		if true --not self._mod_reloaded_t
+		if not self._mod_reloaded_t
 		and (mod.do_reload or not tablex.deepcompare(self._mod_health_bar_size_cached, health_bar_size)) then
 			mod:pcall(function()
 				if self._health_widgets then
@@ -371,12 +364,13 @@ local function ufUI_update(self, dt, t, player_unit) -- luacheck: ignore dt t
 
 			self:reset()
 
-			table.clear(self.data)
 			self:set_dirty()
 		end
 
-		-- 	self:_set_widget_dirty(self._default_widgets.default_dynamic)
-		-- 	self:_set_widget_dirty(self._default_widgets.default_static)
+		-- self:_set_widget_dirty(self._default_widgets.default_dynamic)
+		-- self:_set_widget_dirty(self._default_widgets.default_static)
+		-- self:_set_widget_dirty(self._health_widgets.health_dynamic)
+		-- self:_set_widget_dirty(self._ability_widgets.ability_dynamic)
 		-- self:set_dirty()
 	end
 
@@ -434,6 +428,12 @@ end
 mod:hook("UnitFramesHandler.update", function(func, self, dt, t, ignore_own_player)
 	if not self._is_visible then
 		return
+	end
+
+	if mod.do_reload then
+		for index, unit_frame in ipairs(self._unit_frames) do
+			table.clear(unit_frame.data)
+		end
 	end
 
 	local function uf_comparison(uf_first, uf_second)

@@ -6,7 +6,7 @@ local tablex = require'pl.tablex'
 -- luacheck: globals UIRenderer ScriptUnit Managers BackendUtils UIWidget UnitFrameUI
 -- luacheck: globals UILayer UISceneGraph EquipmentUI ButtonTextureByName Colors
 -- luacheck: globals ChatGui Vector2 Gui Color unpack table PlayerUnitHealthExtension
--- luacheck: globals math local_require World Unit
+-- luacheck: globals math local_require World Unit DamageUtils StatBuffIndex
 
 mod.custom_player_widget = nil
 
@@ -53,8 +53,7 @@ mod.cached_player_hp_bars = mod:persistent_table("hp_bars_cache")
 
 PlayerUnitHealthExtension._mod_get_max_health_without_grims = function (self)
 	local buff_extension = self.buff_extension
-	local health_state = self.state
-	local max_health_alive, max_health_kd = self:_get_base_max_health()
+	local max_health_alive = self:_get_base_max_health()
 	local max_health
 
 	max_health = buff_extension:apply_buffs_to_value(max_health_alive, StatBuffIndex.MAX_HEALTH_ALIVE)
@@ -216,15 +215,9 @@ mod:hook("UnitFrameUI._create_ui_elements", function (func, self, frame_index)
 end)
 
 UnitFrameUI.customhud_update = function (self, is_wounded)
-	-- local function set_level_and_name_text_color(color)
-	-- 	self._other_players_widget.style.custom_player_name.text_color = color
-	-- 	self._other_players_widget.style.custom_player_level.text_color = color
-	-- 	unit_frame_ui._default_widgets.default_static.content.ability_bar.bar_value
-	-- end
 	mod:pcall(function()
 		-- is_wounded= true
 		if self._frame_index then
-			-- set_level_and_name_text_color(Colors.color_definitions.white)
 			self._default_widgets.default_static.style.hp_bar_rect.color = is_wounded and {255, 255, 255, 255} or {255, 105, 105, 105}
 			-- self._default_widgets.default_static.style.hp_bar_rect2.color = is_wounded and {255, 255, 255, 255} or {255, 0, 0, 0}
 			self._default_widgets.default_static.style.ult_bar_rect.color = is_wounded and {255, 255, 255, 255} or {255, 105, 105, 105}
@@ -245,7 +238,6 @@ mod:hook("UnitFrameUI.set_ability_percentage", function (func, self, ability_per
 	mod:pcall(function()
 		if self._frame_index then
 			self._default_widgets.default_static.content.ability_bar.bar_value = ability_percent
-			-- EchoConsole(tostring(ability_percent))
 		end
 	end)
 	return func(self, ability_percent)
@@ -258,15 +250,6 @@ mod:hook("UnitFramesHandler._sync_player_stats", function (func, self, unit_fram
 	mod:pcall(function()
 		local player_data = unit_frame.player_data
 		local player_unit = player_data.player_unit
-
-		-- local go_id = Managers.state.unit_storage:go_id(player_unit)
-		-- local network_manager = Managers.state.network
-		-- local game = network_manager:game()
-		-- if game and go_id then
-			-- if not unit_frame_ui._frame_index then
-				-- pout(GameSession.game_object_field(game, go_id, "ability_percentage") or 0, go_id)
-			-- end
-		-- end
 
 		if player_data and player_data.player_unit and Unit.alive(player_unit) then
 			if player_data.extensions then
@@ -289,10 +272,6 @@ mod:hook("UnitFramesHandler._sync_player_stats", function (func, self, unit_fram
 end)
 
 local function ufUI_update(self, dt, t, player_unit) -- luacheck: ignore dt t
-	-- self:_set_widget_dirty(self._default_widgets.default_dynamic)
-	-- self:_set_widget_dirty(self._default_widgets.default_static)
-	-- self:_set_widget_dirty(self._health_widgets.health_dynamic)
-
 	if self._mod_reloaded_t and t - self._mod_reloaded_t > 1.5 then
 		self._mod_reloaded_t = nil
 		mod.do_reload = false
@@ -303,17 +282,6 @@ local function ufUI_update(self, dt, t, player_unit) -- luacheck: ignore dt t
 	self._mod_health_bar_offset = health_bar_offset
 
 	if self._frame_index then
-		-- DEBUG ability bar
-		-- mod:pcall(function()
-			-- local widget = self:_widget_by_feature("ability", "dynamic")
-			-- local widget_style = widget.style
-			-- local widget_content = widget.content
-			-- widget_content.actual_ability_percent = ability_percent
-			-- pprint(widget.content)
-			-- EchoConsole(tostring(widget_content.bar_value))
-			-- EchoConsole(tostring(self._default_widgets.default_static.content.ability_bar.bar_value))
-		-- end)
-
 		mod:pcall(function()
 			if true --not self._mod_reloaded_t
 			and (mod.do_reload or not tablex.deepcompare(self._mod_health_bar_size_cached, health_bar_size)) then
@@ -496,10 +464,6 @@ end)
 
 local did_once = false -- luacheck: ignore did_once
 mod:hook("UnitFrameUI.draw", function (func, self, dt) -- luacheck: ignore func
-	-- return func(self, dt)
-	-- -- self:set_visible(true)
-	-- self._dirty = true
-
 	if not self._is_visible then
 		return
 	end
@@ -562,8 +526,6 @@ mod:hook("UnitFrameUI.draw", function (func, self, dt) -- luacheck: ignore func
 	if self._mod_display_warning_overlay then
 		self:ufUI_draw_warning_icon(dt)
 	end
-
-	-- self._dirty = true
 end)
 
 mod.warning_icon_alpha_up = false
@@ -754,7 +716,7 @@ mod:hook("EquipmentUI.draw", function (func, self, dt)
 			if not widget.offset_original then
 				widget.offset_original = table.clone(widget.offset)
 			end
-			widget.offset[1] = widget.offset_original[1] - 140 - 70 + mod.global_offset_x--+ 90 + 575 + global_offset_x
+			widget.offset[1] = widget.offset_original[1] - 140 - 70 + mod.global_offset_x
 			widget.offset[2] = widget.offset_original[2] + 68 + 5 + mod.global_offset_y
 		end
 	end)
@@ -882,8 +844,6 @@ mod:hook("AbilityUI.draw", function (func, self, dt) -- luacheck: ignore func
 		self._widgets[1].style.ability_effect_top_left.horizontal_alignment = "center"
 		self._widgets[1].style.ability_effect_top_left.offset[1] = -player_health_bar_size[1]/2 - 50
 		self._widgets[1].style.ability_effect_top_left.offset[2] = skull_offsets[2] - mod.ability_ui_offset_y
-
-		-- mod:dtf(self._widgets[1], "AbilityUI._widgets[1]", 8)
 	end)
 
 	self._widgets[1].offset[1]= -1
@@ -896,8 +856,6 @@ mod:hook("AbilityUI.draw", function (func, self, dt) -- luacheck: ignore func
 
 	-- self:_set_widget_dirty(self._widgets[1])
 	-- self._dirty = true
-
-	-- return func(self, ...)
 
 	local ui_renderer = self.ui_renderer
 	local ui_scenegraph = self.ui_scenegraph

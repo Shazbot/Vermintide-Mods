@@ -431,7 +431,7 @@ mod:hook("UnitFramesHandler.update", function(func, self, dt, t, ignore_own_play
 	end
 
 	if mod.do_reload then
-		for index, unit_frame in ipairs(self._unit_frames) do
+		for _, unit_frame in ipairs(self._unit_frames) do
 			table.clear(unit_frame.data)
 		end
 	end

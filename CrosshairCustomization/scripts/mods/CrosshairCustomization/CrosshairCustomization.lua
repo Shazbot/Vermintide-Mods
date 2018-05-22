@@ -255,27 +255,19 @@ local function draw_crosshair_prehook(crosshair_ui)
 	end)
 end
 
-local CROSSHAIR_STYLE_FUNCTIONS = {
-	-- default = "draw_default_style_crosshair",
-	circle = "draw_circle_style_crosshair",
-	-- shotgun = "draw_shotgun_style_crosshair",
-	-- dot = "draw_dot_style_crosshair",
-	arrows = "draw_arrows_style_crosshair",
-	-- projectile = "draw_projectile_style_crosshair"
-}
-
-for _, method_name in pairs( CROSSHAIR_STYLE_FUNCTIONS ) do
-	mod:hook("CrosshairUI."..method_name, function(func, self, ...)
-		draw_crosshair_prehook(self)
-		return func(self, ...)
-	end)
-end
+mod:hook("CrosshairUI.draw_circle_style_crosshair", function(func, self, ...)
+	draw_crosshair_prehook(self)
+	return func(self, ...)
+end)
 
 --- No crosshair at all with a melee weapon.
 mod:hook("CrosshairUI.draw_dot_style_crosshair", function(func, self, ...)
 	draw_crosshair_prehook(self)
 
-	if mod:is_enabled() and mod:get(SETTING_NAMES.NO_MELEE_DOT) then
+	if mod:is_enabled()
+	and mod:get(SETTING_NAMES.NO_MELEE_DOT)
+	and self.crosshair_style
+	and self.crosshair_style == "dot" then
 		return
 	end
 
@@ -295,6 +287,7 @@ end
 --- Hide lines, keep dot.
 mod:hook("CrosshairUI.draw_default_style_crosshair", dot_only_prehook)
 mod:hook("CrosshairUI.draw_shotgun_style_crosshair", dot_only_prehook)
+mod:hook("CrosshairUI.draw_arrows_style_crosshair", dot_only_prehook)
 
 --- Hide headshot markers.
 mod:hook("CrosshairUI.draw_projectile_style_crosshair", function (func, self, ui_renderer, pitch_percentage, yaw_percentage)

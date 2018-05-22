@@ -437,12 +437,10 @@ mod:hook("UnitFramesHandler.update", function(func, self, dt, t, ignore_own_play
 	end
 
 	local function uf_comparison(uf_first, uf_second)
-		local health_system_first = ScriptUnit.has_extension(uf_first.player_data.player_unit, "health_system")
-		local health_system_second = ScriptUnit.has_extension(uf_second.player_data.player_unit, "health_system")
-		if health_system_first and health_system_second then
-			return health_system_first:_mod_get_max_health_without_grims() > health_system_second:_mod_get_max_health_without_grims()
-		end
-		return not not health_system_first
+		local hp_bar_size_first = mod:get_hp_bar_size_and_offset(uf_first.player_data.player_unit)[1]
+		local hp_bar_size_second = mod:get_hp_bar_size_and_offset(uf_second.player_data.player_unit)[1]
+
+		return hp_bar_size_first > hp_bar_size_second
 	end
 
 	for index, unit_frame in ipairs(self._unit_frames) do

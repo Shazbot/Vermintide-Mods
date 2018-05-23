@@ -1,8 +1,8 @@
 return {
 	mod_name = {
-		en = "Visible Ammo"
+		en = "Persistent Ammo Counter"
 	},
 	mod_description = {
-		en = "Keep ammo counter always visible."
+		en = "Keep the ammo counter always visible."
 	},
 }

@@ -280,16 +280,11 @@ local function junk_item_sort_func(item_1, item_2)
 	return item_sort_func(item_1, item_2)
 end
 
-mod:hook("ItemGridUI.apply_item_sorting_function", function (func, self, item_sort_func)
-	self._item_sort_func = item_sort_func
-	-- return func(self, ...)
-end)
-
 mod:hook("ItemGridUI.change_item_filter", function (func, self, item_filter, change_page)
 	if pl.stringx.count(item_filter, "can_salvage") > 0 then
 		item_filter = "not is_favorite and " .. item_filter
 		self:apply_item_sorting_function(junk_item_sort_func)
-	else
+	elseif pl.stringx.count(item_filter, "slot_type == loot_chest") == 0 then
 		self:apply_item_sorting_function(junk_last_item_sort_func)
 	end
 	return func(self, item_filter, change_page)
@@ -399,6 +394,11 @@ local function get_text_height(ui_renderer, size, ui_style, ui_content, text, ui
 	return full_font_height
 end
 
+local function is_chest(item_data)
+	local item_type = item_data.item_type
+	return item_type == "loot_chest"
+end
+
 --NOTE: can refactor this to create UITooltipPasses.junk from UITooltipPasses.fav
 UITooltipPasses.fav = {
 	setup_data = function ()
@@ -433,6 +433,10 @@ UITooltipPasses.fav = {
 		local frame_margin = data.frame_margin or 0
 		local style = data.style
 		local content = data.content
+
+		if is_chest(item.data) then
+			return 0
+		end
 
 		local backend_id = item.backend_id
 
@@ -501,6 +505,10 @@ UITooltipPasses.junk = {
 		local frame_margin = data.frame_margin or 0
 		local style = data.style
 		local content = data.content
+
+		if is_chest(item.data) then
+			return 0
+		end
 
 		local backend_id = item.backend_id
 
@@ -615,6 +623,11 @@ UITooltipPasses.advanced_input_helper_favorite = {
 		local frame_margin = data.frame_margin or 0
 		local style = data.style
 		local content = data.content
+
+		if is_chest(item.data) then
+			return 0
+		end
+
 		local position_x = position[1]
 		local position_y = position[2]
 		local position_z = position[3]
@@ -790,6 +803,11 @@ UITooltipPasses.advanced_input_helper_junk = {
 		local frame_margin = data.frame_margin or 0
 		local style = data.style
 		local content = data.content
+
+		if is_chest(item.data) then
+			return 0
+		end
+
 		local position_x = position[1]
 		local position_y = position[2]
 		local position_z = position[3]

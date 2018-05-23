@@ -77,13 +77,21 @@ mod:hook("StatisticsUtil.register_kill", function(func, victim_unit, damage_data
 				local slot_name = inventory_extension:get_wielded_slot_name()
 				local slot_data = inventory_extension:get_slot_data(slot_name)
 				if slot_data.item_data.key == damage_data[DamageDataIndex.DAMAGE_SOURCE_NAME] then
-					increase_kill_counter(slot_data.item_data.backend_id)
+					local backend_id = slot_data.item_data.backend_id
+					if backend_id then
+						increase_kill_counter()
+					end
 				end
 			end
 		end
 	end)
 	return func(victim_unit, damage_data, statistics_db, is_server)
 end)
+
+local function is_chest(item_data)
+	local item_type = item_data.item_type
+	return item_type == "loot_chest"
+end
 
 UITooltipPasses.weapon_kills = {
 	setup_data = function ()
@@ -117,6 +125,10 @@ UITooltipPasses.weapon_kills = {
 		local frame_margin = data.frame_margin or 0
 		local style = data.style
 		local content = data.content
+
+		if is_chest(item.data) then
+			return 0
+		end
 
 		local backend_id = item.backend_id
 

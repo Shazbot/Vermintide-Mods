@@ -1,0 +1,12 @@
+mod =  [
+	"FailLevelCommand"
+]
+
+package = [
+	"resource_packages/FailLevelCommand/FailLevelCommand"
+]
+
+lua = [
+	"localization/*"
+	"scripts/mods/FailLevelCommand/*"
+]

@@ -1,0 +1,12 @@
+mod =  [
+	"WinLevelCommand"
+]
+
+package = [
+	"resource_packages/WinLevelCommand/WinLevelCommand"
+]
+
+lua = [
+	"localization/*"
+	"scripts/mods/WinLevelCommand/*"
+]

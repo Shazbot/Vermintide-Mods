@@ -88,9 +88,9 @@ mod:hook("StatisticsUtil.register_kill", function(func, victim_unit, damage_data
 	return func(victim_unit, damage_data, statistics_db, is_server)
 end)
 
-local function is_chest(item_data)
-	local item_type = item_data.item_type
-	return item_type == "loot_chest"
+local function is_weapon(item_data)
+	local slot_type = item_data.slot_type
+	return slot_type == "melee" or slot_type == "ranged"
 end
 
 UITooltipPasses.weapon_kills = {
@@ -126,7 +126,7 @@ UITooltipPasses.weapon_kills = {
 		local style = data.style
 		local content = data.content
 
-		if is_chest(item.data) then
+		if not is_weapon(item.data) then
 			return 0
 		end
 

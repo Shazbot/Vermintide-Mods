@@ -79,7 +79,7 @@ mod:hook("StatisticsUtil.register_kill", function(func, victim_unit, damage_data
 				if slot_data.item_data.key == damage_data[DamageDataIndex.DAMAGE_SOURCE_NAME] then
 					local backend_id = slot_data.item_data.backend_id
 					if backend_id then
-						increase_kill_counter()
+						increase_kill_counter(backend_id)
 					end
 				end
 			end

@@ -1,0 +1,12 @@
+mod =  [
+	"MutatorsSelector"
+]
+
+package = [
+	"resource_packages/MutatorsSelector/MutatorsSelector"
+]
+
+lua = [
+	"localization/*"
+	"scripts/mods/MutatorsSelector/*"
+]

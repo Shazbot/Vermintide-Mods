@@ -43,5 +43,3 @@ end
 mod.on_enabled = function(is_first_call) -- luacheck: ignore is_first_call
 	mod:enable_all_hooks()
 end
-
-

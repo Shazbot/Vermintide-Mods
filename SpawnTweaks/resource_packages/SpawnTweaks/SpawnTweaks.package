@@ -1,0 +1,12 @@
+mod =  [
+	"SpawnTweaks"
+]
+
+package = [
+	"resource_packages/SpawnTweaks/SpawnTweaks"
+]
+
+lua = [
+	"localization/*"
+	"scripts/mods/SpawnTweaks/*"
+]

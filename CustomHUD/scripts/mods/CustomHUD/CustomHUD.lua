@@ -14,8 +14,6 @@ mod.custom_player_widget = nil
 local debug_favs = false
 mod.RETAINED_MODE_ENABLED = not debug_favs
 
-mod.my_scale_x = 0.45
-
 mod.SIZE_X = 1920
 mod.SIZE_Y = 1080
 
@@ -36,7 +34,7 @@ mod.ult_bar_height = 5
 mod.portrait_scale = 1
 mod.slot_scale = 1
 mod.health_bar_size_fraction = 2
-mod.default_hp_bar_size_x = 400
+mod.default_hp_bar_size_x = 180
 mod.default_hp_bar_size_y = 17
 
 mod.others_items_offsets = {
@@ -65,37 +63,45 @@ PlayerUnitHealthExtension._mod_get_max_health_without_grims = function (self)
 end
 
 mod.get_player_hp_bar_size = function(self) -- luacheck: ignore self
-	local hp_scale = 1
 	local player_unit = Managers.player:local_player().player_unit
-	if player_unit and Unit.alive(player_unit) then
-		local health_system = ScriptUnit.extension(player_unit, "health_system")
+	return mod:get_hp_bar_size_and_offset(player_unit)
+	-- local hp_scale = 1
+	-- local player_unit = Managers.player:local_player().player_unit
+	-- if player_unit and Unit.alive(player_unit) then
+	-- 	local health_system = ScriptUnit.extension(player_unit, "health_system")
 
-		if health_system.state == "knocked_down" or health_system.state == "dead" then
-			if mod.cached_player_hp_bars[player_unit] then
-				return mod.cached_player_hp_bars[player_unit]
-			end
-		else
-			hp_scale = health_system:_mod_get_max_health_without_grims() / 100
-		end
-	elseif mod.cached_player_hp_bars[player_unit] then
-		return mod.cached_player_hp_bars[player_unit]
-	end
+	-- 	if health_system.state == "knocked_down" or health_system.state == "dead" then
+	-- 		if mod.cached_player_hp_bars[player_unit] then
+	-- 			return mod.cached_player_hp_bars[player_unit]
+	-- 		end
+	-- 	else
+	-- 		hp_scale = health_system:_mod_get_max_health_without_grims() / 100
+	-- 	end
+	-- elseif mod.cached_player_hp_bars[player_unit] then
+	-- 	return mod.cached_player_hp_bars[player_unit]
+	-- end
 
-	local health_bar_size = {
-		mod.default_hp_bar_size_x*mod.my_scale_x*hp_scale,
-		mod.default_hp_bar_size_y
-	}
+	-- local health_bar_size = {
+	-- 	mod.default_hp_bar_size_x*hp_scale,
+	-- 	mod.default_hp_bar_size_y
+	-- }
 
-	if player_unit then
-		mod.cached_player_hp_bars[player_unit] = health_bar_size
-	end
+	-- if player_unit then
+	-- 	mod.cached_player_hp_bars[player_unit] = health_bar_size
+	-- end
 
-	return health_bar_size
+	-- return health_bar_size
 end
 
 mod.get_hp_bar_size_and_offset = function(self, player_unit) -- luacheck: ignore self
 	local hp_scale = 1
-	if player_unit and Unit.alive(player_unit) then
+
+	local is_valid = player_unit and Unit.alive(player_unit)
+	if not is_valid and mod.cached_player_hp_bars[player_unit] then
+		return mod.cached_player_hp_bars[player_unit]
+	end
+
+	if is_valid then
 		local health_system = ScriptUnit.extension(player_unit, "health_system")
 
 		if health_system.state == "knocked_down" or health_system.state == "dead" then
@@ -103,14 +109,17 @@ mod.get_hp_bar_size_and_offset = function(self, player_unit) -- luacheck: ignore
 				return mod.cached_player_hp_bars[player_unit]
 			end
 		else
-			hp_scale = health_system:_mod_get_max_health_without_grims() / 100
+			if mod:get(mod.SETTING_NAMES.HP_BAR_SIZE_METHOD) ~= mod.HP_BAR_SIZE_METHODS.FIXED then
+				hp_scale = health_system:_mod_get_max_health_without_grims() / 100
+			end
+			if mod:get(mod.SETTING_NAMES.HP_BAR_SIZE_METHOD) ~= mod.HP_BAR_SIZE_METHODS.DEFAULT then
+				hp_scale = hp_scale * mod:get(mod.SETTING_NAMES.HP_BAR_SIZE_SCALE_BY) / 100
+			end
 		end
-	elseif mod.cached_player_hp_bars[player_unit] then
-		return mod.cached_player_hp_bars[player_unit]
 	end
 
 	local health_bar_size = {
-		mod.default_hp_bar_size_x*mod.my_scale_x*hp_scale,
+		mod.default_hp_bar_size_x*hp_scale,
 		mod.default_hp_bar_size_y
 	}
 	local health_bar_offset = {
@@ -118,6 +127,8 @@ mod.get_hp_bar_size_and_offset = function(self, player_unit) -- luacheck: ignore
 		mod.health_bar_size_fraction*-25,
 		0
 	}
+
+	health_bar_size[1] = math.round(health_bar_size[1])
 
 	if player_unit then
 		mod.cached_player_hp_bars[player_unit] = health_bar_size
@@ -387,7 +398,7 @@ local function ufUI_update(self, dt, t, player_unit) -- luacheck: ignore dt t
 		self._default_widgets.default_static.style.character_portrait.texture_size = { 86*0.55, 108*0.55 }
 		self._default_widgets.default_static.style.character_portrait.offset = { -80, -32, 1 }
 
-		local portrait_left = true
+		local portrait_left = mod:get(mod.SETTING_NAMES.PARTY_UI_ORIENTATION) == mod.ORIENTATIONS.VERTICAL
 		if portrait_left then
 			self._default_widgets.default_static.style.character_portrait.offset = { -180, -80, 1 }
 		end
@@ -400,8 +411,8 @@ local function ufUI_update(self, dt, t, player_unit) -- luacheck: ignore dt t
 		-- self._dirty = true
 
 		local default_static_style = self._default_widgets.default_static.style
-		local player_name_offset_x = 0
-		local player_name_offset_y = -92
+		local player_name_offset_x = -20
+		local player_name_offset_y = -85
 
 		if portrait_left then
 			player_name_offset_x = -117
@@ -426,10 +437,10 @@ local function ufUI_update(self, dt, t, player_unit) -- luacheck: ignore dt t
 	end
 
 	-- DEBUG
-	if debug_favs then
+	-- if debug_favs then
 		self:set_visible(true)
 		self._dirty = true
-	end
+	-- end
 end
 
 mod:hook("UnitFramesHandler.update", function(func, self, dt, t, ignore_own_player)
@@ -460,7 +471,12 @@ mod:hook("UnitFramesHandler.update", function(func, self, dt, t, ignore_own_play
 	local i = 1
 	for index, unit_frame in tablex.sortv(self._unit_frames, uf_comparison) do
 		if index ~= 1 then
-			unit_frame.widget:set_position(205, 160+(i-1)*110)
+			if mod:get(mod.SETTING_NAMES.PARTY_UI_ORIENTATION) == mod.ORIENTATIONS.VERTICAL then
+				unit_frame.widget:set_position(205, 160+(i-1)*110)
+			else
+				unit_frame.widget:set_position(205+(i-1)*200, 160)
+			end
+
 			i = i + 1
 		end
 	end
@@ -929,4 +945,112 @@ mod.on_enabled = function(is_first_call) -- luacheck: ignore is_first_call
 	-- mod.do_reload = true
 end
 
+mod.on_setting_changed = function(setting_name)
+	mod:echo(setting_name)
+
+	if setting_name == mod.SETTING_NAMES.HP_BAR_SIZE_METHOD then
+
+	end
+end
+
 mod.do_reload = true
+
+local mod_data = {
+	name = mod:localize("mod_name"),
+	description = mod:localize("mod_description"),
+	is_togglable = true,
+}
+
+mod.SETTING_NAMES = {
+	CUSTOM_HUD_METHOD = "custom_hud_method",
+    HP_BAR_SIZE_METHOD = "hp_bar_size_method",
+    HP_BAR_SIZE_SCALE_BY = "event_horde_size",
+    PARTY_UI_ORIENTATION = "party_ui_orientation",
+    PLAYER_UI_OFFSET = "player_ui_offset",
+}
+
+mod.CUSTOM_HUD_METHODS = {
+	DEFAULT = 1,
+	V1 = 2,
+	CUSTOM = 3,
+}
+
+mod.HP_BAR_SIZE_METHODS = {
+	DEFAULT = 1,
+	FIXED = 2,
+	CUSTOM = 3,
+}
+
+mod.ORIENTATIONS = {
+	HORIZONTAL = 1,
+	VERTICAL = 2,
+}
+
+mod_data.options_widgets = {
+	{
+		["setting_name"] = mod.SETTING_NAMES.CUSTOM_HUD_METHOD,
+		["widget_type"] = "dropdown",
+		["text"] = mod:localize("custom_hud_method"),
+		["tooltip"] = mod:localize("custom_hud_method_tooltip"),
+		["options"] = {
+			{text = mod:localize("custom_hud_method_default"), value = mod.CUSTOM_HUD_METHODS.DEFAULT},
+			{text =  mod:localize("custom_hud_method_v1"), value = mod.CUSTOM_HUD_METHODS.V1},
+			{text =  mod:localize("custom_hud_method_custom"), value = mod.CUSTOM_HUD_METHODS.CUSTOM},
+		},
+		["default_value"] = mod.CUSTOM_HUD_METHODS.DEFAULT,
+		["sub_widgets"] = {
+			{
+				["show_widget_condition"] = {mod.CUSTOM_HUD_METHODS.CUSTOM},
+				["setting_name"] = mod.SETTING_NAMES.HP_BAR_SIZE_METHOD,
+				["widget_type"] = "dropdown",
+				["text"] = mod:localize("hp_bar_size_method"),
+				["tooltip"] = mod:localize("hp_bar_size_method_tooltip"),
+				["options"] = {
+					{text =  mod:localize("hp_bar_method_default"), value = mod.HP_BAR_SIZE_METHODS.DEFAULT},
+					{text =  mod:localize("hp_bar_method_fixed"), value = mod.HP_BAR_SIZE_METHODS.FIXED},
+					{text =  mod:localize("hp_bar_method_custom"), value = mod.HP_BAR_SIZE_METHODS.CUSTOM},
+				},
+				["default_value"] = mod.HP_BAR_SIZE_METHODS.DEFAULT,
+				["sub_widgets"] = {
+					{
+						["show_widget_condition"] = {
+							mod.HP_BAR_SIZE_METHODS.FIXED,
+							mod.HP_BAR_SIZE_METHODS.CUSTOM,
+						},
+						["setting_name"] = mod.SETTING_NAMES.HP_BAR_SIZE_SCALE_BY,
+						["widget_type"] = "numeric",
+						["text"] = mod:localize("hp_bar_size_scale_by"),
+						["tooltip"] = mod:localize("hp_bar_size_scale_by_tooltip"),
+						["range"] = {0, 300},
+						["unit_text"] = "%",
+					    ["default_value"] = 100,
+					},
+				},
+			},
+			{
+				["show_widget_condition"] = {mod.CUSTOM_HUD_METHODS.CUSTOM},
+				["setting_name"] = mod.SETTING_NAMES.PARTY_UI_ORIENTATION,
+				["widget_type"] = "dropdown",
+				["text"] = mod:localize("party_ui_orientation"),
+				["tooltip"] = mod:localize("party_ui_orientation_tooltip"),
+				["options"] = {
+					{text =  mod:localize("party_ui_orientation_vertical"), value = mod.ORIENTATIONS.VERTICAL},
+					{text =  mod:localize("party_ui_orientation_horizontal"), value = mod.ORIENTATIONS.HORIZONTAL},
+				},
+				["default_value"] = mod.ORIENTATIONS.VERTICAL,
+			},
+			{
+				["show_widget_condition"] = {mod.CUSTOM_HUD_METHODS.CUSTOM},
+				["setting_name"] = mod.SETTING_NAMES.PLAYER_UI_OFFSET,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("player_ui_offset"),
+				["tooltip"] = mod:localize("player_ui_offset_tooltip"),
+				["range"] = {-2000, 2000},
+				["unit_text"] = "px",
+			    ["default_value"] = 0,
+			},
+		},
+	},
+}
+
+mod:initialize_data(mod_data)

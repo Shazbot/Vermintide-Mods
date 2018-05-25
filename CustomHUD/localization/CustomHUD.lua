@@ -1,27 +1,85 @@
 return {
+	mod_name = {
+		en = "Custom HUD"
+	},
 	mod_description = {
-		en = "CustomHUD description"
+		en = "HUD modifications backed by science."
 	},
---[[
-	some_text_id = {
-		en = "Translation",        -- English
-		fr = "Translation",        -- French
-		de = "Translation",        -- German
-		es = "Translation",        -- Spanish
-		ru = "Translation",        -- Russian
-		it = "Translation",        -- Italian
-		pl = "Translation",        -- Polish
-		["br-pt"] = "Translation", -- Portuguese-Brazil
+	custom_hud_method = {
+		en = "HUD Presets"
 	},
-	some_other_text_id = {
-		en = "Translation",
-		fr = "Translation",
-		de = "Translation",
-		es = "Translation",
-		ru = "Translation",
-		it = "Translation",
-		pl = "Translation",
-		["br-pt"] = "Translation",
+	custom_hud_method_tooltip = {
+		en = "Choose a preset."
 	},
---]]
+	custom_hud_method_default = {
+		en = "Default"
+	},
+	custom_hud_method_v1 = {
+		en = "V1-like"
+	},
+	custom_hud_method_custom = {
+		en = "Customize"
+	},
+	hp_bar_size_method = {
+		en = "HP Bar Size"
+	},
+	hp_bar_size_method_tooltip = {
+		en = "Method to determine the length of the HP bar:\n"
+			.."Default: use value from the preset.\n"
+			.."Fixed: all HP bars are the same length.\n"
+			.."Customize: different lengths but with custom scale."
+	},
+	hp_bar_method_default = {
+		en = "Default"
+	},
+	hp_bar_method_fixed = {
+		en = "Fixed"
+	},
+	hp_bar_method_custom = {
+		en = "Customize"
+	},
+	hp_bar_size_scale_by = {
+		en = "Scale HP Bar"
+	},
+	hp_bar_size_scale_by_tooltip = {
+		en = "Scale the HP bar"
+	},
+	party_ui_orientation = {
+		en = "Party UI Orientation"
+	},
+	party_ui_orientation_tooltip = {
+		en = "Party memeber UI orientation\n"
+			.."Note that horizontal always uses fixed hp bar length."
+	},
+	party_ui_orientation_vertical = {
+		en = "Vertical"
+	},
+	party_ui_orientation_horizontal = {
+		en = "Horizontal"
+	},
+	player_ui_offset = {
+		en = "Player UI Offset"
+	},
+	player_ui_offset_tooltip = {
+		en = "Offset the player's UI"
+	},
+	ammo_bar_offset_x = {
+		en = "Ammo Bar Offset X"
+	},
+	ammo_bar_offset_x_tooltip = {
+		en = "Offset the ammo bar on the x axis."
+	},
+	ammo_bar_offset_y = {
+		en = "Ammo Bar Offset Y"
+	},
+	ammo_bar_offset_y_tooltip = {
+		en = "Offset the ammo bar on the y axis."
+	},
+	buffs_offset_x = {
+		en = "Buffs Offset X"
+	},
+	buffs_offset_x_tooltip = {
+		en = "Offset all the buffs on the x axis."
+	},
+
 }

@@ -46,7 +46,7 @@ mod.create_player_dynamic_health_widget = function(self, player_health_bar_size)
 						local actual_active_percentage = content.actual_active_percentage or 1
 						local grim_progress = math.max(internal_bar_value, actual_active_percentage)
 						local offset = style.offset
-						offset[1] = mod.settings.hp_bar.x - 7*mod.my_scale_x + grim_progress * player_health_bar_size[1]
+						offset[1] = mod.settings.hp_bar.x - 3 + grim_progress * player_health_bar_size[1]
 					end
 				},
 				{
@@ -177,7 +177,7 @@ mod.create_player_dynamic_health_widget = function(self, player_health_bar_size)
 			},
 			grimoire_debuff_divider = {
 				size = {
-					21*mod.my_scale_x,
+					10,
 					36
 				},
 				color = {

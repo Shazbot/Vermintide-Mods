@@ -37,11 +37,17 @@ mod.health_bar_size_fraction = 2
 mod.default_hp_bar_size_x = 180
 mod.default_hp_bar_size_y = 17
 
-mod.others_items_offsets = {
+mod.others_items_offsets_vertical_align = {
 	-101,
 	-0,
 	0
 }
+mod.others_items_offsets_horizontal_align = {
+	-20,
+	-0,
+	0
+}
+mod.others_items_offsets = mod.others_items_offsets_horizontal_align
 
 mod:dofile("scripts/mods/CustomHUD/scenegraph_definitions")
 mod:dofile("scripts/mods/CustomHUD/player_definitions")
@@ -65,32 +71,6 @@ end
 mod.get_player_hp_bar_size = function(self) -- luacheck: ignore self
 	local player_unit = Managers.player:local_player().player_unit
 	return mod:get_hp_bar_size_and_offset(player_unit)
-	-- local hp_scale = 1
-	-- local player_unit = Managers.player:local_player().player_unit
-	-- if player_unit and Unit.alive(player_unit) then
-	-- 	local health_system = ScriptUnit.extension(player_unit, "health_system")
-
-	-- 	if health_system.state == "knocked_down" or health_system.state == "dead" then
-	-- 		if mod.cached_player_hp_bars[player_unit] then
-	-- 			return mod.cached_player_hp_bars[player_unit]
-	-- 		end
-	-- 	else
-	-- 		hp_scale = health_system:_mod_get_max_health_without_grims() / 100
-	-- 	end
-	-- elseif mod.cached_player_hp_bars[player_unit] then
-	-- 	return mod.cached_player_hp_bars[player_unit]
-	-- end
-
-	-- local health_bar_size = {
-	-- 	mod.default_hp_bar_size_x*hp_scale,
-	-- 	mod.default_hp_bar_size_y
-	-- }
-
-	-- if player_unit then
-	-- 	mod.cached_player_hp_bars[player_unit] = health_bar_size
-	-- end
-
-	-- return health_bar_size
 end
 
 mod.get_hp_bar_size_and_offset = function(self, player_unit) -- luacheck: ignore self
@@ -109,12 +89,17 @@ mod.get_hp_bar_size_and_offset = function(self, player_unit) -- luacheck: ignore
 				return mod.cached_player_hp_bars[player_unit]
 			end
 		else
-			if mod:get(mod.SETTING_NAMES.HP_BAR_SIZE_METHOD) ~= mod.HP_BAR_SIZE_METHODS.FIXED then
+			if mod:get(mod.SETTING_NAMES.PARTY_UI_ORIENTATION) ~= mod.ORIENTATIONS.HORIZONTAL
+			and mod:get(mod.SETTING_NAMES.HP_BAR_SIZE_METHOD) ~= mod.HP_BAR_SIZE_METHODS.FIXED then
 				hp_scale = health_system:_mod_get_max_health_without_grims() / 100
 			end
 			if mod:get(mod.SETTING_NAMES.HP_BAR_SIZE_METHOD) ~= mod.HP_BAR_SIZE_METHODS.DEFAULT then
 				hp_scale = hp_scale * mod:get(mod.SETTING_NAMES.HP_BAR_SIZE_SCALE_BY) / 100
 			end
+		end
+	else
+		if mod:get(mod.SETTING_NAMES.HP_BAR_SIZE_METHOD) ~= mod.HP_BAR_SIZE_METHODS.DEFAULT then
+			hp_scale = hp_scale * mod:get(mod.SETTING_NAMES.HP_BAR_SIZE_SCALE_BY) / 100
 		end
 	end
 
@@ -178,6 +163,7 @@ mod:hook("UnitFrameUI._create_ui_elements", function (func, self, frame_index)
 
 			self.slot_equip_animations = {}
 			self.bar_animations = {}
+			self.slot_equip_animations  = {}
 
 			if self._frame_index then
 				self:_widget_by_name("health_dynamic").content.hp_bar.texture_id = "teammate_hp_bar_color_tint_" .. self._frame_index
@@ -224,20 +210,28 @@ mod:hook("UnitFrameUI._create_ui_elements", function (func, self, frame_index)
 	end
 end)
 
-UnitFrameUI.customhud_update = function (self, is_wounded)
+UnitFrameUI.customhud_update = function (self, is_dead, is_wounded, has_respawned)
 	mod:pcall(function()
-		-- is_wounded= true
+		-- is_wounded = true
 		if self._frame_index then
-			self._default_widgets.default_static.style.hp_bar_rect.color = is_wounded and {255, 255, 255, 255} or {255, 105, 105, 105}
+			self._default_widgets.default_static.style.hp_bar_rect.color = is_wounded and {200, 255, 255, 255} or {255, 105, 105, 105}
 			-- self._default_widgets.default_static.style.hp_bar_rect2.color = is_wounded and {255, 255, 255, 255} or {255, 0, 0, 0}
-			self._default_widgets.default_static.style.ult_bar_rect.color = is_wounded and {255, 255, 255, 255} or {255, 105, 105, 105}
-			self._default_widgets.default_static.style.ammo_bar_rect.color = is_wounded and {255, 255, 255, 255} or {255, 105, 105, 105}
+			self._default_widgets.default_static.style.ult_bar_rect.color = is_wounded and {200, 255, 255, 255} or {255, 105, 105, 105}
+			self._default_widgets.default_static.style.ammo_bar_rect.color = is_wounded and {200, 255, 255, 255} or {255, 105, 105, 105}
+
+			if has_respawned then
+				-- self._widgets.health_dynamic.content.hp_bar.texture_id = "hud_teammate_ammo_bar_fill"
+				self._widgets.health_dynamic.style.hp_bar.color = {100, 255, 255, 255}
+			else
+				-- self._widgets.health_dynamic.content.hp_bar.texture_id = "teammate_hp_bar_color_tint_1"
+				self._widgets.health_dynamic.style.hp_bar.color = {255, 255, 255, 255}
+			end
 		else
 			if mod.custom_player_widget then
-				mod.custom_player_widget.style.hp_bar_rect.color = is_wounded and {255, 255, 255, 255} or {255, 105, 105, 105}
+				mod.custom_player_widget.style.hp_bar_rect.color = is_wounded and {200, 255, 255, 255} or {255, 105, 105, 105}
 				-- mod.custom_player_widget.style.hp_bar_rect2.color = is_wounded and {255, 255, 255, 255} or {255, 0, 0, 0}
-				mod.custom_player_widget.style.ult_bar_rect.color = is_wounded and {255, 255, 255, 255} or {255, 105, 105, 105}
-				mod.custom_player_widget.style.ammo_bar_rect.color = is_wounded and {255, 255, 255, 255} or {255, 105, 105, 105}
+				mod.custom_player_widget.style.ult_bar_rect.color = is_wounded and {200, 255, 255, 255} or {255, 105, 105, 105}
+				mod.custom_player_widget.style.ammo_bar_rect.color = is_wounded and {200, 255, 255, 255} or {255, 105, 105, 105}
 			end
 		end
 	end)
@@ -254,31 +248,19 @@ mod:hook("UnitFrameUI.set_ability_percentage", function (func, self, ability_per
 end)
 
 mod:hook("UnitFramesHandler._sync_player_stats", function (func, self, unit_frame)
-	local is_wounded = false
-	local unit_frame_ui = unit_frame.widget
-
-	mod:pcall(function()
-		local player_data = unit_frame.player_data
-		local player_unit = player_data.player_unit
-
-		if player_data and player_data.player_unit and Unit.alive(player_unit) then
-			if player_data.extensions then
-				is_wounded = player_data.extensions.status:is_wounded()
-			end
-		end
-	end)
-
-	local original_set_portrait_status = UnitFrameUI.set_portrait_status
-	UnitFrameUI.set_portrait_status = function (self, is_knocked_down, needs_help, is_dead, assisted_respawn) -- luacheck: ignore self
-		self._mod_display_warning_overlay = not is_dead and (is_knocked_down or (needs_help and not assisted_respawn))
-		return original_set_portrait_status(self, is_knocked_down, needs_help, is_dead, assisted_respawn)
-	end
-
 	func(self, unit_frame)
 
-	unit_frame_ui:customhud_update(is_wounded)
 
-	UnitFrameUI.set_portrait_status = original_set_portrait_status
+	mod:pcall(function()
+		local unit_frame_ui = unit_frame.widget
+		local player_data = unit_frame.player_data
+		local data = unit_frame.data
+
+		if player_data then
+			unit_frame_ui._mod_display_warning_overlay = not data.is_dead and (data.is_knocked_down or (data.needs_help and not data.assisted_respawn))
+			unit_frame_ui:customhud_update(data.is_dead, data.is_wounded, data.assisted_respawn)
+		end
+	end)
 end)
 
 mod:hook("UnitFrameUI.set_visible", function(func, self, visible)
@@ -333,6 +315,7 @@ local function ufUI_update(self, dt, t, player_unit) -- luacheck: ignore dt t
 				UIRenderer.clear_scenegraph_queue(self.ui_renderer)
 				self.slot_equip_animations = {}
 				self.bar_animations = {}
+				self.slot_equip_animations  = {}
 
 				self:_widget_by_name("health_dynamic").content.hp_bar.texture_id = "teammate_hp_bar_color_tint_" .. self._frame_index
 				self:_widget_by_name("health_dynamic").content.total_health_bar.texture_id = "teammate_hp_bar_" .. self._frame_index
@@ -364,7 +347,7 @@ local function ufUI_update(self, dt, t, player_unit) -- luacheck: ignore dt t
 			end
 			self._mod_health_bar_size_cached = health_bar_size
 
-			mod.player_offset_x = -health_bar_size[1]/2
+			mod.player_offset_x = -health_bar_size[1]/2 + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET)
 
 			self._health_widgets = {
 				health_dynamic = UIWidget.init(mod:create_player_dynamic_health_widget(health_bar_size))
@@ -393,54 +376,60 @@ local function ufUI_update(self, dt, t, player_unit) -- luacheck: ignore dt t
 	end
 
 	if self._frame_index then
-		-- self._portrait_widgets.portrait_static.content.scale = 1
-		self._portrait_widgets.portrait_static.style.texture_1.size = { 0, 0 }
-		self._default_widgets.default_static.style.character_portrait.texture_size = { 86*0.55, 108*0.55 }
-		self._default_widgets.default_static.style.character_portrait.offset = { -80, -32, 1 }
+		mod:pcall(function()
+			-- self._portrait_widgets.portrait_static.content.scale = 1
+			self._portrait_widgets.portrait_static.style.texture_1.size = { 0, 0 }
+			self._default_widgets.default_static.style.character_portrait.texture_size = { 86*0.55, 108*0.55 }
+			self._default_widgets.default_static.style.character_portrait.offset = { -105, -32, 1 }
 
-		local portrait_left = mod:get(mod.SETTING_NAMES.PARTY_UI_ORIENTATION) == mod.ORIENTATIONS.VERTICAL
-		if portrait_left then
-			self._default_widgets.default_static.style.character_portrait.offset = { -180, -80, 1 }
-		end
+			self._default_widgets.default_dynamic.style.portrait_icon.size = { 86*0.55, 108*0.55 }
+			self._default_widgets.default_dynamic.style.portrait_icon.offset = { -105, -32, 10 }
 
-		self._default_widgets.default_dynamic.style.portrait_icon.size = { 86*0.55, 108*0.55 }
-		self._default_widgets.default_dynamic.style.portrait_icon.offset = { -180, -80, 10 }
+			self._default_widgets.default_dynamic.style.connecting_icon.offset = { -25, -70, 20 }
 
-		self._default_widgets.default_dynamic.style.connecting_icon.offset = { -25, -70, 20 }
+			mod.others_items_offsets = mod.others_items_offsets_horizontal_align
 
-		-- self._dirty = true
+			local portrait_left = mod:get(mod.SETTING_NAMES.PARTY_UI_ORIENTATION) == mod.ORIENTATIONS.VERTICAL
+			if portrait_left then
+				self._default_widgets.default_static.style.character_portrait.offset = { -180, -80, 1 }
+				self._default_widgets.default_dynamic.style.portrait_icon.offset = { -180, -80, 10 }
+				mod.others_items_offsets = mod.others_items_offsets_vertical_align
+			end
 
-		local default_static_style = self._default_widgets.default_static.style
-		local player_name_offset_x = -20
-		local player_name_offset_y = -85
+			local default_static_style = self._default_widgets.default_static.style
+			local player_name_offset_x = -115 + health_bar_size[1]/2
+			local player_name_offset_y = -94
+			default_static_style.player_name.horizontal_alignment = "center"
+			default_static_style.player_name_shadow.horizontal_alignment = "center"
 
-		if portrait_left then
-			player_name_offset_x = -117
-			player_name_offset_y = -94
-		end
-		default_static_style.player_name.offset[1] = player_name_offset_x
-		default_static_style.player_name_shadow.offset[1] = player_name_offset_x+1
+			if portrait_left then
+				default_static_style.player_name.horizontal_alignment = "left"
+				default_static_style.player_name_shadow.horizontal_alignment = "left"
+				player_name_offset_x = -117
+				player_name_offset_y = -94
+			end
+			default_static_style.player_name.offset[1] = player_name_offset_x
+			default_static_style.player_name_shadow.offset[1] = player_name_offset_x+1
 
-		default_static_style.player_name.offset[2] = player_name_offset_y
-		default_static_style.player_name_shadow.offset[2] = player_name_offset_y-1
+			default_static_style.player_name.offset[2] = player_name_offset_y
+			default_static_style.player_name_shadow.offset[2] = player_name_offset_y-1
 
-		default_static_style.player_level.offset[1] = -55
-		default_static_style.player_level.offset[2] = -15
+			default_static_style.player_level.offset[1] = -55
+			default_static_style.player_level.offset[2] = -15
 
-		-- default_static_style.player_level.offset = { 0,0,1 }
-		-- self._default_widgets.default_static.content.player_level = "100"
-		self._portrait_widgets.portrait_static.content.level = ""
+			self._portrait_widgets.portrait_static.content.level = ""
 
-		-- self._default_widgets.default_static.content.player_name = "Big McLarge Huge"
+			-- self._default_widgets.default_static.content.player_name = "Big McLarge Huge"
+		end)
 	else
 		self:set_position(0, 0)
 	end
 
 	-- DEBUG
-	-- if debug_favs then
+	if debug_favs then
 		self:set_visible(true)
 		self._dirty = true
-	-- end
+	end
 end
 
 mod:hook("UnitFramesHandler.update", function(func, self, dt, t, ignore_own_player)
@@ -474,7 +463,11 @@ mod:hook("UnitFramesHandler.update", function(func, self, dt, t, ignore_own_play
 			if mod:get(mod.SETTING_NAMES.PARTY_UI_ORIENTATION) == mod.ORIENTATIONS.VERTICAL then
 				unit_frame.widget:set_position(205, 160+(i-1)*110)
 			else
-				unit_frame.widget:set_position(205+(i-1)*200, 160)
+				local scale = 1
+				if mod:get(mod.SETTING_NAMES.HP_BAR_SIZE_METHOD) ~= mod.HP_BAR_SIZE_METHODS.DEFAULT then
+					scale = mod:get(mod.SETTING_NAMES.HP_BAR_SIZE_SCALE_BY) / 100
+				end
+				unit_frame.widget:set_position(150+(i-1)*145+((i-1)*105*scale), 150)
 			end
 
 			i = i + 1
@@ -647,7 +640,7 @@ mod:hook("EquipmentUI.draw", function (func, self, dt)
 	if not mod.custom_player_widget then
 		local health_bar_size = mod:get_player_hp_bar_size()
 
-		mod.player_offset_x = -health_bar_size[1]/2
+		mod.player_offset_x = -health_bar_size[1]/2 + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET)
 
 		mod.custom_player_widget = UIWidget.init(mod:get_custom_player_widget_def(health_bar_size))
 	end
@@ -697,8 +690,8 @@ mod:hook("EquipmentUI.draw", function (func, self, dt)
 
 	mod:pcall(function()
 		for _, widget in ipairs( self._ammo_widgets ) do
-			widget.offset[1] = 0
-			widget.offset[2] = 0
+			widget.offset[1] = mod:get(mod.SETTING_NAMES.AMMO_BAR_OFFSET_X)
+			widget.offset[2] = mod:get(mod.SETTING_NAMES.AMMO_BAR_OFFSET_Y)
 		end
 	end)
 
@@ -738,7 +731,7 @@ mod:hook("EquipmentUI.draw", function (func, self, dt)
 			if not widget.offset_original then
 				widget.offset_original = table.clone(widget.offset)
 			end
-			widget.offset[1] = widget.offset_original[1] - 140 - 70 + mod.global_offset_x
+			widget.offset[1] = widget.offset_original[1] - 140 - 70 + mod.global_offset_x + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET)
 			widget.offset[2] = widget.offset_original[2] + 68 + 5 + mod.global_offset_y
 		end
 	end)
@@ -760,9 +753,12 @@ mod:hook("BuffUI._align_widgets", function (func, self) -- luacheck: ignore func
 	for index, data in ipairs(self._active_buffs) do
 		local widget = data.widget
 		local widget_offset = widget.offset
-		local target_position = (index - 1)*horizontal_spacing + mod:get_player_hp_bar_size()[1]/2 + 20
+		local buffs_direction = mod:get(mod.SETTING_NAMES.BUFFS_DIRECTION) == mod.DIRECTIONS.RIGHT and 1 or -1
+		local target_position = buffs_direction*(index - 1)*horizontal_spacing + mod:get_player_hp_bar_size()[1]/2 + 20
 		data.target_position = target_position
 		data.target_distance = math.abs(widget_offset[1] - target_position)
+
+		widget.offset[1] = widget.offset[1] + mod:get(mod.SETTING_NAMES.BUFFS_OFFSET_X)
 
 		widget.offset[2] = -8
 
@@ -819,11 +815,25 @@ mod:hook("BuffUI._update_pivot_alignment", function (func, self, dt) -- luacheck
 end)
 
 mod:hook("BuffUI.draw", function(func, self, dt)
-	local player_hp_bar_size = mod:get_player_hp_bar_size()
-	if mod.do_reload or not tablex.deepcompare(self._mod_player_health_bar_size_cached, player_hp_bar_size) then
-		self._mod_player_health_bar_size_cached = player_hp_bar_size
-		self:_align_widgets()
-	end
+	mod:pcall(function()
+		local buffs_direction = mod:get(mod.SETTING_NAMES.BUFFS_DIRECTION)
+		if self._mod_cached_buffs_direction ~= buffs_direction then
+			self._mod_cached_buffs_direction = buffs_direction
+			self:_align_widgets()
+			self:_on_resolution_modified()
+		end
+		local buffs_offset_x = mod:get(mod.SETTING_NAMES.BUFFS_OFFSET_X)
+		if self._mod_cached_buffs_offset_x ~= buffs_offset_x then
+			self._mod_cached_buffs_offset_x = buffs_offset_x
+			self.ui_scenegraph.pivot.local_position[1] = buffs_offset_x
+			self:_on_resolution_modified()
+		end
+		local player_hp_bar_size = mod:get_player_hp_bar_size()
+		if mod.do_reload or not tablex.deepcompare(self._mod_player_health_bar_size_cached, player_hp_bar_size) then
+			self._mod_player_health_bar_size_cached = player_hp_bar_size
+			self:_align_widgets()
+		end
+	end)
 	return func(self, dt)
 end)
 
@@ -868,7 +878,7 @@ mod:hook("AbilityUI.draw", function (func, self, dt) -- luacheck: ignore func
 		self._widgets[1].style.ability_effect_top_left.offset[2] = skull_offsets[2] - mod.ability_ui_offset_y
 	end)
 
-	self._widgets[1].offset[1]= -1
+	self._widgets[1].offset[1]= -1 + mod.player_offset_x + player_health_bar_size[1]/2
 	self._widgets[1].offset[2]= 56 + mod.global_offset_y + mod.ability_ui_offset_y + mod.player_offset_y
 	self._widgets[1].style.ability_bar_highlight.texture_size[1] = player_health_bar_size[1]*1.09
 	self._widgets[1].style.ability_bar_highlight.texture_size[2] = 50
@@ -946,10 +956,8 @@ mod.on_enabled = function(is_first_call) -- luacheck: ignore is_first_call
 end
 
 mod.on_setting_changed = function(setting_name)
-	mod:echo(setting_name)
-
-	if setting_name == mod.SETTING_NAMES.HP_BAR_SIZE_METHOD then
-
+	if setting_name == mod.SETTING_NAMES.PLAYER_UI_OFFSET then
+		mod.do_reload = true
 	end
 end
 
@@ -958,7 +966,7 @@ mod.do_reload = true
 local mod_data = {
 	name = mod:localize("mod_name"),
 	description = mod:localize("mod_description"),
-	is_togglable = true,
+	is_togglable = false,
 }
 
 mod.SETTING_NAMES = {
@@ -967,6 +975,10 @@ mod.SETTING_NAMES = {
     HP_BAR_SIZE_SCALE_BY = "event_horde_size",
     PARTY_UI_ORIENTATION = "party_ui_orientation",
     PLAYER_UI_OFFSET = "player_ui_offset",
+    AMMO_BAR_OFFSET_X = "ammo_bar_offset_x",
+    AMMO_BAR_OFFSET_Y = "ammo_bar_offset_y",
+    BUFFS_DIRECTION = "buffs_direction",
+    BUFFS_OFFSET_X = "buffs_offset_x",
 }
 
 mod.CUSTOM_HUD_METHODS = {
@@ -984,6 +996,11 @@ mod.HP_BAR_SIZE_METHODS = {
 mod.ORIENTATIONS = {
 	HORIZONTAL = 1,
 	VERTICAL = 2,
+}
+
+mod.DIRECTIONS = {
+	RIGHT = 1,
+	LEFT = 2,
 }
 
 mod_data.options_widgets = {
@@ -1045,6 +1062,48 @@ mod_data.options_widgets = {
 				["widget_type"] = "numeric",
 				["text"] = mod:localize("player_ui_offset"),
 				["tooltip"] = mod:localize("player_ui_offset_tooltip"),
+				["range"] = {-2000, 2000},
+				["unit_text"] = "px",
+			    ["default_value"] = 0,
+			},
+			{
+				["show_widget_condition"] = {mod.CUSTOM_HUD_METHODS.CUSTOM},
+				["setting_name"] = mod.SETTING_NAMES.AMMO_BAR_OFFSET_X,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("ammo_bar_offset_x"),
+				["tooltip"] = mod:localize("ammo_bar_offset_x_tooltip"),
+				["range"] = {-2000, 2000},
+				["unit_text"] = "px",
+			    ["default_value"] = 0,
+			},
+			{
+				["show_widget_condition"] = {mod.CUSTOM_HUD_METHODS.CUSTOM},
+				["setting_name"] = mod.SETTING_NAMES.AMMO_BAR_OFFSET_Y,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("ammo_bar_offset_y"),
+				["tooltip"] = mod:localize("ammo_bar_offset_y_tooltip"),
+				["range"] = {-2000, 2000},
+				["unit_text"] = "px",
+			    ["default_value"] = 0,
+			},
+			{
+				["show_widget_condition"] = {mod.CUSTOM_HUD_METHODS.CUSTOM},
+				["setting_name"] = mod.SETTING_NAMES.BUFFS_DIRECTION,
+				["widget_type"] = "dropdown",
+				["text"] = mod:localize("buffs_direction"),
+				["tooltip"] = mod:localize("buffs_direction_tooltip"),
+				["options"] = {
+					{text =  mod:localize("buffs_direction_right"), value = mod.DIRECTIONS.RIGHT},
+					{text =  mod:localize("buffs_direction_left"), value = mod.DIRECTIONS.LEFT},
+				},
+				["default_value"] = mod.ORIENTATIONS.RIGHT,
+			},
+			{
+				["show_widget_condition"] = {mod.CUSTOM_HUD_METHODS.CUSTOM},
+				["setting_name"] = mod.SETTING_NAMES.BUFFS_OFFSET_X,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("buffs_offset_x"),
+				["tooltip"] = mod:localize("buffs_offset_x_tooltip"),
 				["range"] = {-2000, 2000},
 				["unit_text"] = "px",
 			    ["default_value"] = 0,

@@ -15,7 +15,7 @@ return {
 		en = "Default"
 	},
 	custom_hud_method_v1 = {
-		en = "V1-like"
+		en = "V1-like(MIA)"
 	},
 	custom_hud_method_custom = {
 		en = "Customize"
@@ -74,6 +74,18 @@ return {
 	},
 	ammo_bar_offset_y_tooltip = {
 		en = "Offset the ammo bar on the y axis."
+	},
+	buffs_direction = {
+		en = "Buffs Flow Direction"
+	},
+	buffs_direction_tooltip = {
+		en = "Direction in which buffs get positioned."
+	},
+	buffs_direction_left = {
+		en = "Left"
+	},
+	buffs_direction_right = {
+		en = "Right"
 	},
 	buffs_offset_x = {
 		en = "Buffs Offset X"

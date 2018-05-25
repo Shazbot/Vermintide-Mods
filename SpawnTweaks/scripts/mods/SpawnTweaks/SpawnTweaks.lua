@@ -117,10 +117,7 @@ mod:hook("HordeSpawner.compose_horde_spawn_list", function (func, self, composit
 		local result = original_random_interval(numbers)
 		if result then
 			local horde_size_ratio = mod:get(mod.SETTING_NAMES.HORDE_SIZE) / 100
-			mod:echo(horde_size_ratio)
-			mod:echo(result)
 			result = math.round(result * horde_size_ratio)
-			mod:echo(result)
 
 			-- so in compose_horde_spawn_list we have "for start,start+result,1 do" which will run once for result 0
 			-- and as a result we get 1 slave in every horde

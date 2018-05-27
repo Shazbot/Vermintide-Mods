@@ -634,7 +634,7 @@ UITooltipPasses.advanced_input_helper_favorite = {
 		local total_height = 0
 		position[3] = start_layer - 6
 
-		if #pass_data.items == 2 and item ~= pass_data.items[1] then
+		if (#pass_data.items == 2 or #pass_data.items == 3) and item ~= pass_data.items[1] then
 			return 0
 		end
 
@@ -677,7 +677,6 @@ UITooltipPasses.advanced_input_helper_favorite = {
 			local text_height = -1 * get_text_height(ui_renderer, text_size, text_style, content, text, ui_style_global)
 			total_height = total_height + text_height
 			text_size[2] = text_height
-			-- pprint(text_size)
 			local frame_size = data.frame_size
 			local frame_pass_data = data.frame_pass_data
 			local frame_pass_definition = data.frame_pass_definition
@@ -814,7 +813,7 @@ UITooltipPasses.advanced_input_helper_junk = {
 		local total_height = 0
 		position[3] = start_layer - 6
 
-		if #pass_data.items == 2 and item ~= pass_data.items[1] then
+		if (#pass_data.items == 2 or #pass_data.items == 3) and item ~= pass_data.items[1] then
 			return 0
 		end
 

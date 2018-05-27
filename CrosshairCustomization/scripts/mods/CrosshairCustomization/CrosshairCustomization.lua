@@ -160,6 +160,10 @@ local widget_names = pl.List{
 local function change_crosshair_size(crosshair_ui)
 	local scale_by = mod:get(SETTING_NAMES.ENLARGE) / 100
 
+	if crosshair_ui.crosshair_style == "circle" then
+		scale_by = 1
+	end
+
 	widget_names:foreach(function(widget_name)
 		local widget = crosshair_ui.ui_scenegraph[widget_name]
 		if widget then
@@ -180,23 +184,21 @@ end
 
 --- Change crosshair color, run before every of the crosshair_ui draw functions.
 local function change_crosshair_color(crosshair_ui)
-	mod:pcall(function()
-		local color = get_color()
+	local color = get_color()
 
-		crosshair_ui.crosshair_projectile.style.color = color
-		crosshair_ui.crosshair_shotgun.style.color = color
-		crosshair_ui.crosshair_dot.style.color = color
-		crosshair_ui.crosshair_line.style.color = color
-		crosshair_ui.crosshair_arrow.style.color = color
-		crosshair_ui.crosshair_circle.style.color = color
+	crosshair_ui.crosshair_projectile.style.color = color
+	crosshair_ui.crosshair_shotgun.style.color = color
+	crosshair_ui.crosshair_dot.style.color = color
+	crosshair_ui.crosshair_line.style.color = color
+	crosshair_ui.crosshair_arrow.style.color = color
+	crosshair_ui.crosshair_circle.style.color = color
 
-		if not crosshair_ui.hit_marker_animations[1] then
-			for _,hit_marker in ipairs(crosshair_ui.hit_markers) do
-			  hit_marker.style.rotating_texture.color = table.clone(color)
-			  hit_marker.style.rotating_texture.color[1] = 0
-			end
+	if not crosshair_ui.hit_marker_animations[1] then
+		for _,hit_marker in ipairs(crosshair_ui.hit_markers) do
+		  hit_marker.style.rotating_texture.color = table.clone(color)
+		  hit_marker.style.rotating_texture.color[1] = 0
 		end
-	end)
+	end
 end
 
 --- Change color of hit markers.
@@ -249,6 +251,7 @@ end
 
 local function draw_crosshair_prehook(crosshair_ui)
 	mod:pcall(function()
+		crosshair_ui._mod_last_crosshair_style = crosshair_ui.crosshair_style
 		-- simulate_hit(crosshair_ui)
 		change_crosshair_size(crosshair_ui)
 		change_crosshair_color(crosshair_ui)
@@ -256,12 +259,22 @@ local function draw_crosshair_prehook(crosshair_ui)
 end
 
 mod:hook("CrosshairUI.draw_circle_style_crosshair", function(func, self, ...)
+	if self._mod_last_crosshair_style ~= self.crosshair_style then
+		self._mod_last_crosshair_style = self.crosshair_style
+		draw_crosshair_prehook(self)
+		return
+	end
 	draw_crosshair_prehook(self)
 	return func(self, ...)
 end)
 
 --- No crosshair at all with a melee weapon.
 mod:hook("CrosshairUI.draw_dot_style_crosshair", function(func, self, ...)
+	if self._mod_last_crosshair_style == "circle" then
+		self._mod_last_crosshair_style = self.crosshair_style
+		draw_crosshair_prehook(self)
+		return
+	end
 	draw_crosshair_prehook(self)
 
 	if mod:is_enabled()

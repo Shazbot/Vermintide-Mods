@@ -59,5 +59,4 @@ return {
 	no_boss_door_tooltip = {
 		en = "Disable boss barriers."
 	},
-
 }

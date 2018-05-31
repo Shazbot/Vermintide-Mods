@@ -1,137 +1,9 @@
-local mod = get_mod("CrosshairCustomization")
+local mod = get_mod("CrosshairCustomization") -- luacheck: ignore get_mod
 
 -- luacheck: globals UIRenderer table ScriptUnit
 
 local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
-
---- Enums ---
-local COLOR_INDEX = {
-    DEFAULT = 1,
-    RED = 2,
-    GREEN = 3,
-    CUSTOM = 4
-}
-
-local COLORS = {
-	[COLOR_INDEX.DEFAULT] = {255, 255, 255, 255},
-	[COLOR_INDEX.RED] = {255, 255, 0, 0},
-	[COLOR_INDEX.GREEN] = {255, 0, 255, 0},
-	DEFAULT = {255, 255, 255, 255},
-	RED = {255, 255, 0, 0},
-	GREEN = {255, 0, 255, 0},
-}
-
-local SETTING_NAMES = {
-    COLOR = "color",
-    ENLARGE = "enlarge",
-    DOT = "dot",
-    DOT_TOGGLE_HOTKEY = "dot_toggle_hotkey",
-    NO_MELEE_DOT = "no_melee_dot",
-    CUSTOM_RED = "custom_red",
-    CUSTOM_GREEN = "custom_green",
-    CUSTOM_BLUE = "custom_blue",
-    NO_RANGE_MARKERS = "no_range_markers",
-    NO_LINE_MARKERS = "no_line_markers"
-}
----! Enums ---
-
-local mod_data = {
-	name = mod:localize("mod_name"),
-	description = mod:localize("mod_description"),
-	is_togglable = true,
-}
-mod_data.options_widgets = {
-   {
-		["setting_name"] = SETTING_NAMES.COLOR,
-		["widget_type"] = "dropdown",
-		["text"] = mod:localize("color"),
-		["tooltip"] = mod:localize("color_tooltip"),
-		["options"] = {
-				{text = mod:localize("default"), value = COLOR_INDEX.DEFAULT},
-				{text = mod:localize("red"), value = COLOR_INDEX.RED},
-				{text = mod:localize("green"), value = COLOR_INDEX.GREEN},
-				{text = mod:localize("custom"), value = COLOR_INDEX.CUSTOM},
-	    },
-		["default_value"] = COLOR_INDEX.DEFAULT,
-		["sub_widgets"] = {
-		    {
-				["show_widget_condition"] = { COLOR_INDEX.CUSTOM },
-				["setting_name"] = SETTING_NAMES.CUSTOM_RED,
-				["widget_type"] = "numeric",
-				["text"] = mod:localize("red"),
-				["tooltip"] = mod:localize("custom_red_tooltip"),
-				["range"] = {0, 255},
-				["default_value"] = 255,
-			},
-			{
-				["show_widget_condition"] = { COLOR_INDEX.CUSTOM },
-				["setting_name"] = SETTING_NAMES.CUSTOM_GREEN,
-				["widget_type"] = "numeric",
-				["text"] = mod:localize("green"),
-				["tooltip"] = mod:localize("custom_green_tooltip"),
-				["range"] = {0, 255},
-				["default_value"] = 255,
-			},
-			{
-				["show_widget_condition"] = { COLOR_INDEX.CUSTOM },
-				["setting_name"] = SETTING_NAMES.CUSTOM_BLUE,
-				["widget_type"] = "numeric",
-				["text"] = mod:localize("blue"),
-				["tooltip"] = mod:localize("custom_blue_tooltip"),
-				["range"] = {0, 255},
-				["default_value"] = 255,
-			},
-		},
-	},
-	{
-		["setting_name"] = SETTING_NAMES.ENLARGE,
-		["widget_type"] = "numeric",
-		["text"] = mod:localize("enlarge"),
-		["tooltip"] = mod:localize("enlarge_tooltip"),
-		["range"] = {0, 300},
-		["unit_text"] = "%",
-	    ["default_value"] = 100,
-	},
-	{
-		["setting_name"] = SETTING_NAMES.DOT,
-		["widget_type"] = "checkbox",
-		["text"] = mod:localize("dot"),
-		["tooltip"] = mod:localize("dot_tooltip"),
-		["default_value"] = false,
-	},
-	{
-		["setting_name"] = SETTING_NAMES.DOT_TOGGLE_HOTKEY,
-		["widget_type"] = "keybind",
-		["text"] = mod:localize("dot_toggle_hotkey"),
-		["tooltip"] = mod:localize("dot_toggle_hotkey_tooltip"),
-		["default_value"] = {},
-		["action"] = "dot_toggle"
-	},
-	{
-		["setting_name"] = SETTING_NAMES.NO_MELEE_DOT,
-		["widget_type"] = "checkbox",
-		["text"] = mod:localize("no_melee_dot"),
-		["tooltip"] = mod:localize("no_melee_dot_tooltip"),
-		["default_value"] = false
-	},
-	{
-		["setting_name"] = SETTING_NAMES.NO_LINE_MARKERS,
-		["widget_type"] = "checkbox",
-		["text"] = mod:localize("no_line_markers"),
-		["tooltip"] = mod:localize("no_line_markers_tooltip"),
-		["default_value"] = false
-	},
-	{
-		["setting_name"] = SETTING_NAMES.NO_RANGE_MARKERS,
-		["widget_type"] = "checkbox",
-		["text"] = mod:localize("no_range_markers"),
-		["tooltip"] = mod:localize("no_range_markers_tooltip"),
-		["default_value"] = false
-	},
-}
-
-mod:initialize_data(mod_data)
 
 --- Callbacks ---
 mod.on_disabled = function(is_first_call) -- luacheck: ignore is_first_call
@@ -144,8 +16,8 @@ end
 
 --- Mod Logic ---
 local function get_color()
-	local color_index = mod:is_enabled() and mod:get(SETTING_NAMES.COLOR) or COLOR_INDEX.DEFAULT
-	local color = COLORS[color_index] or { 255, mod:get(SETTING_NAMES.CUSTOM_RED), mod:get(SETTING_NAMES.CUSTOM_GREEN), mod:get(SETTING_NAMES.CUSTOM_BLUE) }
+	local color_index = mod:is_enabled() and mod:get(mod.SETTING_NAMES.COLOR) or mod.COLOR_INDEX.DEFAULT
+	local color = mod.COLORS[color_index] or { 255, mod:get(mod.SETTING_NAMES.CUSTOM_RED), mod:get(mod.SETTING_NAMES.CUSTOM_GREEN), mod:get(mod.SETTING_NAMES.CUSTOM_BLUE) }
 	return color
 end
 
@@ -158,7 +30,7 @@ local widget_names = pl.List{
 	"crosshair_circle",
 }
 local function change_crosshair_size(crosshair_ui)
-	local scale_by = mod:get(SETTING_NAMES.ENLARGE) / 100
+	local scale_by = mod:get(mod.SETTING_NAMES.ENLARGE) / 100
 
 	if crosshair_ui.crosshair_style == "circle" then
 		scale_by = 1
@@ -278,7 +150,7 @@ mod:hook("CrosshairUI.draw_dot_style_crosshair", function(func, self, ...)
 	draw_crosshair_prehook(self)
 
 	if mod:is_enabled()
-	and mod:get(SETTING_NAMES.NO_MELEE_DOT)
+	and mod:get(mod.SETTING_NAMES.NO_MELEE_DOT)
 	and self.crosshair_style
 	and self.crosshair_style == "dot" then
 		return
@@ -290,7 +162,7 @@ end)
 local function dot_only_prehook(func, self, ...)
 	draw_crosshair_prehook(self)
 
-	if mod:is_enabled() and mod:get(SETTING_NAMES.DOT) then
+	if mod:is_enabled() and mod:get(mod.SETTING_NAMES.DOT) then
 		return self:draw_dot_style_crosshair(...)
 	end
 
@@ -304,16 +176,16 @@ mod:hook("CrosshairUI.draw_arrows_style_crosshair", dot_only_prehook)
 
 --- Hide headshot markers.
 mod:hook("CrosshairUI.draw_projectile_style_crosshair", function (func, self, ui_renderer, pitch_percentage, yaw_percentage)
-	if mod:is_enabled() and mod:get(SETTING_NAMES.DOT) then
+	if mod:is_enabled() and mod:get(mod.SETTING_NAMES.DOT) then
 		return self:draw_dot_style_crosshair(ui_renderer, pitch_percentage, yaw_percentage)
 	end
 
 	local original_draw_widget = UIRenderer.draw_widget
 	UIRenderer.draw_widget = function (ui_renderer, ui_widget)
-		if mod:get(SETTING_NAMES.NO_RANGE_MARKERS) and ui_widget == self.crosshair_projectile then
+		if mod:get(mod.SETTING_NAMES.NO_RANGE_MARKERS) and ui_widget == self.crosshair_projectile then
 			return
 		end
-		if mod:get(SETTING_NAMES.NO_LINE_MARKERS) and ui_widget == self.crosshair_line then
+		if mod:get(mod.SETTING_NAMES.NO_LINE_MARKERS) and ui_widget == self.crosshair_line then
 			return
 		end
 		return original_draw_widget(ui_renderer, ui_widget)
@@ -328,6 +200,6 @@ end)
 --- Actions ---
 --- Dot only on_toggle.
 mod.dot_toggle = function()
-	local current_dot_only = mod:get(SETTING_NAMES.DOT)
-	mod:set(SETTING_NAMES.DOT, not current_dot_only, true)
+	local current_dot_only = mod:get(mod.SETTING_NAMES.DOT)
+	mod:set(mod.SETTING_NAMES.DOT, not current_dot_only, true)
 end

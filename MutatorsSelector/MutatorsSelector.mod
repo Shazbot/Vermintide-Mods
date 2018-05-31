@@ -1,8 +1,11 @@
 return {
 	run = function()
-		local mod = new_mod("MutatorsSelector")
-		mod:localization("localization/MutatorsSelector")
-		mod:initialize("scripts/mods/MutatorsSelector/MutatorsSelector")
+		local mod_resources = {
+			mod_script = "scripts/mods/MutatorsSelector/MutatorsSelector",
+			mod_data = "scripts/mods/MutatorsSelector/MutatorsSelector_data",
+			mod_localization = "scripts/mods/MutatorsSelector/MutatorsSelector_localization"
+		}
+		new_mod("MutatorsSelector", mod_resources)
 	end,
 	packages = {
 		"resource_packages/MutatorsSelector/MutatorsSelector"

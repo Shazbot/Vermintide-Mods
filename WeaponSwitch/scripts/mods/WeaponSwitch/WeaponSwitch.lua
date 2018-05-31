@@ -1,15 +1,7 @@
-local mod = get_mod("WeaponSwitch")
+local mod = get_mod("WeaponSwitch") -- luacheck: ignore get_mod
 
 -- luacheck: globals CharacterStateHelper ScriptUnit Profiler Managers DamageProfileTemplates BackendUtils
 -- luacheck: globals Development ActionUtils table InventorySettings
-
-local mod_data = {
-	name = mod:localize("mod_name"),
-	description = mod:localize("mod_description"),
-	is_togglable = true,
-}
-
-mod:initialize_data(mod_data)
 
 --- Callbacks ---
 mod.on_disabled = function(is_first_call) -- luacheck: ignore is_first_call

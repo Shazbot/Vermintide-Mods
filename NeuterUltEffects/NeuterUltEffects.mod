@@ -1,8 +1,11 @@
 return {
 	run = function()
-		local mod = new_mod("NeuterUltEffects")
-		mod:localization("localization/NeuterUltEffects")
-		mod:initialize("scripts/mods/NeuterUltEffects/NeuterUltEffects")
+		local mod_resources = {
+			mod_script = "scripts/mods/NeuterUltEffects/NeuterUltEffects",
+			mod_data = "scripts/mods/NeuterUltEffects/NeuterUltEffects_data",
+			mod_localization = "scripts/mods/NeuterUltEffects/NeuterUltEffects_localization"
+		}
+		new_mod("NeuterUltEffects", mod_resources)
 	end,
 	packages = {
 		"resource_packages/NeuterUltEffects/NeuterUltEffects"

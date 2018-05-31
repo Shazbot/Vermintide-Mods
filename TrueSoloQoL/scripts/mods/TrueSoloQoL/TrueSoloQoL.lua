@@ -1,14 +1,6 @@
-local mod = get_mod("TrueSoloQoL")
+local mod = get_mod("TrueSoloQoL") -- luacheck: ignore get_mod
 
 -- luacheck: globals LevelTransitionHandler
-
-local mod_data = {
-	name = mod:localize("mod_name"),
-	description = mod:localize("mod_description"),
-	is_togglable = true,
-}
-
-mod:initialize_data(mod_data)
 
 --- Callbacks ---
 mod.on_disabled = function(is_first_call) -- luacheck: ignore is_first_call

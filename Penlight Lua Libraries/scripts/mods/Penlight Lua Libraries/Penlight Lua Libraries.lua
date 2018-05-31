@@ -1,10 +1,5 @@
 local mod = get_mod("Penlight Lua Libraries")
 
-local mod_data = {}
-mod_data.is_togglable = false
-
-mod:initialize_data(mod_data)
-
 if not rawget(_G, "_penlight_require_hook") then
 	rawset(_G, "_penlight_require_hook", true)
 	local original_require = _G.require

@@ -1,16 +1,8 @@
-local mod = get_mod("OutlinePriorityFix")
+local mod = get_mod("OutlinePriorityFix") -- luacheck: ignore get_mod
 
 --- Using walterr's Vermintide 1 mod as the base. Credits and gratitude to him.
 
 -- luacheck: globals OutlineSettings Color Managers script_data ScriptUnit
-
-local mod_data = {
-	name = mod:localize("mod_name"),
-	description = mod:localize("mod_description"),
-	is_togglable = true,
-}
-
-mod:initialize_data(mod_data)
 
 --- Callbacks ---
 mod.on_disabled = function(is_first_call) -- luacheck: ignore is_first_call

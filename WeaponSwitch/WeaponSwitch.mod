@@ -1,8 +1,11 @@
 return {
 	run = function()
-		local mod = new_mod("WeaponSwitch")
-		mod:localization("localization/WeaponSwitch")
-		mod:initialize("scripts/mods/WeaponSwitch/WeaponSwitch")
+		local mod_resources = {
+			mod_script = "scripts/mods/WeaponSwitch/WeaponSwitch",
+			mod_data = "scripts/mods/WeaponSwitch/WeaponSwitch_data",
+			mod_localization = "scripts/mods/WeaponSwitch/WeaponSwitch_localization"
+		}
+		new_mod("WeaponSwitch", mod_resources)
 	end,
 	packages = {
 		"resource_packages/WeaponSwitch/WeaponSwitch"

@@ -3,14 +3,6 @@ local mod = get_mod("WeaponKillCounter")
 -- luacheck: globals Json UITooltipPasses UIFontByResolution UIGetFontHeight UIPasses RESOLUTION_LOOKUP Localize
 -- luacheck: globals UIRenderer ScriptUnit Managers DamageDataIndex AiUtils Colors
 
-local mod_data = {
-	name = mod:localize("mod_name"),
-	description = mod:localize("mod_description"),
-	is_togglable = true,
-}
-
-mod:initialize_data(mod_data)
-
 mod.WEAPON_KILLS_SETTINGS_KEY = "weapon_kills"
 
 local weapon_kills_table = mod:get(mod.WEAPON_KILLS_SETTINGS_KEY) or {}

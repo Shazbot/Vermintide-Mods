@@ -1,16 +1,8 @@
-local mod = get_mod("NeuterUltEffects")
+local mod = get_mod("NeuterUltEffects") -- luacheck: ignore get_mod
 
 -- luacheck: globals BuffFunctionTemplates MOOD_BLACKBOARD
 
 local pl = require'pl.import_into'()
-
-local mod_data = {
-	name = mod:localize("mod_name"),
-	description = mod:localize("mod_description"),
-	is_togglable = true,
-}
-
-mod:initialize_data(mod_data)
 
 --- Callbacks ---
 mod.on_disabled = function(is_first_call) -- luacheck: ignore is_first_call

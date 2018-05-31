@@ -7,7 +7,6 @@ package = [
 ]
 
 lua = [
-	"localization/*"
 	"scripts/mods/CustomHUD/*"
 ]
 

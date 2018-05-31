@@ -1,14 +1,6 @@
-local mod = get_mod("PositiveReinforcementTweaks")
+local mod = get_mod("PositiveReinforcementTweaks") -- luacheck: ignore get_mod
 
 -- luacheck: globals UISceneGraph UILayer Colors table
-
-local mod_data = {
-	name = mod:localize("mod_name"),
-	description = mod:localize("mod_description"),
-	is_togglable = false,
-}
-
-mod:initialize_data(mod_data)
 
 local pl = require'pl.import_into'()
 

@@ -93,5 +93,4 @@ return {
 	buffs_offset_x_tooltip = {
 		en = "Offset all the buffs on the x axis."
 	},
-
 }

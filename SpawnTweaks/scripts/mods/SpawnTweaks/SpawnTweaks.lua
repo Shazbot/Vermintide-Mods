@@ -1,6 +1,6 @@
 local mod = get_mod("SpawnTweaks") -- luacheck: ignore get_mod
 
--- luacheck: globals math ConflictUtils unpack table
+-- luacheck: globals math ConflictUtils unpack table BossSettings CurrentSpecialsSettings
 
 local tablex = require'pl.tablex'
 local stringx = require'pl.stringx'
@@ -47,12 +47,12 @@ mod:hook("HordeSpawner.compose_horde_spawn_list", function (func, self, composit
 end)
 
 --- Fix for an assert crash for missing next queued breed when downsizing hordes.
-mod:hook("HordeSpawner.spawn_unit", function (func, self, hidden_spawn, breed_name, goal_pos, horde, ...)
+mod:hook("HordeSpawner.spawn_unit", function (func, self, hidden_spawn, breed_name, ...)
 	if breed_name == nil then
 		return
 	end
 
-	return func(self, hidden_spawn, breed_name, goal_pos, horde, ...)
+	return func(self, hidden_spawn, breed_name, ...)
 end)
 
 --- Disable ambients.
@@ -130,11 +130,122 @@ mod:hook("ConflictDirector.spawn_queued_unit", function(func, self, breed, boxed
 	return func(self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, optional_data, group_data, unit_data)
 end)
 
+--- Specials cooldowns.
+mod:hook("SpecialsPacing.specials_by_slots", function(func, self, t, specials_settings, method_data, slots, spawn_queue)
+	local new_method_data = tablex.deepcopy(method_data)
+	new_method_data.spawn_cooldown = {
+		mod:get(mod.SETTING_NAMES.SPAWN_COOLDOWN_MIN),
+		mod:get(mod.SETTING_NAMES.SPAWN_COOLDOWN_MAX)
+	}
+
+	local original_specials_settings = tablex.deepcopy(CurrentSpecialsSettings)
+	CurrentSpecialsSettings.max_specials = mod:get(mod.SETTING_NAMES.MAX_SPECIALS)
+
+	func(self, t, specials_settings, new_method_data, slots, spawn_queue)
+
+	CurrentSpecialsSettings = original_specials_settings
+end)
+
+--- Specials spawn delay from start of the level.
+mod:hook("SpecialsPacing.setup_functions.specials_by_slots", function(func, t, slots, method_data)
+	local new_method_data = tablex.deepcopy(method_data)
+	new_method_data.after_safe_zone_delay = {
+		mod:get(mod.SETTING_NAMES.SAFE_ZONE_DELAY_MIN),
+		mod:get(mod.SETTING_NAMES.SAFE_ZONE_DELAY_MAX)
+	}
+	func(t, slots, new_method_data)
+end)
+
+--- Change max of same special.
+mod:hook("SpecialsPacing.select_breed_functions.get_random_breed", function(func, slots, breeds, method_data)
+	local new_method_data = tablex.deepcopy(method_data)
+	new_method_data.max_of_same = mod:get(mod.SETTING_NAMES.MAX_SAME_SPECIALS)
+	return func(slots, breeds, new_method_data)
+end)
+
+--- Double bosses.
+mod.bosses = {
+	"skaven_stormfiend",
+	"skaven_rat_ogre",
+	"chaos_troll",
+	"chaos_spawn"
+}
+mod:hook("TerrorEventMixer.run_functions.spawn", function (func, event, element, ...)
+	if not mod:get(mod.SETTING_NAMES.DOUBLE_BOSSES) then
+		return func(event, element, ...)
+	end
+
+	if stringx.count(event.name, "boss_event") > 0
+	  and stringx.count(event.name, "patrol") == 0 then
+		local new_element = tablex.deepcopy(element)
+		local bosses_no_duplicate = tablex.deepcopy(mod.bosses)
+		local duplicate_index = tablex.find(bosses_no_duplicate, element.breed_name)
+		if duplicate_index then
+			table.remove(bosses_no_duplicate, duplicate_index)
+		end
+		new_element.breed_name = bosses_no_duplicate[math.random(#bosses_no_duplicate)]
+		if event.data.group_data then
+			event.data.group_data.size = 2
+		end
+		func(event, new_element, ...)
+	end
+
+	return func(event, element, ...)
+end)
+
+--- Threat and intensity tweaking.
+mod:hook("ConflictDirector.calculate_threat_value", function(func, self)
+	func(self)
+
+	self.threat_value = self.threat_value * mod:get(mod.SETTING_NAMES.THREAT_MULTIPLIER)
+	local threat_value = self.threat_value
+
+	self.delay_horde = self.delay_horde_threat_value < threat_value
+	self.delay_mini_patrol = self.delay_mini_patrol_threat_value < threat_value
+	self.delay_specials = self.delay_specials_threat_value < threat_value
+end)
+
 --- Callbacks ---
 mod.on_disabled = function(is_first_call) -- luacheck: ignore is_first_call
 	mod:disable_all_hooks()
+
+	mod.on_setting_changed(mod.SETTING_NAMES.NO_EMPTY_EVENTS)
 end
 
 mod.on_enabled = function(is_first_call) -- luacheck: ignore is_first_call
 	mod:enable_all_hooks()
+
+	mod.on_setting_changed(mod.SETTING_NAMES.NO_EMPTY_EVENTS)
+end
+
+mod.update = function()
+	mod:pcall(function()
+		local boss_settings_backup = mod:persistent_table("backups").BossSettings
+		if BossSettings and not boss_settings_backup then
+			mod:persistent_table("backups").BossSettings = tablex.deepcopy(BossSettings)
+		end
+	end)
+end
+
+mod.no_empty_events = {
+	"event_boss",
+	-- "event_patrol"
+}
+
+mod.on_setting_changed = function(setting_name)
+	local boss_settings_backup = mod:persistent_table("backups").BossSettings
+	if setting_name == mod.SETTING_NAMES.NO_EMPTY_EVENTS and boss_settings_backup then
+		if mod:is_enabled() and mod:get(mod.SETTING_NAMES.NO_EMPTY_EVENTS) then
+			for _, boss_setting in pairs( BossSettings ) do
+				if boss_setting.boss_events and boss_setting.boss_events.events then
+					boss_setting.boss_events.events = mod.no_empty_events
+					boss_setting.boss_events.max_events_of_this_kind = {}
+				end
+			end
+		else
+			if mod:persistent_table("backups").BossSettings then
+				BossSettings = tablex.deepcopy(mod:persistent_table("backups").BossSettings)
+			end
+		end
+	end
 end

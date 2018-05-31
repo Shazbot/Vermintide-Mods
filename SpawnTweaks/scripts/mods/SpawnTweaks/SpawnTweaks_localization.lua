@@ -59,4 +59,58 @@ return {
 	no_boss_door_tooltip = {
 		en = "Disable boss barriers."
 	},
+	spawn_cooldown_min = {
+		en = "Min Cooldown For New Special"
+	},
+	spawn_cooldown_min_tooltip = {
+		en = "Minimal cooldown for a new special to spawn. Game randomly chooses between min and max."
+	},
+	spawn_cooldown_max = {
+		en = "Max Cooldown For New Special"
+	},
+	spawn_cooldown_max_tooltip = {
+		en = "Maximal cooldown for a new special to spawn. Game randomly chooses between min and max."
+	},
+	safe_zone_delay_min = {
+		en = "Min Delay After Leaving Safe Zone"
+	},
+	safe_zone_delay_min_tooltip = {
+		en = "Minimal delay after start of the map and when timed specials start to spawn."
+	},
+	safe_zone_delay_max = {
+		en = "Max Delay After Leaving Safe Zone"
+	},
+	safe_zone_delay_max_tooltip = {
+		en = "Maximal delay after start of the map and when timed specials start to spawn."
+	},
+	double_bosses = {
+		en = "Double Bosses"
+	},
+	double_bosses_tooltip = {
+		en = "Spawn 2 non-duplicate bosses instead of 1."
+	},
+	no_empty_events = {
+		en = "No Empty Boss Triggers"
+	},
+	no_empty_events_tooltip = {
+		en = "All boss map triggers will spawn bosses."
+	},
+	max_specials = {
+		en = "Max Specials"
+	},
+	max_specials_tooltip = {
+		en = "Maximum number of specials alive at the same time."
+	},
+	max_same_specials = {
+		en = "Max Of Same Special"
+	},
+	max_same_specials_tooltip = {
+		en = "Maximum number of duplicate specials alive at the same time."
+	},
+	threat_multiplier = {
+		en = "Threat Multiplier"
+	},
+	threat_multiplier_tooltip = {
+		en = "Decrease global threat level so the game increases spawn rates."
+	},
 }

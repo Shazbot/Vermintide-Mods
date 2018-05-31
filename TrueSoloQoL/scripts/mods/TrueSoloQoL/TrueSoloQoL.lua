@@ -1,6 +1,6 @@
 local mod = get_mod("TrueSoloQoL") -- luacheck: ignore get_mod
 
--- luacheck: globals LevelTransitionHandler
+-- luacheck: globals LevelTransitionHandler get_mod
 
 --- Callbacks ---
 mod.on_disabled = function(is_first_call) -- luacheck: ignore is_first_call
@@ -37,18 +37,18 @@ end)
 mod:hook("UnitFrameUI.update", function (func, self, ...)
 	mod:pcall(function()
 		if self._mod_stay_hidden then
-			self:set_visible(false)
+			self:set_visible(self.data.level_text ~= "BOT")
 		end
 	end)
 	func(self, ...)
 end)
 
 --- Hook the kill_bots function of Killbots and add UI hiding code after we run /killbots.
-local mod = get_mod("Killbots")
-if mod then
-	mod.original_kill_bots = mod.original_kill_bots or mod.kill_bots
-	mod.kill_bots = function(self)
-		mod:original_kill_bots()
+local killbots_mod = get_mod("Killbots")
+if killbots_mod then
+	killbots_mod.original_kill_bots = killbots_mod.original_kill_bots or killbots_mod.kill_bots
+	killbots_mod.kill_bots = function(self)
+		killbots_mod:original_kill_bots()
 		mod:pcall(function()
 			local unit_frames_handler = rawget(_G, "unit_frames_handler")
 			for _, unit_frame in ipairs( unit_frames_handler._unit_frames ) do

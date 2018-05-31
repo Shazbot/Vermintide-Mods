@@ -71,3 +71,12 @@ mod.spawn_pickup = function(self) -- luacheck: ignore self
 		)
 	mod:echo("Spawned: "..current_pickup_name)
 end
+
+--- Callbacks ---
+--- We don't use hooks, just so we don't get that warning message
+--- about missing on_enabled/on_disabled.
+mod.on_disabled = function(is_first_call) -- luacheck: ignore is_first_call
+end
+
+mod.on_enabled = function(is_first_call) -- luacheck: ignore is_first_call
+end

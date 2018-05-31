@@ -329,6 +329,11 @@ local function ufUI_update(self, dt, t, player_unit) -- luacheck: ignore dt t
 
 				-- self:set_dirty()
 			end
+
+			local is_bot = self.data.level_text == "BOT"
+			if self._mod_stay_hidden and self._is_visible == is_bot then
+				self:set_visible(not is_bot)
+			end
 			-- self:set_visible(true)
 			-- self:set_dirty()
 		end)
@@ -479,6 +484,12 @@ end)
 
 local did_once = false -- luacheck: ignore did_once
 mod:hook("UnitFrameUI.draw", function (func, self, dt) -- luacheck: ignore func
+
+	local is_bot = self.data.level_text == "BOT"
+	if self._mod_stay_hidden and (not self.data.level_text or not is_bot) then
+		return
+	end
+
 	if not self._is_visible then
 		return
 	end

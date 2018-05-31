@@ -204,7 +204,7 @@ function (func, t, unit, input_extension, inventory_extension, health_extension)
 			end
 		end
 
-		if not new_action then
+		if not item_template.actions[new_action] or not item_template.actions[new_action][new_sub_action] then
 			for action_name, sub_actions in pairs(item_template.actions) do
 				for sub_action_name, action_settings in pairs(sub_actions) do
 					if sub_action_name ~= "default" and action_settings.condition_func then

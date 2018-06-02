@@ -138,4 +138,22 @@ return {
 	horde_grunt_limit_tooltip = {
 		en = "Cutoff for number of trash alive that prevents a new wave or horde to start. Default is 60."
 	},
+	more_ambient_elites = {
+		en = "More Ambient Elites"
+	},
+	more_ambient_elites_tooltip = {
+		en = "Spawn more elite ambients instead of ambient trash."
+	},
+	ambients_multiplier = {
+		en = "Ambient Spawn Amount"
+	},
+	ambients_multiplier_tooltip = {
+		en = "Change amount of ambient spawns."
+	},
+	no_troll = {
+		en = "No Troll"
+	},
+	no_troll_tooltip = {
+		en = "Replace troll with another random boss."
+	},
 }

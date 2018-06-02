@@ -29,6 +29,9 @@ mod.SETTING_NAMES = {
 	HORDE_GRUNT_LIMIT = "horde_grunt_limit",
 	HORDE_FREQUENCY_MIN = "horde_frequency_min",
 	HORDE_FREQUENCY_MAX = "horde_frequency_max",
+	AMBIENTS_MULTIPLIER = "ambients_multiplier",
+	MORE_AMBIENT_ELITES = "more_ambient_elites",
+	NO_TROLL = "no_troll",
 }
 
 mod_data.options_widgets = {
@@ -93,6 +96,20 @@ mod_data.options_widgets = {
 		["default_value"] = false,
 	},
 	{
+		["setting_name"] = mod.SETTING_NAMES.DOUBLE_BOSSES,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("double_bosses"),
+		["tooltip"] = mod:localize("double_bosses_tooltip"),
+		["default_value"] = false,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.NO_TROLL,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("no_troll"),
+		["tooltip"] = mod:localize("no_troll_tooltip"),
+		["default_value"] = false,
+	},
+	{
 		["setting_name"] = mod.SETTING_NAMES.NO_BOSS_DOOR,
 		["widget_type"] = "checkbox",
 		["text"] = mod:localize("no_boss_door"),
@@ -136,13 +153,6 @@ mod_data.options_widgets = {
 		["default_value"] = 60,
 	},
 	{
-		["setting_name"] = mod.SETTING_NAMES.DOUBLE_BOSSES,
-		["widget_type"] = "checkbox",
-		["text"] = mod:localize("double_bosses"),
-		["tooltip"] = mod:localize("double_bosses_tooltip"),
-		["default_value"] = false,
-	},
-	{
 		["setting_name"] = mod.SETTING_NAMES.NO_EMPTY_EVENTS,
 		["widget_type"] = "checkbox",
 		["text"] = mod:localize("no_empty_events"),
@@ -179,7 +189,7 @@ mod_data.options_widgets = {
 		["widget_type"] = "numeric",
 		["text"] = mod:localize("horde_frequency_max"),
 		["tooltip"] = mod:localize("horde_frequency_max_tooltip"),
-		["range"] = {10, 200},
+		["range"] = {5, 200},
 		["unit_text"] = " sec",
 		["default_value"] = 100,
 	},
@@ -207,6 +217,22 @@ mod_data.options_widgets = {
 		["tooltip"] = mod:localize("horde_grunt_limit_tooltip"),
 		["range"] = {10, 240},
 		["default_value"] = 60,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.MORE_AMBIENT_ELITES,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("more_ambient_elites"),
+		["tooltip"] = mod:localize("more_ambient_elites_tooltip"),
+		["default_value"] = false,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.AMBIENTS_MULTIPLIER,
+		["widget_type"] = "numeric",
+		["text"] = mod:localize("ambients_multiplier"),
+		["tooltip"] = mod:localize("ambients_multiplier_tooltip"),
+		["range"] = {10, 1500},
+		["unit_text"] = "%",
+		["default_value"] = 100,
 	},
 }
 

@@ -3,6 +3,7 @@ local mod = get_mod("SpawnTweaks") -- luacheck: ignore get_mod
 -- luacheck: globals math ConflictUtils unpack table BossSettings CurrentSpecialsSettings
 -- luacheck: globals RecycleSettings CurrentPacing
 
+local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
 local stringx = require'pl.stringx'
 
@@ -165,30 +166,32 @@ mod:hook("SpecialsPacing.select_breed_functions.get_random_breed", function(func
 end)
 
 --- Double bosses.
-mod.bosses = {
+mod.bosses = pl.List{
 	"skaven_stormfiend",
 	"skaven_rat_ogre",
 	"chaos_troll",
 	"chaos_spawn"
 }
+mod.bosses_no_troll = mod.bosses:clone():remove_value("chaos_troll")
 mod:hook("TerrorEventMixer.run_functions.spawn", function (func, event, element, ...)
-	if not mod:get(mod.SETTING_NAMES.DOUBLE_BOSSES) then
-		return func(event, element, ...)
-	end
+	if stringx.count(event.name, "boss_event") > 0 and stringx.count(event.name, "patrol") == 0 then
+	  	if mod:get(mod.SETTING_NAMES.NO_TROLL) and element.breed_name == "chaos_troll" then
+	  		element.breed_name = mod.bosses_no_troll[math.random(#mod.bosses_no_troll)]
+	  	end
 
-	if stringx.count(event.name, "boss_event") > 0
-	  and stringx.count(event.name, "patrol") == 0 then
-		local new_element = tablex.deepcopy(element)
-		local bosses_no_duplicate = tablex.deepcopy(mod.bosses)
-		local duplicate_index = tablex.find(bosses_no_duplicate, element.breed_name)
-		if duplicate_index then
-			table.remove(bosses_no_duplicate, duplicate_index)
+	  	if mod:get(mod.SETTING_NAMES.DOUBLE_BOSSES) then
+			local new_element = tablex.deepcopy(element)
+			local bosses_no_duplicate = tablex.deepcopy(mod:get(mod.SETTING_NAMES.NO_TROLL) and mod.bosses_no_troll or mod.bosses)
+			local duplicate_index = tablex.find(bosses_no_duplicate, element.breed_name)
+			if duplicate_index then
+				table.remove(bosses_no_duplicate, duplicate_index)
+			end
+			new_element.breed_name = bosses_no_duplicate[math.random(#bosses_no_duplicate)]
+			if event.data.group_data then
+				event.data.group_data.size = 2
+			end
+			func(event, new_element, ...)
 		end
-		new_element.breed_name = bosses_no_duplicate[math.random(#bosses_no_duplicate)]
-		if event.data.group_data then
-			event.data.group_data.size = 2
-		end
-		func(event, new_element, ...)
 	end
 
 	return func(event, element, ...)
@@ -216,7 +219,7 @@ mod:hook("Pacing.update", function(func, self, t, dt, alive_player_units)
 	end
 
 	for k = 1, num_alive_player_units, 1 do
-		self.player_intensity[k] = intensity * mod:get(mod.SETTING_NAMES.THREAT_MULTIPLIER)
+		self.player_intensity[k] = self.player_intensity[k] * mod:get(mod.SETTING_NAMES.THREAT_MULTIPLIER)
 	end
 
 	self.total_intensity = self.total_intensity * mod:get(mod.SETTING_NAMES.THREAT_MULTIPLIER)
@@ -259,6 +262,28 @@ mod:hook("ConflictDirector.horde_killed", function(func, self, ...)
 	CurrentPacing = original_current_pacing
 end)
 
+--- More ambient elites. Replaces trash ambients with elites.
+--- trash spawn without a spawn_type == ambient trash
+mod:hook("ConflictDirector.spawn_queued_unit", function(func, self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, optional_data, group_data, unit_data)
+	if mod:get(mod.SETTING_NAMES.MORE_AMBIENT_ELITES) then
+		if not spawn_type then
+			if breed.name == "skaven_clan_rat" then
+				breed = ({Breeds["skaven_plague_monk"], Breeds["skaven_storm_vermin_commander"], Breeds["skaven_storm_vermin_with_shield"]})[math.random(1,6)] or breed
+			elseif breed.name == "chaos_marauder" then
+				breed = ({Breeds["chaos_raider"], Breeds["chaos_fanatic"], Breeds["chaos_warrior"]})[math.random(1,6)] or breed
+			end
+		end
+	end
+	return func(self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, optional_data, group_data, unit_data)
+end)
+
+--- Change ambient density.
+mod:hook("SpawnZoneBaker.spawn_amount_rats", function(func, self, spawns, pack_sizes, pack_rotations, pack_types, zone_data_list, nodes, num_wanted_rats, pack_type, area, zone)
+	num_wanted_rats = math.round(num_wanted_rats * mod:get(mod.SETTING_NAMES.AMBIENTS_MULTIPLIER)/100)
+
+	return func(self, spawns, pack_sizes, pack_rotations, pack_types, zone_data_list, nodes, num_wanted_rats, pack_type, area, zone)
+end)
+
 --- Callbacks ---
 mod.on_disabled = function(is_first_call) -- luacheck: ignore is_first_call
 	mod:disable_all_hooks()
@@ -277,6 +302,7 @@ mod.update = function()
 		local boss_settings_backup = mod:persistent_table("backups").BossSettings
 		if BossSettings and not boss_settings_backup then
 			mod:persistent_table("backups").BossSettings = tablex.deepcopy(BossSettings)
+			mod.on_setting_changed(mod.SETTING_NAMES.NO_EMPTY_EVENTS)
 		end
 	end)
 end

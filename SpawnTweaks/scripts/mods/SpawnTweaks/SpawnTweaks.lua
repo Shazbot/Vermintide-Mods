@@ -1,6 +1,7 @@
 local mod = get_mod("SpawnTweaks") -- luacheck: ignore get_mod
 
 -- luacheck: globals math ConflictUtils unpack table BossSettings CurrentSpecialsSettings
+-- luacheck: globals RecycleSettings CurrentPacing
 
 local tablex = require'pl.tablex'
 local stringx = require'pl.stringx'
@@ -203,6 +204,59 @@ mod:hook("ConflictDirector.calculate_threat_value", function(func, self)
 	self.delay_horde = self.delay_horde_threat_value < threat_value
 	self.delay_mini_patrol = self.delay_mini_patrol_threat_value < threat_value
 	self.delay_specials = self.delay_specials_threat_value < threat_value
+end)
+
+mod:hook("Pacing.update", function(func, self, t, dt, alive_player_units)
+	func(self, t, dt, alive_player_units)
+
+	local num_alive_player_units = #alive_player_units
+
+	if num_alive_player_units == 0 then
+		return
+	end
+
+	for k = 1, num_alive_player_units, 1 do
+		self.player_intensity[k] = intensity * mod:get(mod.SETTING_NAMES.THREAT_MULTIPLIER)
+	end
+
+	self.total_intensity = self.total_intensity * mod:get(mod.SETTING_NAMES.THREAT_MULTIPLIER)
+end)
+
+mod:hook("ConflictDirector.update_horde_pacing", function(func, self, t, dt)
+	local original_recycle_settings = tablex.deepcopy(RecycleSettings)
+	RecycleSettings.push_horde_if_num_alive_grunts_above = mod:get(mod.SETTING_NAMES.HORDE_GRUNT_LIMIT)
+
+	local original_current_pacing = tablex.deepcopy(CurrentPacing)
+	CurrentPacing.horde_frequency = {
+		mod:get(mod.SETTING_NAMES.HORDE_FREQUENCY_MIN),
+		mod:get(mod.SETTING_NAMES.HORDE_FREQUENCY_MAX)
+	}
+
+	func(self, t, dt)
+
+	CurrentPacing = original_current_pacing
+	RecycleSettings = original_recycle_settings
+end)
+
+mod:hook("ConflictDirector.update", function(func, self, dt, t)
+	local original_recycle_settings = tablex.deepcopy(RecycleSettings)
+	RecycleSettings.max_grunts = mod:get(mod.SETTING_NAMES.MAX_GRUNTS)
+
+	func(self, dt, t)
+
+	RecycleSettings = original_recycle_settings
+end)
+
+mod:hook("ConflictDirector.horde_killed", function(func, self, ...)
+	local original_current_pacing = tablex.deepcopy(CurrentPacing)
+	CurrentPacing.horde_frequency = {
+		mod:get(mod.SETTING_NAMES.HORDE_FREQUENCY_MIN),
+		mod:get(mod.SETTING_NAMES.HORDE_FREQUENCY_MAX)
+	}
+
+	func(self, ...)
+
+	CurrentPacing = original_current_pacing
 end)
 
 --- Callbacks ---

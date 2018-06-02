@@ -107,10 +107,35 @@ return {
 	max_same_specials_tooltip = {
 		en = "Maximum number of duplicate specials alive at the same time."
 	},
+	horde_frequency_min = {
+		en = "Min Horde Cooldown"
+	},
+	horde_frequency_min_tooltip = {
+		en = "Min bound of horde cooldown. Game chooses between those two for time of next horde. Default is 50."
+	},
+	horde_frequency_max = {
+		en = "Max Horde Cooldown"
+	},
+	horde_frequency_max_tooltip = {
+		en = "Max bound of horde cooldown. Game chooses between those two for time of next horde. Default is 100."
+	},
+
 	threat_multiplier = {
 		en = "Threat Multiplier"
 	},
 	threat_multiplier_tooltip = {
 		en = "Decrease global threat level so the game increases spawn rates."
+	},
+	max_grunts = {
+		en = "Max Horde Trash"
+	},
+	max_grunts_tooltip = {
+		en = "Max horde trash alive, stops spawning new trash if this number is hit. Default is 90."
+	},
+	horde_grunt_limit = {
+		en = "Max Trash Limiting Horde Start"
+	},
+	horde_grunt_limit_tooltip = {
+		en = "Cutoff for number of trash alive that prevents a new wave or horde to start. Default is 60."
 	},
 }

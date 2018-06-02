@@ -1,0 +1,11 @@
+mod = [
+	"MaxProperties"
+]
+
+package = [
+	"resource_packages/MaxProperties/MaxProperties"
+]
+
+lua = [
+	"scripts/mods/MaxProperties/*"
+]

@@ -74,6 +74,18 @@ return {
 	safe_zone_delay_min = {
 		en = "Min Delay After Leaving Safe Zone"
 	},
+	horde_startup_min = {
+		en = "Horde Initial Map Delay Min"
+	},
+	horde_startup_min_tooltip = {
+		en = "Minimal delay after start of the map for the first horde to appear. Default is 40."
+	},
+	horde_startup_max = {
+		en = "Horde Initial Map Delay Max"
+	},
+	horde_startup_max_tooltip = {
+		en = "Maximal delay after start of the map for the first horde to appear. Default is 120."
+	},
 	safe_zone_delay_min_tooltip = {
 		en = "Minimal delay after start of the map and when timed specials start to spawn."
 	},
@@ -119,12 +131,11 @@ return {
 	horde_frequency_max_tooltip = {
 		en = "Max bound of horde cooldown. Game chooses between those two for time of next horde. Default is 100."
 	},
-
 	threat_multiplier = {
-		en = "Threat Multiplier"
+		en = "Threat And Intensity Multiplier"
 	},
 	threat_multiplier_tooltip = {
-		en = "Decrease global threat level so the game increases spawn rates."
+		en = "Decrease global threat and intensity level so the game increases spawn rates."
 	},
 	max_grunts = {
 		en = "Max Horde Trash"

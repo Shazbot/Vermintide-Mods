@@ -77,25 +77,6 @@ mod:hook("DoorSystem.update", function(func, self, context, t)
 	return func(self, context, t)
 end)
 
-mod.boss_events = {
-	"boss_event_chaos_troll",
-	"boss_event_chaos_spawn",
-	"boss_event_storm_fiend",
-	"boss_event_rat_ogre"
-}
---- Disable boss event.
-mod:hook("TerrorEventMixer.run_functions.spawn", function (func, event, element, ...)
-	if mod:get(mod.SETTING_NAMES.DISABLE_BOSSES) and tablex.find(mod.boss_events, event.name) then
-		return true
-	end
-
-	if mod:get(mod.SETTING_NAMES.DISABLE_FIXED_EVENT_SPECIALS) and stringx.count(event.name, "_event_specials_") > 0 then
-		return true
-	end
-
-	return func(event, element, ...)
-end)
-
 --- Disable patrols.
 mod:hook("TerrorEventMixer.run_functions.spawn_patrol", function (func, event, element, t, dt)
 	if mod:get(mod.SETTING_NAMES.DISABLE_PATROLS) then
@@ -140,12 +121,7 @@ mod:hook("SpecialsPacing.specials_by_slots", function(func, self, t, specials_se
 		mod:get(mod.SETTING_NAMES.SPAWN_COOLDOWN_MAX)
 	}
 
-	local original_specials_settings = tablex.deepcopy(CurrentSpecialsSettings)
-	CurrentSpecialsSettings.max_specials = mod:get(mod.SETTING_NAMES.MAX_SPECIALS)
-
 	func(self, t, specials_settings, new_method_data, slots, spawn_queue)
-
-	CurrentSpecialsSettings = original_specials_settings
 end)
 
 --- Specials spawn delay from start of the level.
@@ -155,7 +131,13 @@ mod:hook("SpecialsPacing.setup_functions.specials_by_slots", function(func, t, s
 		mod:get(mod.SETTING_NAMES.SAFE_ZONE_DELAY_MIN),
 		mod:get(mod.SETTING_NAMES.SAFE_ZONE_DELAY_MAX)
 	}
+
+	local original_specials_settings = tablex.deepcopy(CurrentSpecialsSettings)
+	CurrentSpecialsSettings.max_specials = mod:get(mod.SETTING_NAMES.MAX_SPECIALS)
+
 	func(t, slots, new_method_data)
+
+	CurrentSpecialsSettings = original_specials_settings
 end)
 
 --- Change max of same special.
@@ -165,7 +147,13 @@ mod:hook("SpecialsPacing.select_breed_functions.get_random_breed", function(func
 	return func(slots, breeds, new_method_data)
 end)
 
---- Double bosses.
+--- Disable boss event and double bosses.
+mod.boss_events = {
+	"boss_event_chaos_troll",
+	"boss_event_chaos_spawn",
+	"boss_event_storm_fiend",
+	"boss_event_rat_ogre"
+}
 mod.bosses = pl.List{
 	"skaven_stormfiend",
 	"skaven_rat_ogre",
@@ -174,12 +162,20 @@ mod.bosses = pl.List{
 }
 mod.bosses_no_troll = mod.bosses:clone():remove_value("chaos_troll")
 mod:hook("TerrorEventMixer.run_functions.spawn", function (func, event, element, ...)
-	if stringx.count(event.name, "boss_event") > 0 and stringx.count(event.name, "patrol") == 0 then
-	  	if mod:get(mod.SETTING_NAMES.NO_TROLL) and element.breed_name == "chaos_troll" then
-	  		element.breed_name = mod.bosses_no_troll[math.random(#mod.bosses_no_troll)]
-	  	end
+	if mod:get(mod.SETTING_NAMES.DISABLE_BOSSES) and tablex.find(mod.boss_events, event.name) then
+		return true
+	end
 
-	  	if mod:get(mod.SETTING_NAMES.DOUBLE_BOSSES) then
+	if mod:get(mod.SETTING_NAMES.DISABLE_FIXED_EVENT_SPECIALS) and stringx.count(event.name, "_event_specials_") > 0 then
+		return true
+	end
+
+	if stringx.count(event.name, "boss_event") > 0 and stringx.count(event.name, "patrol") == 0 then
+		if mod:get(mod.SETTING_NAMES.NO_TROLL) and element.breed_name == "chaos_troll" then
+			element.breed_name = mod.bosses_no_troll[math.random(#mod.bosses_no_troll)]
+		end
+
+		if mod:get(mod.SETTING_NAMES.DOUBLE_BOSSES) then
 			local new_element = tablex.deepcopy(element)
 			local bosses_no_duplicate = tablex.deepcopy(mod:get(mod.SETTING_NAMES.NO_TROLL) and mod.bosses_no_troll or mod.bosses)
 			local duplicate_index = tablex.find(bosses_no_duplicate, element.breed_name)
@@ -245,8 +241,15 @@ mod:hook("ConflictDirector.update", function(func, self, dt, t)
 	local original_recycle_settings = tablex.deepcopy(RecycleSettings)
 	RecycleSettings.max_grunts = mod:get(mod.SETTING_NAMES.MAX_GRUNTS)
 
+	local original_current_pacing = tablex.deepcopy(CurrentPacing)
+	CurrentPacing.horde_startup_time = {
+		mod:get(mod.SETTING_NAMES.HORDE_STARTUP_MIN),
+		mod:get(mod.SETTING_NAMES.HORDE_STARTUP_MAX)
+	}
+
 	func(self, dt, t)
 
+	CurrentPacing = original_current_pacing
 	RecycleSettings = original_recycle_settings
 end)
 

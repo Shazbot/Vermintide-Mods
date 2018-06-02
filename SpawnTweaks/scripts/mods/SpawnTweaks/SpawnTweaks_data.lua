@@ -32,6 +32,8 @@ mod.SETTING_NAMES = {
 	AMBIENTS_MULTIPLIER = "ambients_multiplier",
 	MORE_AMBIENT_ELITES = "more_ambient_elites",
 	NO_TROLL = "no_troll",
+	HORDE_STARTUP_MIN = "HORDE_STARTUP_MIN",
+	HORDE_STARTUP_MAX = "HORDE_STARTUP_MAX",
 }
 
 mod_data.options_widgets = {
@@ -192,6 +194,24 @@ mod_data.options_widgets = {
 		["range"] = {5, 200},
 		["unit_text"] = " sec",
 		["default_value"] = 100,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.HORDE_STARTUP_MIN,
+		["widget_type"] = "numeric",
+		["text"] = mod:localize("horde_startup_min"),
+		["tooltip"] = mod:localize("horde_startup_min_tooltip"),
+		["range"] = {0, 200},
+		["unit_text"] = " sec",
+		["default_value"] = 40,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.HORDE_STARTUP_MAX,
+		["widget_type"] = "numeric",
+		["text"] = mod:localize("horde_startup_max"),
+		["tooltip"] = mod:localize("horde_startup_max_tooltip"),
+		["range"] = {0, 250},
+		["unit_text"] = " sec",
+		["default_value"] = 120,
 	},
 	{
 		["setting_name"] = mod.SETTING_NAMES.THREAT_MULTIPLIER,

@@ -1,7 +1,7 @@
 local mod = get_mod("SpawnTweaks") -- luacheck: ignore get_mod
 
 -- luacheck: globals math ConflictUtils unpack table BossSettings CurrentSpecialsSettings
--- luacheck: globals RecycleSettings CurrentPacing
+-- luacheck: globals RecycleSettings CurrentPacing Breeds
 
 local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
@@ -22,8 +22,7 @@ mod:hook("SpawnerSystem._try_spawn_breed", function (func, self, breed_name, spa
 	return func(self, breed_name, spawn_list_per_breed, spawn_list, breed_limits, active_enemies, group_template)
 end)
 
---- Timed hordes size adjustment.
-mod:hook("HordeSpawner.compose_horde_spawn_list", function (func, self, composition_type)
+mod.horde_compose_hooks = function (func, self, ...)
 	local original_random_interval = ConflictUtils.random_interval
 	ConflictUtils.random_interval = function (numbers)
 		local result = original_random_interval(numbers)
@@ -41,12 +40,16 @@ mod:hook("HordeSpawner.compose_horde_spawn_list", function (func, self, composit
 		return result
 	end
 
-	local packed_return = pack2(func(self, composition_type))
+	local packed_return = pack2(func(self, ...))
 
 	ConflictUtils.random_interval = original_random_interval
 
 	return unpack2(packed_return)
-end)
+end
+
+--- Timed hordes size adjustment.
+mod:hook("HordeSpawner.compose_horde_spawn_list", mod.horde_compose_hooks)
+mod:hook("HordeSpawner.compose_blob_horde_spawn_list", mod.horde_compose_hooks)
 
 --- Fix for an assert crash for missing next queued breed when downsizing hordes.
 mod:hook("HordeSpawner.spawn_unit", function (func, self, hidden_spawn, breed_name, ...)
@@ -105,9 +108,25 @@ local breeds_specials = {
 	"skaven_warpfire_thrower"
 }
 --- Disable timed specials.
+--- More ambient elites. Replaces trash ambients with elites.
+--- trash spawn without a spawn_type == ambient trash
 mod:hook("ConflictDirector.spawn_queued_unit", function(func, self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, optional_data, group_data, unit_data)
 	if mod:get(mod.SETTING_NAMES.DISABLE_TIMED_SPECIALS) and tablex.find(breeds_specials, breed.name) then
 		return
+	end
+
+	if mod:get(mod.SETTING_NAMES.DISABLE_FIXED_SPAWNS) and spawn_category == "raw_spawner" then
+		return
+	end
+
+	if mod:get(mod.SETTING_NAMES.MORE_AMBIENT_ELITES) then
+		if not spawn_type then
+			if breed.name == "skaven_clan_rat" then
+				breed = ({Breeds["skaven_plague_monk"], Breeds["skaven_storm_vermin_commander"], Breeds["skaven_storm_vermin_with_shield"]})[math.random(1,6)] or breed
+			elseif breed.name == "chaos_marauder" then
+				breed = ({Breeds["chaos_raider"], Breeds["chaos_fanatic"], Breeds["chaos_warrior"]})[math.random(1,6)] or breed
+			end
+		end
 	end
 
 	return func(self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, optional_data, group_data, unit_data)
@@ -263,21 +282,6 @@ mod:hook("ConflictDirector.horde_killed", function(func, self, ...)
 	func(self, ...)
 
 	CurrentPacing = original_current_pacing
-end)
-
---- More ambient elites. Replaces trash ambients with elites.
---- trash spawn without a spawn_type == ambient trash
-mod:hook("ConflictDirector.spawn_queued_unit", function(func, self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, optional_data, group_data, unit_data)
-	if mod:get(mod.SETTING_NAMES.MORE_AMBIENT_ELITES) then
-		if not spawn_type then
-			if breed.name == "skaven_clan_rat" then
-				breed = ({Breeds["skaven_plague_monk"], Breeds["skaven_storm_vermin_commander"], Breeds["skaven_storm_vermin_with_shield"]})[math.random(1,6)] or breed
-			elseif breed.name == "chaos_marauder" then
-				breed = ({Breeds["chaos_raider"], Breeds["chaos_fanatic"], Breeds["chaos_warrior"]})[math.random(1,6)] or breed
-			end
-		end
-	end
-	return func(self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, optional_data, group_data, unit_data)
 end)
 
 --- Change ambient density.

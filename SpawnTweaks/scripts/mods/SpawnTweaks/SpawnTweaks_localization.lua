@@ -35,6 +35,12 @@ return {
 	disable_fixed_event_specials_tooltip = {
 		en = "Disable scripted specials spawns in map events."
 	},
+	disable_fixed_spawns = {
+		en = "Disable Fixed Spawns"
+	},
+	disable_fixed_spawns_tooltip = {
+		en = "Disable fixed map spawns."
+	},
 	disable_roaming_patrols = {
 		en = "Disable Roaming Patrols"
 	},

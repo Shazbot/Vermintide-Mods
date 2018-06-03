@@ -34,6 +34,7 @@ mod.SETTING_NAMES = {
 	NO_TROLL = "no_troll",
 	HORDE_STARTUP_MIN = "HORDE_STARTUP_MIN",
 	HORDE_STARTUP_MAX = "HORDE_STARTUP_MAX",
+	DISABLE_FIXED_SPAWNS = "disable_fixed_spawns"
 }
 
 mod_data.options_widgets = {
@@ -88,6 +89,13 @@ mod_data.options_widgets = {
 		["widget_type"] = "checkbox",
 		["text"] = mod:localize("disable_fixed_event_specials"),
 		["tooltip"] = mod:localize("disable_fixed_event_specials_tooltip"),
+		["default_value"] = false,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.DISABLE_FIXED_SPAWNS,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("disable_fixed_spawns"),
+		["tooltip"] = mod:localize("disable_fixed_spawns_tooltip"),
 		["default_value"] = false,
 	},
 	{

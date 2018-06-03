@@ -86,12 +86,14 @@ end)
 
 --- Disable boss doors.
 mod:hook("DoorSystem.update", function(func, self, context, t)
-	if mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.CUSTOMIZE then
-		if mod:get(mod.SETTING_NAMES.NO_BOSS_DOOR) and self.is_server then
-			for map_section, _ in pairs(table.clone(self._active_groups)) do
-				self:open_boss_doors(map_section)
-				self._active_groups[map_section] = nil
-			end
+	if mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.DISABLE
+	or (
+		mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.CUSTOMIZE and
+		mod:get(mod.SETTING_NAMES.NO_BOSS_DOOR) and self.is_server
+	) then
+		for map_section, _ in pairs(table.clone(self._active_groups)) do
+			self:open_boss_doors(map_section)
+			self._active_groups[map_section] = nil
 		end
 	end
 
@@ -129,7 +131,7 @@ local breeds_specials = {
 --- More ambient elites. Replaces trash ambients with elites.
 --- trash spawn without a spawn_type == ambient trash
 mod:hook("ConflictDirector.spawn_queued_unit", function(func, self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, optional_data, group_data, unit_data)
-	if mod:get(mod.SETTING_NAMES.DISABLE_TIMED_SPECIALS) and tablex.find(breeds_specials, breed.name) then
+	if mod:get(mod.SETTING_NAMES.SPECIALS) == mod.SPECIALS.DISABLE and tablex.find(breeds_specials, breed.name) then
 		return
 	end
 
@@ -154,6 +156,10 @@ end)
 
 --- Specials cooldowns.
 mod:hook("SpecialsPacing.specials_by_slots", function(func, self, t, specials_settings, method_data, slots, spawn_queue)
+	if mod:get(mod.SETTING_NAMES.SPECIALS) ~= mod.SPECIALS.CUSTOMIZE then
+		return func(self, t, specials_settings, method_data, slots, spawn_queue)
+	end
+
 	local new_method_data = tablex.deepcopy(method_data)
 	new_method_data.spawn_cooldown = {
 		mod:get(mod.SETTING_NAMES.SPAWN_COOLDOWN_MIN),
@@ -165,6 +171,10 @@ end)
 
 --- Specials spawn delay from start of the level.
 mod:hook("SpecialsPacing.setup_functions.specials_by_slots", function(func, t, slots, method_data)
+	if mod:get(mod.SETTING_NAMES.SPECIALS) ~= mod.SPECIALS.CUSTOMIZE then
+		return func(t, slots, method_data)
+	end
+
 	local new_method_data = tablex.deepcopy(method_data)
 	new_method_data.after_safe_zone_delay = {
 		mod:get(mod.SETTING_NAMES.SAFE_ZONE_DELAY_MIN),
@@ -181,6 +191,10 @@ end)
 
 --- Change max of same special.
 mod:hook("SpecialsPacing.select_breed_functions.get_random_breed", function(func, slots, breeds, method_data)
+	if mod:get(mod.SETTING_NAMES.SPECIALS) ~= mod.SPECIALS.CUSTOMIZE then
+		return func(slots, breeds, method_data)
+	end
+
 	local new_method_data = tablex.deepcopy(method_data)
 	new_method_data.max_of_same = mod:get(mod.SETTING_NAMES.MAX_SAME_SPECIALS)
 	return func(slots, breeds, new_method_data)
@@ -321,6 +335,24 @@ mod:hook("SpawnZoneBaker.spawn_amount_rats", function(func, self, spawns, pack_s
 	end
 
 	return func(self, spawns, pack_sizes, pack_rotations, pack_types, zone_data_list, nodes, num_wanted_rats, pack_type, area, zone)
+end)
+
+mod:hook("TerrorEventMixer.init_functions.control_specials", function(func, event, element, t)
+	if mod:get(mod.SETTING_NAMES.SPECIALS) == mod.SPECIALS.CUSTOMIZE
+	and mod:get(mod.SETTING_NAMES.ALWAYS_SPECIALS) then
+		element.enable = true
+	end
+
+	return func(event, element, t)
+end)
+
+mod:hook("SpecialsPacing.update", function(func, self, t, alive_specials, specials_population, player_positions)
+	if mod:get(mod.SETTING_NAMES.SPECIALS) == mod.SPECIALS.CUSTOMIZE
+	and mod:get(mod.SETTING_NAMES.ALWAYS_SPECIALS) then
+		specials_population = 1
+	end
+
+	return func(self, t, alive_specials, specials_population, player_positions)
 end)
 
 --- Callbacks ---

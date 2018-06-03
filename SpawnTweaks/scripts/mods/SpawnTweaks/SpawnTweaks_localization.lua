@@ -41,12 +41,6 @@ return {
 	disable_roaming_patrols_tooltip = {
 		en = "Disable small ambient roaming patrols."
 	},
-	disable_timed_specials = {
-		en = "Disable Timed Specials"
-	},
-	disable_timed_specials_tooltip = {
-		en = "Disable specials that are spawned using the map timer."
-	},
 	bosses = {
 		en = "Bosses"
 	},
@@ -64,6 +58,12 @@ return {
 	},
 	hordes_tooltip = {
 		en = "Disable or customize horde-related options."
+	},
+	specials = {
+		en = "Specials"
+	},
+	specials_tooltip = {
+		en = "Disable or customize timed specials-related options."
 	},
 	default = {
 		en = "Default"
@@ -116,6 +116,12 @@ return {
 	safe_zone_delay_max_tooltip = {
 		en = "Maximal delay after start of the map and when timed specials start to spawn."
 	},
+	always_specials = {
+		en = "Keep Spawning During Events"
+	},
+	always_specials_tooltip = {
+		en = "Some events disable timed specials spawning, choose to keep them always spawning."
+	},
 	double_bosses = {
 		en = "Double Bosses"
 	},
@@ -132,13 +138,13 @@ return {
 		en = "Max Specials"
 	},
 	max_specials_tooltip = {
-		en = "Maximum number of specials alive at the same time."
+		en = "Maximum number of specials alive at the same time. Default is 4."
 	},
 	max_same_specials = {
 		en = "Max Of Same Special"
 	},
 	max_same_specials_tooltip = {
-		en = "Maximum number of duplicate specials alive at the same time."
+		en = "Maximum number of duplicate specials alive at the same time. Default is 2."
 	},
 	horde_frequency_min = {
 		en = "Min Horde Cooldown"

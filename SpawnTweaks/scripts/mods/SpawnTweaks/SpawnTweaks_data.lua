@@ -11,7 +11,6 @@ mod.SETTING_NAMES = {
 	EVENT_HORDE_SIZE = "event_horde_size",
 	DISABLE_PATROLS = "disable_patrols",
 	DISABLE_ROAMING_PATROLS = "disable_roaming_patrols",
-	DISABLE_TIMED_SPECIALS = "disable_timed_specials",
 	DISABLE_FIXED_EVENT_SPECIALS = "fixed_event_specials",
 	NO_BOSS_DOOR = "no_boss_door",
 	SPAWN_COOLDOWN_MIN = "spawn_cooldown_min",
@@ -36,6 +35,8 @@ mod.SETTING_NAMES = {
 	BOSSES = "bosses",
 	AMBIENTS = "ambients",
 	HORDES = "hordes",
+	SPECIALS = "specials",
+	ALWAYS_SPECIALS = "always_specials",
 }
 
 mod.BOSSES = {
@@ -56,6 +57,12 @@ mod.HORDES = {
 	CUSTOMIZE = 3,
 }
 
+mod.SPECIALS = {
+	DEFAULT = 1,
+	DISABLE = 2,
+	CUSTOMIZE = 3,
+}
+
 mod_data.options_widgets = {
 	{
 		["setting_name"] = mod.SETTING_NAMES.DISABLE_PATROLS,
@@ -69,13 +76,6 @@ mod_data.options_widgets = {
 		["widget_type"] = "checkbox",
 		["text"] = mod:localize("disable_roaming_patrols"),
 		["tooltip"] = mod:localize("disable_roaming_patrols_tooltip"),
-		["default_value"] = false,
-	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.DISABLE_TIMED_SPECIALS,
-		["widget_type"] = "checkbox",
-		["text"] = mod:localize("disable_timed_specials"),
-		["tooltip"] = mod:localize("disable_timed_specials_tooltip"),
 		["default_value"] = false,
 	},
 	{
@@ -184,6 +184,85 @@ mod_data.options_widgets = {
 		},
 	},
 	{
+		["setting_name"] = mod.SETTING_NAMES.SPECIALS,
+		["widget_type"] = "dropdown",
+		["text"] = mod:localize("specials"),
+		["tooltip"] = mod:localize("specials_tooltip"),
+		["options"] = {
+			{ text = mod:localize("default"), value = mod.SPECIALS.DEFAULT }, --1
+			{ text = mod:localize("disable"), value = mod.SPECIALS.DISABLE }, --2
+			{ text = mod:localize("customize"), value = mod.SPECIALS.CUSTOMIZE }, --3
+		},
+		["sub_widgets"] = {
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.MAX_SPECIALS,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("max_specials"),
+				["tooltip"] = mod:localize("max_specials_tooltip"),
+				["range"] = {0, 30},
+				["default_value"] = 4,
+			},
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.MAX_SAME_SPECIALS,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("max_same_specials"),
+				["tooltip"] = mod:localize("max_same_specials_tooltip"),
+				["range"] = {0, 30},
+				["default_value"] = 2,
+			},
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.SPAWN_COOLDOWN_MIN,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("spawn_cooldown_min"),
+				["tooltip"] = mod:localize("spawn_cooldown_min_tooltip"),
+				["range"] = {0, 150},
+				["unit_text"] = " sec",
+				["default_value"] = 50,
+			},
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.SPAWN_COOLDOWN_MAX,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("spawn_cooldown_max"),
+				["tooltip"] = mod:localize("spawn_cooldown_max_tooltip"),
+				["range"] = {0, 150},
+				["unit_text"] = " sec",
+				["default_value"] = 90,
+			},
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.SAFE_ZONE_DELAY_MIN,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("safe_zone_delay_min"),
+				["tooltip"] = mod:localize("safe_zone_delay_min_tooltip"),
+				["range"] = {0, 100},
+				["unit_text"] = " sec",
+				["default_value"] = 30,
+			},
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.SAFE_ZONE_DELAY_MAX,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("safe_zone_delay_max"),
+				["tooltip"] = mod:localize("safe_zone_delay_max_tooltip"),
+				["range"] = {0, 100},
+				["unit_text"] = " sec",
+				["default_value"] = 60,
+			},
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.ALWAYS_SPECIALS,
+				["widget_type"] = "checkbox",
+				["text"] = mod:localize("always_specials"),
+				["tooltip"] = mod:localize("always_specials_tooltip"),
+				["default_value"] = false,
+			},
+		},
+	},
+	{
 		["setting_name"] = mod.SETTING_NAMES.AMBIENTS,
 		["widget_type"] = "dropdown",
 		["text"] = mod:localize("ambients"),
@@ -258,58 +337,6 @@ mod_data.options_widgets = {
 				["default_value"] = false,
 			},
 		},
-	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.SPAWN_COOLDOWN_MIN,
-		["widget_type"] = "numeric",
-		["text"] = mod:localize("spawn_cooldown_min"),
-		["tooltip"] = mod:localize("spawn_cooldown_min_tooltip"),
-		["range"] = {0, 150},
-		["unit_text"] = " sec",
-		["default_value"] = 50,
-	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.SPAWN_COOLDOWN_MAX,
-		["widget_type"] = "numeric",
-		["text"] = mod:localize("spawn_cooldown_max"),
-		["tooltip"] = mod:localize("spawn_cooldown_max_tooltip"),
-		["range"] = {0, 150},
-		["unit_text"] = " sec",
-		["default_value"] = 90,
-	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.SAFE_ZONE_DELAY_MIN,
-		["widget_type"] = "numeric",
-		["text"] = mod:localize("safe_zone_delay_min"),
-		["tooltip"] = mod:localize("safe_zone_delay_min_tooltip"),
-		["range"] = {0, 100},
-		["unit_text"] = " sec",
-		["default_value"] = 30,
-	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.SAFE_ZONE_DELAY_MAX,
-		["widget_type"] = "numeric",
-		["text"] = mod:localize("safe_zone_delay_max"),
-		["tooltip"] = mod:localize("safe_zone_delay_max_tooltip"),
-		["range"] = {0, 100},
-		["unit_text"] = " sec",
-		["default_value"] = 60,
-	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.MAX_SPECIALS,
-		["widget_type"] = "numeric",
-		["text"] = mod:localize("max_specials"),
-		["tooltip"] = mod:localize("max_specials_tooltip"),
-		["range"] = {0, 25},
-		["default_value"] = 4,
-	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.MAX_SAME_SPECIALS,
-		["widget_type"] = "numeric",
-		["text"] = mod:localize("max_same_specials"),
-		["tooltip"] = mod:localize("max_same_specials_tooltip"),
-		["range"] = {0, 25},
-		["default_value"] = 2,
 	},
 	{
 		["setting_name"] = mod.SETTING_NAMES.THREAT_MULTIPLIER,

@@ -127,17 +127,17 @@ mod.create_passes = function(self, widget)
 				widget.style[junk_style_key] = table.clone(junk_item_text_style)
 
 				widget.style[fav_style_key].offset = table.clone(widget.style["item_icon_" .. tostring(i) .. "_" .. tostring(k)].offset)
-				widget.style[fav_style_key].offset[1] = widget.style[fav_style_key].offset[1] + 5
-				widget.style[fav_style_key].offset[2] = widget.style[fav_style_key].offset[2] + 43
+				widget.style[fav_style_key].offset[1] = widget.style[fav_style_key].offset[1] + 8
+				widget.style[fav_style_key].offset[2] = widget.style[fav_style_key].offset[2] + 41
 				widget.style[fav_style_key].offset[3] = 10
 
 				widget.style[junk_style_key].offset = table.clone(widget.style["item_icon_" .. tostring(i) .. "_" .. tostring(k)].offset)
-				widget.style[junk_style_key].offset[1] = widget.style[junk_style_key].offset[1] + 25
-				widget.style[junk_style_key].offset[2] = widget.style[junk_style_key].offset[2] - 7
+				widget.style[junk_style_key].offset[1] = widget.style[junk_style_key].offset[1] + 63
+				widget.style[junk_style_key].offset[2] = widget.style[junk_style_key].offset[2] - 5
 				widget.style[junk_style_key].offset[3] = 10
 
-				widget.content["item_" .. tostring(i) .. "_" .. tostring(k)].text_favorite = "FAV"
-				widget.content["item_" .. tostring(i) .. "_" .. tostring(k)].text_junk = "JUNK"
+				widget.content["item_" .. tostring(i) .. "_" .. tostring(k)].text_favorite = "F"
+				widget.content["item_" .. tostring(i) .. "_" .. tostring(k)].text_junk = "J"
 				passes[#passes + 1] = {
 					text_id = "text_favorite",
 					content_id = "item_" .. tostring(i) .. "_" .. tostring(k),

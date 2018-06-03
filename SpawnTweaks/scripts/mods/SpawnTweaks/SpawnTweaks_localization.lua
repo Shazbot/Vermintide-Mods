@@ -59,6 +59,12 @@ return {
 	ambients_tooltip = {
 		en = "Disable or customize the ambient, static map spawns."
 	},
+	hordes = {
+		en = "Hordes"
+	},
+	hordes_tooltip = {
+		en = "Disable or customize horde-related options."
+	},
 	default = {
 		en = "Default"
 	},

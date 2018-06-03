@@ -35,6 +35,7 @@ mod.SETTING_NAMES = {
 	DISABLE_FIXED_SPAWNS = "disable_fixed_spawns",
 	BOSSES = "bosses",
 	AMBIENTS = "ambients",
+	HORDES = "hordes",
 }
 
 mod.BOSSES = {
@@ -49,25 +50,13 @@ mod.AMBIENTS = {
 	CUSTOMIZE = 3,
 }
 
+mod.HORDES = {
+	DEFAULT = 1,
+	DISABLE = 2,
+	CUSTOMIZE = 3,
+}
+
 mod_data.options_widgets = {
-	{
-		["setting_name"] = mod.SETTING_NAMES.HORDE_SIZE,
-		["widget_type"] = "numeric",
-		["text"] = mod:localize("horde_size"),
-		["tooltip"] = mod:localize("horde_size_tooltip"),
-		["range"] = {0, 300},
-		["unit_text"] = "%",
-		["default_value"] = 100,
-	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.EVENT_HORDE_SIZE,
-		["widget_type"] = "numeric",
-		["text"] = mod:localize("event_horde_size"),
-		["tooltip"] = mod:localize("event_horde_size_tooltip"),
-		["range"] = {0, 300},
-		["unit_text"] = "%",
-		["default_value"] = 100,
-	},
 	{
 		["setting_name"] = mod.SETTING_NAMES.DISABLE_PATROLS,
 		["widget_type"] = "checkbox",
@@ -102,6 +91,97 @@ mod_data.options_widgets = {
 		["text"] = mod:localize("disable_fixed_spawns"),
 		["tooltip"] = mod:localize("disable_fixed_spawns_tooltip"),
 		["default_value"] = false,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.HORDES,
+		["widget_type"] = "dropdown",
+		["text"] = mod:localize("hordes"),
+		["tooltip"] = mod:localize("hordes_tooltip"),
+		["options"] = {
+			{ text = mod:localize("default"), value = mod.HORDES.DEFAULT }, --1
+			{ text = mod:localize("disable"), value = mod.HORDES.DISABLE }, --2
+			{ text = mod:localize("customize"), value = mod.HORDES.CUSTOMIZE }, --3
+		},
+		["sub_widgets"] = {
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.HORDE_SIZE,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("horde_size"),
+				["tooltip"] = mod:localize("horde_size_tooltip"),
+				["range"] = {0, 300},
+				["unit_text"] = "%",
+				["default_value"] = 100,
+			},
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.EVENT_HORDE_SIZE,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("event_horde_size"),
+				["tooltip"] = mod:localize("event_horde_size_tooltip"),
+				["range"] = {0, 300},
+				["unit_text"] = "%",
+				["default_value"] = 100,
+			},
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.HORDE_FREQUENCY_MIN,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("horde_frequency_min"),
+				["tooltip"] = mod:localize("horde_frequency_min_tooltip"),
+				["range"] = {5, 150},
+				["unit_text"] = " sec",
+				["default_value"] = 50,
+			},
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.HORDE_FREQUENCY_MAX,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("horde_frequency_max"),
+				["tooltip"] = mod:localize("horde_frequency_max_tooltip"),
+				["range"] = {5, 200},
+				["unit_text"] = " sec",
+				["default_value"] = 100,
+			},
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.HORDE_STARTUP_MIN,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("horde_startup_min"),
+				["tooltip"] = mod:localize("horde_startup_min_tooltip"),
+				["range"] = {0, 200},
+				["unit_text"] = " sec",
+				["default_value"] = 40,
+			},
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.HORDE_STARTUP_MAX,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("horde_startup_max"),
+				["tooltip"] = mod:localize("horde_startup_max_tooltip"),
+				["range"] = {0, 250},
+				["unit_text"] = " sec",
+				["default_value"] = 120,
+			},
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.MAX_GRUNTS,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("max_grunts"),
+				["tooltip"] = mod:localize("max_grunts_tooltip"),
+				["range"] = {10, 360},
+				["default_value"] = 90,
+			},
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.HORDE_GRUNT_LIMIT,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("horde_grunt_limit"),
+				["tooltip"] = mod:localize("horde_grunt_limit_tooltip"),
+				["range"] = {10, 240},
+				["default_value"] = 60,
+			},
+		},
 	},
 	{
 		["setting_name"] = mod.SETTING_NAMES.AMBIENTS,
@@ -232,42 +312,6 @@ mod_data.options_widgets = {
 		["default_value"] = 2,
 	},
 	{
-		["setting_name"] = mod.SETTING_NAMES.HORDE_FREQUENCY_MIN,
-		["widget_type"] = "numeric",
-		["text"] = mod:localize("horde_frequency_min"),
-		["tooltip"] = mod:localize("horde_frequency_min_tooltip"),
-		["range"] = {5, 150},
-		["unit_text"] = " sec",
-		["default_value"] = 50,
-	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.HORDE_FREQUENCY_MAX,
-		["widget_type"] = "numeric",
-		["text"] = mod:localize("horde_frequency_max"),
-		["tooltip"] = mod:localize("horde_frequency_max_tooltip"),
-		["range"] = {5, 200},
-		["unit_text"] = " sec",
-		["default_value"] = 100,
-	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.HORDE_STARTUP_MIN,
-		["widget_type"] = "numeric",
-		["text"] = mod:localize("horde_startup_min"),
-		["tooltip"] = mod:localize("horde_startup_min_tooltip"),
-		["range"] = {0, 200},
-		["unit_text"] = " sec",
-		["default_value"] = 40,
-	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.HORDE_STARTUP_MAX,
-		["widget_type"] = "numeric",
-		["text"] = mod:localize("horde_startup_max"),
-		["tooltip"] = mod:localize("horde_startup_max_tooltip"),
-		["range"] = {0, 250},
-		["unit_text"] = " sec",
-		["default_value"] = 120,
-	},
-	{
 		["setting_name"] = mod.SETTING_NAMES.THREAT_MULTIPLIER,
 		["widget_type"] = "numeric",
 		["text"] = mod:localize("threat_multiplier"),
@@ -275,22 +319,6 @@ mod_data.options_widgets = {
 		["range"] = {0.1, 1},
 		["decimals_number"] = 1,
 		["default_value"] = 1,
-	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.MAX_GRUNTS,
-		["widget_type"] = "numeric",
-		["text"] = mod:localize("max_grunts"),
-		["tooltip"] = mod:localize("max_grunts_tooltip"),
-		["range"] = {10, 360},
-		["default_value"] = 90,
-	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.HORDE_GRUNT_LIMIT,
-		["widget_type"] = "numeric",
-		["text"] = mod:localize("horde_grunt_limit"),
-		["tooltip"] = mod:localize("horde_grunt_limit_tooltip"),
-		["range"] = {10, 240},
-		["default_value"] = 60,
 	},
 }
 

@@ -13,21 +13,36 @@ local function unpack2(t) return unpack(t, 1, t.n) end
 
 --- Event hordes size adjustment.
 mod:hook("SpawnerSystem._try_spawn_breed", function (func, self, breed_name, spawn_list_per_breed, spawn_list, breed_limits, active_enemies, group_template)
+	if mod:get(mod.SETTING_NAMES.HORDES) == mod.HORDES.DEFAULT then
+		return func(self, breed_name, spawn_list_per_breed, spawn_list, breed_limits, active_enemies, group_template)
+	end
+
 	local num_to_spawn = spawn_list_per_breed[breed_name]
 	if num_to_spawn ~= nil then
 		local horde_size_ratio = mod:get(mod.SETTING_NAMES.EVENT_HORDE_SIZE) / 100
+		if mod:get(mod.SETTING_NAMES.HORDES) == mod.HORDES.DISABLE then
+			horde_size_ratio = 0
+		end
 		num_to_spawn = math.round(num_to_spawn * horde_size_ratio)
 		spawn_list_per_breed[breed_name] = num_to_spawn
 	end
+
 	return func(self, breed_name, spawn_list_per_breed, spawn_list, breed_limits, active_enemies, group_template)
 end)
 
 mod.horde_compose_hooks = function (func, self, ...)
+	if mod:get(mod.SETTING_NAMES.HORDES) == mod.HORDES.DEFAULT then
+		return func(self, ...)
+	end
+
 	local original_random_interval = ConflictUtils.random_interval
 	ConflictUtils.random_interval = function (numbers)
 		local result = original_random_interval(numbers)
 		if result then
 			local horde_size_ratio = mod:get(mod.SETTING_NAMES.HORDE_SIZE) / 100
+			if mod:get(mod.SETTING_NAMES.HORDES) == mod.HORDES.DISABLE then
+				horde_size_ratio = 0
+			end
 			result = math.round(result * horde_size_ratio)
 
 			-- so in compose_horde_spawn_list we have "for start,start+result,1 do" which will run once for result 0
@@ -248,6 +263,10 @@ mod:hook("Pacing.update", function(func, self, t, dt, alive_player_units)
 end)
 
 mod:hook("ConflictDirector.update_horde_pacing", function(func, self, t, dt)
+	if mod:get(mod.SETTING_NAMES.HORDES) ~= mod.HORDES.CUSTOMIZE then
+		return func(self, t, dt)
+	end
+
 	local original_recycle_settings = tablex.deepcopy(RecycleSettings)
 	RecycleSettings.push_horde_if_num_alive_grunts_above = mod:get(mod.SETTING_NAMES.HORDE_GRUNT_LIMIT)
 
@@ -263,7 +282,11 @@ mod:hook("ConflictDirector.update_horde_pacing", function(func, self, t, dt)
 	RecycleSettings = original_recycle_settings
 end)
 
-mod:hook("ConflictDirector.update", function(func, self, dt, t)
+mod:hook("ConflictDirector.update", function(func, self, ...)
+	if mod:get(mod.SETTING_NAMES.HORDES) ~= mod.HORDES.CUSTOMIZE then
+		return func(self, ...)
+	end
+
 	local original_recycle_settings = tablex.deepcopy(RecycleSettings)
 	RecycleSettings.max_grunts = mod:get(mod.SETTING_NAMES.MAX_GRUNTS)
 
@@ -273,7 +296,7 @@ mod:hook("ConflictDirector.update", function(func, self, dt, t)
 		mod:get(mod.SETTING_NAMES.HORDE_STARTUP_MAX)
 	}
 
-	func(self, dt, t)
+	func(self, ...)
 
 	CurrentPacing = original_current_pacing
 	RecycleSettings = original_recycle_settings

@@ -17,12 +17,6 @@ return {
 	event_horde_size_tooltip = {
 		en = "Set event horde size."
 	},
-	disable_ambients = {
-		en = "Disable Ambients"
-	},
-	disable_ambients_tooltip = {
-		en = "Disable ambient spawns."
-	},
 	disable_patrols = {
 		en = "Disable Patrols"
 	},
@@ -53,11 +47,26 @@ return {
 	disable_timed_specials_tooltip = {
 		en = "Disable specials that are spawned using the map timer."
 	},
-	disable_bosses = {
-		en = "Disable Bosses"
+	bosses = {
+		en = "Bosses"
 	},
-	disable_bosses_tooltip = {
-		en = "Disable boss spawns."
+	bosses_tooltip = {
+		en = "Disable bosses from map triggers completely or customize boss-related options."
+	},
+	ambients = {
+		en = "Ambients"
+	},
+	ambients_tooltip = {
+		en = "Disable or customize the ambient, static map spawns."
+	},
+	default = {
+		en = "Default"
+	},
+	disable = {
+		en = "Disable"
+	},
+	customize = {
+		en = "Customize"
 	},
 	no_boss_door = {
 		en = "No Boss Doors"

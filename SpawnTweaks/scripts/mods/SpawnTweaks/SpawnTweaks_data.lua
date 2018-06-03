@@ -9,12 +9,10 @@ local mod_data = {
 mod.SETTING_NAMES = {
 	HORDE_SIZE = "horde_size",
 	EVENT_HORDE_SIZE = "event_horde_size",
-	DISABLE_AMBIENTS = "disable_ambients",
 	DISABLE_PATROLS = "disable_patrols",
 	DISABLE_ROAMING_PATROLS = "disable_roaming_patrols",
 	DISABLE_TIMED_SPECIALS = "disable_timed_specials",
 	DISABLE_FIXED_EVENT_SPECIALS = "fixed_event_specials",
-	DISABLE_BOSSES = "disable_bosses",
 	NO_BOSS_DOOR = "no_boss_door",
 	SPAWN_COOLDOWN_MIN = "spawn_cooldown_min",
 	SPAWN_COOLDOWN_MAX = "spawn_cooldown_max",
@@ -32,9 +30,23 @@ mod.SETTING_NAMES = {
 	AMBIENTS_MULTIPLIER = "ambients_multiplier",
 	MORE_AMBIENT_ELITES = "more_ambient_elites",
 	NO_TROLL = "no_troll",
-	HORDE_STARTUP_MIN = "HORDE_STARTUP_MIN",
-	HORDE_STARTUP_MAX = "HORDE_STARTUP_MAX",
-	DISABLE_FIXED_SPAWNS = "disable_fixed_spawns"
+	HORDE_STARTUP_MIN = "horde_startup_min",
+	HORDE_STARTUP_MAX = "horde_startup_max",
+	DISABLE_FIXED_SPAWNS = "disable_fixed_spawns",
+	BOSSES = "bosses",
+	AMBIENTS = "ambients",
+}
+
+mod.BOSSES = {
+	DEFAULT = 1,
+	DISABLE = 2,
+	CUSTOMIZE = 3,
+}
+
+mod.AMBIENTS = {
+	DEFAULT = 1,
+	DISABLE = 2,
+	CUSTOMIZE = 3,
 }
 
 mod_data.options_widgets = {
@@ -55,13 +67,6 @@ mod_data.options_widgets = {
 		["range"] = {0, 300},
 		["unit_text"] = "%",
 		["default_value"] = 100,
-	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.DISABLE_AMBIENTS,
-		["widget_type"] = "checkbox",
-		["text"] = mod:localize("disable_ambients"),
-		["tooltip"] = mod:localize("disable_ambients_tooltip"),
-		["default_value"] = false,
 	},
 	{
 		["setting_name"] = mod.SETTING_NAMES.DISABLE_PATROLS,
@@ -99,32 +104,80 @@ mod_data.options_widgets = {
 		["default_value"] = false,
 	},
 	{
-		["setting_name"] = mod.SETTING_NAMES.DISABLE_BOSSES,
-		["widget_type"] = "checkbox",
-		["text"] = mod:localize("disable_bosses"),
-		["tooltip"] = mod:localize("disable_bosses_tooltip"),
-		["default_value"] = false,
+		["setting_name"] = mod.SETTING_NAMES.AMBIENTS,
+		["widget_type"] = "dropdown",
+		["text"] = mod:localize("ambients"),
+		["tooltip"] = mod:localize("ambients_tooltip"),
+		["options"] = {
+			{ text = mod:localize("default"), value = mod.AMBIENTS.DEFAULT }, --1
+			{ text = mod:localize("disable"), value = mod.AMBIENTS.DISABLE }, --2
+			{ text = mod:localize("customize"), value = mod.AMBIENTS.CUSTOMIZE }, --3
+		},
+		["sub_widgets"] = {
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.MORE_AMBIENT_ELITES,
+				["widget_type"] = "checkbox",
+				["text"] = mod:localize("more_ambient_elites"),
+				["tooltip"] = mod:localize("more_ambient_elites_tooltip"),
+				["default_value"] = false,
+			},
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.AMBIENTS_MULTIPLIER,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("ambients_multiplier"),
+				["tooltip"] = mod:localize("ambients_multiplier_tooltip"),
+				["range"] = {10, 1500},
+				["unit_text"] = "%",
+				["default_value"] = 100,
+			},
+		},
 	},
 	{
-		["setting_name"] = mod.SETTING_NAMES.DOUBLE_BOSSES,
-		["widget_type"] = "checkbox",
-		["text"] = mod:localize("double_bosses"),
-		["tooltip"] = mod:localize("double_bosses_tooltip"),
-		["default_value"] = false,
-	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.NO_TROLL,
-		["widget_type"] = "checkbox",
-		["text"] = mod:localize("no_troll"),
-		["tooltip"] = mod:localize("no_troll_tooltip"),
-		["default_value"] = false,
-	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.NO_BOSS_DOOR,
-		["widget_type"] = "checkbox",
-		["text"] = mod:localize("no_boss_door"),
-		["tooltip"] = mod:localize("no_boss_door_tooltip"),
-		["default_value"] = false,
+		["setting_name"] = mod.SETTING_NAMES.BOSSES,
+		["widget_type"] = "dropdown",
+		["text"] = mod:localize("bosses"),
+		["tooltip"] = mod:localize("bosses_tooltip"),
+		["options"] = {
+			{ text = mod:localize("default"), value = mod.BOSSES.DEFAULT }, --1
+			{ text = mod:localize("disable"), value = mod.BOSSES.DISABLE }, --2
+			{ text = mod:localize("customize"), value = mod.BOSSES.CUSTOMIZE }, --3
+		},
+		["sub_widgets"] = {
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.DOUBLE_BOSSES,
+				["widget_type"] = "checkbox",
+				["text"] = mod:localize("double_bosses"),
+				["tooltip"] = mod:localize("double_bosses_tooltip"),
+				["default_value"] = false,
+			},
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.NO_TROLL,
+				["widget_type"] = "checkbox",
+				["text"] = mod:localize("no_troll"),
+				["tooltip"] = mod:localize("no_troll_tooltip"),
+				["default_value"] = false,
+			},
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.NO_EMPTY_EVENTS,
+				["widget_type"] = "checkbox",
+				["text"] = mod:localize("no_empty_events"),
+				["tooltip"] = mod:localize("no_empty_events_tooltip"),
+				["default_value"] = false,
+			},
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.NO_BOSS_DOOR,
+				["widget_type"] = "checkbox",
+				["text"] = mod:localize("no_boss_door"),
+				["tooltip"] = mod:localize("no_boss_door_tooltip"),
+				["default_value"] = false,
+			},
+		},
 	},
 	{
 		["setting_name"] = mod.SETTING_NAMES.SPAWN_COOLDOWN_MIN,
@@ -161,13 +214,6 @@ mod_data.options_widgets = {
 		["range"] = {0, 100},
 		["unit_text"] = " sec",
 		["default_value"] = 60,
-	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.NO_EMPTY_EVENTS,
-		["widget_type"] = "checkbox",
-		["text"] = mod:localize("no_empty_events"),
-		["tooltip"] = mod:localize("no_empty_events_tooltip"),
-		["default_value"] = false,
 	},
 	{
 		["setting_name"] = mod.SETTING_NAMES.MAX_SPECIALS,
@@ -245,22 +291,6 @@ mod_data.options_widgets = {
 		["tooltip"] = mod:localize("horde_grunt_limit_tooltip"),
 		["range"] = {10, 240},
 		["default_value"] = 60,
-	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.MORE_AMBIENT_ELITES,
-		["widget_type"] = "checkbox",
-		["text"] = mod:localize("more_ambient_elites"),
-		["tooltip"] = mod:localize("more_ambient_elites_tooltip"),
-		["default_value"] = false,
-	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.AMBIENTS_MULTIPLIER,
-		["widget_type"] = "numeric",
-		["text"] = mod:localize("ambients_multiplier"),
-		["tooltip"] = mod:localize("ambients_multiplier_tooltip"),
-		["range"] = {10, 1500},
-		["unit_text"] = "%",
-		["default_value"] = 100,
 	},
 }
 

@@ -62,7 +62,7 @@ end)
 
 --- Disable ambients.
 mod:hook("AIInterestPointSystem.spawn_interest_points", function (func, ...)
-	if mod:get(mod.SETTING_NAMES.DISABLE_AMBIENTS) then
+	if mod:get(mod.SETTING_NAMES.AMBIENTS) == mod.AMBIENTS.DISABLE then
 		return
 	end
 
@@ -71,12 +71,15 @@ end)
 
 --- Disable boss doors.
 mod:hook("DoorSystem.update", function(func, self, context, t)
-	if mod:get(mod.SETTING_NAMES.NO_BOSS_DOOR) and self.is_server then
-		for map_section, _ in pairs(table.clone(self._active_groups)) do
-			self:open_boss_doors(map_section)
-			self._active_groups[map_section] = nil
+	if mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.CUSTOMIZE then
+		if mod:get(mod.SETTING_NAMES.NO_BOSS_DOOR) and self.is_server then
+			for map_section, _ in pairs(table.clone(self._active_groups)) do
+				self:open_boss_doors(map_section)
+				self._active_groups[map_section] = nil
+			end
 		end
 	end
+
 	return func(self, context, t)
 end)
 
@@ -119,12 +122,14 @@ mod:hook("ConflictDirector.spawn_queued_unit", function(func, self, breed, boxed
 		return
 	end
 
-	if mod:get(mod.SETTING_NAMES.MORE_AMBIENT_ELITES) then
-		if not spawn_type then
-			if breed.name == "skaven_clan_rat" then
-				breed = ({Breeds["skaven_plague_monk"], Breeds["skaven_storm_vermin_commander"], Breeds["skaven_storm_vermin_with_shield"]})[math.random(1,6)] or breed
-			elseif breed.name == "chaos_marauder" then
-				breed = ({Breeds["chaos_raider"], Breeds["chaos_fanatic"], Breeds["chaos_warrior"]})[math.random(1,6)] or breed
+	if mod:get(mod.SETTING_NAMES.AMBIENTS) == mod.AMBIENTS.CUSTOMIZE then
+		if mod:get(mod.SETTING_NAMES.MORE_AMBIENT_ELITES) then
+			if not spawn_type then
+				if breed.name == "skaven_clan_rat" then
+					breed = ({Breeds["skaven_plague_monk"], Breeds["skaven_storm_vermin_commander"], Breeds["skaven_storm_vermin_with_shield"]})[math.random(1,6)] or breed
+				elseif breed.name == "chaos_marauder" then
+					breed = ({Breeds["chaos_raider"], Breeds["chaos_fanatic"], Breeds["chaos_warrior"]})[math.random(1,6)] or breed
+				end
 			end
 		end
 	end
@@ -181,7 +186,7 @@ mod.bosses = pl.List{
 }
 mod.bosses_no_troll = mod.bosses:clone():remove_value("chaos_troll")
 mod:hook("TerrorEventMixer.run_functions.spawn", function (func, event, element, ...)
-	if mod:get(mod.SETTING_NAMES.DISABLE_BOSSES) and tablex.find(mod.boss_events, event.name) then
+	if mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.DISABLE and tablex.find(mod.boss_events, event.name) then
 		return true
 	end
 
@@ -189,23 +194,25 @@ mod:hook("TerrorEventMixer.run_functions.spawn", function (func, event, element,
 		return true
 	end
 
-	if stringx.count(event.name, "boss_event") > 0 and stringx.count(event.name, "patrol") == 0 then
-		if mod:get(mod.SETTING_NAMES.NO_TROLL) and element.breed_name == "chaos_troll" then
-			element.breed_name = mod.bosses_no_troll[math.random(#mod.bosses_no_troll)]
-		end
+	if mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.CUSTOMIZE then
+		if stringx.count(event.name, "boss_event") > 0 and stringx.count(event.name, "patrol") == 0 then
+			if mod:get(mod.SETTING_NAMES.NO_TROLL) and element.breed_name == "chaos_troll" then
+				element.breed_name = mod.bosses_no_troll[math.random(#mod.bosses_no_troll)]
+			end
 
-		if mod:get(mod.SETTING_NAMES.DOUBLE_BOSSES) then
-			local new_element = tablex.deepcopy(element)
-			local bosses_no_duplicate = tablex.deepcopy(mod:get(mod.SETTING_NAMES.NO_TROLL) and mod.bosses_no_troll or mod.bosses)
-			local duplicate_index = tablex.find(bosses_no_duplicate, element.breed_name)
-			if duplicate_index then
-				table.remove(bosses_no_duplicate, duplicate_index)
+			if mod:get(mod.SETTING_NAMES.DOUBLE_BOSSES) then
+				local new_element = tablex.deepcopy(element)
+				local bosses_no_duplicate = tablex.deepcopy(mod:get(mod.SETTING_NAMES.NO_TROLL) and mod.bosses_no_troll or mod.bosses)
+				local duplicate_index = tablex.find(bosses_no_duplicate, element.breed_name)
+				if duplicate_index then
+					table.remove(bosses_no_duplicate, duplicate_index)
+				end
+				new_element.breed_name = bosses_no_duplicate[math.random(#bosses_no_duplicate)]
+				if event.data.group_data then
+					event.data.group_data.size = 2
+				end
+				func(event, new_element, ...)
 			end
-			new_element.breed_name = bosses_no_duplicate[math.random(#bosses_no_duplicate)]
-			if event.data.group_data then
-				event.data.group_data.size = 2
-			end
-			func(event, new_element, ...)
 		end
 	end
 
@@ -286,7 +293,9 @@ end)
 
 --- Change ambient density.
 mod:hook("SpawnZoneBaker.spawn_amount_rats", function(func, self, spawns, pack_sizes, pack_rotations, pack_types, zone_data_list, nodes, num_wanted_rats, pack_type, area, zone)
-	num_wanted_rats = math.round(num_wanted_rats * mod:get(mod.SETTING_NAMES.AMBIENTS_MULTIPLIER)/100)
+	if mod:get(mod.SETTING_NAMES.AMBIENTS) == mod.AMBIENTS.CUSTOMIZE then
+		num_wanted_rats = math.round(num_wanted_rats * mod:get(mod.SETTING_NAMES.AMBIENTS_MULTIPLIER)/100)
+	end
 
 	return func(self, spawns, pack_sizes, pack_rotations, pack_types, zone_data_list, nodes, num_wanted_rats, pack_type, area, zone)
 end)

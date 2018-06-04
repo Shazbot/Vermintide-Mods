@@ -84,13 +84,13 @@ return {
 		en = "Min Cooldown For New Special"
 	},
 	spawn_cooldown_min_tooltip = {
-		en = "Minimal cooldown for a new special to spawn. Game randomly chooses between min and max."
+		en = "Minimal cooldown for a new special to spawn. Game randomly chooses between min and max. Default is 50."
 	},
 	spawn_cooldown_max = {
 		en = "Max Cooldown For New Special"
 	},
 	spawn_cooldown_max_tooltip = {
-		en = "Maximal cooldown for a new special to spawn. Game randomly chooses between min and max."
+		en = "Maximal cooldown for a new special to spawn. Game randomly chooses between min and max. Default is 90."
 	},
 	safe_zone_delay_min = {
 		en = "Min Delay After Leaving Safe Zone"

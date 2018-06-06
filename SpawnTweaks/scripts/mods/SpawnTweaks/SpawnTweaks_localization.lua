@@ -80,6 +80,12 @@ return {
 	no_boss_door_tooltip = {
 		en = "Disable boss barriers."
 	},
+	boss_dmg_multiplier = {
+		en = "Damage To Bosses Multiplier"
+	},
+	boss_dmg_multiplier_tooltip = {
+		en = "Multiplies damage all players do to bosses."
+	},
 	spawn_cooldown_min = {
 		en = "Min Cooldown For New Special"
 	},

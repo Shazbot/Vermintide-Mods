@@ -1,7 +1,7 @@
 local mod = get_mod("SpawnTweaks") -- luacheck: ignore get_mod
 
 -- luacheck: globals math ConflictUtils unpack table BossSettings CurrentSpecialsSettings
--- luacheck: globals RecycleSettings CurrentPacing Breeds
+-- luacheck: globals RecycleSettings CurrentPacing Breeds Unit DamageUtils
 
 local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
@@ -353,6 +353,30 @@ mod:hook("SpecialsPacing.update", function(func, self, t, alive_specials, specia
 	end
 
 	return func(self, t, alive_specials, specials_population, player_positions)
+end)
+
+mod:hook("DamageUtils.add_damage_network_player", function(func, ...)
+	if mod:get(mod.SETTING_NAMES.BOSSES) ~= mod.BOSSES.CUSTOMIZE then
+		return func(...)
+	end
+
+	local original_calculate_damage = DamageUtils.calculate_damage
+	DamageUtils.calculate_damage = function(damage_output, target_unit, ...)
+		local dmg = original_calculate_damage(damage_output, target_unit, ...)
+		local breed = Unit.get_data(target_unit, "breed")
+		if breed then
+			if mod.bosses:contains(breed.name) then
+				dmg = dmg * mod:get(mod.SETTING_NAMES.BOSS_DMG_MULTIPLIER) / 100
+				return dmg
+			end
+		end
+
+		return dmg
+	end
+
+	func(...)
+
+	DamageUtils.calculate_damage = original_calculate_damage
 end)
 
 --- Callbacks ---

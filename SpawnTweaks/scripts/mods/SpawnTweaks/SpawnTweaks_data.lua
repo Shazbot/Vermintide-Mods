@@ -37,6 +37,7 @@ mod.SETTING_NAMES = {
 	HORDES = "hordes",
 	SPECIALS = "specials",
 	ALWAYS_SPECIALS = "always_specials",
+	BOSS_DMG_MULTIPLIER = "boss_dmg_multiplier",
 }
 
 mod.BOSSES = {
@@ -335,6 +336,16 @@ mod_data.options_widgets = {
 				["text"] = mod:localize("no_boss_door"),
 				["tooltip"] = mod:localize("no_boss_door_tooltip"),
 				["default_value"] = false,
+			},
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.BOSS_DMG_MULTIPLIER,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("boss_dmg_multiplier"),
+				["tooltip"] = mod:localize("boss_dmg_multiplier_tooltip"),
+				["range"] = {0, 1000},
+				["unit_text"] = "%",
+				["default_value"] = 100,
 			},
 		},
 	},

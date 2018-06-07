@@ -38,6 +38,7 @@ mod.SETTING_NAMES = {
 	SPECIALS = "specials",
 	ALWAYS_SPECIALS = "always_specials",
 	BOSS_DMG_MULTIPLIER = "boss_dmg_multiplier",
+	SPECIAL_TO_BOSS_CHANCE = "special_to_boss_chance",
 }
 
 mod.BOSSES = {
@@ -346,6 +347,16 @@ mod_data.options_widgets = {
 				["range"] = {0, 1000},
 				["unit_text"] = "%",
 				["default_value"] = 100,
+			},
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.SPECIAL_TO_BOSS_CHANCE,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("special_to_boss_chance"),
+				["tooltip"] = mod:localize("special_to_boss_chance_tooltip"),
+				["range"] = {0, 100},
+				["unit_text"] = "%",
+				["default_value"] = 0,
 			},
 		},
 	},

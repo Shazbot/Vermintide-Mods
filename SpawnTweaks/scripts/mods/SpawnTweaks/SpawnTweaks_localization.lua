@@ -86,6 +86,12 @@ return {
 	boss_dmg_multiplier_tooltip = {
 		en = "Multiplies damage all players do to bosses."
 	},
+	special_to_boss_chance = {
+		en = "Replace Special With Boss Chance"
+	},
+	special_to_boss_chance_tooltip = {
+		en = "Chance for a spawned special to be a boss instead."
+	},
 	spawn_cooldown_min = {
 		en = "Min Cooldown For New Special"
 	},

@@ -1,7 +1,7 @@
 local mod = get_mod("SpawnTweaks") -- luacheck: ignore get_mod
 
 -- luacheck: globals math ConflictUtils unpack table BossSettings CurrentSpecialsSettings
--- luacheck: globals RecycleSettings CurrentPacing Breeds Unit DamageUtils
+-- luacheck: globals RecycleSettings CurrentPacing Breeds Unit DamageUtils Managers
 
 local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
@@ -189,10 +189,18 @@ mod:hook("SpecialsPacing.setup_functions.specials_by_slots", function(func, t, s
 	CurrentSpecialsSettings = original_specials_settings
 end)
 
+mod.get_num_alive_bosses = function()
+	return #Managers.state.conflict:alive_bosses()
+end
+
 --- Change max of same special.
 mod:hook("SpecialsPacing.select_breed_functions.get_random_breed", function(func, slots, breeds, method_data)
 	if mod:get(mod.SETTING_NAMES.SPECIALS) ~= mod.SPECIALS.CUSTOMIZE then
 		return func(slots, breeds, method_data)
+	end
+
+	if mod.get_num_alive_bosses() == 0 and math.random(100) <= mod:get(mod.SETTING_NAMES.SPECIAL_TO_BOSS_CHANCE) then
+		return mod.bosses[math.random(#mod.bosses)]
 	end
 
 	local new_method_data = tablex.deepcopy(method_data)

@@ -15,16 +15,18 @@ end
 --- Restart the level on mission failure.
 --- Without it we'd transitions to the inn.
 mod:hook("GameModeManager.server_update", function (func, self, dt, t)
-	local round_started = self._round_started
-	local ended, reason = self._game_mode:evaluate_end_conditions(round_started, dt, t)
-	local original_set_next_level = LevelTransitionHandler.set_next_level
-	if ended and reason == "lost" then
-		LevelTransitionHandler.set_next_level = function(self, level_key) -- self is now LevelTransitionHandler
-			return original_set_next_level(self, self:get_current_level_keys())
+	local original_evaluate_end_conditions = self._game_mode.evaluate_end_conditions
+	self._game_mode.evaluate_end_conditions = function(...)
+		local ended, reason = original_evaluate_end_conditions(...)
+		if ended and reason == "lost" then
+			return ended, "reload"
 		end
+		return ended, reason
 	end
+
 	func(self, dt, t)
-	LevelTransitionHandler.set_next_level = original_set_next_level
+
+	self._game_mode.evaluate_end_conditions = original_evaluate_end_conditions
 end)
 
 --- Track frame_index to know if it's bot UI. Player frame_index is nil.

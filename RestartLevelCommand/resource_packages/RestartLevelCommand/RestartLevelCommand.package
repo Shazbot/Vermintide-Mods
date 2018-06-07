@@ -1,0 +1,11 @@
+mod = [
+	"RestartLevelCommand"
+]
+
+package = [
+	"resource_packages/RestartLevelCommand/RestartLevelCommand"
+]
+
+lua = [
+	"scripts/mods/RestartLevelCommand/*"
+]

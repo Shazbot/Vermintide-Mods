@@ -1,7 +1,7 @@
 local mod = get_mod("SpawnTweaks") -- luacheck: ignore get_mod
 
 -- luacheck: globals math ConflictUtils unpack table BossSettings CurrentSpecialsSettings
--- luacheck: globals RecycleSettings CurrentPacing Breeds Unit DamageUtils Managers
+-- luacheck: globals RecycleSettings CurrentPacing Breeds Unit DamageUtils Managers CurrentBossSettings
 
 local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
@@ -390,24 +390,10 @@ end)
 --- Callbacks ---
 mod.on_disabled = function(is_first_call) -- luacheck: ignore is_first_call
 	mod:disable_all_hooks()
-
-	mod.on_setting_changed(mod.SETTING_NAMES.NO_EMPTY_EVENTS)
 end
 
 mod.on_enabled = function(is_first_call) -- luacheck: ignore is_first_call
 	mod:enable_all_hooks()
-
-	mod.on_setting_changed(mod.SETTING_NAMES.NO_EMPTY_EVENTS)
-end
-
-mod.update = function()
-	mod:pcall(function()
-		local boss_settings_backup = mod:persistent_table("backups").BossSettings
-		if BossSettings and not boss_settings_backup then
-			mod:persistent_table("backups").BossSettings = tablex.deepcopy(BossSettings)
-			mod.on_setting_changed(mod.SETTING_NAMES.NO_EMPTY_EVENTS)
-		end
-	end)
 end
 
 mod.no_empty_events = {
@@ -415,20 +401,15 @@ mod.no_empty_events = {
 	-- "event_patrol"
 }
 
-mod.on_setting_changed = function(setting_name)
-	local boss_settings_backup = mod:persistent_table("backups").BossSettings
-	if setting_name == mod.SETTING_NAMES.NO_EMPTY_EVENTS and boss_settings_backup then
-		if mod:is_enabled() and mod:get(mod.SETTING_NAMES.NO_EMPTY_EVENTS) then
-			for _, boss_setting in pairs( BossSettings ) do
-				if boss_setting.boss_events and boss_setting.boss_events.events then
-					boss_setting.boss_events.events = mod.no_empty_events
-					boss_setting.boss_events.max_events_of_this_kind = {}
-				end
-			end
-		else
-			if mod:persistent_table("backups").BossSettings then
-				BossSettings = tablex.deepcopy(mod:persistent_table("backups").BossSettings)
-			end
+mod:hook("ConflictDirector.set_updated_settings", function(func, self, conflict_settings_name)
+	func(self, conflict_settings_name)
+
+	if mod:is_enabled() and mod:get(mod.SETTING_NAMES.NO_EMPTY_EVENTS) then
+		CurrentBossSettings = tablex.deepcopy(CurrentBossSettings)
+
+		if CurrentBossSettings.boss_events then
+			CurrentBossSettings.boss_events.events = mod.no_empty_events
+			CurrentBossSettings.boss_events.max_events_of_this_kind = {}
 		end
 	end
-end
+end)

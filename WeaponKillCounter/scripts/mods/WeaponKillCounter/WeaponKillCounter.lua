@@ -157,7 +157,7 @@ UITooltipPasses.weapon_kills = {
 	end
 }
 
-mod:hook("UIPasses.item_tooltip.init", function(func, pass_definition, ui_content, ui_style, style_global)
+mod:hook(UIPasses.item_tooltip, "init", function(func, pass_definition, ui_content, ui_style, style_global)
 	local pass_data = func(pass_definition, ui_content, ui_style, style_global)
 
 	local index_of_insertion = nil

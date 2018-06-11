@@ -101,7 +101,7 @@ mod:hook("DoorSystem.update", function(func, self, context, t)
 end)
 
 --- Disable patrols.
-mod:hook("TerrorEventMixer.run_functions.spawn_patrol", function (func, event, element, t, dt)
+mod:hook(TerrorEventMixer.run_functions, "spawn_patrol", function (func, event, element, t, dt)
 	if mod:get(mod.SETTING_NAMES.DISABLE_PATROLS) then
 		return true
 	end
@@ -110,7 +110,7 @@ mod:hook("TerrorEventMixer.run_functions.spawn_patrol", function (func, event, e
 end)
 
 --- Disable roaming patrols.
-mod:hook("TerrorEventMixer.run_functions.roaming_patrol", function (func, event, element, t, dt)
+mod:hook(TerrorEventMixer.run_functions, "roaming_patrol", function (func, event, element, t, dt)
 	if mod:get(mod.SETTING_NAMES.DISABLE_ROAMING_PATROLS) then
 		return true
 	end
@@ -170,7 +170,7 @@ mod:hook("SpecialsPacing.specials_by_slots", function(func, self, t, specials_se
 end)
 
 --- Specials spawn delay from start of the level.
-mod:hook("SpecialsPacing.setup_functions.specials_by_slots", function(func, t, slots, method_data)
+mod:hook(SpecialsPacing.setup_functions, "specials_by_slots", function(func, t, slots, method_data)
 	if mod:get(mod.SETTING_NAMES.SPECIALS) ~= mod.SPECIALS.CUSTOMIZE then
 		return func(t, slots, method_data)
 	end
@@ -194,7 +194,7 @@ mod.get_num_alive_bosses = function()
 end
 
 --- Change max of same special.
-mod:hook("SpecialsPacing.select_breed_functions.get_random_breed", function(func, slots, breeds, method_data)
+mod:hook(SpecialsPacing.select_breed_functions, "get_random_breed", function(func, slots, breeds, method_data)
 	if mod:get(mod.SETTING_NAMES.SPECIALS) ~= mod.SPECIALS.CUSTOMIZE then
 		return func(slots, breeds, method_data)
 	end
@@ -222,7 +222,7 @@ mod.bosses = pl.List{
 	"chaos_spawn"
 }
 mod.bosses_no_troll = mod.bosses:clone():remove_value("chaos_troll")
-mod:hook("TerrorEventMixer.run_functions.spawn", function (func, event, element, ...)
+mod:hook(TerrorEventMixer.run_functions, "spawn", function (func, event, element, ...)
 	if mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.DISABLE and tablex.find(mod.boss_events, event.name) then
 		return true
 	end
@@ -345,7 +345,7 @@ mod:hook("SpawnZoneBaker.spawn_amount_rats", function(func, self, spawns, pack_s
 	return func(self, spawns, pack_sizes, pack_rotations, pack_types, zone_data_list, nodes, num_wanted_rats, pack_type, area, zone)
 end)
 
-mod:hook("TerrorEventMixer.init_functions.control_specials", function(func, event, element, t)
+mod:hook(TerrorEventMixer.init_functions, "control_specials", function(func, event, element, t)
 	if mod:get(mod.SETTING_NAMES.SPECIALS) == mod.SPECIALS.CUSTOMIZE
 	and mod:get(mod.SETTING_NAMES.ALWAYS_SPECIALS) then
 		element.enable = true

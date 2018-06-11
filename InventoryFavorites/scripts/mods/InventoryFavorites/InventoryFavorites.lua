@@ -886,7 +886,7 @@ UITooltipPasses.advanced_input_helper_junk = {
 	end
 }
 
-mod:hook("UIPasses.item_tooltip.init", function(func, pass_definition, ui_content, ui_style, style_global)
+mod:hook(UIPasses.item_tooltip, "init", function(func, pass_definition, ui_content, ui_style, style_global)
 	local pass_data = func(pass_definition, ui_content, ui_style, style_global)
 	table.insert(pass_data.passes, 4, {
 			data = UITooltipPasses.fav.setup_data(),

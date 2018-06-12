@@ -42,7 +42,7 @@ mod:hook("Localize", function (func, id, ...)
 	return func(id, ...)
 end)
 
-mod:hook("EndViewStateScore.draw", function(func, self, ...)
+mod:hook(EndViewStateScore, "draw", function(func, self, ...)
 	mod:pcall(function()
 		local size_delta = 15
 
@@ -84,7 +84,7 @@ mod:hook("EndViewStateScore.draw", function(func, self, ...)
 	return func(self, ...)
 end)
 
-mod:hook("PlayerUnitHealthExtension.add_damage", function(func, self, attacker_unit, damage_amount, hit_zone_name, damage_type, ...)
+mod:hook(PlayerUnitHealthExtension, "add_damage", function(func, self, attacker_unit, damage_amount, hit_zone_name, damage_type, ...)
 	mod:pcall(function()
 		local player_manager = Managers.player
 		local player = player_manager:owner(self.unit)
@@ -114,7 +114,7 @@ local definitions = local_require("scripts/ui/views/level_end/states/definitions
 local player_score_size = definitions.player_score_size
 
 -- luacheck: no unused, no redefined
-mod:hook("EndViewStateScore._setup_score_panel", function(func, self, score_panel_scores, player_names)
+mod:hook(EndViewStateScore, "_setup_score_panel", function(func, self, score_panel_scores, player_names)
 	local category_title_size = 30
 	local text_size = 22
 	local total_row_index = 1

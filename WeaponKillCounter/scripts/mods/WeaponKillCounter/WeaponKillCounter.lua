@@ -57,7 +57,7 @@ local function get_text_height(ui_renderer, size, ui_style, ui_content, text, ui
 	return full_font_height
 end
 
-mod:hook("StatisticsUtil.register_kill", function(func, victim_unit, damage_data, statistics_db, is_server)
+mod:hook(StatisticsUtil, "register_kill", function(func, victim_unit, damage_data, statistics_db, is_server)
 	mod:pcall(function()
 		local attacker_unit = damage_data[DamageDataIndex.ATTACKER]
 		attacker_unit = AiUtils.get_actual_attacker_unit(attacker_unit)
@@ -176,12 +176,3 @@ mod:hook(UIPasses.item_tooltip, "init", function(func, pass_definition, ui_conte
 
 	return pass_data
 end)
-
---- Callbacks ---
-mod.on_disabled = function(is_first_call) -- luacheck: ignore is_first_call
-	mod:disable_all_hooks()
-end
-
-mod.on_enabled = function(is_first_call) -- luacheck: ignore is_first_call
-	mod:enable_all_hooks()
-end

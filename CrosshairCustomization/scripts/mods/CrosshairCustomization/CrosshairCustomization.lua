@@ -5,15 +5,6 @@ local mod = get_mod("CrosshairCustomization") -- luacheck: ignore get_mod
 local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
 
---- Callbacks ---
-mod.on_disabled = function(is_first_call) -- luacheck: ignore is_first_call
-	-- mod:disable_all_hooks()
-end
-
-mod.on_enabled = function(is_first_call) -- luacheck: ignore is_first_call
-	mod:enable_all_hooks()
-end
-
 --- Mod Logic ---
 local function get_color()
 	local color_index = mod:is_enabled() and mod:get(mod.SETTING_NAMES.COLOR) or mod.COLOR_INDEX.DEFAULT
@@ -74,7 +65,7 @@ local function change_crosshair_color(crosshair_ui)
 end
 
 --- Change color of hit markers.
-mod:hook("CrosshairUI.configure_hit_marker_color_and_size", function (func, self, hit_marker, hit_marker_data)
+mod:hook(CrosshairUI, "configure_hit_marker_color_and_size", function (func, self, hit_marker, hit_marker_data)
 	local additional_hit_icon = func(self, hit_marker, hit_marker_data)
 
 	mod:pcall(function()
@@ -130,7 +121,7 @@ local function draw_crosshair_prehook(crosshair_ui)
 	end)
 end
 
-mod:hook("CrosshairUI.draw_circle_style_crosshair", function(func, self, ...)
+mod:hook(CrosshairUI, "draw_circle_style_crosshair", function(func, self, ...)
 	if self._mod_last_crosshair_style ~= self.crosshair_style then
 		self._mod_last_crosshair_style = self.crosshair_style
 		draw_crosshair_prehook(self)
@@ -141,7 +132,7 @@ mod:hook("CrosshairUI.draw_circle_style_crosshair", function(func, self, ...)
 end)
 
 --- No crosshair at all with a melee weapon.
-mod:hook("CrosshairUI.draw_dot_style_crosshair", function(func, self, ...)
+mod:hook(CrosshairUI, "draw_dot_style_crosshair", function(func, self, ...)
 	if self._mod_last_crosshair_style == "circle" then
 		self._mod_last_crosshair_style = self.crosshair_style
 		draw_crosshair_prehook(self)
@@ -170,12 +161,12 @@ local function dot_only_prehook(func, self, ...)
 end
 
 --- Hide lines, keep dot.
-mod:hook("CrosshairUI.draw_default_style_crosshair", dot_only_prehook)
-mod:hook("CrosshairUI.draw_shotgun_style_crosshair", dot_only_prehook)
-mod:hook("CrosshairUI.draw_arrows_style_crosshair", dot_only_prehook)
+mod:hook(CrosshairUI, "draw_default_style_crosshair", dot_only_prehook)
+mod:hook(CrosshairUI, "draw_shotgun_style_crosshair", dot_only_prehook)
+mod:hook(CrosshairUI, "draw_arrows_style_crosshair", dot_only_prehook)
 
 --- Hide headshot markers.
-mod:hook("CrosshairUI.draw_projectile_style_crosshair", function (func, self, ui_renderer, pitch_percentage, yaw_percentage)
+mod:hook(CrosshairUI, "draw_projectile_style_crosshair", function (func, self, ui_renderer, pitch_percentage, yaw_percentage)
 	if mod:is_enabled() and mod:get(mod.SETTING_NAMES.DOT) then
 		return self:draw_dot_style_crosshair(ui_renderer, pitch_percentage, yaw_percentage)
 	end

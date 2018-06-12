@@ -170,14 +170,14 @@ mod.create_passes = function(self, widget)
 	end
 end
 
-mod:hook("HeroWindowLoadoutInventory.on_exit", function (func, self, ...)
+mod:hook(HeroWindowLoadoutInventory, "on_exit", function (func, self, ...)
 	reload = true
 	local widget = self._item_grid._widget
 	mod:remove_passes(widget)
 	return func(self, ...)
 end)
 
-mod:hook("HeroWindowLoadoutInventory.update", function (func, self, ...)
+mod:hook(HeroWindowLoadoutInventory, "update", function (func, self, ...)
 	local widget = self._item_grid._widget
 	if not widget.content.item_1_2 then
 		mod:remove_passes(widget)
@@ -280,7 +280,7 @@ local function junk_item_sort_func(item_1, item_2)
 	return item_sort_func(item_1, item_2)
 end
 
-mod:hook("ItemGridUI.change_item_filter", function (func, self, item_filter, change_page)
+mod:hook(ItemGridUI, "change_item_filter", function (func, self, item_filter, change_page)
 	if pl.stringx.count(item_filter, "can_salvage") > 0 then
 		item_filter = "not is_favorite and " .. item_filter
 		self:apply_item_sorting_function(junk_item_sort_func)
@@ -342,7 +342,7 @@ mod.get_fav_input_service = function(self)
 	return Managers.input:get_input_service("favorite_input_service")
 end
 
-mod:hook("ItemGridUI._populate_inventory_page", function (func, self, ...)
+mod:hook(ItemGridUI, "_populate_inventory_page", function (func, self, ...)
 	local widget = self._widget
 	mod:remove_passes(widget)
 	func(self, ...)

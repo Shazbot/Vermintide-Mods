@@ -35,7 +35,7 @@ local reinforcement_scenegraph_definition = {
 }
 
 --- Make scenegraph creation use own scenegraph definition instead.
-mod:hook("PositiveReinforcementUI.create_ui_elements", function (func, self)
+mod:hook(PositiveReinforcementUI, "create_ui_elements", function (func, self)
 	local original_init_scenegraph = UISceneGraph.init_scenegraph
 	UISceneGraph.init_scenegraph = function (scenegraph) -- luacheck: ignore scenegraph
 		return original_init_scenegraph(reinforcement_scenegraph_definition)
@@ -66,81 +66,69 @@ local event_amount_count_text_style = {
 	}
 }
 
-mod:hook("PositiveReinforcementUI.add_event", function (func, self, hash, is_local_player, color_from, event_type, ...)
-	func(self, hash, is_local_player, color_from, event_type, ...)
+mod:hook_safe(PositiveReinforcementUI, "add_event", function (self, hash, is_local_player, color_from, event_type, ...) -- luacheck: ignore hash is_local_player color_from ...
 
-	mod:pcall(function()
-		local events = pl.List(self._positive_enforcement_events)
+	local events = pl.List(self._positive_enforcement_events)
 
-		-- newly created event
-		local new_event = events[1]
+	-- newly created event
+	local new_event = events[1]
 
-		-- check if older event already exists
-		local duplicate_kill_events = events:clone():remove(1):filter(
-			function(event)
-				return event_type == "killed_special"
-					and event.widget.content["portrait_1"].texture_id == new_event.widget.content["portrait_1"].texture_id
-					and event.widget.content["portrait_2"].texture_id == new_event.widget.content["portrait_2"].texture_id
-			end)
+	-- check if older event already exists
+	local duplicate_kill_events = events:clone():remove(1):filter(
+		function(event)
+			return event_type == "killed_special"
+				and event.widget.content["portrait_1"].texture_id == new_event.widget.content["portrait_1"].texture_id
+				and event.widget.content["portrait_2"].texture_id == new_event.widget.content["portrait_2"].texture_id
+		end)
 
-		-- should be only one duplicate present, get the old count from it
-		local old_count = 0
-		if #duplicate_kill_events > 0 then
-			old_count = duplicate_kill_events[1].event_amount_count
-		end
+	-- should be only one duplicate present, get the old count from it
+	local old_count = 0
+	if #duplicate_kill_events > 0 then
+		old_count = duplicate_kill_events[1].event_amount_count
+	end
 
-		-- remove old event, should be only one, but whatever
-		duplicate_kill_events:foreach(
-			function(kill_event)
-				self:remove_event(events:index(kill_event))
-			end)
+	-- remove old event, should be only one, but whatever
+	duplicate_kill_events:foreach(
+		function(kill_event)
+			self:remove_event(events:index(kill_event))
+		end)
 
-		local widget = new_event.widget
-		local passes = pl.List(widget.element.passes)
+	local widget = new_event.widget
+	local passes = pl.List(widget.element.passes)
 
-		widget.style["event_amount_count"] = table.clone(event_amount_count_text_style) -- new style for our text
+	widget.style["event_amount_count"] = table.clone(event_amount_count_text_style) -- new style for our text
 
-		-- check if our new pass was already created before
-		local widget_already_patched = #passes:filter(
-			function(pass)
-				return pass.text_id and pass.text_id == 'event_amount_count_formatted' or false
-			end) > 0
+	-- check if our new pass was already created before
+	local widget_already_patched = #passes:filter(
+		function(pass)
+			return pass.text_id and pass.text_id == 'event_amount_count_formatted' or false
+		end) > 0
 
-		-- create new pass and pass_data if needed
-		if not widget_already_patched then
-			passes[#passes + 1] = {
+	-- create new pass and pass_data if needed
+	if not widget_already_patched then
+		passes[#passes + 1] = {
+			text_id = "event_amount_count_formatted",
+			pass_type = "text",
+			style_id = "event_amount_count",
+			content_check_function = function(content)
+				return content.event_amount_count > 1
+			end,
+		}
+		widget.element.pass_data[#passes] = {
 				text_id = "event_amount_count_formatted",
-				pass_type = "text",
-				style_id = "event_amount_count",
-				content_check_function = function(content)
-					return content.event_amount_count > 1
-				end,
 			}
-			widget.element.pass_data[#passes] = {
-		      text_id = "event_amount_count_formatted",
-		    }
-		end
+	end
 
-		local content = widget.content
-		new_event.event_amount_count = old_count + 1
-		content.event_amount_count = new_event.event_amount_count -- keep a copy in content for the content_check_function
-		content.event_amount_count_formatted = "x"..tostring(new_event.event_amount_count)
-	end)
+	local content = widget.content
+	new_event.event_amount_count = old_count + 1
+	content.event_amount_count = new_event.event_amount_count -- keep a copy in content for the content_check_function
+	content.event_amount_count_formatted = "x"..tostring(new_event.event_amount_count)
 end)
-
---- Callbacks ---
-mod.on_disabled = function(is_first_call) -- luacheck: ignore is_first_call
-	mod:disable_all_hooks()
-end
-
-mod.on_enabled = function(is_first_call) -- luacheck: ignore is_first_call
-	mod:enable_all_hooks()
-end
 
 -- debug stuff
 -- UISettings.positive_reinforcement.show_duration = 4
 
--- mod:hook("PositiveReinforcementUI.update", function (func, self, ...)
+-- mod:hook(PositiveReinforcementUI, "update", function (func, self, ...)
 -- 	self.ui_scenegraph = UISceneGraph.init_scenegraph(reinforcement_scenegraph_definition)
 
 -- 	return func(self, ...)

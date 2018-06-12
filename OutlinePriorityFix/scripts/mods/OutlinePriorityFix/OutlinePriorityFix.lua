@@ -4,15 +4,6 @@ local mod = get_mod("OutlinePriorityFix") -- luacheck: ignore get_mod
 
 -- luacheck: globals OutlineSettings Color Managers script_data ScriptUnit
 
---- Callbacks ---
-mod.on_disabled = function(is_first_call) -- luacheck: ignore is_first_call
-	mod:disable_all_hooks()
-end
-
-mod.on_enabled = function(is_first_call) -- luacheck: ignore is_first_call
-	mod:enable_all_hooks()
-end
-
 --- Mod Logic ---
 -- Enables or disables the red outline. We don't actually need to do this, OutlineSystem.update would
 -- do it eventually, but there is a brief random delay before it does, and this avoids that.
@@ -46,7 +37,7 @@ local function wrap_set_pinged(outline_extn)
 	end
 end
 
-mod:hook("ActionTrueFlightBowAim.client_owner_post_update", function(orig_func, self, ...)
+mod:hook(ActionTrueFlightBowAim, "client_owner_post_update", function(orig_func, self, ...)
 	local old_target = self.target
 	orig_func(self, ...)
 	local new_target = self.target
@@ -71,7 +62,7 @@ mod:hook("ActionTrueFlightBowAim.client_owner_post_update", function(orig_func, 
 	end
 end)
 
-mod:hook("ActionTrueFlightBowAim.finish", function(orig_func, self, ...)
+mod:hook(ActionTrueFlightBowAim, "finish", function(orig_func, self, ...)
 	local outline_extn = self.target and ScriptUnit.has_extension(self.target, "outline_system")
 	if outline_extn then
 		-- Tidy up.
@@ -85,7 +76,7 @@ end)
 -- Replace OutlineSystem.update with a modified version of the original code which prioritizes the
 -- target-lock outline over the pinged outline (unfortunately I can't see any good way to do this by
 -- just hooking the function.
-mod:hook("OutlineSystem.update", function (func, self, context, t)  -- luacheck: ignore func context t
+mod:hook(OutlineSystem, "update", function (func, self, context, t)  -- luacheck: ignore context t
 	if not mod:is_enabled() then
 		return func(self, context, t)
 	end

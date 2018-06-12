@@ -12,7 +12,7 @@ local function pack2(...) return {n=select('#', ...), ...} end
 local function unpack2(t) return unpack(t, 1, t.n) end
 
 --- Event hordes size adjustment.
-mod:hook("SpawnerSystem._try_spawn_breed", function (func, self, breed_name, spawn_list_per_breed, spawn_list, breed_limits, active_enemies, group_template)
+mod:hook(SpawnerSystem, "_try_spawn_breed", function (func, self, breed_name, spawn_list_per_breed, spawn_list, breed_limits, active_enemies, group_template)
 	if mod:get(mod.SETTING_NAMES.HORDES) == mod.HORDES.DEFAULT then
 		return func(self, breed_name, spawn_list_per_breed, spawn_list, breed_limits, active_enemies, group_template)
 	end
@@ -63,11 +63,11 @@ mod.horde_compose_hooks = function (func, self, ...)
 end
 
 --- Timed hordes size adjustment.
-mod:hook("HordeSpawner.compose_horde_spawn_list", mod.horde_compose_hooks)
-mod:hook("HordeSpawner.compose_blob_horde_spawn_list", mod.horde_compose_hooks)
+mod:hook(HordeSpawner, "compose_horde_spawn_list", mod.horde_compose_hooks)
+mod:hook(HordeSpawner, "compose_blob_horde_spawn_list", mod.horde_compose_hooks)
 
 --- Fix for an assert crash for missing next queued breed when downsizing hordes.
-mod:hook("HordeSpawner.spawn_unit", function (func, self, hidden_spawn, breed_name, ...)
+mod:hook(HordeSpawner, "spawn_unit", function (func, self, hidden_spawn, breed_name, ...)
 	if breed_name == nil then
 		return
 	end
@@ -76,7 +76,7 @@ mod:hook("HordeSpawner.spawn_unit", function (func, self, hidden_spawn, breed_na
 end)
 
 --- Disable ambients.
-mod:hook("AIInterestPointSystem.spawn_interest_points", function (func, ...)
+mod:hook(AIInterestPointSystem, "spawn_interest_points", function (func, ...)
 	if mod:get(mod.SETTING_NAMES.AMBIENTS) == mod.AMBIENTS.DISABLE then
 		return
 	end
@@ -85,7 +85,7 @@ mod:hook("AIInterestPointSystem.spawn_interest_points", function (func, ...)
 end)
 
 --- Disable boss doors.
-mod:hook("DoorSystem.update", function(func, self, context, t)
+mod:hook(DoorSystem, "update", function(func, self, context, t)
 	if mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.DISABLE
 	or (
 		mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.CUSTOMIZE and
@@ -130,7 +130,7 @@ local breeds_specials = {
 --- Disable timed specials.
 --- More ambient elites. Replaces trash ambients with elites.
 --- trash spawn without a spawn_type == ambient trash
-mod:hook("ConflictDirector.spawn_queued_unit", function(func, self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, optional_data, group_data, unit_data)
+mod:hook(ConflictDirector, "spawn_queued_unit", function(func, self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, optional_data, group_data, unit_data)
 	if mod:get(mod.SETTING_NAMES.SPECIALS) == mod.SPECIALS.DISABLE and tablex.find(breeds_specials, breed.name) then
 		return
 	end
@@ -155,7 +155,7 @@ mod:hook("ConflictDirector.spawn_queued_unit", function(func, self, breed, boxed
 end)
 
 --- Specials cooldowns.
-mod:hook("SpecialsPacing.specials_by_slots", function(func, self, t, specials_settings, method_data, slots, spawn_queue)
+mod:hook(SpecialsPacing, "specials_by_slots", function(func, self, t, specials_settings, method_data, slots, spawn_queue)
 	if mod:get(mod.SETTING_NAMES.SPECIALS) ~= mod.SPECIALS.CUSTOMIZE then
 		return func(self, t, specials_settings, method_data, slots, spawn_queue)
 	end
@@ -257,8 +257,7 @@ mod:hook(TerrorEventMixer.run_functions, "spawn", function (func, event, element
 end)
 
 --- Threat and intensity tweaking.
-mod:hook("ConflictDirector.calculate_threat_value", function(func, self)
-	func(self)
+mod:hook_safe(ConflictDirector, "calculate_threat_value", function(self)
 
 	self.threat_value = self.threat_value * mod:get(mod.SETTING_NAMES.THREAT_MULTIPLIER)
 	local threat_value = self.threat_value
@@ -268,8 +267,7 @@ mod:hook("ConflictDirector.calculate_threat_value", function(func, self)
 	self.delay_specials = self.delay_specials_threat_value < threat_value
 end)
 
-mod:hook("Pacing.update", function(func, self, t, dt, alive_player_units)
-	func(self, t, dt, alive_player_units)
+mod:hook_safe(Pacing, "update", function(self, t, dt, alive_player_units) -- luacheck: ignore t dt
 
 	local num_alive_player_units = #alive_player_units
 
@@ -284,7 +282,7 @@ mod:hook("Pacing.update", function(func, self, t, dt, alive_player_units)
 	self.total_intensity = self.total_intensity * mod:get(mod.SETTING_NAMES.THREAT_MULTIPLIER)
 end)
 
-mod:hook("ConflictDirector.update_horde_pacing", function(func, self, t, dt)
+mod:hook(ConflictDirector, "update_horde_pacing", function(func, self, t, dt)
 	if mod:get(mod.SETTING_NAMES.HORDES) ~= mod.HORDES.CUSTOMIZE then
 		return func(self, t, dt)
 	end
@@ -304,7 +302,7 @@ mod:hook("ConflictDirector.update_horde_pacing", function(func, self, t, dt)
 	RecycleSettings = original_recycle_settings
 end)
 
-mod:hook("ConflictDirector.update", function(func, self, ...)
+mod:hook(ConflictDirector, "update", function(func, self, ...)
 	if mod:get(mod.SETTING_NAMES.HORDES) ~= mod.HORDES.CUSTOMIZE then
 		return func(self, ...)
 	end
@@ -324,7 +322,7 @@ mod:hook("ConflictDirector.update", function(func, self, ...)
 	RecycleSettings = original_recycle_settings
 end)
 
-mod:hook("ConflictDirector.horde_killed", function(func, self, ...)
+mod:hook(ConflictDirector, "horde_killed", function(func, self, ...)
 	local original_current_pacing = tablex.deepcopy(CurrentPacing)
 	CurrentPacing.horde_frequency = {
 		mod:get(mod.SETTING_NAMES.HORDE_FREQUENCY_MIN),
@@ -337,7 +335,7 @@ mod:hook("ConflictDirector.horde_killed", function(func, self, ...)
 end)
 
 --- Change ambient density.
-mod:hook("SpawnZoneBaker.spawn_amount_rats", function(func, self, spawns, pack_sizes, pack_rotations, pack_types, zone_data_list, nodes, num_wanted_rats, pack_type, area, zone)
+mod:hook(SpawnZoneBaker, "spawn_amount_rats", function(func, self, spawns, pack_sizes, pack_rotations, pack_types, zone_data_list, nodes, num_wanted_rats, pack_type, area, zone)
 	if mod:get(mod.SETTING_NAMES.AMBIENTS) == mod.AMBIENTS.CUSTOMIZE then
 		num_wanted_rats = math.round(num_wanted_rats * mod:get(mod.SETTING_NAMES.AMBIENTS_MULTIPLIER)/100)
 	end
@@ -354,7 +352,7 @@ mod:hook(TerrorEventMixer.init_functions, "control_specials", function(func, eve
 	return func(event, element, t)
 end)
 
-mod:hook("SpecialsPacing.update", function(func, self, t, alive_specials, specials_population, player_positions)
+mod:hook(SpecialsPacing, "update", function(func, self, t, alive_specials, specials_population, player_positions)
 	if mod:get(mod.SETTING_NAMES.SPECIALS) == mod.SPECIALS.CUSTOMIZE
 	and mod:get(mod.SETTING_NAMES.ALWAYS_SPECIALS) then
 		specials_population = 1
@@ -363,7 +361,7 @@ mod:hook("SpecialsPacing.update", function(func, self, t, alive_specials, specia
 	return func(self, t, alive_specials, specials_population, player_positions)
 end)
 
-mod:hook("DamageUtils.add_damage_network_player", function(func, ...)
+mod:hook(DamageUtils, "add_damage_network_player", function(func, ...)
 	if mod:get(mod.SETTING_NAMES.BOSSES) ~= mod.BOSSES.CUSTOMIZE then
 		return func(...)
 	end
@@ -387,22 +385,12 @@ mod:hook("DamageUtils.add_damage_network_player", function(func, ...)
 	DamageUtils.calculate_damage = original_calculate_damage
 end)
 
---- Callbacks ---
-mod.on_disabled = function(is_first_call) -- luacheck: ignore is_first_call
-	mod:disable_all_hooks()
-end
-
-mod.on_enabled = function(is_first_call) -- luacheck: ignore is_first_call
-	mod:enable_all_hooks()
-end
-
 mod.no_empty_events = {
 	"event_boss",
 	-- "event_patrol"
 }
 
-mod:hook("ConflictDirector.set_updated_settings", function(func, self, conflict_settings_name)
-	func(self, conflict_settings_name)
+mod:hook_safe(ConflictDirector, "set_updated_settings", function(self, conflict_settings_name) -- luacheck: ignore conflict_settings_name
 
 	if mod:is_enabled() and mod:get(mod.SETTING_NAMES.NO_EMPTY_EVENTS) then
 		CurrentBossSettings = tablex.deepcopy(CurrentBossSettings)

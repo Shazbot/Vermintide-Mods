@@ -122,7 +122,7 @@ mod.get_hp_bar_size_and_offset = function(self, player_unit) -- luacheck: ignore
 	return health_bar_size, health_bar_offset
 end
 
-mod:hook("UnitFrameUI._create_ui_elements", function (func, self, frame_index)
+mod:hook(UnitFrameUI, "_create_ui_elements", function (func, self, frame_index)
 	self._frame_index = frame_index
 
 	if self._frame_index then
@@ -238,7 +238,7 @@ UnitFrameUI.customhud_update = function (self, is_dead, is_wounded, has_respawne
 end
 
 --- Update the ability_bar progress for other players.
-mod:hook("UnitFrameUI.set_ability_percentage", function (func, self, ability_percent)
+mod:hook(UnitFrameUI, "set_ability_percentage", function (func, self, ability_percent)
 	mod:pcall(function()
 		if self._frame_index then
 			self._default_widgets.default_static.content.ability_bar.bar_value = ability_percent
@@ -247,23 +247,19 @@ mod:hook("UnitFrameUI.set_ability_percentage", function (func, self, ability_per
 	return func(self, ability_percent)
 end)
 
-mod:hook("UnitFramesHandler._sync_player_stats", function (func, self, unit_frame)
-	func(self, unit_frame)
+mod:hook_safe(UnitFramesHandler, "_sync_player_stats", function (self, unit_frame)
 
+	local unit_frame_ui = unit_frame.widget
+	local player_data = unit_frame.player_data
+	local data = unit_frame.data
 
-	mod:pcall(function()
-		local unit_frame_ui = unit_frame.widget
-		local player_data = unit_frame.player_data
-		local data = unit_frame.data
-
-		if player_data then
-			unit_frame_ui._mod_display_warning_overlay = not data.is_dead and (data.is_knocked_down or (data.needs_help and not data.assisted_respawn))
-			unit_frame_ui:customhud_update(data.is_dead, data.is_wounded, data.assisted_respawn)
-		end
-	end)
+	if player_data then
+		unit_frame_ui._mod_display_warning_overlay = not data.is_dead and (data.is_knocked_down or (data.needs_help and not data.assisted_respawn))
+		unit_frame_ui:customhud_update(data.is_dead, data.is_wounded, data.assisted_respawn)
+	end
 end)
 
-mod:hook("UnitFrameUI.set_visible", function(func, self, visible)
+mod:hook(UnitFrameUI, "set_visible", function(func, self, visible)
 	if visible and self._is_visible ~= visible then
 		self._mod_resync = true
 	end
@@ -437,7 +433,7 @@ local function ufUI_update(self, dt, t, player_unit) -- luacheck: ignore dt t
 	end
 end
 
-mod:hook("UnitFramesHandler.update", function(func, self, dt, t, ignore_own_player)
+mod:hook(UnitFramesHandler, "update", function(func, self, dt, t, ignore_own_player)
 	if not self._is_visible then
 		return
 	end
@@ -483,7 +479,7 @@ mod:hook("UnitFramesHandler.update", function(func, self, dt, t, ignore_own_play
 end)
 
 local did_once = false -- luacheck: ignore did_once
-mod:hook("UnitFrameUI.draw", function (func, self, dt) -- luacheck: ignore func
+mod:hook_origin(UnitFrameUI, "draw", function (self, dt)
 
 	local is_bot = self.data.level_text == "BOT"
 	if self._mod_stay_hidden and (not self.data.level_text or not is_bot) then
@@ -593,7 +589,7 @@ mod.ufUI_draw_warning_icon = function(self, dt)
 end
 
 -- compatibility with the no ammo bar patch change
-mod:hook("UnitFrameUI.set_ammo_percentage", function (func, self, ammo_percent)
+mod:hook(UnitFrameUI, "set_ammo_percentage", function (func, self, ammo_percent)
 	mod:pcall(function()
 		local widget = self:_widget_by_feature("ammo", "dynamic")
 		local widget_content = widget.content
@@ -636,7 +632,7 @@ EquipmentUI._customhud_update_ammo = function (self, left_hand_wielded_unit, rig
 	end
 end
 
-mod:hook("EquipmentUI._create_ui_elements", function (func, ...)
+mod:hook(EquipmentUI, "_create_ui_elements", function (func, ...)
 	local original_init_scenegraph = UISceneGraph.init_scenegraph
 	UISceneGraph.init_scenegraph = function(scenegraph_definition)
 		scenegraph_definition.slot.horizontal_alignment = "center"
@@ -647,7 +643,7 @@ mod:hook("EquipmentUI._create_ui_elements", function (func, ...)
 	UISceneGraph.init_scenegraph = original_init_scenegraph
 end)
 
-mod:hook("EquipmentUI.draw", function (func, self, dt)
+mod:hook(EquipmentUI, "draw", function (func, self, dt)
 	if not mod.custom_player_widget then
 		local health_bar_size = mod:get_player_hp_bar_size()
 
@@ -758,7 +754,7 @@ local buff_ui_definitions = local_require("scripts/ui/hud_ui/buff_ui_definitions
 -- local MAX_NUMBER_OF_BUFFS = buff_ui_definitions.MAX_NUMBER_OF_BUFFS
 local BUFF_SIZE = buff_ui_definitions.BUFF_SIZE
 local BUFF_SPACING = buff_ui_definitions.BUFF_SPACING
-mod:hook("BuffUI._align_widgets", function (func, self) -- luacheck: ignore func
+mod:hook_origin(BuffUI, "_align_widgets", function (self)
 	local horizontal_spacing = BUFF_SIZE[1] + BUFF_SPACING
 
 	for index, data in ipairs(self._active_buffs) do
@@ -781,7 +777,7 @@ mod:hook("BuffUI._align_widgets", function (func, self) -- luacheck: ignore func
 	self._alignment_duration = 0
 end)
 
-mod:hook("BuffUI._add_buff", function (func, self, buff, ...)
+mod:hook(BuffUI, "_add_buff", function (func, self, buff, ...)
 	if buff.buff_type == "victor_bountyhunter_passive_infinite_ammo_buff"
 	  or buff.buff_type == "grimoire_health_debuff"
 	  or buff.buff_type == "markus_huntsman_passive_crit_aura_buff" then
@@ -791,7 +787,7 @@ mod:hook("BuffUI._add_buff", function (func, self, buff, ...)
 	return func(self, buff, ...)
 end)
 
-mod:hook("BuffUI._update_pivot_alignment", function (func, self, dt) -- luacheck: ignore func dt
+mod:hook_origin(BuffUI, "_update_pivot_alignment", function (self, dt) -- luacheck: ignore dt
 	-- return func(self, dt)
 	local alignment_duration = self._alignment_duration
 
@@ -825,7 +821,7 @@ mod:hook("BuffUI._update_pivot_alignment", function (func, self, dt) -- luacheck
 	self:set_dirty()
 end)
 
-mod:hook("BuffUI.draw", function(func, self, dt)
+mod:hook(BuffUI, "draw", function(func, self, dt)
 	mod:pcall(function()
 		local buffs_direction = mod:get(mod.SETTING_NAMES.BUFFS_DIRECTION)
 		if self._mod_cached_buffs_direction ~= buffs_direction then
@@ -848,7 +844,7 @@ mod:hook("BuffUI.draw", function(func, self, dt)
 	return func(self, dt)
 end)
 
-mod:hook("BuffUI._create_ui_elements", function (func, ...)
+mod:hook(BuffUI, "_create_ui_elements", function (func, ...)
 	local original_init_scenegraph = UISceneGraph.init_scenegraph
 	UISceneGraph.init_scenegraph = function(scenegraph_definition) -- luacheck: ignore scenegraph_definition
 		return original_init_scenegraph(mod.buff_ui_scenegraph_definition)
@@ -857,7 +853,7 @@ mod:hook("BuffUI._create_ui_elements", function (func, ...)
 	UISceneGraph.init_scenegraph = original_init_scenegraph
 end)
 
-mod:hook("AbilityUI._create_ui_elements", function (func, ...)
+mod:hook(AbilityUI, "_create_ui_elements", function (func, ...)
 	local original_init_scenegraph = UISceneGraph.init_scenegraph
 	UISceneGraph.init_scenegraph = function(scenegraph_definition) -- luacheck: ignore scenegraph_definition
 		return original_init_scenegraph(mod.abilityUI_scenegraph_definition)
@@ -866,7 +862,7 @@ mod:hook("AbilityUI._create_ui_elements", function (func, ...)
 	UISceneGraph.init_scenegraph = original_init_scenegraph
 end)
 
-mod:hook("AbilityUI.draw", function (func, self, dt) -- luacheck: ignore func
+mod:hook_origin(AbilityUI, "draw", function (self, dt)
 	-- pdump(self._widgets, "AbilityUI._widgets")
 	for _, pass in ipairs( self._widgets[1].element.passes ) do
 		if pass.style_id == "ability_effect_right"
@@ -921,7 +917,7 @@ mod.ChatGui_mod_set_position = function(self, x, y)
 	end)
 end
 
-mod:hook("ChatGui.update", function(func, self, ...)
+mod:hook(ChatGui, "update", function(func, self, ...)
 	if not ChatGui.mod_set_position then
 		ChatGui.mod_set_position = mod.ChatGui_mod_set_position
 	end

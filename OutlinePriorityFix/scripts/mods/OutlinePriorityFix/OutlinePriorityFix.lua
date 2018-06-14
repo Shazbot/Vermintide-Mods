@@ -76,11 +76,7 @@ end)
 -- Replace OutlineSystem.update with a modified version of the original code which prioritizes the
 -- target-lock outline over the pinged outline (unfortunately I can't see any good way to do this by
 -- just hooking the function.
-mod:hook_origin(OutlineSystem, "update", function (func, self, context, t)  -- luacheck: ignore context t
-	if not mod:is_enabled() then
-		return func(self, context, t)
-	end
-
+mod:hook_origin(OutlineSystem, "update", function (self, context, t)  -- luacheck: ignore context t
 	if #self.units == 0 then
 		return
 	end

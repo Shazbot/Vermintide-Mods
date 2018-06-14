@@ -32,38 +32,34 @@ mod:hook(SpawnerSystem, "_try_spawn_breed", function (func, self, breed_name, sp
 	return func(self, breed_name, spawn_list_per_breed, spawn_list, breed_limits, active_enemies, group_template)
 end)
 
---- Hook into the horde size randomizer and scale to our liking.
---- Only used as an intermediate hook inside DamageUtils.add_damage_network_player.
-mod:hook(ConflictUtils, "random_interval", function(func, numbers)
-	local result = func(numbers)
-	if result then
-		local horde_size_ratio = mod:get(mod.SETTING_NAMES.HORDE_SIZE) / 100
-		if mod:get(mod.SETTING_NAMES.HORDES) == mod.HORDES.DISABLE then
-			horde_size_ratio = 0
-		end
-		result = math.round(result * horde_size_ratio)
-
-		-- so in compose_horde_spawn_list we have "for start,start+result,1 do" which will run once for result 0
-		-- and as a result we get 1 slave in every horde
-		if result == 0 then
-			result = -1
-		end
-	end
-
-	return result
-end)
-mod:hook_disable(ConflictUtils, "random_interval")
-
 mod.horde_compose_hooks = function (func, self, ...)
 	if mod:get(mod.SETTING_NAMES.HORDES) == mod.HORDES.DEFAULT then
 		return func(self, ...)
 	end
 
-	mod:hook_enable(ConflictUtils, "random_interval")
+	local original_random_interval = ConflictUtils.random_interval
+	ConflictUtils.random_interval = function (numbers)
+		local result = original_random_interval(numbers)
+		if result then
+			local horde_size_ratio = mod:get(mod.SETTING_NAMES.HORDE_SIZE) / 100
+			if mod:get(mod.SETTING_NAMES.HORDES) == mod.HORDES.DISABLE then
+				horde_size_ratio = 0
+			end
+			result = math.round(result * horde_size_ratio)
+
+			-- so in compose_horde_spawn_list we have "for start,start+result,1 do" which will run once for result 0
+			-- and as a result we get 1 slave in every horde
+			if result == 0 then
+				result = -1
+			end
+		end
+
+		return result
+	end
 
 	local packed_return = pack2(func(self, ...))
 
-	mod:hook_disable(ConflictUtils, "random_interval")
+	ConflictUtils.random_interval = original_random_interval
 
 	return unpack2(packed_return)
 end
@@ -199,14 +195,16 @@ mod.get_num_alive_bosses = function()
 	return #Managers.state.conflict:alive_bosses()
 end
 
---- Change max of same special.
+--- Change max of same special; replace special with a random boss.
 mod:hook(SpecialsPacing.select_breed_functions, "get_random_breed", function(func, slots, breeds, method_data)
+	-- if mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.CUSTOMIZE
+	-- and mod.get_num_alive_bosses() == 0
+	-- and math.random(100) <= mod:get(mod.SETTING_NAMES.SPECIAL_TO_BOSS_CHANCE) then
+	-- 	return mod.bosses[math.random(#mod.bosses)]
+	-- end
+
 	if mod:get(mod.SETTING_NAMES.SPECIALS) ~= mod.SPECIALS.CUSTOMIZE then
 		return func(slots, breeds, method_data)
-	end
-
-	if mod.get_num_alive_bosses() == 0 and math.random(100) <= mod:get(mod.SETTING_NAMES.SPECIAL_TO_BOSS_CHANCE) then
-		return mod.bosses[math.random(#mod.bosses)]
 	end
 
 	local new_method_data = tablex.deepcopy(method_data)
@@ -329,6 +327,10 @@ mod:hook(ConflictDirector, "update", function(func, self, ...)
 end)
 
 mod:hook(ConflictDirector, "horde_killed", function(func, self, ...)
+	if mod:get(mod.SETTING_NAMES.HORDES) ~= mod.HORDES.CUSTOMIZE then
+		return func(self, ...)
+	end
+
 	local original_current_pacing = tablex.deepcopy(CurrentPacing)
 	CurrentPacing.horde_frequency = {
 		mod:get(mod.SETTING_NAMES.HORDE_FREQUENCY_MIN),

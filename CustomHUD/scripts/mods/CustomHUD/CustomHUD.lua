@@ -917,7 +917,7 @@ mod.ChatGui_mod_set_position = function(self, x, y)
 	end)
 end
 
-mod:hook(ChatGui, "update", function(func, self, ...)
+mod:hook("ChatGui", "update", function(func, self, ...)
 	if not ChatGui.mod_set_position then
 		ChatGui.mod_set_position = mod.ChatGui_mod_set_position
 	end

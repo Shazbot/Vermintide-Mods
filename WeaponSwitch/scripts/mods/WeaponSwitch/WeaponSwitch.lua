@@ -40,7 +40,7 @@ local weapon_action_interrupt_damage_types = {
 	cutting = true
 }
 local interupting_action_data = {}
-mod:hook_origin(CharacterStateHelper, "update_weapon_actions",
+mod:hook(CharacterStateHelper, "update_weapon_actions",
 function (func, t, unit, input_extension, inventory_extension, health_extension)
 
 	local success = pcall(function()

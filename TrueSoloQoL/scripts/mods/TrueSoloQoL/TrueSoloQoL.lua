@@ -2,19 +2,10 @@ local mod = get_mod("TrueSoloQoL") -- luacheck: ignore get_mod
 
 -- luacheck: globals LevelTransitionHandler get_mod
 
---- Callbacks ---
-mod.on_disabled = function(is_first_call) -- luacheck: ignore is_first_call
-	mod:disable_all_hooks()
-end
-
-mod.on_enabled = function(is_first_call) -- luacheck: ignore is_first_call
-	mod:enable_all_hooks()
-end
-
 --- Mod Logic ---
 --- Restart the level on mission failure.
 --- Without it we'd transitions to the inn.
-mod:hook("GameModeManager.server_update", function (func, self, dt, t)
+mod:hook(GameModeManager, "server_update", function (func, self, dt, t)
 	local original_evaluate_end_conditions = self._game_mode.evaluate_end_conditions
 	self._game_mode.evaluate_end_conditions = function(...)
 		local ended, reason = original_evaluate_end_conditions(...)
@@ -30,13 +21,13 @@ mod:hook("GameModeManager.server_update", function (func, self, dt, t)
 end)
 
 --- Track frame_index to know if it's bot UI. Player frame_index is nil.
-mod:hook("UnitFrameUI._create_ui_elements", function (func, self, frame_index)
+mod:hook(UnitFrameUI, "_create_ui_elements", function (func, self, frame_index)
 	self._frame_index = frame_index
 	func(self, frame_index)
 end)
 
 --- Make sure bots UI doesn't reappear.
-mod:hook("UnitFrameUI.update", function (func, self, ...)
+mod:hook(UnitFrameUI, "update", function (func, self, ...)
 	mod:pcall(function()
 		if self._mod_stay_hidden then
 			self:set_visible(self.data.level_text ~= "BOT")

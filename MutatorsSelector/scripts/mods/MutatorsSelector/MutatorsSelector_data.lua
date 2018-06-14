@@ -16,7 +16,7 @@ mod_data.options_widgets = (function()
 				["setting_name"] = mut_name,
 				["widget_type"] = "checkbox",
 				["text"] = Localize(mut_template.display_name),
-				["tooltip"] = Localize(mut_template.display_name).."\n"..Localize(mut_template.description),
+				["tooltip"] = Localize(mut_template.description),
 				["default_value"] = false
 			})
 	end

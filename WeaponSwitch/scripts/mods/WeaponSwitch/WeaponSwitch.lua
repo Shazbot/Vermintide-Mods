@@ -3,15 +3,6 @@ local mod = get_mod("WeaponSwitch") -- luacheck: ignore get_mod
 -- luacheck: globals CharacterStateHelper ScriptUnit Profiler Managers DamageProfileTemplates BackendUtils
 -- luacheck: globals Development ActionUtils table InventorySettings
 
---- Callbacks ---
-mod.on_disabled = function(is_first_call) -- luacheck: ignore is_first_call
-	mod:disable_all_hooks()
-end
-
-mod.on_enabled = function(is_first_call) -- luacheck: ignore is_first_call
-	mod:enable_all_hooks()
-end
-
 --- Mod Logic ---
 local function validate_action(unit, action_name, sub_action_name, action_settings, input_extension, inventory_extension, only_check_condition, ammo_extension)
 	local input_id = action_settings.input_override or action_name
@@ -49,8 +40,8 @@ local weapon_action_interrupt_damage_types = {
 	cutting = true
 }
 local interupting_action_data = {}
-mod:hook("CharacterStateHelper.update_weapon_actions",
-function (func, t, unit, input_extension, inventory_extension, health_extension) -- luacheck: ignore func
+mod:hook(CharacterStateHelper, "update_weapon_actions",
+function (func, t, unit, input_extension, inventory_extension, health_extension)
 
 	local success = pcall(function()
 		local item_data, right_hand_weapon_extension, left_hand_weapon_extension = CharacterStateHelper.get_item_data_and_weapon_extensions(inventory_extension)
@@ -313,8 +304,8 @@ local career_chain_action = {
 	action = "N/A",
 	input = "action_career"
 }
-mod:hook("CharacterStateHelper._get_chain_action_data",
-function (func, item_template, current_action_extension, current_action_settings, input_extension, inventory_extension, unit, t, is_bot_player)  -- luacheck: ignore func
+mod:hook_origin(CharacterStateHelper, "_get_chain_action_data",
+function (item_template, current_action_extension, current_action_settings, input_extension, inventory_extension, unit, t, is_bot_player)
 	local done, _, new_action, new_sub_action, wield_input, send_buffer, clear_buffer = nil
 	local career_extension = ScriptUnit.has_extension(unit, "career_system")
 
@@ -414,8 +405,8 @@ function (func, item_template, current_action_extension, current_action_settings
 	return new_action, new_sub_action, wield_input
 end)
 
-mod:hook("CharacterStateHelper._check_chain_action",
-function (func, wield_input, action_data, item_template, current_action_extension, input_extension, inventory_extension, unit, t)  -- luacheck: ignore func
+mod:hook_origin(CharacterStateHelper, "_check_chain_action",
+function (wield_input, action_data, item_template, current_action_extension, input_extension, inventory_extension, unit, t)
 	local new_action, new_sub_action, send_buffer, clear_buffer = nil
 	local release_required = action_data.release_required
 	local input_extra_requirement = true

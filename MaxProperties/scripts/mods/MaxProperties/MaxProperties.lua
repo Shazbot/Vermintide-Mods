@@ -2,7 +2,7 @@ local mod = get_mod("MaxProperties") -- luacheck: ignore get_mod
 
 -- luacheck: globals BuffTemplates WeaponProperties WeaponTraits
 
-mod:hook("GearUtils.get_property_and_trait_buffs", function(func, backend_items, backend_id, buffs_table) -- luacheck: ignore func
+mod:hook_origin(GearUtils, "get_property_and_trait_buffs", function(backend_items, backend_id, buffs_table)
 	local properties = backend_items:get_properties(backend_id)
 
 	if properties then
@@ -37,13 +37,3 @@ mod:hook("GearUtils.get_property_and_trait_buffs", function(func, backend_items,
 
 	return buffs_table
 end)
-
---- Callbacks ---
-mod.on_disabled = function(is_first_call) -- luacheck: ignore is_first_call
-	mod:disable_all_hooks()
-end
-
-mod.on_enabled = function(is_first_call) -- luacheck: ignore is_first_call
-	mod:enable_all_hooks()
-end
-

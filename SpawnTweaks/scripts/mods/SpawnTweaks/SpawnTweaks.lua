@@ -2,6 +2,8 @@ local mod = get_mod("SpawnTweaks") -- luacheck: ignore get_mod
 
 -- luacheck: globals math ConflictUtils unpack table BossSettings CurrentSpecialsSettings
 -- luacheck: globals RecycleSettings CurrentPacing Breeds Unit DamageUtils Managers CurrentBossSettings
+-- luacheck: globals HordeSpawner SpawnerSystem SpecialsPacing ConflictDirector TerrorEventMixer DoorSystem
+-- luacheck: globals AIInterestPointSystem SpawnZoneBaker Pacing
 
 local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
@@ -30,34 +32,38 @@ mod:hook(SpawnerSystem, "_try_spawn_breed", function (func, self, breed_name, sp
 	return func(self, breed_name, spawn_list_per_breed, spawn_list, breed_limits, active_enemies, group_template)
 end)
 
+--- Hook into the horde size randomizer and scale to our liking.
+--- Only used as an intermediate hook inside DamageUtils.add_damage_network_player.
+mod:hook(ConflictUtils, "random_interval", function(func, numbers)
+	local result = func(numbers)
+	if result then
+		local horde_size_ratio = mod:get(mod.SETTING_NAMES.HORDE_SIZE) / 100
+		if mod:get(mod.SETTING_NAMES.HORDES) == mod.HORDES.DISABLE then
+			horde_size_ratio = 0
+		end
+		result = math.round(result * horde_size_ratio)
+
+		-- so in compose_horde_spawn_list we have "for start,start+result,1 do" which will run once for result 0
+		-- and as a result we get 1 slave in every horde
+		if result == 0 then
+			result = -1
+		end
+	end
+
+	return result
+end)
+mod:hook_disable(ConflictUtils, "random_interval")
+
 mod.horde_compose_hooks = function (func, self, ...)
 	if mod:get(mod.SETTING_NAMES.HORDES) == mod.HORDES.DEFAULT then
 		return func(self, ...)
 	end
 
-	local original_random_interval = ConflictUtils.random_interval
-	ConflictUtils.random_interval = function (numbers)
-		local result = original_random_interval(numbers)
-		if result then
-			local horde_size_ratio = mod:get(mod.SETTING_NAMES.HORDE_SIZE) / 100
-			if mod:get(mod.SETTING_NAMES.HORDES) == mod.HORDES.DISABLE then
-				horde_size_ratio = 0
-			end
-			result = math.round(result * horde_size_ratio)
-
-			-- so in compose_horde_spawn_list we have "for start,start+result,1 do" which will run once for result 0
-			-- and as a result we get 1 slave in every horde
-			if result == 0 then
-				result = -1
-			end
-		end
-
-		return result
-	end
+	mod:hook_enable(ConflictUtils, "random_interval")
 
 	local packed_return = pack2(func(self, ...))
 
-	ConflictUtils.random_interval = original_random_interval
+	mod:hook_disable(ConflictUtils, "random_interval")
 
 	return unpack2(packed_return)
 end
@@ -343,6 +349,7 @@ mod:hook(SpawnZoneBaker, "spawn_amount_rats", function(func, self, spawns, pack_
 	return func(self, spawns, pack_sizes, pack_rotations, pack_types, zone_data_list, nodes, num_wanted_rats, pack_type, area, zone)
 end)
 
+--- Specials always enabled.
 mod:hook(TerrorEventMixer.init_functions, "control_specials", function(func, event, element, t)
 	if mod:get(mod.SETTING_NAMES.SPECIALS) == mod.SPECIALS.CUSTOMIZE
 	and mod:get(mod.SETTING_NAMES.ALWAYS_SPECIALS) then
@@ -352,6 +359,7 @@ mod:hook(TerrorEventMixer.init_functions, "control_specials", function(func, eve
 	return func(event, element, t)
 end)
 
+--- Specials always enabled.
 mod:hook(SpecialsPacing, "update", function(func, self, t, alive_specials, specials_population, player_positions)
 	if mod:get(mod.SETTING_NAMES.SPECIALS) == mod.SPECIALS.CUSTOMIZE
 	and mod:get(mod.SETTING_NAMES.ALWAYS_SPECIALS) then
@@ -361,28 +369,32 @@ mod:hook(SpecialsPacing, "update", function(func, self, t, alive_specials, speci
 	return func(self, t, alive_specials, specials_population, player_positions)
 end)
 
+--- Change damage dealt to bosses.
+--- Only used as an intermediate hook inside DamageUtils.add_damage_network_player.
+mod:hook(DamageUtils, "calculate_damage", function(func, damage_output, target_unit, ...)
+	local dmg = func(damage_output, target_unit, ...)
+	local breed = Unit.get_data(target_unit, "breed")
+	if breed then
+		if mod.bosses:contains(breed.name) then
+			dmg = dmg * mod:get(mod.SETTING_NAMES.BOSS_DMG_MULTIPLIER) / 100
+			return dmg
+		end
+	end
+
+	return dmg
+end)
+mod:hook_disable(DamageUtils, "calculate_damage")
+
 mod:hook(DamageUtils, "add_damage_network_player", function(func, ...)
 	if mod:get(mod.SETTING_NAMES.BOSSES) ~= mod.BOSSES.CUSTOMIZE then
 		return func(...)
 	end
 
-	local original_calculate_damage = DamageUtils.calculate_damage
-	DamageUtils.calculate_damage = function(damage_output, target_unit, ...)
-		local dmg = original_calculate_damage(damage_output, target_unit, ...)
-		local breed = Unit.get_data(target_unit, "breed")
-		if breed then
-			if mod.bosses:contains(breed.name) then
-				dmg = dmg * mod:get(mod.SETTING_NAMES.BOSS_DMG_MULTIPLIER) / 100
-				return dmg
-			end
-		end
-
-		return dmg
-	end
+	mod:hook_enable(DamageUtils, "calculate_damage")
 
 	func(...)
 
-	DamageUtils.calculate_damage = original_calculate_damage
+	mod:hook_disable(DamageUtils, "calculate_damage")
 end)
 
 mod.no_empty_events = {
@@ -390,7 +402,7 @@ mod.no_empty_events = {
 	-- "event_patrol"
 }
 
-mod:hook_safe(ConflictDirector, "set_updated_settings", function(self, conflict_settings_name) -- luacheck: ignore conflict_settings_name
+mod:hook_safe(ConflictDirector, "set_updated_settings", function(self, conflict_settings_name) -- luacheck: ignore self conflict_settings_name
 
 	if mod:is_enabled() and mod:get(mod.SETTING_NAMES.NO_EMPTY_EVENTS) then
 		CurrentBossSettings = tablex.deepcopy(CurrentBossSettings)

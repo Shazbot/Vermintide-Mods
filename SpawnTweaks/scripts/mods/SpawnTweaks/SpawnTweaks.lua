@@ -197,11 +197,11 @@ end
 
 --- Change max of same special; replace special with a random boss.
 mod:hook(SpecialsPacing.select_breed_functions, "get_random_breed", function(func, slots, breeds, method_data)
-	-- if mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.CUSTOMIZE
-	-- and mod.get_num_alive_bosses() == 0
-	-- and math.random(100) <= mod:get(mod.SETTING_NAMES.SPECIAL_TO_BOSS_CHANCE) then
-	-- 	return mod.bosses[math.random(#mod.bosses)]
-	-- end
+	if mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.CUSTOMIZE
+	and mod.get_num_alive_bosses() == 0
+	and math.random(100) <= mod:get(mod.SETTING_NAMES.SPECIAL_TO_BOSS_CHANCE) then
+		return mod.bosses[math.random(#mod.bosses)]
+	end
 
 	if mod:get(mod.SETTING_NAMES.SPECIALS) ~= mod.SPECIALS.CUSTOMIZE then
 		return func(slots, breeds, method_data)

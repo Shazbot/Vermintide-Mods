@@ -375,11 +375,14 @@ end)
 --- Only used as an intermediate hook inside DamageUtils.add_damage_network_player.
 mod:hook(DamageUtils, "calculate_damage", function(func, damage_output, target_unit, ...)
 	local dmg = func(damage_output, target_unit, ...)
-	local breed = Unit.get_data(target_unit, "breed")
-	if breed then
-		if mod.bosses:contains(breed.name) then
-			dmg = dmg * mod:get(mod.SETTING_NAMES.BOSS_DMG_MULTIPLIER) / 100
-			return dmg
+
+	if target_unit then
+		local breed = Unit.get_data(target_unit, "breed")
+		if breed then
+			if mod.bosses:contains(breed.name) then
+				dmg = dmg * mod:get(mod.SETTING_NAMES.BOSS_DMG_MULTIPLIER) / 100
+				return dmg
+			end
 		end
 	end
 

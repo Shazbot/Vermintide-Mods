@@ -1,6 +1,6 @@
 local mod = get_mod("NeuterUltEffects") -- luacheck: ignore get_mod
 
--- luacheck: globals BuffFunctionTemplates MOOD_BLACKBOARD
+-- luacheck: globals BuffFunctionTemplates MOOD_BLACKBOARD StateInGameRunning BuffExtension PlayerUnitFirstPerson
 
 local pl = require'pl.import_into'()
 
@@ -23,6 +23,12 @@ mod:hook(StateInGameRunning, "update_mood", function (func, ...)
 	moods_to_keep_disabled:foreach(function(skill_name)
 		MOOD_BLACKBOARD[skill_name] = false
 	end)
+	if mod:get(mod.SETTING_NAMES.WOUNDED) then
+		MOOD_BLACKBOARD["wounded"] = false
+	end
+	if mod:get(mod.SETTING_NAMES.KNOCKED_DOWN) then
+		MOOD_BLACKBOARD["knocked_down"] = false
+	end
 	return func(...)
 end)
 
@@ -30,8 +36,16 @@ end)
 local skip_these_hud_sound_events = pl.List({
 	"Play_career_ability_bardin_slayer_loop",
 	"Stop_career_ability_bardin_slayer_loop",
-	"Play_career_ability_bardin_slayer_enter",
-	"Play_career_ability_bardin_slayer_exit",
+	-- "Play_career_ability_bardin_slayer_enter",
+	-- "Play_career_ability_bardin_slayer_exit",
+	-- "Play_career_ability_markus_huntsman_enter",
+	-- "Play_career_ability_markus_huntsman_exit",
+	"Play_career_ability_markus_huntsman_loop",
+	"Stop_career_ability_markus_huntsman_loop",
+	-- "Play_career_ability_kerillian_shade_enter",
+	-- "Play_career_ability_kerillian_shade_exit",
+	"Play_career_ability_kerillian_shade_loop",
+	"Stop_career_ability_kerillian_shade_loop",
 })
 mod:hook(PlayerUnitFirstPerson, "play_hud_sound_event", function (func, self, event_name, ...)
 	if skip_these_hud_sound_events:contains(event_name) then

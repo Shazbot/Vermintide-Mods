@@ -408,13 +408,20 @@ mod.no_empty_events = {
 }
 
 mod:hook_safe(ConflictDirector, "set_updated_settings", function(self, conflict_settings_name) -- luacheck: ignore self conflict_settings_name
-
-	if mod:is_enabled() and mod:get(mod.SETTING_NAMES.NO_EMPTY_EVENTS) then
+	if mod:is_enabled() then
 		CurrentBossSettings = tablex.deepcopy(CurrentBossSettings)
 
-		if CurrentBossSettings.boss_events then
-			CurrentBossSettings.boss_events.events = mod.no_empty_events
-			CurrentBossSettings.boss_events.max_events_of_this_kind = {}
+		if mod:get(mod.SETTING_NAMES.NO_EMPTY_EVENTS) then
+			if CurrentBossSettings.boss_events then
+				CurrentBossSettings.boss_events.events = mod.no_empty_events
+				CurrentBossSettings.boss_events.max_events_of_this_kind = {}
+			end
+		end
+
+		if mod:get(mod.SETTING_NAMES.MAX_ONE_BOSS) then
+			if CurrentBossSettings.boss_events then
+				CurrentBossSettings.boss_events.max_events_of_this_kind.event_boss = 1
+			end
 		end
 	end
 end)

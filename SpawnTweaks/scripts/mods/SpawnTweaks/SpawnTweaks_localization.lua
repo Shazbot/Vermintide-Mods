@@ -134,6 +134,12 @@ return {
 	always_specials_tooltip = {
 		en = "Some events disable timed specials spawning, choose to keep them always spawning."
 	},
+	max_one_boss = {
+		en = "Only One Random Boss"
+	},
+	max_one_boss_tooltip = {
+		en = "Limit random bosses to 1 per level."
+	},
 	double_bosses = {
 		en = "Double Bosses"
 	},

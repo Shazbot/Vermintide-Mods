@@ -20,6 +20,7 @@ mod.SETTING_NAMES = {
 	NO_EMPTY_EVENTS = "no_empty_events",
 	MAX_SPECIALS = "max_specials",
 	MAX_SAME_SPECIALS = "max_same_specials",
+	MAX_ONE_BOSS = "max_one_boss",
 	DOUBLE_BOSSES = "double_bosses",
 	THREAT_MULTIPLIER = "threat_multiplier",
 	MAX_GRUNTS = "max_grunts",
@@ -308,6 +309,14 @@ mod_data.options_widgets = {
 		["sub_widgets"] = {
 			{
 				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.MAX_ONE_BOSS,
+				["widget_type"] = "checkbox",
+				["text"] = mod:localize("max_one_boss"),
+				["tooltip"] = mod:localize("max_one_boss_tooltip"),
+				["default_value"] = false,
+			},
+			{
+				["show_widget_condition"] = {3},
 				["setting_name"] = mod.SETTING_NAMES.DOUBLE_BOSSES,
 				["widget_type"] = "checkbox",
 				["text"] = mod:localize("double_bosses"),
@@ -365,7 +374,7 @@ mod_data.options_widgets = {
 		["widget_type"] = "numeric",
 		["text"] = mod:localize("threat_multiplier"),
 		["tooltip"] = mod:localize("threat_multiplier_tooltip"),
-		["range"] = {0.1, 1},
+		["range"] = {0, 1},
 		["decimals_number"] = 1,
 		["default_value"] = 1,
 	},

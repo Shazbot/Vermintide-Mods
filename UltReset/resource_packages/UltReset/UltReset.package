@@ -1,0 +1,11 @@
+mod = [
+	"UltReset"
+]
+
+package = [
+	"resource_packages/UltReset/UltReset"
+]
+
+lua = [
+	"scripts/mods/UltReset/*"
+]

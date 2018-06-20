@@ -26,4 +26,7 @@ return {
 	switch_item_command_description = {
 		en = "Switch to another item. e.g. /switch cooldown"
 	},
+	keybinds_group = {
+		en = "Per Item Keybinds"
+	},
 }

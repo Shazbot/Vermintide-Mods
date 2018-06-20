@@ -23,5 +23,7 @@ return {
 	spawn_pickup_hotkey_tooltip = {
 		en = "Spawns the item beneath your feet."
 	},
-
+	switch_item_command_description = {
+		en = "Switch to another item. e.g. /switch cooldown"
+	},
 }

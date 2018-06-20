@@ -1,6 +1,6 @@
 local mod = get_mod("ItemSpawner") -- luacheck: ignore get_mod
 
--- luacheck: globals AllPickups Spawn Unit NetworkLookup Managers Keyboard
+-- luacheck: globals AllPickups Spawn Unit NetworkLookup Managers Keyboard Localize
 
 local pl = require'pl.import_into'()
 local stringx = require'pl.stringx'
@@ -8,7 +8,7 @@ local stringx = require'pl.stringx'
 local pickup_names = pl.Map{}
 local current_pickup_name = nil
 
-mod.init_pickups = function(self) -- luacheck: ignore self
+mod.init_pickups = function()
 	mod:pcall(function()
 		if AllPickups and pickup_names:len() == 0 then
 			-- get a list of pickup names without those that crash
@@ -26,12 +26,12 @@ mod.init_pickups = function(self) -- luacheck: ignore self
 	end)
 end
 
-mod.next_pickup = function(self) -- luacheck: ignore self
+mod.next_pickup = function()
 	if not mod:is_enabled() then
 		return
 	end
 
-	mod:init_pickups()
+	mod.init_pickups()
 
 	current_pickup_name = pickup_names[pickup_names:index(current_pickup_name) + 1]
 	if not current_pickup_name then
@@ -40,12 +40,12 @@ mod.next_pickup = function(self) -- luacheck: ignore self
 	mod:echo("Switched to: "..current_pickup_name)
 end
 
-mod.prev_pickup = function(self) -- luacheck: ignore self
+mod.prev_pickup = function()
 	if not mod:is_enabled() then
 		return
 	end
 
-	mod:init_pickups()
+	mod.init_pickups()
 
 	current_pickup_name = pickup_names[pickup_names:index(current_pickup_name) - 1]
 	if not current_pickup_name then
@@ -54,12 +54,12 @@ mod.prev_pickup = function(self) -- luacheck: ignore self
 	mod:echo("Switched to: "..current_pickup_name)
 end
 
-mod.spawn_pickup = function(self) -- luacheck: ignore self
+mod.spawn_pickup = function()
 	if not mod:is_enabled() then
 		return
 	end
 
-	mod:init_pickups()
+	mod.init_pickups()
 
 	local local_player_unit = Managers.player:local_player().player_unit
 	Managers.state.network.network_transmit:send_rpc_server(
@@ -72,11 +72,23 @@ mod.spawn_pickup = function(self) -- luacheck: ignore self
 	mod:echo("Spawned: "..current_pickup_name)
 end
 
---- Callbacks ---
---- We don't use hooks, just so we don't get that warning message
---- about missing on_enabled/on_disabled.
-mod.on_disabled = function(is_first_call) -- luacheck: ignore is_first_call
+mod.switch_item = function(user_input)
+	mod:pcall(function()
+		mod.init_pickups()
+
+		local filtered_by_user_input =
+			pl.List(pickup_names):filter(function(pickup_name)
+				return stringx.count(pickup_name, user_input) > 0
+					or stringx.count(Localize(AllPickups[pickup_name].item_name or ""), user_input) > 0
+			end)
+
+		if filtered_by_user_input[1] then
+			current_pickup_name = filtered_by_user_input[1]
+			mod:echo("Switched to: "..current_pickup_name)
+		else
+			mod:echo("Cannot find item that matches: "..user_input)
+		end
+	end)
 end
 
-mod.on_enabled = function(is_first_call) -- luacheck: ignore is_first_call
-end
+mod:command("item", mod:localize("switch_item_command_description"), mod.switch_item)

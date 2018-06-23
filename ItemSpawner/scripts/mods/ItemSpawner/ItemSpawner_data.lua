@@ -62,14 +62,7 @@ keybinds_group_widget.sub_widgets = (function()
 				["action"] = pickup_name
 			})
 		mod[pickup_name] = function()
-			local local_player_unit = Managers.player:local_player().player_unit
-			Managers.state.network.network_transmit:send_rpc_server(
-				'rpc_spawn_pickup_with_physics',
-				NetworkLookup.pickup_names[pickup_name],
-				Unit.local_position(local_player_unit, 0),
-				Unit.local_rotation(local_player_unit, 0),
-				NetworkLookup.pickup_spawn_types['dropped']
-			)
+			mod.spawn_item(pickup_name)
 		end
 	end)
 	return item_keybinds

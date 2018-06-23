@@ -8,6 +8,24 @@ local stringx = require'pl.stringx'
 mod.pickup_names = pl.Map{}
 mod.current_pickup_name = nil
 
+mod.spawn_item = function(pickup_name)
+	mod:pcall(function()
+		local spawn_method = "rpc_spawn_pickup_with_physics"
+		if pickup_name == "all_ammo" then
+			spawn_method = "rpc_spawn_pickup"
+		end
+
+		local local_player_unit = Managers.player:local_player().player_unit
+		Managers.state.network.network_transmit:send_rpc_server(
+			spawn_method,
+			NetworkLookup.pickup_names[pickup_name],
+			Unit.local_position(local_player_unit, 0),
+			Unit.local_rotation(local_player_unit, 0),
+			NetworkLookup.pickup_spawn_types['dropped']
+		)
+	end)
+end
+
 mod.init_pickups = function()
 	mod:pcall(function()
 		if AllPickups and mod.pickup_names:len() == 0 then
@@ -62,14 +80,8 @@ mod.spawn_pickup = function()
 
 	mod.init_pickups()
 
-	local local_player_unit = Managers.player:local_player().player_unit
-	Managers.state.network.network_transmit:send_rpc_server(
-		'rpc_spawn_pickup_with_physics',
-		NetworkLookup.pickup_names[mod.current_pickup_name],
-		Unit.local_position(local_player_unit, 0),
-		Unit.local_rotation(local_player_unit, 0),
-		NetworkLookup.pickup_spawn_types['dropped']
-	)
+	mod.spawn_item(mod.current_pickup_name)
+
 	mod:echo("Spawned: "..mod.current_pickup_name)
 end
 

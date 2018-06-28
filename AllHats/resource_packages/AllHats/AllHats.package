@@ -1,0 +1,11 @@
+mod = [
+	"AllHats"
+]
+
+package = [
+	"resource_packages/AllHats/AllHats"
+]
+
+lua = [
+	"scripts/mods/AllHats/*"
+]

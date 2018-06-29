@@ -1,0 +1,11 @@
+mod = [
+	"AnyWeapon"
+]
+
+package = [
+	"resource_packages/AnyWeapon/AnyWeapon"
+]
+
+lua = [
+	"scripts/mods/AnyWeapon/*"
+]

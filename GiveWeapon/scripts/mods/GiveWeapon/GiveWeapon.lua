@@ -95,8 +95,17 @@ end
 mod.create_item_types_dropdown = function(profile_index, window_size)
 	local careers = SPProfiles[profile_index].careers
 
+	local item_master_list = ItemMasterList
+	local any_weapon = get_mod("AnyWeapon")
+	if any_weapon then
+		local cached_item_master_list = any_weapon:persistent_table("cache").ItemMasterList
+		if cached_item_master_list then
+			item_master_list = cached_item_master_list
+		end
+	end
+
 	local career_item_types = {}
-	for _, item in pairs( ItemMasterList ) do
+	for _, item in pairs( item_master_list ) do
 		for _, career in ipairs( careers ) do
 			if table.contains(item.can_wield, career.name)
 			and (item.slot_type == "melee" or item.slot_type == "ranged") then

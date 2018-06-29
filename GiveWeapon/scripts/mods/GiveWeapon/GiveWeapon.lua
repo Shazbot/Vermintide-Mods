@@ -14,7 +14,7 @@ mod.properties = {}
 mod.traits = {}
 
 fassert(mod.simple_ui, "GiveWeapon must be lower than SimpleUI in your launcher's load order.")
-fassert(mod.simple_ui, "GiveWeapon must be lower than MoreItemsLibrary in your launcher's load order.")
+fassert(mod.more_items_library, "GiveWeapon must be lower than MoreItemsLibrary in your launcher's load order.")
 
 mod.create_weapon = function(item_type)
 	for item_key, item in pairs( ItemMasterList ) do
@@ -76,7 +76,7 @@ mod.create_weapon = function(item_type)
 
 			mod.more_items_library:add_mod_items_to_local_backend({entry}, "GiveWeapon")
 
-			mod:echo("spawned"..item_key)
+			mod:echo("Spawned "..item_key)
 
 			Managers.backend:get_interface("items"):_refresh()
 

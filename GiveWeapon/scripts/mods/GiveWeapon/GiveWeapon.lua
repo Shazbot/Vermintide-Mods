@@ -19,70 +19,73 @@ fassert(mod.more_items_library, "GiveWeapon must be lower than MoreItemsLibrary 
 mod.create_weapon = function(item_type)
 	for item_key, item in pairs( ItemMasterList ) do
 		if item.item_type == item_type and item.template then
-			local skin
-			local skins = {}
-			for skin_key, weapon_skin in pairs( WeaponSkins.skins ) do
-				if weapon_skin.template == item.template then
-					skin = skin_key
-					table.insert(skins, skin)
+			if item.skin_combination_table or pl.List{"necklace", "ring", "trinket"}:contains(item_type) then
+
+				-- get a random valid skin
+				-- dumb way to flatten a map-like-table of lists without duplicates
+				local skin
+				if item.skin_combination_table then
+					local all_skins = pl.List()
+					tablex.foreach(WeaponSkins.skin_combinations[item.skin_combination_table], function(value)
+						all_skins:extend(pl.List(value))
+					end)
+					all_skins = pl.Map.keys(pl.Set(all_skins))
+					skin = all_skins[math.random(#all_skins)]
 				end
-			end
 
-			skin = skins[math.random(#skins)]
+				local custom_properties = "{"
+				for _, prop_name in ipairs( mod.properties ) do
+					custom_properties = custom_properties..'\"'..prop_name..'\":1,'
+				end
+				custom_properties = custom_properties.."}"
 
-			local entry = table.clone(ItemMasterList[item_key])
+				local properties = {}
+				for _, prop_name in ipairs( mod.properties ) do
+					properties[prop_name] = 1
+				end
 
-			local rnd = math.random(100000)
-			local custom_properties = "{"
-			for _, prop_name in ipairs( mod.properties ) do
-				custom_properties = custom_properties..'\"'..prop_name..'\":1,'
-			end
-			custom_properties = custom_properties.."}"
+				local custom_traits = "["
+				for _, trait_name in ipairs( mod.traits ) do
+					custom_traits = custom_traits..'\"'..trait_name..'\",'
+				end
+				custom_traits = custom_traits.."]"
 
-			local properties = {}
-			for _, prop_name in ipairs( mod.properties ) do
-				properties[prop_name] = 1
-			end
-
-			local custom_traits = "["
-			for _, trait_name in ipairs( mod.traits ) do
-				custom_traits = custom_traits..'\"'..trait_name..'\",'
-			end
-			custom_traits = custom_traits.."]"
-
-			entry.mod_data = {
-			    backend_id = tostring(item_key) .. rnd .. "_from_GiveWeapon",
-			    ItemInstanceId = tostring(item_key) .. rnd .. "_from_GiveWeapon",
-			    CustomData = {
-					-- traits = "[\"melee_attack_speed_on_crit\", \"melee_timed_block_cost\"]",
-					traits = custom_traits,
-					power_level = "300",
-					properties = custom_properties,
+				local rnd = math.random(1000000) -- uhh yeah
+				local entry = table.clone(ItemMasterList[item_key])
+				entry.mod_data = {
+				    backend_id = tostring(item_key) .. rnd .. "_from_GiveWeapon",
+				    ItemInstanceId = tostring(item_key) .. rnd .. "_from_GiveWeapon",
+				    CustomData = {
+						-- traits = "[\"melee_attack_speed_on_crit\", \"melee_timed_block_cost\"]",
+						traits = custom_traits,
+						power_level = "300",
+						properties = custom_properties,
+						rarity = "exotic",
+					},
 					rarity = "exotic",
-				},
-				rarity = "exotic",
-			    -- traits = { "melee_timed_block_cost", "melee_attack_speed_on_crit" },
-			    traits = table.clone(mod.traits),
-			    power_level = 300,
-			    properties = properties,
-			}
-			if skin then
-				entry.mod_data.CustomData.skin = skin
-				entry.mod_data.skin = skin
-				entry.mod_data.inventory_icon = WeaponSkins.skins[skin].inventory_icon
+				    -- traits = { "melee_timed_block_cost", "melee_attack_speed_on_crit" },
+				    traits = table.clone(mod.traits),
+				    power_level = 300,
+				    properties = properties,
+				}
+				if skin then
+					entry.mod_data.CustomData.skin = skin
+					entry.mod_data.skin = skin
+					entry.mod_data.inventory_icon = WeaponSkins.skins[skin].inventory_icon
+				end
+
+				entry.rarity = "exotic"
+
+				mod.more_items_library:add_mod_items_to_local_backend({entry}, "GiveWeapon")
+
+				mod:echo("Spawned "..item_key)
+
+				Managers.backend:get_interface("items"):_refresh()
+
+				mod.properties = {}
+				mod.traits = {}
+				break
 			end
-
-			entry.rarity = "exotic"
-
-			mod.more_items_library:add_mod_items_to_local_backend({entry}, "GiveWeapon")
-
-			mod:echo("Spawned "..item_key)
-
-			Managers.backend:get_interface("items"):_refresh()
-
-			mod.properties = {}
-			mod.traits = {}
-			break
 		end
 	end
 end
@@ -158,7 +161,6 @@ mod.create_window = function(self, profile_index)
 	end
 	if profile_index then
 		mod.heroes_dropdown:select_index(profile_index)
-		-- mod.create_item_types_dropdown(profile_index, window_size)
 	end
 
 	mod.add_property_button = self.main_window:create_button("add_property_button", {pos_x+180+180+5+5+260+5+40, window_size[2]-70}, {180, 30}, nil, "Add Property", nil)

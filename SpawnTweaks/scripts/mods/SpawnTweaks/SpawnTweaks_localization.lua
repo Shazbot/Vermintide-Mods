@@ -212,4 +212,16 @@ return {
 	no_troll_tooltip = {
 		en = "Replace troll with another random boss."
 	},
+	no_chaos_spawn = {
+		en = "No Chaos Spawn"
+	},
+	no_chaos_spawn_tooltip = {
+		en = "Replace Chaos Spawn with another random boss."
+	},
+	no_stormfiend = {
+		en = "No Stormfiend"
+	},
+	no_stormfiend_tooltip = {
+		en = "Replace Stormfiend with another random boss."
+	},
 }

@@ -32,36 +32,39 @@ mod:hook(SpawnerSystem, "_try_spawn_breed", function (func, self, breed_name, sp
 	return func(self, breed_name, spawn_list_per_breed, spawn_list, breed_limits, active_enemies, group_template)
 end)
 
+mod.original_random_interval = nil
+mod.new_random_interval = function (numbers)
+	local result = mod.original_random_interval(numbers)
+	if result then
+		local horde_size_ratio = mod:get(mod.SETTING_NAMES.HORDE_SIZE) / 100
+		if mod:get(mod.SETTING_NAMES.HORDES) == mod.HORDES.DISABLE then
+			horde_size_ratio = 0
+		end
+		result = math.round(result * horde_size_ratio)
+
+		-- so in compose_horde_spawn_list we have "for start,start+result,1 do" which will run once for result 0
+		-- and as a result we get 1 slave in every horde
+		if result == 0 then
+			result = -1
+		end
+	end
+
+	return result
+end
+
 mod.horde_compose_hooks = function (func, self, ...)
 	if mod:get(mod.SETTING_NAMES.HORDES) == mod.HORDES.DEFAULT then
 		return func(self, ...)
 	end
 
-	local original_random_interval = ConflictUtils.random_interval
-	ConflictUtils.random_interval = function (numbers)
-		local result = original_random_interval(numbers)
-		if result then
-			local horde_size_ratio = mod:get(mod.SETTING_NAMES.HORDE_SIZE) / 100
-			if mod:get(mod.SETTING_NAMES.HORDES) == mod.HORDES.DISABLE then
-				horde_size_ratio = 0
-			end
-			result = math.round(result * horde_size_ratio)
+	mod.original_random_interval = ConflictUtils.random_interval
+	ConflictUtils.random_interval = mod.new_random_interval
 
-			-- so in compose_horde_spawn_list we have "for start,start+result,1 do" which will run once for result 0
-			-- and as a result we get 1 slave in every horde
-			if result == 0 then
-				result = -1
-			end
-		end
+	local return_val_1, return_val_2, return_val_3 = func(self, ...)
 
-		return result
-	end
+	ConflictUtils.random_interval = mod.original_random_interval
 
-	local packed_return = pack2(func(self, ...))
-
-	ConflictUtils.random_interval = original_random_interval
-
-	return unpack2(packed_return)
+	return return_val_1, return_val_2, return_val_3
 end
 
 --- Timed hordes size adjustment.
@@ -212,6 +215,21 @@ mod:hook(SpecialsPacing.select_breed_functions, "get_random_breed", function(fun
 	return func(slots, breeds, new_method_data)
 end)
 
+--- Get boss breed names without disabled bosses
+mod.get_filtered_boss_list = function()
+	local pruned_bosses = mod.bosses:clone()
+	if mod:get(mod.SETTING_NAMES.NO_TROLL) then
+		pruned_bosses:remove_value("chaos_troll")
+	end
+	if mod:get(mod.SETTING_NAMES.NO_CHAOS_SPAWN) then
+		pruned_bosses:remove_value("chaos_spawn")
+	end
+	if mod:get(mod.SETTING_NAMES.NO_STORMFIEND) then
+		pruned_bosses:remove_value("skaven_stormfiend")
+	end
+	return pruned_bosses
+end
+
 --- Disable boss event and double bosses.
 mod.boss_events = {
 	"boss_event_chaos_troll",
@@ -225,7 +243,6 @@ mod.bosses = pl.List{
 	"chaos_troll",
 	"chaos_spawn"
 }
-mod.bosses_no_troll = mod.bosses:clone():remove_value("chaos_troll")
 mod:hook(TerrorEventMixer.run_functions, "spawn", function (func, event, element, ...)
 	if mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.DISABLE and tablex.find(mod.boss_events, event.name) then
 		return true
@@ -237,15 +254,18 @@ mod:hook(TerrorEventMixer.run_functions, "spawn", function (func, event, element
 
 	if mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.CUSTOMIZE then
 		if stringx.count(event.name, "boss_event") > 0 and stringx.count(event.name, "patrol") == 0 then
-			if mod:get(mod.SETTING_NAMES.NO_TROLL) and element.breed_name == "chaos_troll" then
-				element.breed_name = mod.bosses_no_troll[math.random(#mod.bosses_no_troll)]
+			local pruned_bosses = mod.get_filtered_boss_list()
+			if mod:get(mod.SETTING_NAMES.NO_TROLL) and element.breed_name == "chaos_troll"
+			or mod:get(mod.SETTING_NAMES.NO_CHAOS_SPAWN) and element.breed_name == "chaos_spawn"
+			or mod:get(mod.SETTING_NAMES.NO_STORMFIEND) and element.breed_name == "skaven_stormfiend" then
+				element.breed_name = pruned_bosses[math.random(#pruned_bosses)]
 			end
 
 			if mod:get(mod.SETTING_NAMES.DOUBLE_BOSSES) then
 				local new_element = tablex.deepcopy(element)
-				local bosses_no_duplicate = tablex.deepcopy(mod:get(mod.SETTING_NAMES.NO_TROLL) and mod.bosses_no_troll or mod.bosses)
+				local bosses_no_duplicate = tablex.deepcopy(pruned_bosses)
 				local duplicate_index = tablex.find(bosses_no_duplicate, element.breed_name)
-				if duplicate_index then
+				if #bosses_no_duplicate > 1 and duplicate_index then
 					table.remove(bosses_no_duplicate, duplicate_index)
 				end
 				new_element.breed_name = bosses_no_duplicate[math.random(#bosses_no_duplicate)]
@@ -291,10 +311,10 @@ mod:hook(ConflictDirector, "update_horde_pacing", function(func, self, t, dt)
 		return func(self, t, dt)
 	end
 
-	local original_recycle_settings = tablex.deepcopy(RecycleSettings)
+	local original_push_horde_if_num_alive_grunts_above = RecycleSettings.push_horde_if_num_alive_grunts_above
 	RecycleSettings.push_horde_if_num_alive_grunts_above = mod:get(mod.SETTING_NAMES.HORDE_GRUNT_LIMIT)
 
-	local original_current_pacing = tablex.deepcopy(CurrentPacing)
+	local original_horde_frequency = tablex.deepcopy(CurrentPacing.horde_frequency)
 	CurrentPacing.horde_frequency = {
 		mod:get(mod.SETTING_NAMES.HORDE_FREQUENCY_MIN),
 		mod:get(mod.SETTING_NAMES.HORDE_FREQUENCY_MAX)
@@ -302,8 +322,8 @@ mod:hook(ConflictDirector, "update_horde_pacing", function(func, self, t, dt)
 
 	func(self, t, dt)
 
-	CurrentPacing = original_current_pacing
-	RecycleSettings = original_recycle_settings
+	CurrentPacing.horde_frequency = original_horde_frequency
+	RecycleSettings.push_horde_if_num_alive_grunts_above = original_push_horde_if_num_alive_grunts_above
 end)
 
 mod:hook(ConflictDirector, "update", function(func, self, ...)
@@ -311,10 +331,10 @@ mod:hook(ConflictDirector, "update", function(func, self, ...)
 		return func(self, ...)
 	end
 
-	local original_recycle_settings = tablex.deepcopy(RecycleSettings)
-	RecycleSettings.max_grunts = mod:get(mod.SETTING_NAMES.MAX_GRUNTS)
+	local original_max_grunts = RecycleSettings.max_grunts
+	local original_horde_startup_time = tablex.deepcopy(CurrentPacing.horde_startup_time)
 
-	local original_current_pacing = tablex.deepcopy(CurrentPacing)
+	RecycleSettings.max_grunts = mod:get(mod.SETTING_NAMES.MAX_GRUNTS)
 	CurrentPacing.horde_startup_time = {
 		mod:get(mod.SETTING_NAMES.HORDE_STARTUP_MIN),
 		mod:get(mod.SETTING_NAMES.HORDE_STARTUP_MAX)
@@ -322,8 +342,8 @@ mod:hook(ConflictDirector, "update", function(func, self, ...)
 
 	func(self, ...)
 
-	CurrentPacing = original_current_pacing
-	RecycleSettings = original_recycle_settings
+	RecycleSettings.max_grunts = original_max_grunts
+	CurrentPacing.horde_startup_time = original_horde_startup_time
 end)
 
 mod:hook(ConflictDirector, "horde_killed", function(func, self, ...)
@@ -331,7 +351,7 @@ mod:hook(ConflictDirector, "horde_killed", function(func, self, ...)
 		return func(self, ...)
 	end
 
-	local original_current_pacing = tablex.deepcopy(CurrentPacing)
+	local original_horde_frequency = tablex.deepcopy(CurrentPacing.horde_frequency)
 	CurrentPacing.horde_frequency = {
 		mod:get(mod.SETTING_NAMES.HORDE_FREQUENCY_MIN),
 		mod:get(mod.SETTING_NAMES.HORDE_FREQUENCY_MAX)
@@ -339,7 +359,7 @@ mod:hook(ConflictDirector, "horde_killed", function(func, self, ...)
 
 	func(self, ...)
 
-	CurrentPacing = original_current_pacing
+	CurrentPacing.horde_frequency = original_horde_frequency
 end)
 
 --- Change ambient density.

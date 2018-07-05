@@ -137,9 +137,11 @@ mod.create_window = function(self, profile_index)
 	local scale = UIResolutionScale()
 	local screen_width, screen_height = UIResolution() -- luacheck: ignore screen_width
 	local window_size = {905, 80}
-	local window_position = {850*scale, screen_height - window_size[2]*scale - 5}
+	local window_position = {850, screen_height - window_size[2] - 5}
 
 	self.main_window = mod.simple_ui:create_window("give_weapon", window_position, window_size)
+
+	self.main_window.position = {850*scale, screen_height - window_size[2]*scale - 5}
 
 	local pos_x = 5
 

@@ -40,6 +40,7 @@ mod.SETTING_NAMES = {
 	HORDES = "hordes",
 	SPECIALS = "specials",
 	ALWAYS_SPECIALS = "always_specials",
+	SPECIALS_NO_THREAT_DELAY = "specials_no_threat_delay",
 	BOSS_DMG_MULTIPLIER = "boss_dmg_multiplier",
 	SPECIAL_TO_BOSS_CHANCE = "special_to_boss_chance",
 }
@@ -263,6 +264,14 @@ mod_data.options_widgets = {
 				["widget_type"] = "checkbox",
 				["text"] = mod:localize("always_specials"),
 				["tooltip"] = mod:localize("always_specials_tooltip"),
+				["default_value"] = false,
+			},
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.SPECIALS_NO_THREAT_DELAY,
+				["widget_type"] = "checkbox",
+				["text"] = mod:localize("specials_no_threat_delay"),
+				["tooltip"] = mod:localize("specials_no_threat_delay_tooltip"),
 				["default_value"] = false,
 			},
 		},

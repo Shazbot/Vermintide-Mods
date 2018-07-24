@@ -33,7 +33,7 @@ return {
 		en = "Disable Fixed Spawns"
 	},
 	disable_fixed_spawns_tooltip = {
-		en = "Disable fixed map spawns."
+		en = "Disable fixed map spawns. (e.g. Empire in Flames 2 chaos warriors at the gates)"
 	},
 	disable_roaming_patrols = {
 		en = "Disable Roaming Patrols"
@@ -133,6 +133,12 @@ return {
 	},
 	always_specials_tooltip = {
 		en = "Some events disable timed specials spawning, choose to keep them always spawning."
+	},
+	specials_no_threat_delay = {
+		en = "Specials Ignore Threat"
+	},
+	specials_no_threat_delay_tooltip = {
+		en = "Keep spawning specials even when threat(what the game uses to calculate current intensity for dynamic difficulty scaling) is high."
 	},
 	max_one_boss = {
 		en = "Only One Random Boss"

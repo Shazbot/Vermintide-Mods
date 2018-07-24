@@ -289,6 +289,11 @@ mod:hook_safe(ConflictDirector, "calculate_threat_value", function(self)
 	self.delay_horde = self.delay_horde_threat_value < threat_value
 	self.delay_mini_patrol = self.delay_mini_patrol_threat_value < threat_value
 	self.delay_specials = self.delay_specials_threat_value < threat_value
+
+	if mod:get(mod.SETTING_NAMES.SPECIALS) == mod.SPECIALS.CUSTOMIZE
+	and mod:get(mod.SETTING_NAMES.SPECIALS_NO_THREAT_DELAY) then
+		self.delay_specials = false
+	end
 end)
 
 mod:hook_safe(Pacing, "update", function(self, t, dt, alive_player_units) -- luacheck: ignore t dt

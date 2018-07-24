@@ -17,8 +17,15 @@ fassert(mod.simple_ui, "GiveWeapon must be lower than SimpleUI in your launcher'
 fassert(mod.more_items_library, "GiveWeapon must be lower than MoreItemsLibrary in your launcher's load order.")
 
 mod.create_weapon = function(item_type)
+	local current_career_names = mod.current_careers:map(function(career) return career.name end)
 	for item_key, item in pairs( ItemMasterList ) do
-		if item.item_type == item_type and item.template then
+		if item.item_type == item_type
+		and item.template
+		and item.can_wield
+		and pl.List(item.can_wield) -- check if the item is valid career-wise
+			:map(function(career_name) return current_career_names:contains(career_name) end)
+			:reduce('or')
+		then
 			if item.skin_combination_table or pl.List{"necklace", "ring", "trinket"}:contains(item_type) then
 
 				-- get a random valid skin
@@ -96,7 +103,7 @@ for i, profile in ipairs(pl.List(SPProfiles):slice(1, 5)) do
 end
 
 mod.create_item_types_dropdown = function(profile_index, window_size)
-	local careers = SPProfiles[profile_index].careers
+	mod.current_careers = pl.List(SPProfiles[profile_index].careers)
 
 	local item_master_list = ItemMasterList
 	local any_weapon = get_mod("AnyWeapon")
@@ -109,7 +116,7 @@ mod.create_item_types_dropdown = function(profile_index, window_size)
 
 	local career_item_types = {}
 	for _, item in pairs( item_master_list ) do
-		for _, career in ipairs( careers ) do
+		for _, career in ipairs( mod.current_careers ) do
 			if table.contains(item.can_wield, career.name)
 			and (item.slot_type == "melee" or item.slot_type == "ranged") then
 				career_item_types[item.item_type] = true

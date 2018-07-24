@@ -1,0 +1,11 @@
+mod =  [
+	"VisibleAmmo"
+]
+
+package = [
+	"resource_packages/VisibleAmmo/VisibleAmmo"
+]
+
+lua = [
+	"scripts/mods/VisibleAmmo/*"
+]

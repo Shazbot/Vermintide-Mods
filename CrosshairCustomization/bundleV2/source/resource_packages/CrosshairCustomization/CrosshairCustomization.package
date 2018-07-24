@@ -1,0 +1,11 @@
+mod =  [
+	"CrosshairCustomization"
+]
+
+package = [
+	"resource_packages/CrosshairCustomization/CrosshairCustomization"
+]
+
+lua = [
+	"scripts/mods/CrosshairCustomization/*"
+]

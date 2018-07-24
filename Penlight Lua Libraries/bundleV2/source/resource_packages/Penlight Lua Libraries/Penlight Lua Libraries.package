@@ -1,0 +1,11 @@
+mod =  [
+	"Penlight Lua Libraries"
+]
+
+package = [
+	"resource_packages/Penlight Lua Libraries/Penlight Lua Libraries"
+]
+
+lua = [
+	"scripts/mods/Penlight Lua Libraries/*"
+]

@@ -1,0 +1,11 @@
+mod =  [
+	"InventoryFavorites"
+]
+
+package = [
+	"resource_packages/InventoryFavorites/InventoryFavorites"
+]
+
+lua = [
+	"scripts/mods/InventoryFavorites/*"
+]

@@ -1,0 +1,11 @@
+mod =  [
+	"PositiveReinforcementTweaks"
+]
+
+package = [
+	"resource_packages/PositiveReinforcementTweaks/PositiveReinforcementTweaks"
+]
+
+lua = [
+	"scripts/mods/PositiveReinforcementTweaks/*"
+]

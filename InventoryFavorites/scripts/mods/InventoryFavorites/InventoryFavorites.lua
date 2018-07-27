@@ -1263,7 +1263,7 @@ local filter_macros = {
 }
 
 local empty_params = {}
-BackendInterfaceCommon.filter_items = function (self, items, filter_infix, params)
+mod:hook_origin(BackendInterfaceCommon, "filter_items", function (self, items, filter_infix, params)
 	local filter_postfix = BackendInterfaceCommon.filter_postfix_cache[filter_infix]
 
 	if not filter_postfix then
@@ -1313,10 +1313,10 @@ BackendInterfaceCommon.filter_items = function (self, items, filter_infix, param
 	end
 
 	return passed
-end
+end)
 
 -- sublime lua reformat loses its wits here
-BackendInterfaceCommon._infix_to_postfix_item_filter = function (self, filter_infix)
+mod:hook_origin(BackendInterfaceCommon, "_infix_to_postfix_item_filter", function (self, filter_infix)
 	local output = {}
 	local stack = {}
 
@@ -1370,4 +1370,4 @@ BackendInterfaceCommon._infix_to_postfix_item_filter = function (self, filter_in
 		end
 
 	return output
-end
+end)

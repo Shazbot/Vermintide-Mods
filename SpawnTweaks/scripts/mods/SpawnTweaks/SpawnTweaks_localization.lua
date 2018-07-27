@@ -230,4 +230,13 @@ return {
 	no_stormfiend_tooltip = {
 		en = "Replace Stormfiend with another random boss."
 	},
+	save_preset_command_description = {
+		en = "Save current SpawnTweaks options into a preset!"
+	},
+	load_preset_command_description = {
+		en = "Load a SpawnTweaks preset."
+	},
+	delete_preset_command_description = {
+		en = "Delete a SpawnTweaks preset."
+	},
 }

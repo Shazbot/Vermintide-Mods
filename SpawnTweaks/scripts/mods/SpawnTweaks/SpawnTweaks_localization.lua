@@ -239,4 +239,7 @@ return {
 	delete_preset_command_description = {
 		en = "Delete a SpawnTweaks preset."
 	},
+	specials_toggle_group = {
+		en = "Disable Specials By Type"
+	},
 }

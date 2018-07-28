@@ -176,6 +176,13 @@ mod:hook(SpecialsPacing, "specials_by_slots", function(func, self, t, specials_s
 	func(self, t, specials_settings, new_method_data, slots, spawn_queue)
 end)
 
+--- Did we disable all the specials breeds through checkboxes?
+mod.are_all_specials_disabled = function()
+	return tablex.keys(mod.specials_breeds)
+		:map(function(breed_name) return mod:get(breed_name.."_toggle") end)
+		:reduce("and")
+end
+
 --- Specials spawn delay from start of the level.
 mod:hook(SpecialsPacing.setup_functions, "specials_by_slots", function(func, t, slots, method_data)
 	if mod:get(mod.SETTING_NAMES.SPECIALS) ~= mod.SPECIALS.CUSTOMIZE then
@@ -190,6 +197,10 @@ mod:hook(SpecialsPacing.setup_functions, "specials_by_slots", function(func, t, 
 
 	local original_specials_settings = tablex.deepcopy(CurrentSpecialsSettings)
 	CurrentSpecialsSettings.max_specials = mod:get(mod.SETTING_NAMES.MAX_SPECIALS)
+
+	if mod.are_all_specials_disabled() then
+		CurrentSpecialsSettings.breeds = {}
+	end
 
 	func(t, slots, new_method_data)
 
@@ -212,9 +223,17 @@ mod:hook(SpecialsPacing.select_breed_functions, "get_random_breed", function(fun
 		return func(slots, breeds, method_data)
 	end
 
+	local only_enabled_breeds = tablex.keys(mod.specials_breeds)
+		:filter(function(breed_name) return not mod:get(breed_name.."_toggle") end)
+
 	local new_method_data = tablex.deepcopy(method_data)
 	new_method_data.max_of_same = mod:get(mod.SETTING_NAMES.MAX_SAME_SPECIALS)
-	return func(slots, breeds, new_method_data)
+
+	if #only_enabled_breeds == 1 then
+		new_method_data.max_of_same = mod:get(mod.SETTING_NAMES.MAX_SPECIALS)
+	end
+
+	return func(slots, only_enabled_breeds, new_method_data)
 end)
 
 --- Get boss breed names without disabled bosses
@@ -390,9 +409,13 @@ end)
 
 --- Specials always enabled.
 mod:hook(SpecialsPacing, "update", function(func, self, t, alive_specials, specials_population, player_positions)
-	if mod:get(mod.SETTING_NAMES.SPECIALS) == mod.SPECIALS.CUSTOMIZE
-	and mod:get(mod.SETTING_NAMES.ALWAYS_SPECIALS) then
-		specials_population = 1
+	if mod:get(mod.SETTING_NAMES.SPECIALS) == mod.SPECIALS.CUSTOMIZE then
+		if mod:get(mod.SETTING_NAMES.ALWAYS_SPECIALS) then
+			specials_population = 1
+		end
+		if mod.are_all_specials_disabled() then
+			return
+		end
 	end
 
 	return func(self, t, alive_specials, specials_population, player_positions)
@@ -406,7 +429,8 @@ mod:hook(DamageUtils, "calculate_damage", function(func, damage_output, target_u
 	if target_unit then
 		local breed = Unit.get_data(target_unit, "breed")
 		if breed then
-			if mod.bosses:contains(breed.name) then
+			if mod.bosses:contains(breed.name)
+			and mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.CUSTOMIZE then
 				dmg = dmg * mod:get(mod.SETTING_NAMES.BOSS_DMG_MULTIPLIER) / 100
 				return dmg
 			end

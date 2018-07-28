@@ -1,5 +1,9 @@
 local mod = get_mod("SpawnTweaks") -- luacheck: ignore get_mod
 
+-- luacheck: globals Localize Breeds table
+
+local pl = require'pl.import_into'()
+
 local mod_data = {
 	name = mod:localize("mod_name"),
 	description = mod:localize("mod_description"),
@@ -43,6 +47,7 @@ mod.SETTING_NAMES = {
 	SPECIALS_NO_THREAT_DELAY = "specials_no_threat_delay",
 	BOSS_DMG_MULTIPLIER = "boss_dmg_multiplier",
 	SPECIAL_TO_BOSS_CHANCE = "special_to_boss_chance",
+	SPECIALS_TOGGLE_GROUP = "specials_toggle_group",
 }
 
 mod.BOSSES = {
@@ -68,6 +73,46 @@ mod.SPECIALS = {
 	DISABLE = 2,
 	CUSTOMIZE = 3,
 }
+
+local unused_specials = pl.List{
+	"chaos_plague_wave_spawner",
+	"chaos_tentacle_sorcerer",
+	"chaos_tentacle",
+	"chaos_plague_sorcerer",
+}
+mod.specials_breeds = table.clone(Breeds)
+for breed_name, breed_data in pairs(mod.specials_breeds) do
+	if not breed_data.special or unused_specials:contains(breed_name) then
+		mod.specials_breeds[breed_name] = nil
+	else
+		breed_data.localized_name = Localize(breed_name)
+		if breed_name == "chaos_corruptor_sorcerer" then
+			breed_data.localized_name = "Lifeleech Sorcerer"
+		end
+	end
+end
+
+local specials_toggle_widget = {
+	["show_widget_condition"] = {3},
+	["setting_name"] = mod.SETTING_NAMES.SPECIALS_TOGGLE_GROUP,
+	["widget_type"] = "group",
+	["text"] = mod:localize("specials_toggle_group"),
+	["sub_widgets"] = {}
+}
+specials_toggle_widget.sub_widgets = (function()
+	local breed_options = {}
+	for breed_name, breed_data in pairs(mod.specials_breeds) do
+		table.insert(breed_options,
+			{
+				["setting_name"] = breed_name.."_toggle",
+				["widget_type"] = "checkbox",
+				["text"] = breed_data.localized_name,
+				["tooltip"] = "Remove "..breed_data.localized_name.." as an elegible spawn.",
+				["default_value"] = false,
+			})
+	end
+	return breed_options
+end)()
 
 mod_data.options_widgets = {
 	{
@@ -274,6 +319,7 @@ mod_data.options_widgets = {
 				["tooltip"] = mod:localize("specials_no_threat_delay_tooltip"),
 				["default_value"] = false,
 			},
+			specials_toggle_widget,
 		},
 	},
 	{

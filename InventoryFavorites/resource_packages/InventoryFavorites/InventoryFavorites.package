@@ -9,3 +9,7 @@ package = [
 lua = [
 	"scripts/mods/InventoryFavorites/*"
 ]
+
+material = [
+	"materials/InventoryFavorites/*"
+]

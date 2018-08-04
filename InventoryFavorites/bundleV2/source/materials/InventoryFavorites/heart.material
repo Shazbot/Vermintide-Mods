@@ -1,0 +1,14 @@
+heart = {
+	material_contexts = {
+		surface_material = ""
+	}
+
+	shader = "gui:DIFFUSE_MAP"
+
+	textures = {
+		diffuse_map = "textures/InventoryFavorites/heart"
+	}
+
+	variables = {
+	}
+}

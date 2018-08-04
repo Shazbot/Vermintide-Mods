@@ -6,6 +6,7 @@ local pl = require'pl.import_into'()
 -- luacheck: globals UIFrameSettings Managers ItemGridUI Localize UIUtils
 -- luacheck: globals BackendInterfaceCommon ItemMasterList UISettings
 -- luacheck: globals UISettings UIFontByResolution UIGetFontHeight UIRenderer RESOLUTION_LOOKUP
+-- luacheck: globals HeroWindowLoadoutInventory
 
 -- needs to be global for create_input_service
 Favorite_keymaps = {
@@ -25,42 +26,43 @@ Favorite_keymaps = {
 Favorite_keymaps.xb1 = Favorite_keymaps.win32
 
 local fav_item_text_style = {
-	font_size = 25,
-	word_wrap = false,
-	pixel_perfect = true,
-	horizontal_alignment = "left",
-	vertical_alignment = "center",
-	dynamic_font = true,
-	font_type = "hell_shark",
-	text_color = Colors.get_color_table_with_alpha("orange", 255),
-	size = {
-		30,
-		38
-	},
+    horizontal_alignment = "left",
+    color = {
+      100,
+      220,
+      20,
+      60
+    },
+    texture_size = {
+      20,
+      20
+    },
 	offset = {
-		220+5,
-		35+42,
+		220+28,
+		35-8,
 		6
-	}
+	},
+    vertical_alignment = "center"
 }
+
 local junk_item_text_style = {
-	font_size = 20,
-	word_wrap = false,
-	pixel_perfect = true,
 	horizontal_alignment = "left",
-	vertical_alignment = "center",
-	dynamic_font = true,
-	font_type = "hell_shark",
-	text_color = Colors.get_color_table_with_alpha("white", 255),
-	size = {
-		34+2,
-		42+2
+	color = {
+	  75,
+	  255,
+	  255,
+	  255
+	},
+	texture_size = {
+	  20,
+	  20
 	},
 	offset = {
 		220+28,
 		35-8,
 		6
-	}
+	},
+	vertical_alignment = "center"
 }
 
 mod.FAVS_SETTINGS_KEY = "favs"
@@ -71,35 +73,35 @@ mod.junk_table = pl.List(mod:get(mod.JUNK_SETTINGS_KEY) or {})
 
 local reload = false
 
-mod.remove_passes = function(self, widget)
+mod.remove_passes = function(widget)
 	local passes = widget.element.passes
-	widget.element.dirty = true
-	local favorite_pass_index = nil
-	for i, pass in ipairs(passes) do
-		if pass.text_id == "text_favorite" then
-			favorite_pass_index = i
-			break
-		end
-	end
-	local junk_pass_index = nil
-	for i, pass in ipairs(passes) do
-		if pass.text_id == "text_junk" then
-			junk_pass_index = i
-			break
-		end
-	end
-	if junk_pass_index then
-		table.remove(passes, junk_pass_index)
-	end
-	if favorite_pass_index then
-		table.remove(passes, favorite_pass_index)
-	end
+	-- widget.element.dirty = true
+	-- local favorite_pass_index = nil
+	-- for i, pass in ipairs(passes) do
+	-- 	if pass.texture_id == "texture_fav" then
+	-- 		favorite_pass_index = i
+	-- 		break
+	-- 	end
+	-- end
+	-- local junk_pass_index = nil
+	-- for i, pass in ipairs(passes) do
+	-- 	if pass.texture_id == "texture_junk" then
+	-- 		junk_pass_index = i
+	-- 		break
+	-- 	end
+	-- end
+	-- if junk_pass_index then
+	-- 	table.remove(passes, junk_pass_index)
+	-- end
+	-- if favorite_pass_index then
+	-- 	table.remove(passes, favorite_pass_index)
+	-- end
 
 	local new_passes
 	mod:pcall(function()
 		new_passes = pl.seq(passes):filter(
 			function(pass)
-				return not pass.text_id or pass.text_id ~= 'text_favorite' or pass.text_id ~= 'text_junk'
+				return not pass.texture_id or (pass.texture_id ~= 'texture_fav' and pass.texture_id ~= 'texture_junk')
 			end):copy()
 	end)
 
@@ -110,7 +112,7 @@ mod.remove_passes = function(self, widget)
 	widget.element.dirty = true
 end
 
-mod.create_passes = function(self, widget)
+mod.create_passes = function(widget)
 	local passes = widget.element.passes
 	local content = widget.content
 
@@ -128,42 +130,47 @@ mod.create_passes = function(self, widget)
 
 				widget.style[fav_style_key].offset = table.clone(widget.style["item_icon_" .. tostring(i) .. "_" .. tostring(k)].offset)
 				widget.style[fav_style_key].offset[1] = widget.style[fav_style_key].offset[1] + 8
-				widget.style[fav_style_key].offset[2] = widget.style[fav_style_key].offset[2] + 41
+				widget.style[fav_style_key].offset[2] = widget.style[fav_style_key].offset[2] - 60 - 250 - 19 + 45 + 1
 				widget.style[fav_style_key].offset[3] = 10
 
 				widget.style[junk_style_key].offset = table.clone(widget.style["item_icon_" .. tostring(i) .. "_" .. tostring(k)].offset)
-				widget.style[junk_style_key].offset[1] = widget.style[junk_style_key].offset[1] + 63
-				widget.style[junk_style_key].offset[2] = widget.style[junk_style_key].offset[2] - 5
+				widget.style[junk_style_key].offset[1] = widget.style[junk_style_key].offset[1] + 54
+				widget.style[junk_style_key].offset[2] = widget.style[junk_style_key].offset[2] - 60 - 250 - 19
 				widget.style[junk_style_key].offset[3] = 10
 
-				widget.content["item_" .. tostring(i) .. "_" .. tostring(k)].text_favorite = "F"
-				widget.content["item_" .. tostring(i) .. "_" .. tostring(k)].text_junk = "J"
-				passes[#passes + 1] = {
-					text_id = "text_favorite",
+				widget.content["item_" .. tostring(i) .. "_" .. tostring(k)].texture_junk = "trash"
+				widget.content["item_" .. tostring(i) .. "_" .. tostring(k)].texture_fav = "heart"
+
+				passes[#passes + 1] =
+				{
+					pass_type = "texture",
+					style_id = fav_style_key,
 					content_id = "item_" .. tostring(i) .. "_" .. tostring(k),
-					pass_type = "text",
-					style_id = "text_favorite_" .. tostring(i) .. "_" .. tostring(k),
-					content_check_function = function(content)
+					texture_id = "texture_fav",
+					content_check_function = function(content, style)
 						return table.contains(mod.favs_table, content.backend_id)
 					end,
 				}
 				widget.element.pass_data[#passes] = {
-					text_id = "text_favorite",
+					style_id = fav_style_key,
 					content_id = "item_" .. tostring(i) .. "_" .. tostring(k),
+					texture_id = "texture_fav",
 				}
 
-				passes[#passes + 1] = {
-					text_id = "text_junk",
+				passes[#passes + 1] =
+				{
+					pass_type = "texture",
+					style_id = junk_style_key,
 					content_id = "item_" .. tostring(i) .. "_" .. tostring(k),
-					pass_type = "text",
-					style_id = "text_junk_" .. tostring(i) .. "_" .. tostring(k),
-					content_check_function = function(content)
+					texture_id = "texture_junk",
+					content_check_function = function(content, style)
 						return table.contains(mod.junk_table, content.backend_id)
 					end,
 				}
 				widget.element.pass_data[#passes] = {
-					text_id = "text_junk",
+					style_id = junk_style_key,
 					content_id = "item_" .. tostring(i) .. "_" .. tostring(k),
+					texture_id = "texture_junk",
 				}
 			end
 		end
@@ -173,29 +180,19 @@ end
 mod:hook(HeroWindowLoadoutInventory, "on_exit", function (func, self, ...)
 	reload = true
 	local widget = self._item_grid._widget
-	mod:remove_passes(widget)
+	mod.remove_passes(widget)
 	return func(self, ...)
 end)
 
 mod:hook(HeroWindowLoadoutInventory, "update", function (func, self, ...)
 	local widget = self._item_grid._widget
 	if not widget.content.item_1_2 then
-		mod:remove_passes(widget)
+		mod.remove_passes(widget)
 		return func(self, ...)
 	end
 
-	if not widget.style.text_favorite or reload then
-		widget.style.text_favorite = table.clone(fav_item_text_style)
-	end
-	if not widget.style.text_junk or reload then
-		widget.style.text_junk = table.clone(junk_item_text_style)
-	end
-
-	widget.content.text_favorite = "FAV"
-	widget.content.text_junk = "JUNK"
-
 	if not self._created_favs or reload then
-		mod:create_passes(widget)
+		mod.create_passes(widget)
 		self._created_favs = true
 	end
 
@@ -290,46 +287,46 @@ mod:hook(ItemGridUI, "change_item_filter", function (func, self, item_filter, ch
 	return func(self, item_filter, change_page)
 end)
 
-mod.serialize = function(self)
+mod.serialize = function()
 	mod:set(mod.FAVS_SETTINGS_KEY, mod.favs_table)
 	mod:set(mod.JUNK_SETTINGS_KEY, mod.junk_table)
 end
 
-mod.is_favorite = function(self, backend_id)
+mod.is_favorite = function(backend_id)
 	return mod.favs_table:contains(backend_id)
 end
 
-mod.is_junk = function(self, backend_id)
+mod.is_junk = function(backend_id)
 	return mod.junk_table:contains(backend_id)
 end
 
-mod.remove_item_from_junk = function(self, backend_id)
+mod.remove_item_from_junk = function(backend_id)
 	if mod.junk_table:contains(backend_id) then
 		mod.junk_table:remove_value(backend_id)
-		mod:serialize()
+		mod.serialize()
 	end
 end
 
-mod.toggle_item_as_favorite = function(self, backend_id)
+mod.toggle_item_as_favorite = function(backend_id)
 	if mod.favs_table:contains(backend_id) then
 		mod.favs_table:remove_value(backend_id)
 	else
-		mod:remove_item_from_junk(backend_id)
+		mod.remove_item_from_junk(backend_id)
 		mod.favs_table:append(backend_id)
 	end
-	mod:serialize()
+	mod.serialize()
 end
 
-mod.toggle_item_as_junk = function(self, backend_id)
+mod.toggle_item_as_junk = function(backend_id)
 	if mod.junk_table:contains(backend_id) then
 		mod.junk_table:remove_value(backend_id)
 	else
 		mod.junk_table:append(backend_id)
 	end
-	mod:serialize()
+	mod.serialize()
 end
 
-mod.get_fav_input_service = function(self)
+mod.get_fav_input_service = function()
 	if not Managers.input:get_input_service("favorite_input_service") then
 		Managers.input:create_input_service("favorite_input_service", "Favorite_keymaps")
 		Managers.input:map_device_to_service("favorite_input_service", "keyboard")
@@ -344,9 +341,9 @@ end
 
 mod:hook(ItemGridUI, "_populate_inventory_page", function (func, self, ...)
 	local widget = self._widget
-	mod:remove_passes(widget)
+	mod.remove_passes(widget)
 	func(self, ...)
-	mod:create_passes(widget)
+	mod.create_passes(widget)
 end)
 
 -- variable for enforcing a delay between fav/junk toggle on an item in an item grid
@@ -640,7 +637,7 @@ UITooltipPasses.advanced_input_helper_favorite = {
 
 		local backend_id = item.backend_id
 		mod:pcall(function()
-			local fav_input_service = mod:get_fav_input_service()
+			local fav_input_service = mod.get_fav_input_service()
 			if fav_input_service:get("fav") or fav_input_service:get("junk") then
 				local current_time = Managers.time:time("main")
 				-- if 2 tooltips open while in comparison make sure we're changing the correct one
@@ -649,11 +646,11 @@ UITooltipPasses.advanced_input_helper_favorite = {
 					if toggled_time + 0.1 < current_time then
 						toggled_time = current_time
 						if fav_input_service:get("fav") then
-							mod:toggle_item_as_favorite(backend_id)
+							mod.toggle_item_as_favorite(backend_id)
 						end
 						if fav_input_service:get("junk") then
 							if not mod.favs_table:contains(backend_id) then
-								mod:toggle_item_as_junk(backend_id)
+								mod.toggle_item_as_junk(backend_id)
 							end
 						end
 					end
@@ -661,7 +658,7 @@ UITooltipPasses.advanced_input_helper_favorite = {
 			end
 		end)
 
-		if mod:is_favorite(backend_id) then
+		if mod.is_favorite(backend_id) then
 			content.text = "Click [f] to unmark as favorite."
 		else
 			content.text = "Click [f] to mark as favorite."
@@ -819,11 +816,11 @@ UITooltipPasses.advanced_input_helper_junk = {
 
 		local backend_id = item.backend_id
 
-		if mod:is_favorite(backend_id) then
+		if mod.is_favorite(backend_id) then
 			return 0
 		end
 
-		if mod:is_junk(backend_id) then
+		if mod.is_junk(backend_id) then
 			content.text = "Click [j] to unmark as junk."
 		else
 			content.text = "Click [j] to mark as junk."

@@ -1,8 +1,10 @@
 local mod = get_mod("PositiveReinforcementTweaks") -- luacheck: ignore get_mod
 
 -- luacheck: globals UISceneGraph UILayer Colors table PositiveReinforcementUI UISettings
+-- luacheck: globals UIRenderer
 
 local pl = require'pl.import_into'()
+local tablex = require'pl.tablex'
 
 -- overwrite scenegraph definition to be on the left border of screen
 mod.get_reinforcement_scenegraph_definition = function()
@@ -152,6 +154,23 @@ mod.alignment_offsets_lookup = {
 	0,
 }
 
+local positive_enforcement_events -- keep a reference to PositiveReinforcementUI._positive_enforcement_events to pass into draw_widget
+mod:hook(UIRenderer, "draw_widget", function(func, ui_renderer, widget)
+	local original_offset_y = widget.offset[2]
+	for _, event in ipairs(positive_enforcement_events) do
+		if widget == event.widget then
+			local step_size = 80
+			widget.offset[2] = widget.offset[2] + #positive_enforcement_events*step_size
+			break
+		end
+	end
+
+	func(ui_renderer, widget)
+
+	widget.offset[2] = original_offset_y
+end)
+mod:hook_disable(UIRenderer, "draw_widget")
+
 mod:hook(PositiveReinforcementUI, "update", function (func, self, ...)
 	if mod.init_new_scenegraph  then
 		mod.init_new_scenegraph = false
@@ -173,7 +192,12 @@ mod:hook(PositiveReinforcementUI, "update", function (func, self, ...)
 		position[2] = position[2] + mod:get(mod.SETTING_NAMES.OFFSET_Y)
 	end
 
-	return func(self, ...)
+	positive_enforcement_events = self._positive_enforcement_events
+	if mod:get(mod.SETTING_NAMES.REVERSE_FLOW) then
+		mod:hook_enable(UIRenderer, "draw_widget")
+	end
+	func(self, ...)
+	mod:hook_disable(UIRenderer, "draw_widget")
 end)
 
 mod.reposition_widgets = true

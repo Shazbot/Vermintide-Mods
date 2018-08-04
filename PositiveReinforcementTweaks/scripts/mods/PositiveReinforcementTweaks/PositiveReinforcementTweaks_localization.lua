@@ -50,4 +50,10 @@ return {
 	offset_y_tooltip = {
 		en = "Optinally offset on the y axis."
 	},
+	reverse_flow = {
+		en = "Reverse Direction"
+	},
+	reverse_flow_tooltip = {
+		en = "Notifications will flow from bottom to top instead."
+	},
 }

@@ -12,6 +12,7 @@ mod.SETTING_NAMES = {
 	SHOW_DURATION = "show_duration",
 	OFFSET_X = "offset_x",
 	OFFSET_Y = "offset_y",
+	REVERSE_FLOW = "reverse_flow",
 }
 
 mod.ALIGNMENTS = {
@@ -54,6 +55,13 @@ mod_data.options_widgets = {
 			{ text = mod:localize("center"), value = mod.ALIGNMENTS.CENTER }, --3
 		},
 		["default_value"] = mod.ALIGNMENTS.RIGHT,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.REVERSE_FLOW,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("reverse_flow"),
+		["tooltip"] = mod:localize("reverse_flow_tooltip"),
+		["default_value"] = false,
 	},
 	{
 		["show_widget_condition"] = {3},

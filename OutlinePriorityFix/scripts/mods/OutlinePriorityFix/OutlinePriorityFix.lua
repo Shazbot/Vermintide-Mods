@@ -42,6 +42,13 @@ mod.wrap_set_pinged = function(outline_extn)
 	end
 end
 
+mod:hook(OutlineSystem, "outline_unit", function(func, self, unit, flag, ...)
+	if not flag then
+		flag = "outline_unit"
+	end
+	return func(self, unit, flag, ...)
+end)
+
 mod:hook(ActionTrueFlightBowAim, "finish", function(...) return mod.ActionTrueFlightBowAim_finish(...) end)
 mod.ActionTrueFlightBowAim_finish = function(orig_func, self, ...)
 	local outline_extn = self.target and ScriptUnit.has_extension(self.target, "outline_system")

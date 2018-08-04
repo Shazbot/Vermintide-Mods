@@ -42,6 +42,14 @@ mod.wrap_set_pinged = function(outline_extn)
 	end
 end
 
+mod:hook(OutlineSystem, "outline_unit", function(func, self, unit, flag, ...)
+	if not flag then
+		flag = "outline_unit"
+	end
+	return func(self, unit, flag, ...)
+end)
+
+mod:hook(ActionTrueFlightBowAim, "finish", function(...) return mod.ActionTrueFlightBowAim_finish(...) end)
 mod.ActionTrueFlightBowAim_finish = function(orig_func, self, ...)
 	local outline_extn = self.target and ScriptUnit.has_extension(self.target, "outline_system")
 	if outline_extn then
@@ -52,6 +60,7 @@ mod.ActionTrueFlightBowAim_finish = function(orig_func, self, ...)
 	return orig_func(self, ...)
 end
 
+mod:hook(ActionTrueFlightBowAim, "client_owner_post_update", function(...) return mod.ActionTrueFlightBowAim_client_owner_post_update(...) end)
 mod.ActionTrueFlightBowAim_client_owner_post_update = function(orig_func, self, ...)
 	local old_target = self.target
 	orig_func(self, ...)
@@ -78,6 +87,3 @@ mod.ActionTrueFlightBowAim_client_owner_post_update = function(orig_func, self, 
 		end
 	end
 end
-
-mod:hook(ActionTrueFlightBowAim, "finish", function(...) return mod.ActionTrueFlightBowAim_finish(...) end)
-mod:hook(ActionTrueFlightBowAim, "client_owner_post_update", function(...) return mod.ActionTrueFlightBowAim_client_owner_post_update(...) end)

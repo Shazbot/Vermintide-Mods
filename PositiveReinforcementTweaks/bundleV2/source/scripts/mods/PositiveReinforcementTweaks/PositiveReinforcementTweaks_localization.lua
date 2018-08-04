@@ -48,7 +48,7 @@ return {
 		en = "Offset Y"
 	},
 	offset_y_tooltip = {
-		en = "Optinally offset on the y axis."
+		en = "Optionally offset on the y axis."
 	},
 	reverse_flow = {
 		en = "Reverse Direction"

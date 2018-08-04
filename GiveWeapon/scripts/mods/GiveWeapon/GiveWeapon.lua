@@ -2,6 +2,7 @@ local mod = get_mod("GiveWeapon") -- luacheck: ignore get_mod
 
 -- luacheck: globals get_mod fassert HeroView Managers UIResolutionScale UIResolution InventorySettings
 -- luacheck: globals WeaponProperties WeaponTraits WeaponSkins table ItemMasterList SPProfiles Localize
+-- luacheck: globals ItemHelper
 
 local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
@@ -58,10 +59,11 @@ mod.create_weapon = function(item_type)
 				custom_traits = custom_traits.."]"
 
 				local rnd = math.random(1000000) -- uhh yeah
+				local new_backend_id =  tostring(item_key) .. rnd .. "_from_GiveWeapon"
 				local entry = table.clone(ItemMasterList[item_key])
 				entry.mod_data = {
-				    backend_id = tostring(item_key) .. rnd .. "_from_GiveWeapon",
-				    ItemInstanceId = tostring(item_key) .. rnd .. "_from_GiveWeapon",
+				    backend_id = new_backend_id,
+				    ItemInstanceId = new_backend_id,
 				    CustomData = {
 						-- traits = "[\"melee_attack_speed_on_crit\", \"melee_timed_block_cost\"]",
 						traits = custom_traits,
@@ -88,6 +90,8 @@ mod.create_weapon = function(item_type)
 				mod:echo("Spawned "..item_key)
 
 				Managers.backend:get_interface("items"):_refresh()
+
+				ItemHelper.mark_backend_id_as_new(new_backend_id)
 
 				mod.properties = {}
 				mod.traits = {}

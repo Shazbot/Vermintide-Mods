@@ -242,4 +242,13 @@ return {
 	specials_toggle_group = {
 		en = "Disable Specials By Type"
 	},
+	breeds_dmg_group = {
+		en = "Breeds Dmg Taken Multipliers"
+	},
+	breed_dmg_multiplier_tooltip = {
+		en = "Multiplies damage all players do to "
+	},
+	reset_breed_dmg_description = {
+		en = "Reset all damage taken for breeds to 100."
+	},
 }

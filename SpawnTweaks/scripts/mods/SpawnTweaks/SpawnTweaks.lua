@@ -429,6 +429,12 @@ mod:hook(DamageUtils, "calculate_damage", function(func, damage_output, target_u
 	if target_unit then
 		local breed = Unit.get_data(target_unit, "breed")
 		if breed then
+			if mod:get(mod.SETTING_NAMES.BREEDS_TOGGLE_GROUP)
+			and mod:get(breed.name.."_dmg_toggle") ~= 100 then
+				dmg = dmg * mod:get(breed.name.."_dmg_toggle") / 100
+				return dmg
+			end
+
 			if mod.bosses:contains(breed.name)
 			and mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.CUSTOMIZE then
 				dmg = dmg * mod:get(mod.SETTING_NAMES.BOSS_DMG_MULTIPLIER) / 100
@@ -558,6 +564,14 @@ mod.delete_preset = function(preset_name)
 	end)
 end
 
+mod.reset_breed_dmg = function()
+	for breed_name, _ in pairs(mod.all_breeds) do
+		mod:set(breed_name.."_dmg_toggle", 100)
+	end
+	vmf.save_unsaved_settings_to_file()
+end
+
 mod:command("save_preset", mod:localize("save_preset_command_description"), mod.save_preset)
 mod:command("load_preset", mod:localize("load_preset_command_description"), mod.load_preset)
 mod:command("delete_preset", mod:localize("delete_preset_command_description"), mod.delete_preset)
+mod:command("reset_breed_dmg", mod:localize("reset_breed_dmg_description"), mod.reset_breed_dmg)

@@ -48,6 +48,7 @@ mod.SETTING_NAMES = {
 	BOSS_DMG_MULTIPLIER = "boss_dmg_multiplier",
 	SPECIAL_TO_BOSS_CHANCE = "special_to_boss_chance",
 	SPECIALS_TOGGLE_GROUP = "specials_toggle_group",
+	BREEDS_TOGGLE_GROUP = "breeds_toggle_group",
 }
 
 mod.BOSSES = {
@@ -80,10 +81,11 @@ local unused_specials = pl.List{
 	"chaos_tentacle",
 	"chaos_plague_sorcerer",
 }
-mod.specials_breeds = table.clone(Breeds)
-for breed_name, breed_data in pairs(mod.specials_breeds) do
-	if not breed_data.special or unused_specials:contains(breed_name) then
-		mod.specials_breeds[breed_name] = nil
+
+mod.all_breeds = table.clone(Breeds)
+for breed_name, breed_data in pairs(mod.all_breeds) do
+	if unused_specials:contains(breed_name) then
+		mod.all_breeds[breed_name] = nil
 	else
 		breed_data.localized_name = Localize(breed_name)
 		if breed_name == "chaos_corruptor_sorcerer" then
@@ -91,6 +93,37 @@ for breed_name, breed_data in pairs(mod.specials_breeds) do
 		end
 	end
 end
+
+mod.specials_breeds = table.clone(mod.all_breeds)
+for breed_name, breed_data in pairs(mod.specials_breeds) do
+	if not breed_data.special then
+		mod.specials_breeds[breed_name] = nil
+	end
+end
+
+local breeds_dmg_group_widget = {
+	["setting_name"] = mod.SETTING_NAMES.BREEDS_TOGGLE_GROUP,
+	["widget_type"] = "checkbox",
+	["text"] = mod:localize("breeds_dmg_group"),
+	["sub_widgets"] = {},
+	["default_value"] = false,
+}
+breeds_dmg_group_widget.sub_widgets = (function()
+	local breed_options = {}
+	for breed_name, breed_data in pairs(mod.all_breeds) do
+		table.insert(breed_options,
+			{
+				["setting_name"] = breed_name.."_dmg_toggle",
+				["widget_type"] = "numeric",
+				["text"] = breed_data.localized_name,
+				["tooltip"] =  mod:localize("breed_dmg_multiplier_tooltip")..breed_data.localized_name,
+				["range"] = {0, 1000},
+				["unit_text"] = "%",
+				["default_value"] = 100,
+			})
+	end
+	return breed_options
+end)()
 
 local specials_toggle_widget = {
 	["show_widget_condition"] = {3},
@@ -143,6 +176,7 @@ mod_data.options_widgets = {
 		["tooltip"] = mod:localize("disable_fixed_spawns_tooltip"),
 		["default_value"] = false,
 	},
+	breeds_dmg_group_widget,
 	{
 		["setting_name"] = mod.SETTING_NAMES.HORDES,
 		["widget_type"] = "dropdown",

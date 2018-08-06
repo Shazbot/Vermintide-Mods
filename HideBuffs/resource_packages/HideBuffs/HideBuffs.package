@@ -1,0 +1,11 @@
+mod = [
+	"HideBuffs"
+]
+
+package = [
+	"resource_packages/HideBuffs/HideBuffs"
+]
+
+lua = [
+	"scripts/mods/HideBuffs/*"
+]

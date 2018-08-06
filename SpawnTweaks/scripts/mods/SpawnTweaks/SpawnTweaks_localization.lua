@@ -251,4 +251,14 @@ return {
 	reset_breed_dmg_description = {
 		en = "Reset all damage taken for breeds to 100."
 	},
+	specials_weights_toggle_group = {
+		en = "Use Weighted Spawning Rules"
+	},
+	specials_weights_toggle_group_tooltip = {
+		en = "If enabled use weighted probability to control spawning of specials.\n"..
+			"A special of weight 10 is 10x more likely to spawn compared to a special with weight 1.\n"..
+			"Can be combined with \"Disable Specials By Type\".\n"..
+			"Already queued specials will still spawn before you see any changes.\n"..
+			"Ignores max of same breed limit."
+	},
 }

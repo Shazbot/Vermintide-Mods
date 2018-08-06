@@ -49,6 +49,7 @@ mod.SETTING_NAMES = {
 	SPECIAL_TO_BOSS_CHANCE = "special_to_boss_chance",
 	SPECIALS_TOGGLE_GROUP = "specials_toggle_group",
 	BREEDS_TOGGLE_GROUP = "breeds_toggle_group",
+	SPECIALS_WEIGHTS_TOGGLE_GROUP = "specials_weights_toggle_group",
 }
 
 mod.BOSSES = {
@@ -142,6 +143,31 @@ specials_toggle_widget.sub_widgets = (function()
 				["text"] = breed_data.localized_name,
 				["tooltip"] = "Remove "..breed_data.localized_name.." as an elegible spawn.",
 				["default_value"] = false,
+			})
+	end
+	return breed_options
+end)()
+
+local specials_weights_toggle_widget = {
+	["show_widget_condition"] = {3},
+	["setting_name"] = mod.SETTING_NAMES.SPECIALS_WEIGHTS_TOGGLE_GROUP,
+	["widget_type"] = "checkbox",
+	["text"] = mod:localize("specials_weights_toggle_group"),
+	["tooltip"] = mod:localize("specials_weights_toggle_group_tooltip"),
+	["default_value"] = false,
+	["sub_widgets"] = {},
+}
+specials_weights_toggle_widget.sub_widgets = (function()
+	local breed_options = {}
+	for breed_name, breed_data in pairs(mod.specials_breeds) do
+		table.insert(breed_options,
+			{
+				["setting_name"] = breed_name.."_weight",
+				["widget_type"] = "numeric",
+				["text"] = breed_data.localized_name,
+				["tooltip"] = "Set spawn weight for "..breed_data.localized_name..".",
+				["range"] = {0, 20},
+				["default_value"] = 1,
 			})
 	end
 	return breed_options
@@ -354,6 +380,7 @@ mod_data.options_widgets = {
 				["default_value"] = false,
 			},
 			specials_toggle_widget,
+			specials_weights_toggle_widget,
 		},
 	},
 	{

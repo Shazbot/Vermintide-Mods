@@ -15,6 +15,15 @@ local stringx = require'pl.stringx'
 local function pack2(...) return {n=select('#', ...), ...} end
 local function unpack2(t) return unpack(t, 1, t.n) end
 
+--- Don't play horde warning sound when hordes disabled.
+mod:hook(HordeSpawner, "play_sound", function(func, ...)
+	if mod:get(mod.SETTING_NAMES.HORDES) == mod.HORDES.DISABLE then
+		return
+	end
+
+	return func(...)
+end)
+
 --- Event hordes size adjustment.
 mod:hook(SpawnerSystem, "_try_spawn_breed", function (func, self, breed_name, spawn_list_per_breed, spawn_list, breed_limits, active_enemies, group_template)
 	if mod:get(mod.SETTING_NAMES.HORDES) == mod.HORDES.DEFAULT then
@@ -225,6 +234,20 @@ mod:hook(SpecialsPacing.select_breed_functions, "get_random_breed", function(fun
 
 	local only_enabled_breeds = tablex.keys(mod.specials_breeds)
 		:filter(function(breed_name) return not mod:get(breed_name.."_toggle") end)
+
+	-- manually select special when they are weighted
+	if mod:get(mod.SETTING_NAMES.SPECIALS_WEIGHTS_TOGGLE_GROUP) then
+		local total = only_enabled_breeds:map(function(breed_name) return mod:get(breed_name.."_weight") end)
+			:reduce(function(acc, breed_weight) return acc + breed_weight end)
+		local rnd = math.random(total)
+		local count = 0
+		for _, breed_name in ipairs( only_enabled_breeds ) do
+			count = count + mod:get(breed_name.."_weight")
+			if count >= rnd then
+				return breed_name
+			end
+		end
+	end
 
 	local new_method_data = tablex.deepcopy(method_data)
 	new_method_data.max_of_same = mod:get(mod.SETTING_NAMES.MAX_SAME_SPECIALS)

@@ -124,7 +124,7 @@ mod:hook_safe(PositiveReinforcementUI, "add_event", function (self, hash, is_loc
 	end
 
 	local content = widget.content
-	new_event.event_amount_count = old_count + 1
+	new_event.event_amount_count = old_count or 0 + 1
 	content.event_amount_count = new_event.event_amount_count -- keep a copy in content for the content_check_function
 	content.event_amount_count_formatted = "x"..tostring(new_event.event_amount_count)
 end)

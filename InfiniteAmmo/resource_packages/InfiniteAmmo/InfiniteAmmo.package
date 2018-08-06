@@ -1,0 +1,11 @@
+mod = [
+	"InfiniteAmmo"
+]
+
+package = [
+	"resource_packages/InfiniteAmmo/InfiniteAmmo"
+]
+
+lua = [
+	"scripts/mods/InfiniteAmmo/*"
+]

@@ -777,16 +777,6 @@ mod:hook_origin(BuffUI, "_align_widgets", function (self)
 	self._alignment_duration = 0
 end)
 
-mod:hook(BuffUI, "_add_buff", function (func, self, buff, ...)
-	if buff.buff_type == "victor_bountyhunter_passive_infinite_ammo_buff"
-	  or buff.buff_type == "grimoire_health_debuff"
-	  or buff.buff_type == "markus_huntsman_passive_crit_aura_buff" then
-		return false
-	end
-
-	return func(self, buff, ...)
-end)
-
 mod:hook_origin(BuffUI, "_update_pivot_alignment", function (self, dt) -- luacheck: ignore dt
 	-- return func(self, dt)
 	local alignment_duration = self._alignment_duration

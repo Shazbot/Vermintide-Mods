@@ -1,0 +1,11 @@
+mod =  [
+	"SpawnTweaks"
+]
+
+package = [
+	"resource_packages/SpawnTweaks/SpawnTweaks"
+]
+
+lua = [
+	"scripts/mods/SpawnTweaks/*"
+]

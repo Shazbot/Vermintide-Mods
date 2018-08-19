@@ -1,6 +1,6 @@
 return {
 	mod_description = {
-		en = "Hide buffs."
+		en = "Hide UI elements."
 	},
 	victor_bountyhunter_passive_infinite_ammo_buff = {
 		en = "Bounty Hunter Passive"
@@ -37,5 +37,38 @@ return {
 	},
 	kerillian_maidenguard_passive_stamina_regen_buff_tooltip = {
 		en = "Handmaiden passive."
+	},
+	buffs_group = {
+		en = "Hide Buffs"
+	},
+	hide_hotkeys_tooltip = {
+		en = "Hide hotkeys."
+	},
+	hide_hotkeys = {
+		en = "Hide Hotkeys"
+	},
+	hide_levels_tooltip = {
+		en = "Hide levels."
+	},
+	hide_levels = {
+		en = "Hide Levels"
+	},
+	hide_frames_tooltip = {
+		en = "Hide portrait frames."
+	},
+	hide_frames = {
+		en = "Hide Portrait Frames"
+	},
+	no_tutorial_ui = {
+		en = "Hide Floating Objective Marker"
+	},
+	no_tutorial_ui_tooltip = {
+		en = "Disable objective markers like \"Set Free\" for dead players."
+	},
+	no_mission_objective = {
+		en = "Hide Mission Objective"
+	},
+	no_mission_objective_tooltip = {
+		en = "Hide the mission objective on top of the screen."
 	},
 }

@@ -67,24 +67,7 @@ end
 -- @function compat.setfenv
 
 if compat.lua51 then -- define Lua 5.2 style load()
-    if not isJit then -- but LuaJIT's load _is_ compatible
-        local lua51_load = load
-        function compat.load(str,src,mode,env)
-            local chunk,err
-            if type(str) == 'string' then
-                if str:byte(1) == 27 and not (mode or 'bt'):find 'b' then
-                    return nil,"attempt to load a binary chunk"
-                end
-                chunk,err = loadstring(str,src)
-            else
-                chunk,err = lua51_load(str,src)
-            end
-            if chunk and env then setfenv(chunk,env) end
-            return chunk,err
-        end
-    else
-        compat.load = load
-    end
+    compat.load = load
     compat.setfenv, compat.getfenv = setfenv, getfenv
 else
     compat.load = load

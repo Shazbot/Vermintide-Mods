@@ -125,9 +125,9 @@ mod.blob_horde_compose_hook = function (func, self, variant, ...)
 		return func(self, variant, ...)
 	end
 
-	if mod:get(mod.SETTING_NAMES.HORDE_TYPES) == mod.HORDE_TYPES.CUSTOM then
-		mod.horde_compose_hook(func, self, variant, ...)
-	end
+	-- if mod:get(mod.SETTING_NAMES.HORDE_TYPES) == mod.HORDE_TYPES.CUSTOM then
+	-- 	mod.horde_compose_hook(func, self, variant, ...)
+	-- end
 
 	mod.original_random_interval = ConflictUtils.random_interval
 	ConflictUtils.random_interval = mod.new_random_interval
@@ -254,9 +254,9 @@ mod.are_all_specials_disabled = function()
 end
 
 --- Specials spawn delay from start of the level.
-mod:hook(SpecialsPacing.setup_functions, "specials_by_slots", function(func, t, slots, method_data)
+mod:hook(SpecialsPacing.setup_functions, "specials_by_slots", function(func, t, slots, method_data, ...)
 	if mod:get(mod.SETTING_NAMES.SPECIALS) ~= mod.SPECIALS.CUSTOMIZE then
-		return func(t, slots, method_data)
+		return func(t, slots, method_data, ...)
 	end
 
 	local new_method_data = tablex.deepcopy(method_data)
@@ -272,7 +272,7 @@ mod:hook(SpecialsPacing.setup_functions, "specials_by_slots", function(func, t, 
 		CurrentSpecialsSettings.breeds = {}
 	end
 
-	func(t, slots, new_method_data)
+	func(t, slots, new_method_data, ...)
 
 	CurrentSpecialsSettings = original_specials_settings
 end)
@@ -282,7 +282,7 @@ mod.get_num_alive_bosses = function()
 end
 
 --- Change max of same special; replace special with a random boss.
-mod:hook(SpecialsPacing.select_breed_functions, "get_random_breed", function(func, slots, breeds, method_data)
+mod:hook(SpecialsPacing.select_breed_functions, "get_random_breed", function(func, slots, specials_settings, method_data, ...)
 	if mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.CUSTOMIZE
 	and mod.get_num_alive_bosses() == 0
 	and math.random(100) <= mod:get(mod.SETTING_NAMES.SPECIAL_TO_BOSS_CHANCE) then
@@ -290,7 +290,7 @@ mod:hook(SpecialsPacing.select_breed_functions, "get_random_breed", function(fun
 	end
 
 	if mod:get(mod.SETTING_NAMES.SPECIALS) ~= mod.SPECIALS.CUSTOMIZE then
-		return func(slots, breeds, method_data)
+		return func(slots, specials_settings, method_data, ...)
 	end
 
 	local only_enabled_breeds = tablex.keys(mod.specials_breeds)
@@ -317,7 +317,10 @@ mod:hook(SpecialsPacing.select_breed_functions, "get_random_breed", function(fun
 		new_method_data.max_of_same = mod:get(mod.SETTING_NAMES.MAX_SPECIALS)
 	end
 
-	return func(slots, only_enabled_breeds, new_method_data)
+	local new_specials_settings = tablex.deepcopy(method_data)
+	new_specials_settings.breeds = only_enabled_breeds
+
+	return func(slots, new_specials_settings, new_method_data, ...)
 end)
 
 --- Get boss breed names without disabled bosses

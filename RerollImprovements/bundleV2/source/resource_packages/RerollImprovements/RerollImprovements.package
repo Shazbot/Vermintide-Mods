@@ -1,0 +1,11 @@
+mod = [
+	"RerollImprovements"
+]
+
+package = [
+	"resource_packages/RerollImprovements/RerollImprovements"
+]
+
+lua = [
+	"scripts/mods/RerollImprovements/*"
+]

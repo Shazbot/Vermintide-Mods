@@ -144,7 +144,7 @@ mod.create_item_types_dropdown = function(profile_index, window_size)
 	mod.item_types_dropdown:select_index(1)
 end
 
-mod.create_window = function(self, profile_index)
+mod.create_window = function(self, profile_index, loadout_inv_view)
 	local scale = UIResolutionScale()
 	local screen_width, screen_height = UIResolution() -- luacheck: ignore screen_width
 	local window_size = {905, 80}
@@ -164,7 +164,19 @@ mod.create_window = function(self, profile_index)
 				if trait_name then
 					table.insert(mod.traits, trait_name)
 				end
-				mod.create_weapon(item_type)
+				local backend_id = mod.create_weapon(item_type)
+				mod:pcall(function()
+					local backend_items = Managers.backend:get_interface("items")
+					local item = backend_items:get_item_from_id(backend_id)
+					item.rarity = "exotic"
+					item.CustomData.rarity = "exotic"
+					if loadout_inv_view then
+						backend_items:_refresh()
+						local inv_item_grid  = loadout_inv_view._item_grid
+						inv_item_grid:change_item_filter(inv_item_grid._item_filter, false)
+						inv_item_grid:repopulate_current_inventory_page()
+					end
+				end)
 			end
 		end
 
@@ -216,20 +228,15 @@ mod.create_window = function(self, profile_index)
 end
 
 --- Create window when opening hero view.
-mod:hook_safe(HeroView, "on_enter", function()
+mod:hook_safe(HeroWindowLoadoutInventory, "on_enter", function(self)
 	local player = Managers.player:local_player()
 	local profile_index = player:profile_index()
-	mod:reload_windows(profile_index)
+	mod:reload_windows(profile_index, self)
 end)
 
---- Create window when unsuspending hero view.
-mod:hook_safe(HeroView, "unsuspend", function()
-	mod:reload_windows()
-end)
-
-mod.reload_windows = function(self, profile_index)
+mod.reload_windows = function(self, profile_index, loadout_inv_view)
 	self:destroy_windows()
-	self:create_window(profile_index)
+	self:create_window(profile_index, loadout_inv_view)
 end
 
 mod.destroy_windows = function(self)
@@ -239,7 +246,7 @@ mod.destroy_windows = function(self)
 	end
 end
 
-mod:hook(HeroView, "on_exit", function(func, self)
+mod:hook(HeroWindowLoadoutInventory, "on_exit", function(func, self)
 	func(self)
 
 	mod:destroy_windows()

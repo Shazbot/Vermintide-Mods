@@ -71,4 +71,10 @@ return {
 	no_mission_objective_tooltip = {
 		en = "Hide the mission objective on top of the screen."
 	},
+	force_default_frame = {
+		en = "Use Default Frames"
+	},
+	force_default_frame_tooltip = {
+		en = "Always use the default frame."
+	},
 }

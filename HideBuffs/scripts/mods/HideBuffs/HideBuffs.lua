@@ -99,6 +99,11 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 			self:_set_widget_dirty(portrait_static)
 		end
 
+		if mod:get(mod.SETTING_NAMES.FORCE_DEFAULT_FRAME)
+		and portrait_static.content.texture_1 ~= "portrait_frame_0000" then
+			self:set_portrait_frame("default", portrait_static.content.level_text)
+		end
+
 		-- level
 		if mod.reset_level_alpha then
 			portrait_static.style.level.text_color[1] = 255

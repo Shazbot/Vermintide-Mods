@@ -13,6 +13,7 @@ mod.SETTING_NAMES = {
 	NO_TUTORIAL_UI = "no_tutorial_ui",
 	NO_MISSION_OBJECTIVE = "no_mission_objective",
 	BUFFS_GROUP = "buffs_group",
+	FORCE_DEFAULT_FRAME = "force_default_frame",
 }
 
 -- Everything here is optional. You can remove unused parts.
@@ -22,6 +23,13 @@ local mod_data = {
 	is_togglable = true,
 }
 mod_data.options_widgets = {
+	{
+		["setting_name"] = mod.SETTING_NAMES.FORCE_DEFAULT_FRAME,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("force_default_frame"),
+		["tooltip"] = mod:localize("force_default_frame_tooltip"),
+		["default_value"] = false,
+	},
 	{
 		["setting_name"] = mod.SETTING_NAMES.NO_TUTORIAL_UI,
 		["widget_type"] = "checkbox",

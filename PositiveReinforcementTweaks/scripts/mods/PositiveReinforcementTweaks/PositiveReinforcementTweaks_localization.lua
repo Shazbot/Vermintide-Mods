@@ -9,13 +9,13 @@ return {
 		en = "Vertical Alignment"
 	},
 	vertical_alignment_tooltip = {
-		en = "Vertical Alignment."
+		en = "Vertical alignment on the screen."
 	},
 	horizontal_alignment = {
 		en = "Horizontal Alignment"
 	},
 	horizontal_alignment_tooltip = {
-		en = "Horizontal Alignment."
+		en = "Horizontal alignment on the screen."
 	},
 	top = {
 		en = "Top"
@@ -42,7 +42,7 @@ return {
 		en = "Offset X"
 	},
 	offset_x_tooltip = {
-		en = "Optinally offset on the x axis."
+		en = "Optionally offset on the x axis."
 	},
 	offset_y = {
 		en = "Offset Y"

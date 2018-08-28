@@ -1,0 +1,11 @@
+mod = [
+	"Pause"
+]
+
+package = [
+	"resource_packages/Pause/Pause"
+]
+
+lua = [
+	"scripts/mods/Pause/*"
+]

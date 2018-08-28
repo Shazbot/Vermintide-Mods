@@ -97,7 +97,7 @@ mod.horde_compose_hook = function (func, self, variant, ...)
 			horde_setting_name = "skaven_horde"
 		end
 		if mod:get(mod.SETTING_NAMES.HORDE_TYPES) == mod.HORDE_TYPES.CHAOS
-		and pl.stringx.lfind(CurrentHordeSettings.name, "chaos_") then
+		and pl.stringx.lfind(CurrentHordeSettings.name, "chaos") then
 			horde_setting_name = "chaos_horde"
 		end
 

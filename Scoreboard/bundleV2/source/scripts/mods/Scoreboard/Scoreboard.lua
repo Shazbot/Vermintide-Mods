@@ -1,7 +1,8 @@
 local mod = get_mod("Scoreboard") -- luacheck: ignore get_mod
 
 -- luacheck: globals ScoreboardHelper StatisticsDefinitions AiUtils ScriptUnit Managers
--- luacheck: globals UIRenderer math UTF8Utils local_require Localize
+-- luacheck: globals UIRenderer math UTF8Utils local_require Localize EndViewStateScore
+-- luacheck: globals PlayerUnitHealthExtension
 
 local tablex = require'pl.tablex'
 
@@ -114,7 +115,7 @@ local definitions = local_require("scripts/ui/views/level_end/states/definitions
 local player_score_size = definitions.player_score_size
 
 -- luacheck: no unused, no redefined
-mod:hook(EndViewStateScore, "_setup_score_panel", function(func, self, score_panel_scores, player_names)
+mod:hook_origin(EndViewStateScore, "_setup_score_panel", function(self, score_panel_scores, player_names)
 	local category_title_size = 30
 	local text_size = 22
 	local total_row_index = 1
@@ -158,7 +159,7 @@ mod:hook(EndViewStateScore, "_setup_score_panel", function(func, self, score_pan
 				local row_bg = "row_bg_" .. tostring(total_row_index)
 				local has_highscore = highscore <= player_score and highscore > 0
 				if score_data.stat_name == "ff" or score_data.stat_name == "damage_taken" then
-					local min_score = tablex.reduce(math.min, player_scores)
+					local min_score = tablex.reduce(math.min, tablex.map(math.round, player_scores))
 					has_highscore = min_score == player_score
 				end
 				local has_horizontal_divider = false

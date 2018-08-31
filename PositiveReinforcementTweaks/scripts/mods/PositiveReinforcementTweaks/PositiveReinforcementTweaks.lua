@@ -89,6 +89,9 @@ mod:hook_safe(PositiveReinforcementUI, "add_event", function (self, hash, is_loc
 	local old_count = 0
 	if #duplicate_kill_events > 0 then
 		old_count = duplicate_kill_events[1].event_amount_count
+		if not old_count then
+			old_count = 0
+		end
 	end
 
 	-- remove old event, should be only one, but whatever
@@ -124,7 +127,7 @@ mod:hook_safe(PositiveReinforcementUI, "add_event", function (self, hash, is_loc
 	end
 
 	local content = widget.content
-	new_event.event_amount_count = old_count or 0 + 1
+	new_event.event_amount_count = old_count + 1
 	content.event_amount_count = new_event.event_amount_count -- keep a copy in content for the content_check_function
 	content.event_amount_count_formatted = "x"..tostring(new_event.event_amount_count)
 end)

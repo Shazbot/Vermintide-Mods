@@ -83,8 +83,29 @@ mod:hook(AbilityUI, "draw", function(func, self, dt)
 	return func(self, dt)
 end)
 
+--- Store frame_index in a new variable.
+mod:hook_safe(UnitFrameUI, "_create_ui_elements", function(self, frame_index)
+	self._mod_frame_index = frame_index
+end)
+
 mod:hook(UnitFrameUI, "update", function(func, self, ...)
 	mod:pcall(function()
+		local def_static_widget = self:_widget_by_feature("default", "static")
+		local def_static_widget_content = def_static_widget.content
+
+		local hide_player_portrait = mod:get(mod.SETTING_NAMES.HIDE_PLAYER_PORTRAIT)
+		if not self._mod_frame_index then
+			if (hide_player_portrait and def_static_widget_content.visible)
+			or (not hide_player_portrait and not def_static_widget_content.visible)
+			then
+				def_static_widget_content.visible = not hide_player_portrait
+				self:_set_widget_dirty(def_static_widget)
+
+				self._portrait_widgets.portrait_static.content.visible = not hide_player_portrait
+				self:_set_widget_dirty(self._portrait_widgets.portrait_static)
+			end
+		end
+
 		local portrait_static = self._widgets.portrait_static
 
 		-- portrait frame
@@ -144,3 +165,5 @@ mod:hook(MissionObjectiveUI, "draw", function(func, self, dt)
 	end
 	return func(self, dt)
 end)
+
+mod:dofile("scripts/mods/HideBuffs/anim_speedup")

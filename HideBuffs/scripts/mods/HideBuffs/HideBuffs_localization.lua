@@ -1,6 +1,12 @@
 return {
 	mod_description = {
-		en = "Hide UI elements."
+		en = "UI Tweaks."
+	},
+	SPEEDUP_ANIMATIONS = {
+		en = "Speed up UI animations"
+	},
+	SPEEDUP_ANIMATIONS_T = {
+		en = "Speed up some UI screens like the end of level xp screen and chest presentation."
 	},
 	victor_bountyhunter_passive_infinite_ammo_buff = {
 		en = "Bounty Hunter Passive"
@@ -76,5 +82,11 @@ return {
 	},
 	force_default_frame_tooltip = {
 		en = "Always use the default frame."
+	},
+	hide_player_portrait = {
+		en = "Hide Player Portrait"
+	},
+	hide_player_portrait_tooltip = {
+		en = "Hide player portrait at bottom left."
 	},
 }

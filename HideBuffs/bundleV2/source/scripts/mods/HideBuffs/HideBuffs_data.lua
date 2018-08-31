@@ -14,15 +14,31 @@ mod.SETTING_NAMES = {
 	NO_MISSION_OBJECTIVE = "no_mission_objective",
 	BUFFS_GROUP = "buffs_group",
 	FORCE_DEFAULT_FRAME = "force_default_frame",
+	HIDE_PLAYER_PORTRAIT = "hide_player_portrait",
+	SPEEDUP_ANIMATIONS = "SPEEDUP_ANIMATIONS",
 }
 
 -- Everything here is optional. You can remove unused parts.
 local mod_data = {
-	name = "Hide UI Elements",
+	name = "UI Tweaks",
 	description = mod:localize("mod_description"),
 	is_togglable = true,
 }
 mod_data.options_widgets = {
+	{
+		["setting_name"] = mod.SETTING_NAMES.SPEEDUP_ANIMATIONS,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("SPEEDUP_ANIMATIONS"),
+		["tooltip"] = mod:localize("SPEEDUP_ANIMATIONS_T"),
+		["default_value"] = false,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.HIDE_PLAYER_PORTRAIT,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("hide_player_portrait"),
+		["tooltip"] = mod:localize("hide_player_portrait_tooltip"),
+		["default_value"] = false,
+	},
 	{
 		["setting_name"] = mod.SETTING_NAMES.FORCE_DEFAULT_FRAME,
 		["widget_type"] = "checkbox",

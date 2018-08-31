@@ -1,4 +1,6 @@
-return {
+local stringx = require'pl.stringx'
+
+local localization = {
 	mod_name= {
 		en = "Neuter Ult Effects"
 	},
@@ -18,3 +20,23 @@ return {
 		en = "Disable the red screen filter when knocked down."
 	},
 }
+
+for _, name in ipairs( { "SLAYER", "HUNTSMAN", "SHADE", "ZEALOT", "RANGER" } ) do
+	localization[name.."_GROUP"] = {
+		en = stringx.title(name)
+	}
+	localization[name.."_VISUAL"] = {
+		en = stringx.title(name).." Visual"
+	}
+	localization[name.."_VISUAL_T"] = {
+		en = "Disable visual effects on "..stringx.title(name).." ult."
+	}
+	localization[name.."_AUDIO"] = {
+		en = stringx.title(name).." Audio"
+	}
+	localization[name.."_AUDIO_T"] = {
+		en = "Disable audio effects on "..stringx.title(name).." ult."
+	}
+end
+
+return localization

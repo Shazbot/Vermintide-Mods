@@ -11,18 +11,23 @@ BuffFunctionTemplates.functions.apply_huntsman_activated_ability = function (...
 end
 
 --- Stop mood activation for specific skills.
-local moods_to_keep_disabled = pl.List({
-	"skill_slayer",
-	"skill_zealot",
-	"skill_huntsman_surge",
-	"skill_huntsman_stealth",
-	"skill_ranger",
-	"skill_shade",
-})
+local name_to_mood = {
+	SLAYER = "skill_slayer",
+	ZEALOT = "skill_zealot",
+	RANGER = "skill_ranger",
+	SHADE = "skill_shade",
+}
 mod:hook(StateInGameRunning, "update_mood", function (func, ...)
-	moods_to_keep_disabled:foreach(function(skill_name)
-		MOOD_BLACKBOARD[skill_name] = false
-	end)
+	for name, mood in pairs( name_to_mood ) do
+		if mod:get(mod.SETTING_NAMES[name.."_VISUAL"]) then
+			MOOD_BLACKBOARD[mood] = false
+		end
+	end
+	if mod:get(mod.SETTING_NAMES["HUNTSMAN_VISUAL"]) then
+		MOOD_BLACKBOARD["skill_huntsman_surge"] = false
+		MOOD_BLACKBOARD["skill_huntsman_stealth"] = false
+	end
+
 	if mod:get(mod.SETTING_NAMES.WOUNDED) then
 		MOOD_BLACKBOARD["wounded"] = false
 	end
@@ -32,40 +37,42 @@ mod:hook(StateInGameRunning, "update_mood", function (func, ...)
 	return func(...)
 end)
 
---- Skip Bardin hearthbeat sound loop and his ult audio distortions that mess with specials audio.
-local skip_these_hud_sound_events = pl.List({
-	"Play_career_ability_bardin_slayer_loop",
-	"Stop_career_ability_bardin_slayer_loop",
-	-- "Play_career_ability_bardin_slayer_enter",
-	-- "Play_career_ability_bardin_slayer_exit",
-	-- "Play_career_ability_markus_huntsman_enter",
-	-- "Play_career_ability_markus_huntsman_exit",
-	"Play_career_ability_markus_huntsman_loop",
-	"Stop_career_ability_markus_huntsman_loop",
-	-- "Play_career_ability_kerillian_shade_enter",
-	-- "Play_career_ability_kerillian_shade_exit",
-	"Play_career_ability_kerillian_shade_loop",
-	"Stop_career_ability_kerillian_shade_loop",
-})
+--- Skip audio distortions.
+local name_to_event = {
+	SLAYER = { "Play_career_ability_bardin_slayer_loop", "Stop_career_ability_bardin_slayer_loop" },
+	HUNTSMAN = { "Play_career_ability_markus_huntsman_loop", "Stop_career_ability_markus_huntsman_loop" },
+	SHADE = { "Play_career_ability_kerillian_shade_loop", "Stop_career_ability_kerillian_shade_loop" },
+	RANGER = { "Play_career_ability_bardin_ranger_loop", "Stop_career_ability_bardin_ranger_loop" },
+	ZEALOT = { "Play_career_ability_victor_zealot_loop", "Stop_career_ability_victor_zealot_loop" },
+}
 mod:hook(PlayerUnitFirstPerson, "play_hud_sound_event", function (func, self, event_name, ...)
-	if skip_these_hud_sound_events:contains(event_name) then
-		return
+	for name, event_names in pairs( name_to_event ) do
+		if mod:get(mod.SETTING_NAMES[name.."_AUDIO"]) then
+			for _, ult_event_name in ipairs( event_names ) do
+				if ult_event_name == event_name then
+					return
+				end
+			end
+		end
 	end
 	return func(self, event_name, ...)
 end)
 
 --- Skip huntsman, ranger, shade ult swirly screen effect.
-local effects_to_disable = pl.List({
-	"fx/screenspace_huntsman_skill_01",
-	"fx/screenspace_huntsman_skill_02",
-	"fx/screenspace_ranger_skill_01",
-	"fx/screenspace_ranger_skill_02",
-	"fx/screenspace_shade_skill_01",
-	"fx/screenspace_shade_skill_02",
-})
+local name_to_fx = {
+	HUNTSMAN = { "fx/screenspace_huntsman_skill_01", "fx/screenspace_huntsman_skill_02" },
+	SHADE = { "fx/screenspace_shade_skill_01", "fx/screenspace_shade_skill_02" },
+	RANGER = { "fx/screenspace_ranger_skill_01", "fx/screenspace_ranger_skill_02" },
+}
 mod:hook(BuffExtension, "_play_screen_effect", function (func, self, effect)
-	if effects_to_disable:contains(effect) then
-		return
+	for name, fxs in pairs( name_to_fx ) do
+		if mod:get(mod.SETTING_NAMES[name.."_VISUAL"]) then
+			for _, fx in ipairs( fxs ) do
+				if fx == effect then
+					return
+				end
+			end
+		end
 	end
 	return func(self, effect)
 end)

@@ -45,7 +45,7 @@ return {
 		en = "Handmaiden passive."
 	},
 	buffs_group = {
-		en = "Hide Buffs"
+		en = "Buffs Tweaks"
 	},
 	hide_hotkeys_tooltip = {
 		en = "Hide hotkeys."
@@ -124,5 +124,56 @@ return {
 	},
 	BUFFS_OFFSET_Y_T = {
 		en = "Optionally offset on the y axis."
+	},
+	REVERSE_BUFF_DIRECTION = {
+		en = "Reverse Buff Direction"
+	},
+	REVERSE_BUFF_DIRECTION_T = {
+		en = "Make active buffs flow from right to left."
+	},
+	BUFFS_FLOW_VERTICALLY = {
+		en = "Buffs Flow Vertically"
+	},
+	BUFFS_FLOW_VERTICALLY_T = {
+		en = "Make active buffs flow from top to bottom."
+	},
+	BUFFS_DISABLE_ALIGN_ANIMATION = {
+		en = "Disable Align Animation"
+	},
+	BUFFS_DISABLE_ALIGN_ANIMATION_T = {
+		en = "Disable the animation of a new buff sliding into place."
+	},
+	TEAM_UI_GROUP = {
+		en = "Teammate UI Tweaks"
+	},
+	TEAM_UI_GROUP_T = {
+		en = "Tweaks related to the teammate portraits."
+	},
+	TEAM_UI_OFFSET_X = {
+		en = "X Offset"
+	},
+	TEAM_UI_OFFSET_X_T = {
+		en = "Optionally offset on the x axis."
+	},
+	TEAM_UI_OFFSET_Y = {
+		en = "Y Offset"
+	},
+	TEAM_UI_OFFSET_Y_T = {
+		en = "Optionally offset on the y axis."
+	},
+	TEAM_UI_SPACING = {
+		en = "Spacing Between Portraits"
+	},
+	TEAM_UI_SPACING_T = {
+		en = "Change the spacing between portraits. Default is 220."
+	},
+	HIDE_BUFFS_GROUP = {
+		en = "Hide Active Buffs"
+	},
+	TEAM_UI_FLOWS_HORIZONTALLY = {
+		en = "Arrange Horizontally"
+	},
+	TEAM_UI_FLOWS_HORIZONTALLY_T = {
+		en = "Arrange the teammate portraits horizontally."
 	},
 }

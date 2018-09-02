@@ -98,16 +98,17 @@ mod:hook(AreaIndicatorUI, "update", function(func, self, dt)
 end)
 
 mod:hook(ConflictDirector, "spawn_queued_unit", function(func, self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, optional_data, group_data, unit_data)
-	local assassin_spawn_option = mod:get(mod.SETTING_NAMES.ASSASSIN_STINGER_FIX)
+	-- local assassin_spawn_option = mod:get(mod.SETTING_NAMES.ASSASSIN_STINGER_FIX)
 
-	if assassin_spawn_option == mod.ASSASSIN_SOUND_OPTIONS.DEFAULT then
-		Breeds.skaven_gutter_runner.special_spawn_stinger = "enemy_gutterrunner_stinger"
-	else
-		Breeds.skaven_gutter_runner.special_spawn_stinger = nil
-	end
+	-- if assassin_spawn_option == mod.ASSASSIN_SOUND_OPTIONS.DEFAULT then
+	-- 	Breeds.skaven_gutter_runner.special_spawn_stinger = "enemy_gutterrunner_stinger"
+	-- else
+	-- 	Breeds.skaven_gutter_runner.special_spawn_stinger = nil
+	-- end
 
 	if breed.name == "skaven_gutter_runner" then
 		if mod:get(mod.SETTING_NAMES.ASSASSIN_TEXT_WARNING) then
+			UISettings.area_indicator.wait_time = 0
 			local player_unit = Managers.player:local_player().player_unit
 			local player_hud_extension = ScriptUnit.extension(player_unit, "hud_system")
 			if mod.get_num_alive_assassins() > 0 then
@@ -119,33 +120,35 @@ mod:hook(ConflictDirector, "spawn_queued_unit", function(func, self, breed, boxe
 					player_hud_extension.current_location = "ASSASSIN_WARNING_ASS!"
 				end
 			end
+		else
+			UISettings.area_indicator.wait_time = 1
 		end
 
-		local wwise_world = Managers.world:wwise_world(self._world)
-		if assassin_spawn_option == mod.ASSASSIN_SOUND_OPTIONS.FIXED then
-			WwiseWorld.trigger_event(wwise_world, "enemy_gutterrunner_stinger")
-		elseif assassin_spawn_option == mod.ASSASSIN_SOUND_OPTIONS.KRENCH then
-			Managers.state.network.network_transmit:send_rpc_all("rpc_server_audio_event", NetworkLookup.sound_events["Play_hud_matchmaking_countdown"])
-			self._mod_times_to_play_sound = self._mod_times_to_play_sound or {}
-			table.insert(self._mod_times_to_play_sound, self._time + 1)
-			table.insert(self._mod_times_to_play_sound, self._time + 2)
-		end
+		-- local wwise_world = Managers.world:wwise_world(self._world)
+		-- if assassin_spawn_option == mod.ASSASSIN_SOUND_OPTIONS.FIXED then
+		-- 	WwiseWorld.trigger_event(wwise_world, "enemy_gutterrunner_stinger")
+		-- elseif assassin_spawn_option == mod.ASSASSIN_SOUND_OPTIONS.KRENCH then
+		-- 	Managers.state.network.network_transmit:send_rpc_all("rpc_server_audio_event", NetworkLookup.sound_events["Play_hud_matchmaking_countdown"])
+		-- 	self._mod_times_to_play_sound = self._mod_times_to_play_sound or {}
+		-- 	table.insert(self._mod_times_to_play_sound, self._time + 1)
+		-- 	table.insert(self._mod_times_to_play_sound, self._time + 2)
+		-- end
 	end
 
 	return func(self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, optional_data, group_data, unit_data)
 end)
 
-mod:hook(ConflictDirector, "update", function(func, self, dt, t)
-	self._mod_times_to_play_sound = self._mod_times_to_play_sound or {}
-	for _, time in ipairs( self._mod_times_to_play_sound ) do
-		if time < t then
-			Managers.state.network.network_transmit:send_rpc_all("rpc_server_audio_event", NetworkLookup.sound_events["Play_hud_matchmaking_countdown"])
-		end
-	end
-	for i=#self._mod_times_to_play_sound, 1, -1 do
-	    if self._mod_times_to_play_sound[i] < t then
-	        table.remove(self._mod_times_to_play_sound, i)
-	    end
-	end
-	return func(self, dt, t)
-end)
+-- mod:hook(ConflictDirector, "update", function(func, self, dt, t)
+-- 	self._mod_times_to_play_sound = self._mod_times_to_play_sound or {}
+-- 	for _, time in ipairs( self._mod_times_to_play_sound ) do
+-- 		if time < t then
+-- 			Managers.state.network.network_transmit:send_rpc_all("rpc_server_audio_event", NetworkLookup.sound_events["Play_hud_matchmaking_countdown"])
+-- 		end
+-- 	end
+-- 	for i=#self._mod_times_to_play_sound, 1, -1 do
+-- 	    if self._mod_times_to_play_sound[i] < t then
+-- 	        table.remove(self._mod_times_to_play_sound, i)
+-- 	    end
+-- 	end
+-- 	return func(self, dt, t)
+-- end)

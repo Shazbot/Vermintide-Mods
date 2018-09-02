@@ -18,17 +18,17 @@ local mod_data = {
 }
 
 mod_data.options_widgets = {
-	{
-		["setting_name"] = mod.SETTING_NAMES.ASSASSIN_STINGER_FIX,
-		["widget_type"] = "dropdown",
-		["text"] = mod:localize("assassin_stinger_fix"),
-		["tooltip"] = mod:localize("assassin_stinger_fix_tooltip"),
-		["options"] = {
-			{ text = mod:localize("default"), value = mod.ASSASSIN_SOUND_OPTIONS.DEFAULT }, --1
-			{ text = mod:localize("custom_sound"), value = mod.ASSASSIN_SOUND_OPTIONS.KRENCH }, --2
-			{ text = mod:localize("fixed"), value = mod.ASSASSIN_SOUND_OPTIONS.FIXED }, --3
-		},
-	},
+	-- {
+	-- 	["setting_name"] = mod.SETTING_NAMES.ASSASSIN_STINGER_FIX,
+	-- 	["widget_type"] = "dropdown",
+	-- 	["text"] = mod:localize("assassin_stinger_fix"),
+	-- 	["tooltip"] = mod:localize("assassin_stinger_fix_tooltip"),
+	-- 	["options"] = {
+	-- 		{ text = mod:localize("default"), value = mod.ASSASSIN_SOUND_OPTIONS.DEFAULT }, --1
+	-- 		{ text = mod:localize("custom_sound"), value = mod.ASSASSIN_SOUND_OPTIONS.KRENCH }, --2
+	-- 		{ text = mod:localize("fixed"), value = mod.ASSASSIN_SOUND_OPTIONS.FIXED }, --3
+	-- 	},
+	-- },
 	{
 		["setting_name"] = mod.SETTING_NAMES.ASSASSIN_TEXT_WARNING,
 		["widget_type"] = "checkbox",

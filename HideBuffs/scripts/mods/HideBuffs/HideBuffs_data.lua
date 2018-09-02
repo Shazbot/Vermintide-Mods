@@ -16,6 +16,12 @@ mod.SETTING_NAMES = {
 	FORCE_DEFAULT_FRAME = "force_default_frame",
 	HIDE_PLAYER_PORTRAIT = "hide_player_portrait",
 	SPEEDUP_ANIMATIONS = "SPEEDUP_ANIMATIONS",
+	AMMO_COUNTER_GROUP = "AMMO_COUNTER_GROUP",
+	AMMO_COUNTER_OFFSET_X = "AMMO_COUNTER_OFFSET_X",
+	AMMO_COUNTER_OFFSET_Y = "AMMO_COUNTER_OFFSET_Y",
+	BUFFS_GROUP = "BUFFS_GROUP",
+	BUFFS_OFFSET_X = "BUFFS_OFFSET_X",
+	BUFFS_OFFSET_Y = "BUFFS_OFFSET_Y",
 }
 
 -- Everything here is optional. You can remove unused parts.
@@ -80,6 +86,58 @@ mod_data.options_widgets = {
 		["text"] = mod:localize("hide_hotkeys"),
 		["tooltip"] = mod:localize("hide_hotkeys_tooltip"),
 		["default_value"] = false,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.AMMO_COUNTER_GROUP,
+		["widget_type"] = "group",
+		["text"] = mod:localize("AMMO_COUNTER_GROUP"),
+		["tooltip"] = mod:localize("AMMO_COUNTER_GROUP_T"),
+		["sub_widgets"] = {
+			{
+				["setting_name"] = mod.SETTING_NAMES.AMMO_COUNTER_OFFSET_X,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("AMMO_COUNTER_OFFSET_X"),
+				["tooltip"] = mod:localize("AMMO_COUNTER_OFFSET_X_T"),
+				["range"] = {-2000, 2000},
+				["unit_text"] = "px",
+			    ["default_value"] = 0,
+			},
+			{
+				["setting_name"] = mod.SETTING_NAMES.AMMO_COUNTER_OFFSET_Y,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("AMMO_COUNTER_OFFSET_Y"),
+				["tooltip"] = mod:localize("AMMO_COUNTER_OFFSET_Y_T"),
+				["range"] = {-2000, 2000},
+				["unit_text"] = "px",
+			    ["default_value"] = 0,
+			},
+		},
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.BUFFS_GROUP,
+		["widget_type"] = "group",
+		["text"] = mod:localize("BUFFS_GROUP"),
+		["tooltip"] = mod:localize("BUFFS_GROUP_T"),
+		["sub_widgets"] = {
+			{
+				["setting_name"] = mod.SETTING_NAMES.BUFFS_OFFSET_X,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("BUFFS_OFFSET_X"),
+				["tooltip"] = mod:localize("BUFFS_OFFSET_X_T"),
+				["range"] = {-2000, 2000},
+				["unit_text"] = "px",
+			    ["default_value"] = 0,
+			},
+			{
+				["setting_name"] = mod.SETTING_NAMES.BUFFS_OFFSET_Y,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("BUFFS_OFFSET_Y"),
+				["tooltip"] = mod:localize("BUFFS_OFFSET_Y_T"),
+				["range"] = {-2000, 2000},
+				["unit_text"] = "px",
+			    ["default_value"] = 0,
+			},
+		},
 	},
 	{
 		["setting_name"] = mod.SETTING_NAMES.BUFFS_GROUP,

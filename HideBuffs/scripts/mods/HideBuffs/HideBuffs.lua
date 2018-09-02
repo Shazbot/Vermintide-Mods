@@ -58,6 +58,30 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 				end
 			end
 		end
+
+		-- ammo counter
+		for _, widget in ipairs( self._ammo_widgets ) do
+			widget.offset[1] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_OFFSET_X)
+			widget.offset[2] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_OFFSET_Y)
+		end
+	end)
+	return func(self, dt)
+end)
+
+mod:hook(BuffUI, "draw", function(func, self, dt)
+	mod:pcall(function()
+		local buffs_offset_x = mod:get(mod.SETTING_NAMES.BUFFS_OFFSET_X)
+		if self._hb_mod_cached_buffs_offset_x ~= buffs_offset_x then
+			self._hb_mod_cached_buffs_offset_x = buffs_offset_x
+			self.ui_scenegraph.buff_pivot.position[1] = buffs_offset_x
+			self:_on_resolution_modified()
+		end
+		local buffs_offset_y = mod:get(mod.SETTING_NAMES.BUFFS_OFFSET_Y)
+		if self._hb_mod_cached_buffs_offset_y ~= buffs_offset_y then
+			self._hb_mod_cached_buffs_offset_y = buffs_offset_y
+			self.ui_scenegraph.buff_pivot.position[2] = buffs_offset_y
+			self:_on_resolution_modified()
+		end
 	end)
 	return func(self, dt)
 end)

@@ -89,4 +89,40 @@ return {
 	hide_player_portrait_tooltip = {
 		en = "Hide player portrait at bottom left."
 	},
+	AMMO_COUNTER_GROUP = {
+		en = "Ammo Counter Tweaks"
+	},
+	AMMO_COUNTER_GROUP_T = {
+		en = "Tweaks related to the ammo counter."
+	},
+	AMMO_COUNTER_OFFSET_X = {
+		en = "X Offset"
+	},
+	AMMO_COUNTER_OFFSET_X_T = {
+		en = "Optionally offset on the x axis."
+	},
+	AMMO_COUNTER_OFFSET_Y = {
+		en = "Y Offset"
+	},
+	AMMO_COUNTER_OFFSET_Y_T = {
+		en = "Optionally offset on the y axis."
+	},
+	BUFFS_GROUP = {
+		en = "Buffs Tweaks"
+	},
+	BUFFS_GROUP_T = {
+		en = "Tweaks related to active buffs indicators."
+	},
+	BUFFS_OFFSET_X = {
+		en = "X Offset"
+	},
+	BUFFS_OFFSET_X_T = {
+		en = "Optionally offset on the x axis."
+	},
+	BUFFS_OFFSET_Y = {
+		en = "Y Offset"
+	},
+	BUFFS_OFFSET_Y_T = {
+		en = "Optionally offset on the y axis."
+	},
 }

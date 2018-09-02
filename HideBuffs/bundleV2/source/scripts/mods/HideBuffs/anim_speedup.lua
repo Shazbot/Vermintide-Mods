@@ -12,7 +12,7 @@ mod:hook(RewardPopupUI, "create_ui_elements", function(func, self, ...)
 
 	if mod:get(mod.SETTING_NAMES.SPEEDUP_ANIMATIONS) then
 		local definitions = local_require("scripts/ui/reward_popup/reward_popup_ui_definitions")
-		local animation_definitions = definitions.animations
+		local animation_definitions = table.clone(definitions.animations)
 
 		for _, anims in pairs( animation_definitions ) do
 			for _, anim in ipairs( anims ) do
@@ -46,7 +46,7 @@ mod:hook(EndViewStateChest, "create_ui_elements", function(func, self, ...)
 
 	if mod:get(mod.SETTING_NAMES.SPEEDUP_ANIMATIONS) then
 		local definitions = local_require("scripts/ui/views/level_end/states/definitions/end_view_state_chest_definitions")
-		local animation_definitions = definitions.animation_definitions
+		local animation_definitions = table.clone(definitions.animation_definitions)
 
 		for _, anims in pairs( animation_definitions ) do
 			for _, anim in ipairs( anims ) do

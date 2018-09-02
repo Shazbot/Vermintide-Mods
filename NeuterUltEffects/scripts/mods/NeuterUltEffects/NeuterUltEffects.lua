@@ -4,11 +4,14 @@ local mod = get_mod("NeuterUltEffects") -- luacheck: ignore get_mod
 
 local pl = require'pl.import_into'()
 
---- Mod Logic ---
 --- Skip huntsman fov malarkey.
-BuffFunctionTemplates.functions.apply_huntsman_activated_ability = function (...) -- luacheck: ignore ...
-	return
-end
+mod:hook(BuffFunctionTemplates.functions, "apply_huntsman_activated_ability", function(func, ...)
+	if mod:get(mod.SETTING_NAMES["HUNTSMAN_VISUAL"]) then
+		return
+	end
+
+	return func(...)
+end)
 
 --- Stop mood activation for specific skills.
 local name_to_mood = {

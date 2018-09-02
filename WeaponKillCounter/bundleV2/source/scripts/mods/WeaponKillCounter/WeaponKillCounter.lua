@@ -8,10 +8,14 @@ mod.WEAPON_KILLS_SETTINGS_KEY = "weapon_kills"
 local weapon_kills_table = mod:get(mod.WEAPON_KILLS_SETTINGS_KEY) or {}
 
 local function serialize_weapon_kills()
+	weapon_kills_table[2] = nil -- prologue hammer backend_id that crashes set_user_setting on weapon_kills_table
 	mod:set(mod.WEAPON_KILLS_SETTINGS_KEY, weapon_kills_table)
 end
 
 local function increase_kill_counter(backend_id)
+	if backend_id == 2 then
+		return
+	end
 	weapon_kills_table[backend_id] = (weapon_kills_table[backend_id] or 0) + 1
 	serialize_weapon_kills()
 end

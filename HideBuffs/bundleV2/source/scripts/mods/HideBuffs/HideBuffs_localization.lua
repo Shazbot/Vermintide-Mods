@@ -176,4 +176,40 @@ return {
 	TEAM_UI_FLOWS_HORIZONTALLY_T = {
 		en = "Arrange the teammate portraits horizontally."
 	},
+	CHAT_GROUP = {
+		en = "Chat Tweaks"
+	},
+	CHAT_GROUP_T = {
+		en = "Tweaks related to the chat UI."
+	},
+	CHAT_OFFSET_X = {
+		en = "X Offset"
+	},
+	CHAT_OFFSET_X_T = {
+		en = "Optionally offset on the x axis."
+	},
+	CHAT_OFFSET_Y = {
+		en = "Y Offset"
+	},
+	CHAT_OFFSET_Y_T = {
+		en = "Optionally offset on the y axis."
+	},
+	ITEM_SLOTS_GROUP = {
+		en = "Player UI Tweaks"
+	},
+	ITEM_SLOTS_GROUP_T = {
+		en = "Tweaks related to the player UI on the bottom of the screen."
+	},
+	HIDE_WEAPON_SLOTS = {
+		en = "Hide Weapon Slots"
+	},
+	HIDE_WEAPON_SLOTS_T = {
+		en = "Hide the first 2 item slots(melee and ranged weapon)."
+	},
+	REPOSITION_WEAPON_SLOTS = {
+		en = "Reposition Weapon Slots"
+	},
+	REPOSITION_WEAPON_SLOTS_T = {
+		en = "Reposition the visible item slots to the left."
+	},
 }

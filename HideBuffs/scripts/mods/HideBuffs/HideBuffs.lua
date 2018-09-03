@@ -1,21 +1,21 @@
 local mod = get_mod("HideBuffs") -- luacheck: ignore get_mod
 
 -- luacheck: globals BuffUI EquipmentUI AbilityUI UnitFrameUI MissionObjectiveUI TutorialUI
--- luacheck: globals local_require math UnitFramesHandler
+-- luacheck: globals local_require math UnitFramesHandler table
 
 mod.lookup = {
 	["victor_bountyhunter_passive_infinite_ammo_buff"] =
-		mod.SETTING_NAMES.VICTOR_BOUNTYHUNTER_PASSIVE_INFINITE_AMMO_BUFF,
+	mod.SETTING_NAMES.VICTOR_BOUNTYHUNTER_PASSIVE_INFINITE_AMMO_BUFF,
 	["grimoire_health_debuff"] =
-		mod.SETTING_NAMES.GRIMOIRE_HEALTH_DEBUFF,
+	mod.SETTING_NAMES.GRIMOIRE_HEALTH_DEBUFF,
 	["markus_huntsman_passive_crit_aura_buff"] =
-		mod.SETTING_NAMES.MARKUS_HUNTSMAN_PASSIVE_CRIT_AURA_BUFF,
+	mod.SETTING_NAMES.MARKUS_HUNTSMAN_PASSIVE_CRIT_AURA_BUFF,
 	["markus_knight_passive_defence_aura"] =
-		mod.SETTING_NAMES.MARKUS_KNIGHT_PASSIVE_DEFENCE_AURA,
+	mod.SETTING_NAMES.MARKUS_KNIGHT_PASSIVE_DEFENCE_AURA,
 	["kerillian_waywatcher_passive"] =
-		mod.SETTING_NAMES.KERILLIAN_WAYWATCHER_PASSIVE,
+	mod.SETTING_NAMES.KERILLIAN_WAYWATCHER_PASSIVE,
 	["kerillian_maidenguard_passive_stamina_regen_buff"] =
-		mod.SETTING_NAMES.KERILLIAN_MAIDENGUARD_PASSIVE_STAMINA_REGEN_BUFF,
+	mod.SETTING_NAMES.KERILLIAN_MAIDENGUARD_PASSIVE_STAMINA_REGEN_BUFF,
 }
 
 mod:hook(BuffUI, "_add_buff", function (func, self, buff, ...)
@@ -33,12 +33,20 @@ mod.reset_portrait_frame_alpha = false
 mod.reset_level_alpha = false
 
 mod.on_setting_changed = function(setting_name) -- luacheck: ignore setting_name
-	mod.reset_hotkey_alpha = not mod:get(mod.SETTING_NAMES.HIDE_HOTKEYS)
-	mod.reset_portrait_frame_alpha = not mod:get(mod.SETTING_NAMES.HIDE_FRAMES)
-	mod.reset_level_alpha = not mod:get(mod.SETTING_NAMES.HIDE_LEVELS)
+mod.reset_hotkey_alpha = not mod:get(mod.SETTING_NAMES.HIDE_HOTKEYS)
+mod.reset_portrait_frame_alpha = not mod:get(mod.SETTING_NAMES.HIDE_FRAMES)
+mod.reset_level_alpha = not mod:get(mod.SETTING_NAMES.HIDE_LEVELS)
+
+if setting_name == mod.SETTING_NAMES.HIDE_WEAPON_SLOTS then
+	mod.change_slot_visibility = true
+	mod.reposition_weapon_slots = true
+end
+if setting_name == mod.SETTING_NAMES.REPOSITION_WEAPON_SLOTS then
+	mod.reposition_weapon_slots = true
+end
 end
 
-mod:hook(EquipmentUI, "draw", function(func, self, dt)
+mod:hook(EquipmentUI, "update", function(func, self, ...)
 	mod:pcall(function()
 		if mod.reset_hotkey_alpha then
 			for _, widget in ipairs(self._slot_widgets) do
@@ -63,8 +71,36 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 			widget.offset[1] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_OFFSET_X)
 			widget.offset[2] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_OFFSET_Y)
 		end
+
+		-- hide first 2 item slots
+		if mod.change_slot_visibility then
+			mod.change_slot_visibility = false
+
+			local visible = not mod:get(mod.SETTING_NAMES.HIDE_WEAPON_SLOTS)
+			self:_set_widget_visibility(self._slot_widgets[1], visible)
+			self:_set_widget_visibility(self._slot_widgets[2], visible)
+		end
+
+		-- reposition the other item slots
+		if mod.reposition_weapon_slots then
+			mod.reposition_weapon_slots = false
+			local num_slots = mod:get(mod.SETTING_NAMES.REPOSITION_WEAPON_SLOTS)
+			if not mod:get(mod.SETTING_NAMES.HIDE_WEAPON_SLOTS) then
+				num_slots = 0
+			end
+			for i = 1, #self._slot_widgets do
+				if not self._slot_widgets[i]._hb_mod_offset_cache then
+					self._slot_widgets[i]._hb_mod_offset_cache = table.clone(self._slot_widgets[i].offset)
+				end
+				self._slot_widgets[i].offset = self._slot_widgets[i]._hb_mod_offset_cache
+			end
+			for i = 3, #self._slot_widgets do
+				self._slot_widgets[i].offset = self._slot_widgets[i+num_slots]._hb_mod_offset_cache
+				self:_set_widget_dirty(self._slot_widgets[i])
+			end
+		end
 	end)
-	return func(self, dt)
+	return func(self, ...)
 end)
 
 local buff_ui_definitions = local_require("scripts/ui/hud_ui/buff_ui_definitions")
@@ -316,6 +352,17 @@ mod:hook_origin(UnitFramesHandler, "_align_team_member_frames", function(self)
 			end
 		end
 	end
+end)
+
+--- Chat.
+mod:hook("ChatGui", "update", function(func, self, ...)
+	mod:pcall(function()
+		local position = self.ui_scenegraph.chat_window_root.local_position
+		position[1] = mod:get(mod.SETTING_NAMES.CHAT_OFFSET_X)
+		position[2] = 200 + mod:get(mod.SETTING_NAMES.CHAT_OFFSET_Y)
+	end)
+
+	return func(self, ...)
 end)
 
 mod:hook(TutorialUI, "update_mission_tooltip", function(func, self, ...)

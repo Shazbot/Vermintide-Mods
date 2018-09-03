@@ -30,6 +30,12 @@ mod.SETTING_NAMES = {
 	TEAM_UI_FLOWS_HORIZONTALLY = "TEAM_UI_FLOWS_HORIZONTALLY",
 	HIDE_BUFFS_GROUP = "HIDE_BUFFS_GROUP",
 	BUFFS_DISABLE_ALIGN_ANIMATION = "BUFFS_DISABLE_ALIGN_ANIMATION",
+	CHAT_GROUP = "CHAT_GROUP",
+	CHAT_OFFSET_X = "CHAT_OFFSET_X",
+	CHAT_OFFSET_Y = "CHAT_OFFSET_Y",
+	HIDE_WEAPON_SLOTS = "HIDE_WEAPON_SLOTS",
+	REPOSITION_WEAPON_SLOTS = "REPOSITION_WEAPON_SLOTS",
+	ITEM_SLOTS_GROUP = "ITEM_SLOTS_GROUP",
 }
 
 -- Everything here is optional. You can remove unused parts.
@@ -94,6 +100,58 @@ mod_data.options_widgets = {
 		["text"] = mod:localize("hide_hotkeys"),
 		["tooltip"] = mod:localize("hide_hotkeys_tooltip"),
 		["default_value"] = false,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.ITEM_SLOTS_GROUP,
+		["widget_type"] = "group",
+		["text"] = mod:localize("ITEM_SLOTS_GROUP"),
+		["tooltip"] = mod:localize("ITEM_SLOTS_GROUP_T"),
+		["sub_widgets"] = {
+			{
+				["setting_name"] = mod.SETTING_NAMES.HIDE_WEAPON_SLOTS,
+				["widget_type"] = "checkbox",
+				["text"] = mod:localize("HIDE_WEAPON_SLOTS"),
+				["tooltip"] = mod:localize("HIDE_WEAPON_SLOTS_T"),
+				["default_value"] = false,
+				["sub_widgets"] = {
+					{
+						["setting_name"] = mod.SETTING_NAMES.REPOSITION_WEAPON_SLOTS,
+						["widget_type"] = "numeric",
+						["text"] = mod:localize("REPOSITION_WEAPON_SLOTS"),
+						["tooltip"] = mod:localize("REPOSITION_WEAPON_SLOTS_T"),
+						["range"] = {-2, 0},
+						["unit_text"] = " slots",
+					    ["default_value"] = -2,
+					},
+				},
+			},
+		},
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.CHAT_GROUP,
+		["widget_type"] = "group",
+		["text"] = mod:localize("CHAT_GROUP"),
+		["tooltip"] = mod:localize("CHAT_GROUP_T"),
+		["sub_widgets"] = {
+			{
+				["setting_name"] = mod.SETTING_NAMES.CHAT_OFFSET_X,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("CHAT_OFFSET_X"),
+				["tooltip"] = mod:localize("CHAT_OFFSET_X_T"),
+				["range"] = {-2500, 2500},
+				["unit_text"] = "px",
+			    ["default_value"] = 0,
+			},
+			{
+				["setting_name"] = mod.SETTING_NAMES.CHAT_OFFSET_Y,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("CHAT_OFFSET_Y"),
+				["tooltip"] = mod:localize("CHAT_OFFSET_Y_T"),
+				["range"] = {-2500, 2500},
+				["unit_text"] = "px",
+			    ["default_value"] = 0,
+			},
+		},
 	},
 	{
 		["setting_name"] = mod.SETTING_NAMES.TEAM_UI_GROUP,

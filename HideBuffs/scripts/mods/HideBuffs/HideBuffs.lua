@@ -1,7 +1,7 @@
 local mod = get_mod("HideBuffs") -- luacheck: ignore get_mod
 
 -- luacheck: globals BuffUI EquipmentUI AbilityUI UnitFrameUI MissionObjectiveUI TutorialUI
--- luacheck: globals local_require math UnitFramesHandler table
+-- luacheck: globals local_require math UnitFramesHandler table UIWidget UIRenderer
 
 mod.lookup = {
 	["victor_bountyhunter_passive_infinite_ammo_buff"] =
@@ -209,31 +209,143 @@ mod:hook(BuffUI, "draw", function(func, self, dt)
 	return func(self, dt)
 end)
 
---- Hide ult hotkey.
-mod:hook(AbilityUI, "draw", function(func, self, dt)
+--- Store frame_index in a new variable.
+mod:hook_safe(UnitFrameUI, "_create_ui_elements", function(self, frame_index)
+	self._mod_frame_index = frame_index
+end)
+
+mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 	mod:pcall(function()
-		if mod.reset_hotkey_alpha then
-			local widget = self._widgets_by_name.ability
-			widget.style.input_text.text_color[1] = 255
-			widget.style.input_text_shadow.text_color[1] = 255
-			self:_set_widget_dirty(widget)
-			mod.reset_hotkey_alpha = false
-		end
-		if mod:get(mod.SETTING_NAMES.HIDE_HOTKEYS) then
-			local widget = self._widgets_by_name.ability
-			if widget.style.input_text.text_color[1] ~= 0 then
-				widget.style.input_text.text_color[1] = 0
-				widget.style.input_text_shadow.text_color[1] = 0
-				self:_set_widget_dirty(widget)
+		if (not self._mod_frame_index) and mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET) then
+			self._ability_widgets.ability_dynamic.element.passes[1].content_change_function = function (content, style)
+				local ability_progress = content.bar_value
+				local size = style.size
+				local uvs = content.uvs
+				local bar_length = 448+20+30+10+7
+				uvs[2][2] = ability_progress
+				size[1] = bar_length * ability_progress
 			end
+			self._ability_widgets.ability_dynamic.style.ability_bar.size[2] = 5
+			self._ability_widgets.ability_dynamic.offset[1] = -30-2
+			self._ability_widgets.ability_dynamic.offset[2] = 20-1-2
+			self._ability_widgets.ability_dynamic.offset[3] = 50
+			self._health_widgets.health_dynamic.style.grimoire_debuff_divider.offset[3] = 200
 		end
 	end)
 	return func(self, dt)
 end)
 
---- Store frame_index in a new variable.
-mod:hook_safe(UnitFrameUI, "_create_ui_elements", function(self, frame_index)
-	self._mod_frame_index = frame_index
+mod.hp_bg_rect_def =
+{
+	scenegraph_id = "background_panel_bg",
+	element = {
+		passes = {
+			{
+				pass_type = "rect",
+				style_id = "hp_bar_rect",
+			},
+		},
+	},
+	content = {
+
+	},
+	style = {
+		hp_bar_rect = {
+			offset = {0, 0},
+			size = {
+				500,
+				10
+			},
+			color = {255, 0, 0, 0},
+		},
+	},
+	offset = {
+		0,
+		0,
+		0
+	},
+}
+
+mod:hook(EquipmentUI, "draw", function(func, self, dt)
+	if mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET) then
+		mod:pcall(function()
+			self._static_widgets[1].content.texture_id = "console_hp_bar_frame"
+			self._static_widgets[1].style.texture_id.size = { 576+10, 36 }
+			self._static_widgets[1].offset = { 20, 20, 0 }
+
+			self._static_widgets[2].style.texture_id.size = { 576-10, 36 }
+			self._static_widgets[2].offset[1] = -50
+			self._static_widgets[2].offset[2] = 20
+
+			self.ui_scenegraph.slot.local_position[2] = 44+15
+		end)
+
+		if not self._hb_mod_widget then
+			self._hb_mod_widget = UIWidget.init(mod.hp_bg_rect_def)
+		end
+		mod:pcall(function()
+			self._hb_mod_widget.style.hp_bar_rect.size = { 576-10, 20 }
+			self._hb_mod_widget.offset[1] = -50
+			self._hb_mod_widget.offset[2] = 20
+		end)
+
+		local ui_renderer = self.ui_renderer
+		local ui_scenegraph = self.ui_scenegraph
+		local input_service = self.input_manager:get_service("ingame_menu")
+		local render_settings = self.render_settings
+		UIRenderer.begin_pass(ui_renderer, ui_scenegraph, input_service, dt, nil, render_settings)
+		UIRenderer.draw_widget(ui_renderer, self._hb_mod_widget)
+		UIRenderer.end_pass(ui_renderer)
+
+		self._static_widgets[2].content.visible = false
+	end
+
+	return func(self, dt)
+end)
+
+mod:hook(AbilityUI, "draw", function (func, self, dt)
+	if mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET) then
+		for _, pass in ipairs( self._widgets[1].element.passes ) do
+			if pass.style_id == "ability_effect_left"
+				or pass.style_id == "ability_effect_top_left" then
+					pass.content_check_function = function() return false end
+			end
+		end
+
+		for _, pass in ipairs( self._widgets[1].element.passes ) do
+			if pass.style_id == "input_text"
+			or pass.style_id == "input_text_shadow"
+			then
+				pass.content_check_function = function() return not mod:get(mod.SETTING_NAMES.HIDE_HOTKEYS) end
+			end
+		end
+
+		mod:pcall(function()
+			local skull_offsets = { 0, -15 }
+			self._widgets[1].style.ability_effect_left.offset[1] = -(576+10)/2 - 50
+			self._widgets[1].style.ability_effect_left.horizontal_alignment = "center"
+			self._widgets[1].style.ability_effect_left.offset[2] = skull_offsets[2]
+			self._widgets[1].style.ability_effect_top_left.horizontal_alignment = "center"
+			self._widgets[1].style.ability_effect_top_left.offset[1] = -(576+10)/2 - 50
+			self._widgets[1].style.ability_effect_top_left.offset[2] = skull_offsets[2]
+
+			self._widgets[1].style.ability_effect_right.offset[1] = (576+10)/2 + 30
+			self._widgets[1].style.ability_effect_right.horizontal_alignment = "center"
+			self._widgets[1].style.ability_effect_right.offset[2] = skull_offsets[2]
+			self._widgets[1].style.ability_effect_top_right.horizontal_alignment = "center"
+			self._widgets[1].style.ability_effect_top_right.offset[1] = (576+10)/2 + 30
+			self._widgets[1].style.ability_effect_top_right.offset[2] = skull_offsets[2]
+
+			self._widgets[1].offset[1]= -1+3
+			self._widgets[1].offset[2]= 56-30-5-3
+			self._widgets[1].offset[3]= 60
+			self._widgets[1].style.ability_bar_highlight.texture_size[1] = 576-20
+			self._widgets[1].style.ability_bar_highlight.texture_size[2] = 50
+			self._widgets[1].style.ability_bar_highlight.offset[2] = 22 + 4
+		end)
+	end
+
+	return func(self, dt)
 end)
 
 mod:hook(UnitFrameUI, "update", function(func, self, ...)
@@ -288,11 +400,20 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 			then
 				portrait_widget_content.visible = not hide_player_portrait
 				self:_set_widget_dirty(self._portrait_widgets.portrait_static)
-
 			end
 		end
 	end)
 	return func(self, ...)
+end)
+
+mod:hook(UnitFramesHandler, "_create_unit_frame_by_type", function(func, self, frame_type, frame_index)
+	local unit_frame = func(self, frame_type, frame_index)
+	if frame_type == "player" and mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET) then
+		local new_definitions = local_require("scripts/ui/hud_ui/player_console_unit_frame_ui_definitions")
+		unit_frame.definitions.widget_definitions.health_dynamic = new_definitions.widget_definitions.health_dynamic
+		unit_frame.widget = UnitFrameUI:new(self.ingame_ui_context, unit_frame.definitions, unit_frame.data, frame_index, unit_frame.player_data)
+	end
+	return unit_frame
 end)
 
 --- Teammate UI update hook to catch when we need to realign teammate portraits.
@@ -313,6 +434,21 @@ mod:hook(UnitFramesHandler, "update", function(func, self, ...)
 		self._hb_mod_cached_team_ui_flows_horizontally = team_ui_flows_horizontally
 		self._hb_mod_cached_team_ui_spacing = team_ui_spacing
 		self:_align_team_member_frames()
+	end
+
+	local mini_hud_preset = mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET)
+	if self._hb_mod_cached_mini_hud_preset ~= mini_hud_preset then
+		self._hb_mod_cached_mini_hud_preset = mini_hud_preset
+
+		local my_unit_frame = self._unit_frames[1]
+		my_unit_frame.widget:destroy()
+
+		local new_unit_frame = self:_create_unit_frame_by_type("player")
+		new_unit_frame.player_data = my_unit_frame.player_data
+		new_unit_frame.sync = true
+		self._unit_frames[1] = new_unit_frame
+
+		self:set_visible(self._is_visible)
 	end
 
 	return func(self, ...)

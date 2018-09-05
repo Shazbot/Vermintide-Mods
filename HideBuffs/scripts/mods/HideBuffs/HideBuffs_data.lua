@@ -36,6 +36,7 @@ mod.SETTING_NAMES = {
 	HIDE_WEAPON_SLOTS = "HIDE_WEAPON_SLOTS",
 	REPOSITION_WEAPON_SLOTS = "REPOSITION_WEAPON_SLOTS",
 	ITEM_SLOTS_GROUP = "ITEM_SLOTS_GROUP",
+	MINI_HUD_PRESET = "MINI_HUD_PRESET",
 }
 
 -- Everything here is optional. You can remove unused parts.
@@ -45,6 +46,13 @@ local mod_data = {
 	is_togglable = true,
 }
 mod_data.options_widgets = {
+	{
+		["setting_name"] = mod.SETTING_NAMES.MINI_HUD_PRESET,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("MINI_HUD_PRESET"),
+		["tooltip"] = mod:localize("MINI_HUD_PRESET_T"),
+		["default_value"] = false,
+	},
 	{
 		["setting_name"] = mod.SETTING_NAMES.SPEEDUP_ANIMATIONS,
 		["widget_type"] = "checkbox",

@@ -3,7 +3,7 @@ return {
 		en = "UI Tweaks."
 	},
 	SPEEDUP_ANIMATIONS = {
-		en = "Speed up UI animations"
+		en = "Speed Up UI Animations"
 	},
 	SPEEDUP_ANIMATIONS_T = {
 		en = "Speed up some UI screens like the end of level xp screen and chest presentation."
@@ -211,5 +211,12 @@ return {
 	},
 	REPOSITION_WEAPON_SLOTS_T = {
 		en = "Reposition the visible item slots to the left."
+	},
+	MINI_HUD_PRESET = {
+		en = "Mini HUD Preset"
+	},
+	MINI_HUD_PRESET_T = {
+		en = "Use console HP bar while keeping the rest of the PC UI elements."
+		.."\nDISABLING REQUIRES GAME RESTART"
 	},
 }

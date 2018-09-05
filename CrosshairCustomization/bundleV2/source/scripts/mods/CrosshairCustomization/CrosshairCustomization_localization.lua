@@ -80,4 +80,10 @@ return {
 	no_range_markers_tooltip = {
 		en = "No range markers on a projectile weapon crosshair."
 	},
+	NO_RANGED_DOT = {
+		en = "No Ranged Dot"
+	},
+	NO_RANGED_DOT_T = {
+		en = "No center dot with ranged weapons."
+	},
 }

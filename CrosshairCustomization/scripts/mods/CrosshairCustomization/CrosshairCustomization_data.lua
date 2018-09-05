@@ -27,7 +27,8 @@ mod.SETTING_NAMES = {
     CUSTOM_GREEN = "custom_green",
     CUSTOM_BLUE = "custom_blue",
     NO_RANGE_MARKERS = "no_range_markers",
-    NO_LINE_MARKERS = "no_line_markers"
+    NO_LINE_MARKERS = "no_line_markers",
+    NO_RANGED_DOT = "NO_RANGED_DOT",
 }
 ---! Enums ---
 
@@ -108,6 +109,13 @@ mod_data.options_widgets = {
 		["widget_type"] = "checkbox",
 		["text"] = mod:localize("no_melee_dot"),
 		["tooltip"] = mod:localize("no_melee_dot_tooltip"),
+		["default_value"] = false
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.NO_RANGED_DOT,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("NO_RANGED_DOT"),
+		["tooltip"] = mod:localize("NO_RANGED_DOT_T"),
 		["default_value"] = false
 	},
 	{

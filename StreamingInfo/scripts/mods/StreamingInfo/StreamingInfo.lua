@@ -11,7 +11,7 @@ local stringio = require'pl.stringio'
 
 mod.streaming_data = {}
 
-mod.dump_traits = function(out, slot)
+mod.append_traits = function(out, slot)
 	local traits = slot.traits
 	if traits and #traits then
 		for _,trait_name in ipairs(traits) do
@@ -55,27 +55,27 @@ mod.get_talents = function()
 	end
 end
 
-mod.dump_data_file = function()
+mod.get_streaming_info = function()
 	local out = stringio.create()
 	mod:pcall(function()
 		if mod.streaming_data.slot_melee then
-			mod.dump_traits(out, mod.streaming_data.slot_melee)
+			mod.append_traits(out, mod.streaming_data.slot_melee)
 			out:write("\n")
 		end
 		if mod.streaming_data.slot_ranged then
-			mod.dump_traits(out, mod.streaming_data.slot_ranged)
+			mod.append_traits(out, mod.streaming_data.slot_ranged)
 			out:write("\n")
 		end
 		if mod.streaming_data.slot_necklace then
-			mod.dump_traits(out, mod.streaming_data.slot_necklace)
+			mod.append_traits(out, mod.streaming_data.slot_necklace)
 			out:write("\n")
 		end
 		if mod.streaming_data.slot_ring then
-			mod.dump_traits(out, mod.streaming_data.slot_ring)
+			mod.append_traits(out, mod.streaming_data.slot_ring)
 			out:write("\n")
 		end
 		if mod.streaming_data.slot_trinket_1 then
-			mod.dump_traits(out, mod.streaming_data.slot_trinket_1)
+			mod.append_traits(out, mod.streaming_data.slot_trinket_1)
 			out:write("\n")
 		end
 
@@ -103,8 +103,8 @@ mod:hook(BackendUtils, "get_loadout_item", function (func, career_name, slot)
 	return item_data
 end)
 
-local font = "gw_arial_16"
-local font_mtrl = "materials/fonts/" .. font
+mod.font = "gw_arial_16"
+mod.font_mtrl = "materials/fonts/" .. mod.font
 
 mod:hook(IngameUI, "update", function(func, self, ...)
 	if not self.gui then
@@ -124,11 +124,11 @@ mod:hook(IngameUI, "update", function(func, self, ...)
 	local start_x = 10 + mod:get(mod.SETTING_NAMES.OFFSET_X)
 	local start_y = RESOLUTION_LOOKUP.res_h - 30  + mod:get(mod.SETTING_NAMES.OFFSET_Y)
 	local i = 0
-    mod:pcall(function()
-		pl.List(stringx.splitlines(mod.dump_data_file()))
+	mod:pcall(function()
+		pl.List(stringx.splitlines(mod.get_streaming_info()))
 			:foreach(function(line)
 				local pos = Vector3(start_x, start_y-vertical_spacing*i, 200)
-				Gui.text(self.gui, line, font_mtrl, font_size, font, pos, header_color)
+				Gui.text(self.gui, line, mod.font_mtrl, font_size, mod.font, pos, header_color)
 				i = i + 1
 		end)
     end)

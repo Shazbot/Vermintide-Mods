@@ -55,6 +55,7 @@ mod.add_option(
 	{
 		["widget_type"] = "numeric",
 		["range"] = {0, 50},
+		["unit_text"] = "px",
 		["default_value"] = 22,
 	}
 )

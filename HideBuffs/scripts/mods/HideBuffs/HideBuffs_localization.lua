@@ -219,4 +219,34 @@ return {
 		en = "Use console HP bar while keeping the rest of the PC UI elements."
 		.."\nDISABLING REQUIRES GAME RESTART"
 	},
+	TEAM_UI_PORTRAIT_SCALE = {
+		en = "Portrait Scale"
+	},
+	TEAM_UI_PORTRAIT_SCALE_T = {
+		en = "Scale the portraits."
+	},
+	TEAM_UI_PORTRAIT_OFFSET_X = {
+		en = "Portraits X Offset"
+	},
+	TEAM_UI_PORTRAIT_OFFSET_X_T = {
+		en = "Optionally offset the portraits on the x axis."
+	},
+	TEAM_UI_PORTRAIT_OFFSET_Y = {
+		en = "Portraits Y Offset"
+	},
+	TEAM_UI_PORTRAIT_OFFSET_Y_T = {
+		en = "Optionally offset the portraits on the y axis."
+	},
+	TEAM_UI_NAME_OFFSET_X = {
+		en = "Player Name X Offset"
+	},
+	TEAM_UI_NAME_OFFSET_X_T = {
+		en = "Optionally offset the layer name on the x axis."
+	},
+	TEAM_UI_NAME_OFFSET_Y = {
+		en = "Player Name Y Offset"
+	},
+	TEAM_UI_NAME_OFFSET_Y_T = {
+		en = "Optionally offset the player name on the y axis."
+	},
 }

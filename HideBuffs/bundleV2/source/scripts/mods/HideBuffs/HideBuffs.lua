@@ -3,6 +3,9 @@ local mod = get_mod("HideBuffs") -- luacheck: ignore get_mod
 -- luacheck: globals BuffUI EquipmentUI AbilityUI UnitFrameUI MissionObjectiveUI TutorialUI
 -- luacheck: globals local_require math UnitFramesHandler table UIWidget UIRenderer
 
+local pl = require'pl.import_into'()
+local tablex = require'pl.tablex'
+
 mod.lookup = {
 	["victor_bountyhunter_passive_infinite_ammo_buff"] =
 	mod.SETTING_NAMES.VICTOR_BOUNTYHUNTER_PASSIVE_INFINITE_AMMO_BUFF,
@@ -32,18 +35,23 @@ mod.reset_hotkey_alpha = false
 mod.reset_portrait_frame_alpha = false
 mod.reset_level_alpha = false
 
-mod.on_setting_changed = function(setting_name) -- luacheck: ignore setting_name
-mod.reset_hotkey_alpha = not mod:get(mod.SETTING_NAMES.HIDE_HOTKEYS)
-mod.reset_portrait_frame_alpha = not mod:get(mod.SETTING_NAMES.HIDE_FRAMES)
-mod.reset_level_alpha = not mod:get(mod.SETTING_NAMES.HIDE_LEVELS)
+mod.change_slot_visibility = mod:get(mod.SETTING_NAMES.HIDE_WEAPON_SLOTS)
+mod.reposition_weapon_slots =
+	mod.change_slot_visibility
+	or mod:get(mod.SETTING_NAMES.REPOSITION_WEAPON_SLOTS) ~= 0
 
-if setting_name == mod.SETTING_NAMES.HIDE_WEAPON_SLOTS then
-	mod.change_slot_visibility = true
-	mod.reposition_weapon_slots = true
-end
-if setting_name == mod.SETTING_NAMES.REPOSITION_WEAPON_SLOTS then
-	mod.reposition_weapon_slots = true
-end
+mod.on_setting_changed = function(setting_name)
+	mod.reset_hotkey_alpha = not mod:get(mod.SETTING_NAMES.HIDE_HOTKEYS)
+	mod.reset_portrait_frame_alpha = not mod:get(mod.SETTING_NAMES.HIDE_FRAMES)
+	mod.reset_level_alpha = not mod:get(mod.SETTING_NAMES.HIDE_LEVELS)
+
+	if setting_name == mod.SETTING_NAMES.HIDE_WEAPON_SLOTS then
+		mod.change_slot_visibility = true
+		mod.reposition_weapon_slots = true
+	end
+	if setting_name == mod.SETTING_NAMES.REPOSITION_WEAPON_SLOTS then
+		mod.reposition_weapon_slots = true
+	end
 end
 
 mod:hook(EquipmentUI, "update", function(func, self, ...)
@@ -73,12 +81,14 @@ mod:hook(EquipmentUI, "update", function(func, self, ...)
 		end
 
 		-- hide first 2 item slots
-		if mod.change_slot_visibility then
+		local weapon_slots_visible = not mod:get(mod.SETTING_NAMES.HIDE_WEAPON_SLOTS)
+		if mod.change_slot_visibility
+		or self._slot_widgets[1].content.visible ~= weapon_slots_visible
+		then
 			mod.change_slot_visibility = false
-
-			local visible = not mod:get(mod.SETTING_NAMES.HIDE_WEAPON_SLOTS)
-			self:_set_widget_visibility(self._slot_widgets[1], visible)
-			self:_set_widget_visibility(self._slot_widgets[2], visible)
+			mod.reposition_weapon_slots = true
+			self:_set_widget_visibility(self._slot_widgets[1], weapon_slots_visible)
+			self:_set_widget_visibility(self._slot_widgets[2], weapon_slots_visible)
 		end
 
 		-- reposition the other item slots
@@ -211,7 +221,7 @@ end)
 
 --- Store frame_index in a new variable.
 mod:hook_safe(UnitFrameUI, "_create_ui_elements", function(self, frame_index)
-	self._mod_frame_index = frame_index
+	self._mod_frame_index = frame_index -- nil for player, 1 2 3 for other players
 end)
 
 mod:hook(UnitFrameUI, "draw", function(func, self, dt)
@@ -381,6 +391,7 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 			self:_set_widget_dirty(portrait_static)
 		end
 
+		-- hide player portrait
 		local hide_player_portrait = mod:get(mod.SETTING_NAMES.HIDE_PLAYER_PORTRAIT)
 		if not self._mod_frame_index then
 			local def_static_widget = self:_widget_by_feature("default", "static")
@@ -400,6 +411,56 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 			then
 				portrait_widget_content.visible = not hide_player_portrait
 				self:_set_widget_dirty(self._portrait_widgets.portrait_static)
+			end
+		end
+
+		if self._mod_frame_index then
+			if not self._hb_mod_cached_character_portrait_size then
+				self._hb_mod_cached_character_portrait_size = table.clone(self._default_widgets.default_static.style.character_portrait.size)
+			end
+			local portrait_scale = mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_SCALE)/100
+			self._default_widgets.default_static.style.character_portrait.size = tablex.map("*", self._hb_mod_cached_character_portrait_size, portrait_scale)
+
+			local team_ui_portrait_offset_x = mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_OFFSET_X)
+			local team_ui_portrait_offset_y = mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_OFFSET_Y)
+
+			local widgets = self._widgets
+			local previous_widget = widgets.portrait_static
+			if (
+					self._hb_mod_portrait_scale_lf ~= portrait_scale
+					or self._hb_mod_portrait_offset_x_lf ~= team_ui_portrait_offset_x
+					or self._hb_mod_portrait_offset_y_lf ~= team_ui_portrait_offset_y
+				)
+				and previous_widget.content.level_text
+			then
+				self._hb_mod_portrait_offset_x_lf = team_ui_portrait_offset_x
+				self._hb_mod_portrait_offset_y_lf = team_ui_portrait_offset_y
+				self._hb_mod_portrait_scale_lf = portrait_scale
+
+				local current_frame_settings_name = previous_widget.content.frame_settings_name
+				previous_widget.content.scale = portrait_scale
+				previous_widget.content.frame_settings_name = nil
+				self:set_portrait_frame(current_frame_settings_name, previous_widget.content.level_text)
+
+				local default_static_widget = self._default_widgets.default_static
+				local portrait_size = self._default_widgets.default_static.style.character_portrait.size
+				default_static_widget.style.character_portrait.offset[1] = -portrait_size[1]/2 + team_ui_portrait_offset_x
+
+				local delta_y = self._hb_mod_cached_character_portrait_size[2] -
+					self._default_widgets.default_static.style.character_portrait.size[2]
+				default_static_widget.style.character_portrait.offset[2] = 1 + delta_y/2 + team_ui_portrait_offset_y
+
+				widgets.portrait_static.offset[1] = team_ui_portrait_offset_x
+				widgets.portrait_static.offset[2] = team_ui_portrait_offset_y
+				self:_set_widget_dirty(widgets.portrait_static)
+			end
+
+			local widget = self:_widget_by_feature("player_name", "static")
+			if widget then
+				widget.style.player_name.offset[1] = 0 + mod:get(mod.SETTING_NAMES.TEAM_UI_NAME_OFFSET_X)
+				widget.style.player_name.offset[2] = 110 + mod:get(mod.SETTING_NAMES.TEAM_UI_NAME_OFFSET_Y)
+				widget.style.player_name_shadow.offset[1] = 2 + mod:get(mod.SETTING_NAMES.TEAM_UI_NAME_OFFSET_X)
+				widget.style.player_name_shadow.offset[2] = 110 - 2 + mod:get(mod.SETTING_NAMES.TEAM_UI_NAME_OFFSET_Y)
 			end
 		end
 	end)

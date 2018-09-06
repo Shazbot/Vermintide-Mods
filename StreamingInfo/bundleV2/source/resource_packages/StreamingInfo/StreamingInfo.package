@@ -1,0 +1,11 @@
+mod = [
+	"StreamingInfo"
+]
+
+package = [
+	"resource_packages/StreamingInfo/StreamingInfo"
+]
+
+lua = [
+	"scripts/mods/StreamingInfo/*"
+]

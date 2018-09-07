@@ -217,7 +217,8 @@ return {
 	},
 	MINI_HUD_PRESET_T = {
 		en = "Use console HP bar while keeping the rest of the PC UI elements."
-		.."\nDISABLING REQUIRES GAME RESTART"
+		.."\nWorks only with the Controller HUD Layout option disabled."
+		.."\nDISABLING AND RETURNING TO NORMAL HUD STATE REQUIRES GAME RESTART"
 	},
 	TEAM_UI_PORTRAIT_SCALE = {
 		en = "Portrait Scale"

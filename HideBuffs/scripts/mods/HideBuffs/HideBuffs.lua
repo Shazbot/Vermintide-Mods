@@ -228,6 +228,13 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 	mod:pcall(function()
 		if (not self._mod_frame_index) and mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET) then
 			self._ability_widgets.ability_dynamic.element.passes[1].content_change_function = function (content, style)
+				if not content.uvs then
+					local ability_progress = content.bar_value
+					local size = style.texture_size
+					local offset = style.offset
+					offset[2] = -size[2] + size[2] * ability_progress
+					return
+				end
 				local ability_progress = content.bar_value
 				local size = style.size
 				local uvs = content.uvs
@@ -235,10 +242,14 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 				uvs[2][2] = ability_progress
 				size[1] = bar_length * ability_progress
 			end
-			self._ability_widgets.ability_dynamic.style.ability_bar.size[2] = 5
-			self._ability_widgets.ability_dynamic.offset[1] = -30-2
-			self._ability_widgets.ability_dynamic.offset[2] = 20-1-2
-			self._ability_widgets.ability_dynamic.offset[3] = 50
+
+			local ability_dynamic = self._ability_widgets.ability_dynamic
+			if ability_dynamic.style.ability_bar.size then
+				ability_dynamic.style.ability_bar.size[2] = 5
+				ability_dynamic.offset[1] = -30-2
+				ability_dynamic.offset[2] = 20-1-2
+				ability_dynamic.offset[3] = 50
+			end
 			self._health_widgets.health_dynamic.style.grimoire_debuff_divider.offset[3] = 200
 		end
 	end)
@@ -358,6 +369,26 @@ mod:hook(AbilityUI, "draw", function (func, self, dt)
 	return func(self, dt)
 end)
 
+mod:hook_safe(UnitFrameUI, "set_portrait_frame", function(self)
+	if self._mod_frame_index then
+		local widgets = self._widgets
+		local team_ui_portrait_offset_x = mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_OFFSET_X)
+		local team_ui_portrait_offset_y = mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_OFFSET_Y)
+
+		local default_static_widget = self._default_widgets.default_static
+		local portrait_size = self._default_widgets.default_static.style.character_portrait.size
+		default_static_widget.style.character_portrait.offset[1] = -portrait_size[1]/2 + team_ui_portrait_offset_x
+
+		local delta_y = self._hb_mod_cached_character_portrait_size[2] -
+			self._default_widgets.default_static.style.character_portrait.size[2]
+		default_static_widget.style.character_portrait.offset[2] = 1 + delta_y/2 + team_ui_portrait_offset_y
+
+		widgets.portrait_static.offset[1] = team_ui_portrait_offset_x
+		widgets.portrait_static.offset[2] = team_ui_portrait_offset_y
+		self:_set_widget_dirty(widgets.portrait_static)
+	end
+end)
+
 mod:hook(UnitFrameUI, "update", function(func, self, ...)
 	mod:pcall(function()
 		local portrait_static = self._widgets.portrait_static
@@ -441,18 +472,6 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 				previous_widget.content.scale = portrait_scale
 				previous_widget.content.frame_settings_name = nil
 				self:set_portrait_frame(current_frame_settings_name, previous_widget.content.level_text)
-
-				local default_static_widget = self._default_widgets.default_static
-				local portrait_size = self._default_widgets.default_static.style.character_portrait.size
-				default_static_widget.style.character_portrait.offset[1] = -portrait_size[1]/2 + team_ui_portrait_offset_x
-
-				local delta_y = self._hb_mod_cached_character_portrait_size[2] -
-					self._default_widgets.default_static.style.character_portrait.size[2]
-				default_static_widget.style.character_portrait.offset[2] = 1 + delta_y/2 + team_ui_portrait_offset_y
-
-				widgets.portrait_static.offset[1] = team_ui_portrait_offset_x
-				widgets.portrait_static.offset[2] = team_ui_portrait_offset_y
-				self:_set_widget_dirty(widgets.portrait_static)
 			end
 
 			local widget = self:_widget_by_feature("player_name", "static")

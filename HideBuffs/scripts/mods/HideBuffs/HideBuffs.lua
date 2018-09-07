@@ -52,6 +52,31 @@ mod.on_setting_changed = function(setting_name)
 	if setting_name == mod.SETTING_NAMES.REPOSITION_WEAPON_SLOTS then
 		mod.reposition_weapon_slots = true
 	end
+
+	if pl.List({
+			mod.SETTING_NAMES.TEAM_UI_OFFSET_X,
+			mod.SETTING_NAMES.TEAM_UI_OFFSET_Y,
+			mod.SETTING_NAMES.TEAM_UI_FLOWS_HORIZONTALLY,
+			mod.SETTING_NAMES.TEAM_UI_SPACING,
+		}):contains(setting_name)
+	then
+		mod.realign_team_member_frames = true
+	end
+
+	if setting_name == mod.SETTING_NAMES.MINI_HUD_PRESET then
+		mod.recreate_player_unit_frame = true
+	end
+
+	if setting_name == mod.SETTING_NAMES.BUFFS_FLOW_VERTICALLY
+	or setting_name == mod.SETTING_NAMES.REVERSE_BUFF_DIRECTION then
+		mod.realign_buff_widgets = true
+		mod.reset_buff_widgets = true
+	end
+
+	if setting_name == mod.SETTING_NAMES.BUFFS_OFFSET_X
+	or setting_name == mod.SETTING_NAMES.BUFFS_OFFSET_Y then
+		mod.reset_buff_widgets = true
+	end
 end
 
 mod:hook(EquipmentUI, "update", function(func, self, ...)
@@ -191,30 +216,16 @@ end)
 
 mod:hook(BuffUI, "draw", function(func, self, dt)
 	mod:pcall(function()
-		local are_buffs_reversed = mod:get(mod.SETTING_NAMES.REVERSE_BUFF_DIRECTION)
-		if self._hb_mod_cached_are_buffs_reversed ~= are_buffs_reversed then
-			self._hb_mod_cached_are_buffs_reversed = are_buffs_reversed
+		if mod.realign_buff_widgets then
+			mod.realign_buff_widgets = false
 			self:_align_widgets()
+		end
+
+		if mod.reset_buff_widgets then
+			mod.reset_buff_widgets = false
 			self:_on_resolution_modified()
 		end
-		local are_buffs_vertical = mod:get(mod.SETTING_NAMES.BUFFS_FLOW_VERTICALLY)
-		if self._hb_mod_cached_are_buffs_vertical ~= are_buffs_vertical then
-			self._hb_mod_cached_are_buffs_vertical = are_buffs_vertical
-			self:_align_widgets()
-			self:_on_resolution_modified()
-		end
-		local buffs_offset_x = mod:get(mod.SETTING_NAMES.BUFFS_OFFSET_X)
-		if self._hb_mod_cached_buffs_offset_x ~= buffs_offset_x then
-			self._hb_mod_cached_buffs_offset_x = buffs_offset_x
-			self.ui_scenegraph.buff_pivot.position[1] = buffs_offset_x
-			self:_on_resolution_modified()
-		end
-		local buffs_offset_y = mod:get(mod.SETTING_NAMES.BUFFS_OFFSET_Y)
-		if self._hb_mod_cached_buffs_offset_y ~= buffs_offset_y then
-			self._hb_mod_cached_buffs_offset_y = buffs_offset_y
-			self.ui_scenegraph.buff_pivot.position[2] = buffs_offset_y
-			self:_on_resolution_modified()
-		end
+
 	end)
 	return func(self, dt)
 end)
@@ -445,6 +456,7 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 			end
 		end
 
+		-- changes to the non-player portraits UI
 		if self._mod_frame_index then
 			if not self._hb_mod_cached_character_portrait_size then
 				self._hb_mod_cached_character_portrait_size = table.clone(self._default_widgets.default_static.style.character_portrait.size)
@@ -498,27 +510,14 @@ end)
 
 --- Teammate UI update hook to catch when we need to realign teammate portraits.
 mod:hook(UnitFramesHandler, "update", function(func, self, ...)
-	-- keep everything cached to catch mod option changes between frames
-	local team_ui_offset_x = mod:get(mod.SETTING_NAMES.TEAM_UI_OFFSET_X)
-	local team_ui_offset_y = mod:get(mod.SETTING_NAMES.TEAM_UI_OFFSET_Y)
-	local team_ui_flows_horizontally = mod:get(mod.SETTING_NAMES.TEAM_UI_FLOWS_HORIZONTALLY)
-	local team_ui_spacing = mod:get(mod.SETTING_NAMES.TEAM_UI_SPACING)
+	if mod.realign_team_member_frames then
+		mod.realign_team_member_frames = false
 
-	if self._hb_mod_cached_team_ui_offset_x ~= team_ui_offset_x
-	or self._hb_mod_cached_team_ui_offset_y ~= team_ui_offset_y
-	or self._hb_mod_cached_team_ui_flows_horizontally ~= team_ui_flows_horizontally
-	or self._hb_mod_cached_team_ui_spacing ~= team_ui_spacing
-	then
-		self._hb_mod_cached_team_ui_offset_x = team_ui_offset_x
-		self._hb_mod_cached_team_ui_offset_y = team_ui_offset_y
-		self._hb_mod_cached_team_ui_flows_horizontally = team_ui_flows_horizontally
-		self._hb_mod_cached_team_ui_spacing = team_ui_spacing
 		self:_align_team_member_frames()
 	end
 
-	local mini_hud_preset = mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET)
-	if self._hb_mod_cached_mini_hud_preset ~= mini_hud_preset then
-		self._hb_mod_cached_mini_hud_preset = mini_hud_preset
+	if mod.recreate_player_unit_frame then
+		mod.recreate_player_unit_frame = false
 
 		local my_unit_frame = self._unit_frames[1]
 		my_unit_frame.widget:destroy()

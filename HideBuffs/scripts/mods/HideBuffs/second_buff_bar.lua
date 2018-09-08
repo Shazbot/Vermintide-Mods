@@ -17,6 +17,7 @@ mod:hook(BuffUI, "init", function(func, self, ingame_ui_context)
 		self.draw = function(...)return  mod.BuffUI_draw(...) end
 		self._update_pivot_alignment = function(...) return mod.BuffUI_update_pivot_alignment(...) end
 		self._align_widgets = function(...) return mod.BuffUI_align_widgets(...) end
+		self._remove_buff = function(...) return mod.BuffUI_remove_buff(...) end
 		return
 	end
 
@@ -26,6 +27,26 @@ mod:hook(BuffUI, "init", function(func, self, ingame_ui_context)
 		mod:hook(self, "destroy", function(...) mod.BuffUI_main_destroy(...) end)
 	end
 end)
+
+mod.BuffUI_remove_buff = function (self, index)
+	local buff_ui = rawget(_G, "buff_ui")
+	if not buff_ui then
+		return
+	end
+	if buff_ui.input_manager
+	and buff_ui.ui_scenegraph then
+		self.input_manager = buff_ui.input_manager
+		self.ui_renderer = buff_ui.ui_renderer
+	end
+
+	local active_buffs = self._active_buffs
+	local data = table.remove(active_buffs, index)
+	local widget = data.widget
+	local unused_buff_widgets = self._unused_buff_widgets
+
+	table.insert(unused_buff_widgets, #unused_buff_widgets + 1, widget)
+	UIRenderer.set_element_visible(self.ui_renderer, widget.element, false)
+end
 
 mod.BuffUI_main_set_visible = function(func, self, visible)
 	if mod.buff_ui then
@@ -91,6 +112,16 @@ mod.BuffUI_create_ui_elements = function(func, self)
 end
 
 mod.BuffUI_set_visible = function(self, visible)
+	local buff_ui = rawget(_G, "buff_ui")
+	if not buff_ui then
+		return
+	end
+	if buff_ui.input_manager
+	and buff_ui.ui_scenegraph then
+		self.input_manager = buff_ui.input_manager
+		self.ui_renderer = buff_ui.ui_renderer
+	end
+
 	self._is_visible = visible
 	local ui_renderer = self.ui_renderer
 
@@ -108,6 +139,16 @@ mod.BuffUI_draw = function (self, dt)
 
 	if not self._dirty then
 		return
+	end
+
+	local buff_ui = rawget(_G, "buff_ui")
+	if not buff_ui then
+		return
+	end
+	if buff_ui.input_manager
+	and buff_ui.ui_scenegraph then
+		self.input_manager = buff_ui.input_manager
+		self.ui_renderer = buff_ui.ui_renderer
 	end
 
 	local ui_renderer = self.ui_renderer
@@ -136,6 +177,16 @@ end
 mod.BuffUI_update = function (self, dt, t)
 	self.ui_scenegraph.buff_pivot.position[1] = mod:get(mod.SETTING_NAMES.SECOND_BUFF_BAR_OFFSET_X)
 	self.ui_scenegraph.buff_pivot.position[2] = mod:get(mod.SETTING_NAMES.SECOND_BUFF_BAR_OFFSET_Y)
+
+	local buff_ui = rawget(_G, "buff_ui")
+	if not buff_ui then
+		return
+	end
+	if buff_ui.input_manager
+	and buff_ui.ui_scenegraph then
+		self.input_manager = buff_ui.input_manager
+		self.ui_renderer = buff_ui.ui_renderer
+	end
 
 	local dirty = false
 	local gamepad_active = self.input_manager:is_device_active("gamepad")
@@ -227,3 +278,11 @@ mod.BuffUI_update_pivot_alignment = function (self, dt)
 
 	self:set_dirty()
 end
+
+mod:hook(UIRenderer, "destroy_bitmap", function(func, self, retained_id)
+	if not self.gui_retained then
+		return
+	end
+
+	pcall(func, self, retained_id)
+end)

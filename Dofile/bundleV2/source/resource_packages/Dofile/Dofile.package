@@ -1,0 +1,11 @@
+mod = [
+	"Dofile"
+]
+
+package = [
+	"resource_packages/Dofile/Dofile"
+]
+
+lua = [
+	"scripts/mods/Dofile/*"
+]

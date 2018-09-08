@@ -3,6 +3,7 @@ local mod = get_mod("TrueSoloQoL") -- luacheck: ignore get_mod
 mod.SETTING_NAMES = {
 	ASSASSIN_STINGER_FIX = "assassin_stinger_fix",
 	ASSASSIN_TEXT_WARNING = "assassin_text_warning",
+	DONT_RESPAWN_BOTS = "DONT_RESPAWN_BOTS",
 }
 
 mod.ASSASSIN_SOUND_OPTIONS = {
@@ -34,6 +35,13 @@ mod_data.options_widgets = {
 		["widget_type"] = "checkbox",
 		["text"] = mod:localize("assassin_text_warning"),
 		["tooltip"] = mod:localize("assassin_text_warning_tooltip"),
+		["default_value"] = false,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.DONT_RESPAWN_BOTS,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("DONT_RESPAWN_BOTS"),
+		["tooltip"] = mod:localize("DONT_RESPAWN_BOTS_T"),
 		["default_value"] = false,
 	},
 }

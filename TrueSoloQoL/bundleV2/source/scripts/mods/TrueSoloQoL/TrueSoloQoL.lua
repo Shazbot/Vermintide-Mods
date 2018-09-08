@@ -3,7 +3,8 @@ local mod = get_mod("TrueSoloQoL") -- luacheck: ignore get_mod
 -- luacheck: globals LevelTransitionHandler get_mod
 -- luacheck: globals ConflictDirector Breeds Managers WwiseWorld GameModeManager UnitFrameUI
 -- luacheck: globals TerrorEventBlueprints NetworkLookup fassert ScriptUnit TutorialUI
--- luacheck: globals PlayerHud AreaIndicatorUI script_data
+-- luacheck: globals PlayerHud AreaIndicatorUI script_data UISettings GenericStatusExtension
+-- luacheck: globals RespawnHandler
 
 local pl = require'pl.import_into'()
 
@@ -152,3 +153,26 @@ end)
 -- 	end
 -- 	return func(self, dt, t)
 -- end)
+
+mod:hook(RespawnHandler, "update", function(func, self, dt, t, player_statuses)
+	if mod:get(mod.SETTING_NAMES.DONT_RESPAWN_BOTS) then
+		for _, status in ipairs(player_statuses) do
+			local peer_id = status.peer_id
+			local local_player_id = status.local_player_id
+
+			if peer_id or local_player_id then
+				local player = Managers.player:player(peer_id, local_player_id)
+
+				if status.health_state == "dead"
+				and not status.ready_for_respawn
+				and status.respawn_timer
+				and status.respawn_timer < t
+				and player.bot_player
+				then
+					status.respawn_timer = t + 1
+				end
+			end
+		end
+	end
+	return func(self, dt, t, player_statuses)
+end)

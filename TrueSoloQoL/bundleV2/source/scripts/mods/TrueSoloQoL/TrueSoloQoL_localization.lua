@@ -26,4 +26,10 @@ return {
 	assassin_text_warning_tooltip = {
 		en = "Make a notification on assassin spawn."
 	},
+	DONT_RESPAWN_BOTS = {
+		en = "Bots Don't Respawn"
+	},
+	DONT_RESPAWN_BOTS_T = {
+		en = "Don't respawn the bots once they die."
+	},
 }

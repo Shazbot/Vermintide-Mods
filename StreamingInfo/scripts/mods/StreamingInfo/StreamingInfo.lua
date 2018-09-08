@@ -2,7 +2,8 @@ local mod = get_mod("StreamingInfo") -- luacheck: ignore get_mod
 
 -- luacheck: globals Localize WeaponTraits UIUtils DifficultyManager BackendUtils
 -- luacheck: globals DifficultySettings Managers ScriptUnit RESOLUTION_LOOKUP Vector3
--- luacheck: globals Gui World Color IngameUI
+-- luacheck: globals Gui World Color IngameUI GameModeManager EndScreenUI
+-- luacheck: globals EndScreenUI LevelEndView StateLoading
 
 local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
@@ -37,6 +38,8 @@ mod.append_traits = function(out, slot)
 	end
 end
 
+mod.talents_cached = ""
+
 mod.get_talents = function()
 	local local_player_unit =
 		Managers.player
@@ -50,9 +53,13 @@ mod.get_talents = function()
 			local career_name = career_extension:career_name()
 			local current_talents = talent_interface:get_talents(career_name)
 
-			return pl.List(current_talents):join(" ")
+			local talents = pl.List(current_talents):join(" ")
+			mod.talents_cached = talents
+			return talents
 		end
 	end
+
+	return mod.talents_cached
 end
 
 mod.get_streaming_info = function()
@@ -79,9 +86,12 @@ mod.get_streaming_info = function()
 			out:write("\n")
 		end
 
-		out:write("Talents: ")
-		out:write(mod.get_talents())
-		out:write("\n")
+		local talents = mod.get_talents()
+		if talents and talents ~= "" then
+			out:write("Talents: ")
+			out:write(talents)
+			out:write("\n")
+		end
 	end)
 	return out:value()
 end
@@ -106,9 +116,63 @@ end)
 mod.font = "gw_arial_16"
 mod.font_mtrl = "materials/fonts/" .. mod.font
 
-mod:hook(IngameUI, "update", function(func, self, ...)
+mod:hook_safe(StateLoading, "update", function(self, dt, t)
+	mod.draw_info(self)
+end)
+
+mod:hook_safe(LevelEndView, "update", function(self, dt, t)
+	mod.draw_info(self)
+end)
+
+mod:hook_safe(EndScreenUI, "draw", function(self, dt)
+	mod.draw_info(self)
+end)
+
+mod:hook_safe(GameModeManager, "server_update", function(self, dt, t)
+	if not self._game_mode then
+		return
+	end
+
+	if self._game_mode.lost_condition_timer or self._game_mode.level_complete_timer then
+		mod.draw_info(self)
+	end
+end)
+
+mod:hook_safe(IngameUI, "update", function(self, dt, t, disable_ingame_ui, end_of_level_ui)
+	local level_transition_handler = Managers.state.game_mode.level_transition_handler
+	local level_key = level_transition_handler:get_current_level_keys()
+	local is_in_inn = level_key == "inn_level"
+
+	local in_score_screen = end_of_level_ui ~= nil
+	local end_screen_active = self:end_screen_active()
+
+	local game_mode_manager = Managers.state.game_mode
+	local round_started = game_mode_manager:is_round_started()
+
+	if not (is_in_inn or in_score_screen or end_screen_active) then
+		if round_started then
+			return
+		end
+	end
+
+	mod.draw_info(self)
+end)
+
+mod.draw_info = function(owner)
+	local self = owner
+
+	if
+	not self.world
+	and not self._world
+	and not self.world_manager
+	and not self.world_manager:world("level_world") then
+		return
+	end
+
+	local world = self.world or self._world or self.world_manager:world("level_world")
+
 	if not self.gui then
-		self.gui = World.create_screen_gui(self.world, "material", "materials/fonts/gw_fonts", "immediate")
+		self.gui = World.create_screen_gui(world, "material", "materials/fonts/gw_fonts", "immediate")
 	end
 
 	local header_color = Color(
@@ -124,6 +188,7 @@ mod:hook(IngameUI, "update", function(func, self, ...)
 	local start_x = 10 + mod:get(mod.SETTING_NAMES.OFFSET_X)
 	local start_y = RESOLUTION_LOOKUP.res_h - 30  + mod:get(mod.SETTING_NAMES.OFFSET_Y)
 	local i = 0
+
 	mod:pcall(function()
 		pl.List(stringx.splitlines(mod.get_streaming_info()))
 			:foreach(function(line)
@@ -132,6 +197,4 @@ mod:hook(IngameUI, "update", function(func, self, ...)
 				i = i + 1
 		end)
     end)
-
-	return func(self, ...)
-end)
+end

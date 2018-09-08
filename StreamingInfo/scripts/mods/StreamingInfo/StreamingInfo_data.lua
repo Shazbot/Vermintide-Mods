@@ -46,7 +46,7 @@ mod.add_option(
 	"FONT_SIZE",
 	{
 		["widget_type"] = "numeric",
-		["range"] = {16, 40},
+		["range"] = {10, 40},
 		["default_value"] = 18,
 	}
 )

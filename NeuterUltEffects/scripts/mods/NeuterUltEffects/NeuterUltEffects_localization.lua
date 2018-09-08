@@ -13,11 +13,23 @@ local localization = {
 	wounded_tooltip = {
 		en = "Disable the grayscale filter when about to die."
 	},
-	knocked_down= {
+	knocked_down = {
 		en = "Disable Knocked Down Filter"
 	},
 	knocked_down_tooltip = {
 		en = "Disable the red screen filter when knocked down."
+	},
+	BLOOD_SPLATTER = {
+		en = "Disable Blood Splatters"
+	},
+	BLOOD_SPLATTER_T = {
+		en = "Disable blood splatters that cover the screen."
+	},
+	HEALING = {
+		en = "Disable Healing Filter"
+	},
+	HEALING_T = {
+		en = "Disable getting flashbanged when using healing supplies."
 	},
 }
 

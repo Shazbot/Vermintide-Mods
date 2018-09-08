@@ -3,6 +3,8 @@ local mod = get_mod("NeuterUltEffects") -- luacheck: ignore get_mod
 mod.SETTING_NAMES = {
     WOUNDED = "wounded",
     KNOCKED_DOWN = "knocked_down",
+    BLOOD_SPLATTER = "BLOOD_SPLATTER",
+    HEALING = "HEALING",
 }
 
 local mod_data = {
@@ -23,6 +25,20 @@ mod_data.options_widgets = {
 		["widget_type"] = "checkbox",
 		["text"] = mod:localize("knocked_down"),
 		["tooltip"] = mod:localize("knocked_down_tooltip"),
+		["default_value"] = false,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.BLOOD_SPLATTER,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("BLOOD_SPLATTER"),
+		["tooltip"] = mod:localize("BLOOD_SPLATTER_T"),
+		["default_value"] = false,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.HEALING,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("HEALING"),
+		["tooltip"] = mod:localize("HEALING_T"),
 		["default_value"] = false,
 	},
 }

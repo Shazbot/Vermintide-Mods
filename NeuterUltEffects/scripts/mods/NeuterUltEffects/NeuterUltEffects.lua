@@ -4,6 +4,20 @@ local mod = get_mod("NeuterUltEffects") -- luacheck: ignore get_mod
 
 local pl = require'pl.import_into'()
 
+--- Disable blood splatters.
+mod:hook(World, "create_particles", function(func, world, particle_name, ...)
+	if mod:get(mod.SETTING_NAMES.BLOOD_SPLATTER)
+	and (
+			particle_name == "fx/screenspace_blood_drops"
+			or particle_name == "fx/screenspace_blood_drops_heavy"
+		)
+	then
+		return
+	end
+
+	return func(world, particle_name, ...)
+end)
+
 --- Skip huntsman fov malarkey.
 mod:hook(BuffFunctionTemplates.functions, "apply_huntsman_activated_ability", function(func, ...)
 	if mod:get(mod.SETTING_NAMES["HUNTSMAN_VISUAL"]) then
@@ -37,6 +51,11 @@ mod:hook(StateInGameRunning, "update_mood", function (func, ...)
 	if mod:get(mod.SETTING_NAMES.KNOCKED_DOWN) then
 		MOOD_BLACKBOARD["knocked_down"] = false
 	end
+
+	if mod:get(mod.SETTING_NAMES.HEALING) then
+		MOOD_BLACKBOARD["heal_medikit"] = false
+	end
+
 	return func(...)
 end)
 

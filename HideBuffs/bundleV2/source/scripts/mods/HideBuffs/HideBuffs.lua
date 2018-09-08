@@ -216,16 +216,30 @@ end)
 
 mod:hook(BuffUI, "draw", function(func, self, dt)
 	mod:pcall(function()
+		if not self._hb_mod_first_frame_done then
+			self._hb_mod_first_frame_done = true
+
+			mod.realign_buff_widgets = true
+			mod.reset_buff_widgets = true
+		end
+
 		if mod.realign_buff_widgets then
 			mod.realign_buff_widgets = false
 			self:_align_widgets()
+		end
+
+		if self.ui_scenegraph.buff_pivot.position[1] ~= mod:get(mod.SETTING_NAMES.BUFFS_OFFSET_X)
+		or self.ui_scenegraph.buff_pivot.position[2] ~= mod:get(mod.SETTING_NAMES.BUFFS_OFFSET_Y)
+		then
+			self.ui_scenegraph.buff_pivot.position[1] = mod:get(mod.SETTING_NAMES.BUFFS_OFFSET_X)
+			self.ui_scenegraph.buff_pivot.position[2] = mod:get(mod.SETTING_NAMES.BUFFS_OFFSET_Y)
+			mod.reset_buff_widgets = true
 		end
 
 		if mod.reset_buff_widgets then
 			mod.reset_buff_widgets = false
 			self:_on_resolution_modified()
 		end
-
 	end)
 	return func(self, dt)
 end)
@@ -510,6 +524,13 @@ end)
 
 --- Teammate UI update hook to catch when we need to realign teammate portraits.
 mod:hook(UnitFramesHandler, "update", function(func, self, ...)
+	if not self._hb_mod_first_frame_done then
+		self._hb_mod_first_frame_done = true
+
+		mod.realign_team_member_frames = true
+		mod.recreate_player_unit_frame = true
+	end
+
 	if mod.realign_team_member_frames then
 		mod.realign_team_member_frames = false
 

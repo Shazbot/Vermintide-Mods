@@ -42,9 +42,7 @@ mod:hook(BuffUI, "_add_buff", function (func, self, buff, ...)
 
 	if mod:get(mod.SETTING_NAMES.SECOND_BUFF_BAR) then
 		local is_priority = mod.priority_buffs:contains(buff.buff_type)
-		if is_priority and self ~= mod.buff_ui then
-			return false
-		elseif not is_priority and self == mod.buff_ui then
+		if is_priority then
 			return false
 		end
 	end

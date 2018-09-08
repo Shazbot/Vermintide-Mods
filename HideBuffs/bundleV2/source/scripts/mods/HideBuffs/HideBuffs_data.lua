@@ -35,7 +35,6 @@ mod.SETTING_NAMES = {
 	CHAT_OFFSET_Y = "CHAT_OFFSET_Y",
 	HIDE_WEAPON_SLOTS = "HIDE_WEAPON_SLOTS",
 	REPOSITION_WEAPON_SLOTS = "REPOSITION_WEAPON_SLOTS",
-	ITEM_SLOTS_GROUP = "ITEM_SLOTS_GROUP",
 	MINI_HUD_PRESET = "MINI_HUD_PRESET",
 	TEAM_UI_PORTRAIT_SCALE = "TEAM_UI_PORTRAIT_SCALE",
 	TEAM_UI_PORTRAIT_OFFSET_X = "TEAM_UI_PORTRAIT_OFFSET_X",
@@ -45,6 +44,9 @@ mod.SETTING_NAMES = {
 	SECOND_BUFF_BAR = "SECOND_BUFF_BAR",
 	SECOND_BUFF_BAR_OFFSET_X = "SECOND_BUFF_BAR_OFFSET_X",
 	SECOND_BUFF_BAR_OFFSET_Y = "SECOND_BUFF_BAR_OFFSET_Y",
+	PLAYER_UI_GROUP = "PLAYER_UI_GROUP",
+	PLAYER_UI_OFFSET_X = "PLAYER_UI_OFFSET_X",
+	PLAYER_UI_OFFSET_Y = "PLAYER_UI_OFFSET_Y",
 }
 
 -- Everything here is optional. You can remove unused parts.
@@ -119,11 +121,29 @@ mod_data.options_widgets = {
 		["default_value"] = false,
 	},
 	{
-		["setting_name"] = mod.SETTING_NAMES.ITEM_SLOTS_GROUP,
+		["setting_name"] = mod.SETTING_NAMES.PLAYER_UI_GROUP,
 		["widget_type"] = "group",
-		["text"] = mod:localize("ITEM_SLOTS_GROUP"),
-		["tooltip"] = mod:localize("ITEM_SLOTS_GROUP_T"),
+		["text"] = mod:localize("PLAYER_UI_GROUP"),
+		["tooltip"] = mod:localize("PLAYER_UI_GROUP_T"),
 		["sub_widgets"] = {
+			{
+				["setting_name"] = mod.SETTING_NAMES.PLAYER_UI_OFFSET_X,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("PLAYER_UI_OFFSET_X"),
+				["tooltip"] = mod:localize("PLAYER_UI_OFFSET_X_T"),
+				["range"] = {-2500, 2500},
+				["unit_text"] = "px",
+			    ["default_value"] = 0,
+			},
+			{
+				["setting_name"] = mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("PLAYER_UI_OFFSET_Y"),
+				["tooltip"] = mod:localize("PLAYER_UI_OFFSET_Y_T"),
+				["range"] = {-2500, 2500},
+				["unit_text"] = "px",
+			    ["default_value"] = 0,
+			},
 			{
 				["setting_name"] = mod.SETTING_NAMES.HIDE_WEAPON_SLOTS,
 				["widget_type"] = "checkbox",

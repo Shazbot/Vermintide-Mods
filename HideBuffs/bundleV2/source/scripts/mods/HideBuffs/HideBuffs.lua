@@ -278,6 +278,9 @@ end)
 
 mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 	mod:pcall(function()
+		self.ui_scenegraph.pivot.position[1] = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
+		self.ui_scenegraph.pivot.position[2] = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
+
 		if (not self._mod_frame_index) and mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET) then
 			self._ability_widgets.ability_dynamic.element.passes[1].content_change_function = function (content, style)
 				if not content.uvs then
@@ -352,13 +355,13 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 		mod:pcall(function()
 			self._static_widgets[1].content.texture_id = "console_hp_bar_frame"
 			self._static_widgets[1].style.texture_id.size = { 576+10, 36 }
-			self._static_widgets[1].offset = { 20, 20, 0 }
+			self._static_widgets[1].offset[1] = 20 + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
+			self._static_widgets[1].offset[2] = 20 + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
+			self._static_widgets[1].offset[3] = 0
 
 			self._static_widgets[2].style.texture_id.size = { 576-10, 36 }
-			self._static_widgets[2].offset[1] = -50
-			self._static_widgets[2].offset[2] = 20
-
-			self.ui_scenegraph.slot.local_position[2] = 44+15
+			self._static_widgets[2].offset[1] = -50 + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
+			self._static_widgets[2].offset[2] = 20 + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
 		end)
 
 		if not self._hb_mod_widget then
@@ -366,8 +369,11 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 		end
 		mod:pcall(function()
 			self._hb_mod_widget.style.hp_bar_rect.size = { 576-10, 20 }
-			self._hb_mod_widget.offset[1] = -50
-			self._hb_mod_widget.offset[2] = 20
+			self._hb_mod_widget.offset[1] = -50 + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
+			self._hb_mod_widget.offset[2] = 20 + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
+
+			self.ui_scenegraph.slot.position[1] = 149 + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
+			self.ui_scenegraph.slot.position[2] = 44 + 15 + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
 		end)
 
 		local ui_renderer = self.ui_renderer
@@ -402,6 +408,9 @@ mod:hook(AbilityUI, "draw", function (func, self, dt)
 		end
 
 		mod:pcall(function()
+			self.ui_scenegraph.ability_root.position[1] = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
+			self.ui_scenegraph.ability_root.position[2] = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
+
 			local skull_offsets = { 0, -15 }
 			self._widgets[1].style.ability_effect_left.offset[1] = -(576+10)/2 - 50
 			self._widgets[1].style.ability_effect_left.horizontal_alignment = "center"

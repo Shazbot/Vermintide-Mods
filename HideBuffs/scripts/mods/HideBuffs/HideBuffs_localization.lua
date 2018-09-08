@@ -194,12 +194,6 @@ return {
 	CHAT_OFFSET_Y_T = {
 		en = "Optionally offset on the y axis."
 	},
-	ITEM_SLOTS_GROUP = {
-		en = "Player UI Tweaks"
-	},
-	ITEM_SLOTS_GROUP_T = {
-		en = "Tweaks related to the player UI on the bottom of the screen."
-	},
 	HIDE_WEAPON_SLOTS = {
 		en = "Hide Weapon Slots"
 	},
@@ -250,7 +244,6 @@ return {
 	TEAM_UI_NAME_OFFSET_Y_T = {
 		en = "Optionally offset the player name on the y axis."
 	},
-
 	SECOND_BUFF_BAR = {
 		en = "Priority Buff Bar"
 	},
@@ -269,5 +262,23 @@ return {
 	},
 	SECOND_BUFF_BAR_OFFSET_Y_T = {
 		en = "Optionally offset the second buff bar on the y axis."
+	},
+	PLAYER_UI_GROUP = {
+		en = "Player UI Tweaks"
+	},
+	PLAYER_UI_GROUP_T = {
+		en = "Tweaks related to the player UI on the bottom of the screen."
+	},
+	PLAYER_UI_OFFSET_X = {
+		en = "X Offset"
+	},
+	PLAYER_UI_OFFSET_X_T = {
+		en = "Optionally offset the Player UI on the x axis."
+	},
+	PLAYER_UI_OFFSET_Y = {
+		en = "Y Offset"
+	},
+	PLAYER_UI_OFFSET_Y_T = {
+		en = "Optionally offset the Player UI on the y axis."
 	},
 }

@@ -4,6 +4,7 @@ local mod = get_mod("HideBuffs") -- luacheck: ignore get_mod
 
 mod:dofile("scripts/mods/HideBuffs/PriorityBuffUI")
 
+-- using this the second buff bar keeps working when reloading mods, not needed normally
 mod.persistent_storage = mod:persistent_table("persistent_storage")
 
 mod:hook(BuffUI, "init", function(func, self, ingame_ui_context)

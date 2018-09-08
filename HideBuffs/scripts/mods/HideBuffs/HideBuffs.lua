@@ -276,42 +276,44 @@ end)
 
 mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 	mod:pcall(function()
-		self.ui_scenegraph.pivot.position[1] = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
-		self.ui_scenegraph.pivot.position[2] = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
+		if not self._mod_frame_index then
+			self.ui_scenegraph.pivot.position[1] = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
+			self.ui_scenegraph.pivot.position[2] = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
 
-		if (not self._mod_frame_index) and mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET) then
-			self._ability_widgets.ability_dynamic.element.passes[1].content_change_function = function (content, style)
-				if not content.uvs then
+			if mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET) then
+				self._ability_widgets.ability_dynamic.element.passes[1].content_change_function = function (content, style)
+					if not content.uvs then
+						local ability_progress = content.bar_value
+						local size = style.texture_size
+						local offset = style.offset
+						offset[2] = -size[2] + size[2] * ability_progress
+						return
+					end
 					local ability_progress = content.bar_value
-					local size = style.texture_size
-					local offset = style.offset
-					offset[2] = -size[2] + size[2] * ability_progress
-					return
+					local size = style.size
+					local uvs = content.uvs
+					local bar_length = 448+20+30+10+7
+					uvs[2][2] = ability_progress
+					size[1] = bar_length * ability_progress
 				end
-				local ability_progress = content.bar_value
-				local size = style.size
-				local uvs = content.uvs
-				local bar_length = 448+20+30+10+7
-				uvs[2][2] = ability_progress
-				size[1] = bar_length * ability_progress
+
+				local ability_dynamic = self._ability_widgets.ability_dynamic
+				if ability_dynamic.style.ability_bar.size then
+
+					local ability_progress = ability_dynamic.content.ability_bar.bar_value
+					local bar_length = 448+20+30+10+7
+					local size_x = bar_length * ability_progress
+
+					-- ability_dynamic.style.ability_bar.size[2] = 7
+					ability_dynamic.style.ability_bar.size[2] = 9
+					-- ability_dynamic.offset[1] = -30-2 + bar_length/2 - size_x/2
+					ability_dynamic.offset[1] = -30-2 --+ bar_length/2 - size_x/2
+					-- ability_dynamic.offset[2] = 20-1-2-1
+					ability_dynamic.offset[2] = 20-1-2-2
+					ability_dynamic.offset[3] = 50
+				end
+				self._health_widgets.health_dynamic.style.grimoire_debuff_divider.offset[3] = 200
 			end
-
-			local ability_dynamic = self._ability_widgets.ability_dynamic
-			if ability_dynamic.style.ability_bar.size then
-
-				local ability_progress = ability_dynamic.content.ability_bar.bar_value
-				local bar_length = 448+20+30+10+7
-				local size_x = bar_length * ability_progress
-
-				-- ability_dynamic.style.ability_bar.size[2] = 7
-				ability_dynamic.style.ability_bar.size[2] = 9
-				-- ability_dynamic.offset[1] = -30-2 + bar_length/2 - size_x/2
-				ability_dynamic.offset[1] = -30-2 --+ bar_length/2 - size_x/2
-				-- ability_dynamic.offset[2] = 20-1-2-1
-				ability_dynamic.offset[2] = 20-1-2-2
-				ability_dynamic.offset[3] = 50
-			end
-			self._health_widgets.health_dynamic.style.grimoire_debuff_divider.offset[3] = 200
 		end
 	end)
 	return func(self, dt)

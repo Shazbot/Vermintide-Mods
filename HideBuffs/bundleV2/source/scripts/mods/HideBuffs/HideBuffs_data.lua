@@ -42,6 +42,9 @@ mod.SETTING_NAMES = {
 	TEAM_UI_PORTRAIT_OFFSET_Y = "TEAM_UI_PORTRAIT_OFFSET_Y",
 	TEAM_UI_NAME_OFFSET_X = "TEAM_UI_NAME_OFFSET_X",
 	TEAM_UI_NAME_OFFSET_Y = "TEAM_UI_NAME_OFFSET_Y",
+	SECOND_BUFF_BAR = "SECOND_BUFF_BAR",
+	SECOND_BUFF_BAR_OFFSET_X = "SECOND_BUFF_BAR_OFFSET_X",
+	SECOND_BUFF_BAR_OFFSET_Y = "SECOND_BUFF_BAR_OFFSET_Y",
 }
 
 -- Everything here is optional. You can remove unused parts.
@@ -49,6 +52,7 @@ local mod_data = {
 	name = "UI Tweaks",
 	description = mod:localize("mod_description"),
 	is_togglable = true,
+	allow_rehooking = true,
 }
 mod_data.options_widgets = {
 	{
@@ -320,6 +324,33 @@ mod_data.options_widgets = {
 				["widget_type"] = "numeric",
 				["text"] = mod:localize("BUFFS_OFFSET_Y"),
 				["tooltip"] = mod:localize("BUFFS_OFFSET_Y_T"),
+				["range"] = {-2500, 2500},
+				["unit_text"] = "px",
+			    ["default_value"] = 0,
+			},
+		},
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.SECOND_BUFF_BAR,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("SECOND_BUFF_BAR"),
+		["tooltip"] = mod:localize("SECOND_BUFF_BAR_T"),
+		["default_value"] = false,
+		["sub_widgets"] = {
+			{
+				["setting_name"] = mod.SETTING_NAMES.SECOND_BUFF_BAR_OFFSET_X,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("SECOND_BUFF_BAR_OFFSET_X"),
+				["tooltip"] = mod:localize("SECOND_BUFF_BAR_OFFSET_X_T"),
+				["range"] = {-2500, 2500},
+				["unit_text"] = "px",
+			    ["default_value"] = 0,
+			},
+			{
+				["setting_name"] = mod.SETTING_NAMES.SECOND_BUFF_BAR_OFFSET_Y,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("SECOND_BUFF_BAR_OFFSET_Y"),
+				["tooltip"] = mod:localize("SECOND_BUFF_BAR_OFFSET_Y_T"),
 				["range"] = {-2500, 2500},
 				["unit_text"] = "px",
 			    ["default_value"] = 0,

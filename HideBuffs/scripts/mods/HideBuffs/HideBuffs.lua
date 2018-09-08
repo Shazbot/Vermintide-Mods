@@ -21,9 +21,30 @@ mod.lookup = {
 	mod.SETTING_NAMES.KERILLIAN_MAIDENGUARD_PASSIVE_STAMINA_REGEN_BUFF,
 }
 
+mod.priority_buffs = pl.List{
+	"victor_bountyhunter_passive_crit_buff",
+	"traits_melee_attack_speed_on_crit_proc",
+	"ranged_power_vs_frenzy",
+	"ranged_power_vs_large",
+	"ranged_power_vs_armored",
+	"ranged_power_vs_unarmored",
+	"consecutive_shot_buff",
+	"victor_bountyhunter_passive_crit_cooldown",
+	-- "grimoire_health_debuff",
+}
+
 mod:hook(BuffUI, "_add_buff", function (func, self, buff, ...)
 	for buff_name, setting_name in pairs( mod.lookup ) do
 		if buff.buff_type == buff_name and mod:get(setting_name) then
+			return false
+		end
+	end
+
+	if mod:get(mod.SETTING_NAMES.SECOND_BUFF_BAR) then
+		local is_priority = mod.priority_buffs:contains(buff.buff_type)
+		if is_priority and self ~= mod.buff_ui then
+			return false
+		elseif not is_priority and self == mod.buff_ui then
 			return false
 		end
 	end
@@ -76,6 +97,12 @@ mod.on_setting_changed = function(setting_name)
 	if setting_name == mod.SETTING_NAMES.BUFFS_OFFSET_X
 	or setting_name == mod.SETTING_NAMES.BUFFS_OFFSET_Y then
 		mod.reset_buff_widgets = true
+	end
+
+	if setting_name == mod.SETTING_NAMES.SECOND_BUFF_BAR then
+		if mod.buff_ui then
+			mod.buff_ui:set_visible(mod:get(mod.SETTING_NAMES.SECOND_BUFF_BAR))
+		end
 	end
 end
 
@@ -270,9 +297,17 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 
 			local ability_dynamic = self._ability_widgets.ability_dynamic
 			if ability_dynamic.style.ability_bar.size then
-				ability_dynamic.style.ability_bar.size[2] = 5
-				ability_dynamic.offset[1] = -30-2
-				ability_dynamic.offset[2] = 20-1-2
+
+				local ability_progress = ability_dynamic.content.ability_bar.bar_value
+				local bar_length = 448+20+30+10+7
+				local size_x = bar_length * ability_progress
+
+				-- ability_dynamic.style.ability_bar.size[2] = 7
+				ability_dynamic.style.ability_bar.size[2] = 9
+				-- ability_dynamic.offset[1] = -30-2 + bar_length/2 - size_x/2
+				ability_dynamic.offset[1] = -30-2 --+ bar_length/2 - size_x/2
+				-- ability_dynamic.offset[2] = 20-1-2-1
+				ability_dynamic.offset[2] = 20-1-2-2
 				ability_dynamic.offset[3] = 50
 			end
 			self._health_widgets.health_dynamic.style.grimoire_debuff_divider.offset[3] = 200
@@ -628,3 +663,4 @@ mod:hook(MissionObjectiveUI, "draw", function(func, self, dt)
 end)
 
 mod:dofile("scripts/mods/HideBuffs/anim_speedup")
+mod:dofile("scripts/mods/HideBuffs/second_buff_bar")

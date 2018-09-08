@@ -250,4 +250,24 @@ return {
 	TEAM_UI_NAME_OFFSET_Y_T = {
 		en = "Optionally offset the player name on the y axis."
 	},
+
+	SECOND_BUFF_BAR = {
+		en = "Priority Buff Bar"
+	},
+	SECOND_BUFF_BAR_T = {
+		en = "Add a second buff bar for priority buffs."
+			.."\nThose are BH crit, Swift Slaying, Barrage, Hunter."
+	},
+	SECOND_BUFF_BAR_OFFSET_X = {
+		en = "Second Buff Bar X Offset"
+	},
+	SECOND_BUFF_BAR_OFFSET_X_T = {
+		en = "Optionally offset the second buff bar on the x axis."
+	},
+	SECOND_BUFF_BAR_OFFSET_Y = {
+		en = "Second Buff Bar Y Offset"
+	},
+	SECOND_BUFF_BAR_OFFSET_Y_T = {
+		en = "Optionally offset the second buff bar on the y axis."
+	},
 }

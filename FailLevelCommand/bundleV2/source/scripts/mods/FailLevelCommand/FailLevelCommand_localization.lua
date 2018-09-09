@@ -1,6 +1,6 @@
 return {
 	mod_description = {
-		en = "Lose/Win the level with /command or a hotkey."
+		en = "Lose/Win/Restart the level with /command or a hotkey."
 	},
 	fail_level_command_description = {
 		en = "Lose the level."
@@ -19,5 +19,14 @@ return {
 	},
 	LOSE_HOTKEY_T = {
 		en = "Lose the level hotkey."
+	},
+	RESTART_HOTKEY = {
+		en = "Restart Level Hotkey"
+	},
+	RESTART_HOTKEY_T = {
+		en = "Restart the level hotkey."
+	},
+	restart_level_command_description = {
+		en = "Restart the level."
 	},
 }

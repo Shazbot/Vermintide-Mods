@@ -155,24 +155,38 @@ end)
 -- end)
 
 mod:hook(RespawnHandler, "update", function(func, self, dt, t, player_statuses)
-	if mod:get(mod.SETTING_NAMES.DONT_RESPAWN_BOTS) then
-		for _, status in ipairs(player_statuses) do
-			local peer_id = status.peer_id
-			local local_player_id = status.local_player_id
+	mod:pcall(function()
+		if mod:get(mod.SETTING_NAMES.AUTO_KILL_BOTS) then
+			local game_mode_manager = Managers.state.game_mode
+			local round_started = game_mode_manager:is_round_started()
 
-			if peer_id or local_player_id then
-				local player = Managers.player:player(peer_id, local_player_id)
-
-				if status.health_state == "dead"
-				and not status.ready_for_respawn
-				and status.respawn_timer
-				and status.respawn_timer < t
-				and player.bot_player
-				then
-					status.respawn_timer = t + 1
+			if not round_started then
+				local killbots_mod = get_mod("Killbots")
+				if killbots_mod then
+					killbots_mod:kill_bots()
 				end
 			end
 		end
-	end
+
+		if mod:get(mod.SETTING_NAMES.DONT_RESPAWN_BOTS) then
+			for _, status in ipairs(player_statuses) do
+				local peer_id = status.peer_id
+				local local_player_id = status.local_player_id
+
+				if peer_id or local_player_id then
+					local player = Managers.player:player(peer_id, local_player_id)
+
+					if status.health_state == "dead"
+					and not status.ready_for_respawn
+					and status.respawn_timer
+					and status.respawn_timer < t
+					and player.bot_player
+					then
+						status.respawn_timer = t + 1
+					end
+				end
+			end
+		end
+	end)
 	return func(self, dt, t, player_statuses)
 end)

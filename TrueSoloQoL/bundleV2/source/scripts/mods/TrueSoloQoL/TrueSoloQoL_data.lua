@@ -4,6 +4,7 @@ mod.SETTING_NAMES = {
 	ASSASSIN_STINGER_FIX = "assassin_stinger_fix",
 	ASSASSIN_TEXT_WARNING = "assassin_text_warning",
 	DONT_RESPAWN_BOTS = "DONT_RESPAWN_BOTS",
+	AUTO_KILL_BOTS = "AUTO_KILL_BOTS",
 }
 
 mod.ASSASSIN_SOUND_OPTIONS = {
@@ -42,6 +43,13 @@ mod_data.options_widgets = {
 		["widget_type"] = "checkbox",
 		["text"] = mod:localize("DONT_RESPAWN_BOTS"),
 		["tooltip"] = mod:localize("DONT_RESPAWN_BOTS_T"),
+		["default_value"] = false,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.AUTO_KILL_BOTS,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("AUTO_KILL_BOTS"),
+		["tooltip"] = mod:localize("AUTO_KILL_BOTS_T"),
 		["default_value"] = false,
 	},
 }

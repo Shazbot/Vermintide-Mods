@@ -32,4 +32,10 @@ return {
 	DONT_RESPAWN_BOTS_T = {
 		en = "Don't respawn the bots once they die."
 	},
+	AUTO_KILL_BOTS = {
+		en = "Auto Kill Bots"
+	},
+	AUTO_KILL_BOTS_T = {
+		en = "Kill the bots on map start."
+	},
 }

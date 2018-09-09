@@ -1,7 +1,7 @@
 local mod = get_mod("PositiveReinforcementTweaks") -- luacheck: ignore get_mod
 
 -- luacheck: globals UISceneGraph UILayer Colors table PositiveReinforcementUI UISettings
--- luacheck: globals UIRenderer
+-- luacheck: globals UIRenderer UIAnimation
 
 local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
@@ -58,7 +58,7 @@ local event_amount_count_text_style = {
 	vertical_alignment = "center",
 	dynamic_font = true,
 	font_type = "hell_shark",
-	text_color = Colors.get_color_table_with_alpha("white", 255),
+	text_color = Colors.get_color_table_with_alpha("cheeseburger", 255),
 	size = {
 		30,
 		38
@@ -70,8 +70,14 @@ local event_amount_count_text_style = {
 	}
 }
 
-mod:hook_safe(PositiveReinforcementUI, "add_event", function (self, hash, is_local_player, color_from, event_type, ...) -- luacheck: ignore hash is_local_player color_from ...
+mod.event_colors = {
+	fade_to = Colors.get_table("white"),
+	default = Colors.get_table("cheeseburger"),
+	kill = Colors.get_table("red"),
+	personal = Colors.get_table("dodger_blue")
+}
 
+mod:hook_safe(PositiveReinforcementUI, "add_event", function (self, hash, is_local_player, color_from, event_type, ...) -- luacheck: ignore hash is_local_player color_from ...
 	local events = pl.List(self._positive_enforcement_events)
 
 	-- newly created event
@@ -126,6 +132,19 @@ mod:hook_safe(PositiveReinforcementUI, "add_event", function (self, hash, is_loc
 			}
 	end
 
+	local color_to = mod.event_colors.fade_to
+
+	if not new_event._animations then
+		new_event._animations = {}
+	end
+	new_event._animations["text_color_fade_1_"] = UIAnimation.init(UIAnimation.linear_scale, widget.style["event_amount_count"].text_color, 2, color_from[2], color_to[2], 0.8)
+	new_event._animations["text_color_fade_2_"] = UIAnimation.init(UIAnimation.linear_scale, widget.style["event_amount_count"].text_color, 3, color_from[3], color_to[3], 0.8)
+	new_event._animations["text_color_fade_3_"] = UIAnimation.init(UIAnimation.linear_scale, widget.style["event_amount_count"].text_color, 4, color_from[4], color_to[4], 0.8)
+	new_event._animations["text_pulse_"] = UIAnimation.init(
+			UIAnimation.linear_scale, widget.style["event_amount_count"], "font_size", 25, 35, 0.2,
+			UIAnimation.linear_scale, widget.style["event_amount_count"], "font_size", 35, 25, 0.3
+		)
+
 	local content = widget.content
 	new_event.event_amount_count = old_count + 1
 	content.event_amount_count = new_event.event_amount_count -- keep a copy in content for the content_check_function
@@ -174,7 +193,7 @@ mod:hook(UIRenderer, "draw_widget", function(func, ui_renderer, widget)
 end)
 mod:hook_disable(UIRenderer, "draw_widget")
 
-mod:hook(PositiveReinforcementUI, "update", function (func, self, ...)
+mod:hook(PositiveReinforcementUI, "update", function (func, self, dt, t)
 	if mod.init_new_scenegraph  then
 		mod.init_new_scenegraph = false
 		self.ui_scenegraph = UISceneGraph.init_scenegraph(mod.get_reinforcement_scenegraph_definition())
@@ -195,11 +214,24 @@ mod:hook(PositiveReinforcementUI, "update", function (func, self, ...)
 		position[2] = position[2] + mod:get(mod.SETTING_NAMES.OFFSET_Y)
 	end
 
+	local events = self._positive_enforcement_events
+	for _, event in ipairs(events) do
+		if event._animations then
+			for name, animation in pairs( event._animations ) do
+				if not UIAnimation.completed(animation) then
+					UIAnimation.update(animation, dt)
+				else
+					event._animations[name] = nil
+				end
+			end
+		end
+	end
+
 	positive_enforcement_events = self._positive_enforcement_events
 	if mod:get(mod.SETTING_NAMES.REVERSE_FLOW) then
 		mod:hook_enable(UIRenderer, "draw_widget")
 	end
-	func(self, ...)
+	func(self, dt, t)
 	mod:hook_disable(UIRenderer, "draw_widget")
 end)
 

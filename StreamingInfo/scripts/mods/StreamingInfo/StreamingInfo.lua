@@ -3,7 +3,7 @@ local mod = get_mod("StreamingInfo") -- luacheck: ignore get_mod
 -- luacheck: globals Localize WeaponTraits UIUtils DifficultyManager BackendUtils
 -- luacheck: globals DifficultySettings Managers ScriptUnit RESOLUTION_LOOKUP Vector3
 -- luacheck: globals Gui World Color IngameUI GameModeManager EndScreenUI
--- luacheck: globals EndScreenUI LevelEndView StateLoading
+-- luacheck: globals EndScreenUI LevelEndView StateLoading Application Vector2
 
 local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
@@ -42,9 +42,9 @@ mod.talents_cached = ""
 
 mod.get_talents = function()
 	local local_player_unit =
-		Managers.player
-		and Managers.player:local_player()
-		and Managers.player:local_player().player_unit
+	Managers.player
+	and Managers.player:local_player()
+	and Managers.player:local_player().player_unit
 
 	if local_player_unit then
 		local career_extension = ScriptUnit.extension(local_player_unit, "career_system")
@@ -116,19 +116,19 @@ end)
 mod.font = "gw_arial_16"
 mod.font_mtrl = "materials/fonts/" .. mod.font
 
-mod:hook_safe(StateLoading, "update", function(self, dt, t)
+mod:hook_safe(StateLoading, "update", function(self)
 	mod.draw_info(self)
 end)
 
-mod:hook_safe(LevelEndView, "update", function(self, dt, t)
+mod:hook_safe(LevelEndView, "update", function(self)
 	mod.draw_info(self)
 end)
 
-mod:hook_safe(EndScreenUI, "draw", function(self, dt)
+mod:hook_safe(EndScreenUI, "draw", function(self)
 	mod.draw_info(self)
 end)
 
-mod:hook_safe(GameModeManager, "server_update", function(self, dt, t)
+mod:hook_safe(GameModeManager, "server_update", function(self)
 	if not self._game_mode then
 		return
 	end
@@ -138,7 +138,7 @@ mod:hook_safe(GameModeManager, "server_update", function(self, dt, t)
 	end
 end)
 
-mod:hook_safe(IngameUI, "update", function(self, dt, t, disable_ingame_ui, end_of_level_ui)
+mod:hook_safe(IngameUI, "update", function(self, dt, t, disable_ingame_ui, end_of_level_ui) -- luacheck: no unused
 	local level_transition_handler = Managers.state.game_mode.level_transition_handler
 	local level_key = level_transition_handler:get_current_level_keys()
 	local is_in_inn = level_key == "inn_level"
@@ -180,7 +180,7 @@ mod.draw_info = function(owner)
 		mod:get(mod.SETTING_NAMES.RED),
 		mod:get(mod.SETTING_NAMES.GREEN),
 		mod:get(mod.SETTING_NAMES.BLUE)
-	)
+		)
 
 	local font_size = mod:get(mod.SETTING_NAMES.FONT_SIZE)
 	local vertical_spacing = mod:get(mod.SETTING_NAMES.SPACING)
@@ -190,11 +190,25 @@ mod.draw_info = function(owner)
 	local i = 0
 
 	mod:pcall(function()
-		pl.List(stringx.splitlines(mod.get_streaming_info()))
-			:foreach(function(line)
-				local pos = Vector3(start_x, start_y-vertical_spacing*i, 200)
-				Gui.text(self.gui, line, mod.font_mtrl, font_size, mod.font, pos, header_color)
-				i = i + 1
-		end)
-    end)
+		local current_frame = Application.time_since_launch()
+		if mod.drew_rect_at_frame ~= current_frame then
+			mod.drew_rect_at_frame = current_frame
+			local padding_x = font_size > 19 and 10+(font_size-19)*25 or 0
+			local padding_y = font_size > 30 and (font_size-30)*0.8 or 0
+			Gui.rect(self.gui,
+				Vector3(start_x-10, start_y-(font_size*0.08)*6-vertical_spacing*5+padding_y-2, 400),
+				Vector2(450+padding_x, 30+vertical_spacing*5+(font_size*0.08)*6+padding_y),
+				Color(100, 0, 0, 0)
+			)
+			pl.List(stringx.splitlines(mod.get_streaming_info()))
+				:foreach(function(line)
+					local pos = Vector3(start_x, start_y-vertical_spacing*i, 500)
+					Gui.text(self.gui, line, mod.font_mtrl, font_size, mod.font, pos, header_color)
+						-- shadow?
+						-- pos = Vector3(start_x+2, start_y-vertical_spacing*i-2, 450)
+						-- Gui.text(self.gui, line, mod.font_mtrl, font_size, mod.font, pos, Color(255, 0, 0, 0))
+					i = i + 1
+				end)
+		end
+	end)
 end

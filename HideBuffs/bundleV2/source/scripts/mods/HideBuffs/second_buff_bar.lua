@@ -7,9 +7,7 @@ mod:dofile("scripts/mods/HideBuffs/PriorityBuffUI")
 -- using this the second buff bar keeps working when reloading mods, not needed normally
 mod.persistent_storage = mod:persistent_table("persistent_storage")
 
-mod:hook(BuffUI, "init", function(func, self, ingame_ui_context)
-	func(self, ingame_ui_context)
-
+mod:hook_safe(BuffUI, "init", function(self, ingame_ui_context) -- luacheck: ignore self
 	if mod.buff_ui then
 		mod.buff_ui:destroy()
 	end
@@ -18,9 +16,7 @@ mod:hook(BuffUI, "init", function(func, self, ingame_ui_context)
 	mod.persistent_storage.buff_ui = mod.buff_ui
 end)
 
-mod:hook(BuffUI, "update", function(func, self, dt, t)
-	func(self, dt, t)
-
+mod:hook_safe(BuffUI, "update", function(self, dt, t) -- luacheck: ignore self
 	if not mod.buff_ui
 	and mod.persistent_storage.buff_ui then
 		mod.buff_ui = mod.persistent_storage.buff_ui
@@ -33,9 +29,7 @@ mod:hook(BuffUI, "update", function(func, self, dt, t)
 	end
 end)
 
-mod:hook(BuffUI, "destroy", function(func, self)
-	func(self)
-
+mod:hook_safe(BuffUI, "destroy", function()
 	if mod.buff_ui then
 		mod.buff_ui:destroy()
 		mod.buff_ui = nil
@@ -43,9 +37,7 @@ mod:hook(BuffUI, "destroy", function(func, self)
 	end
 end)
 
-mod:hook(BuffUI, "set_visible", function(func, self, visible)
-	func(self, visible)
-
+mod:hook_safe(BuffUI, "set_visible", function(self, visible) -- luacheck: ignore self
 	if mod.buff_ui then
 		mod.buff_ui:set_visible(visible)
 	end

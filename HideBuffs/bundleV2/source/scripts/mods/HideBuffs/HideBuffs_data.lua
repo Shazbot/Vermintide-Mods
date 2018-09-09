@@ -47,6 +47,7 @@ mod.SETTING_NAMES = {
 	PLAYER_UI_GROUP = "PLAYER_UI_GROUP",
 	PLAYER_UI_OFFSET_X = "PLAYER_UI_OFFSET_X",
 	PLAYER_UI_OFFSET_Y = "PLAYER_UI_OFFSET_Y",
+	PERSISTENT_AMMO_COUNTER = "PERSISTENT_AMMO_COUNTER",
 }
 
 -- Everything here is optional. You can remove unused parts.
@@ -126,6 +127,13 @@ mod_data.options_widgets = {
 		["text"] = mod:localize("PLAYER_UI_GROUP"),
 		["tooltip"] = mod:localize("PLAYER_UI_GROUP_T"),
 		["sub_widgets"] = {
+			{
+				["setting_name"] = mod.SETTING_NAMES.PERSISTENT_AMMO_COUNTER,
+				["widget_type"] = "checkbox",
+				["text"] = mod:localize("PERSISTENT_AMMO_COUNTER"),
+				["tooltip"] = mod:localize("PERSISTENT_AMMO_COUNTER_T"),
+				["default_value"] = true,
+			},
 			{
 				["setting_name"] = mod.SETTING_NAMES.PLAYER_UI_OFFSET_X,
 				["widget_type"] = "numeric",

@@ -673,3 +673,4 @@ end)
 
 mod:dofile("scripts/mods/HideBuffs/anim_speedup")
 mod:dofile("scripts/mods/HideBuffs/second_buff_bar")
+mod:dofile("scripts/mods/HideBuffs/persistent_ammo_counter")

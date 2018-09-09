@@ -281,4 +281,10 @@ return {
 	PLAYER_UI_OFFSET_Y_T = {
 		en = "Optionally offset the Player UI on the y axis."
 	},
+	PERSISTENT_AMMO_COUNTER = {
+		en = "Persistent Ammo Counter"
+	},
+	PERSISTENT_AMMO_COUNTER_T = {
+		en = "Keep the ammo counter visible with melee weapon equipped."
+	},
 }

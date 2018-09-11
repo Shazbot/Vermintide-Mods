@@ -1,0 +1,11 @@
+mod =  [
+	"ItemSpawner"
+]
+
+package = [
+	"resource_packages/ItemSpawner/ItemSpawner"
+]
+
+lua = [
+	"scripts/mods/ItemSpawner/*"
+]

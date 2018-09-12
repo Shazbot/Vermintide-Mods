@@ -2,8 +2,10 @@ local mod = get_mod("Scoreboard") -- luacheck: ignore get_mod
 
 -- luacheck: globals ScoreboardHelper StatisticsDefinitions AiUtils ScriptUnit Managers
 -- luacheck: globals UIRenderer math UTF8Utils local_require Localize EndViewStateScore
--- luacheck: globals PlayerUnitHealthExtension
+-- luacheck: globals PlayerUnitHealthExtension Unit StatisticsUtil DamageDataIndex
+-- luacheck: globals ItemMasterList
 
+local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
 
 mod:pcall(function()
@@ -27,12 +29,15 @@ mod:pcall(function()
 		table.insert(ScoreboardHelper.scoreboard_grouped_topic_stats[1].stats, "ff")
 	end
 
-	if not StatisticsDefinitions.player.ff then
-		StatisticsDefinitions.player.ff = {
-			value = 0,
-			name = "ff"
-		}
-	end
+	local new_stats = pl.List{ "ff", "hs_melee", "hs_ranged", "self_dmg", "boss_dmg" }
+	new_stats:foreach(function(stat_key)
+		if not StatisticsDefinitions.player[stat_key] then
+			StatisticsDefinitions.player[stat_key] = {
+				value = 0,
+				name = stat_key
+			}
+		end
+	end)
 end)
 
 mod:hook("Localize", function (func, id, ...)
@@ -98,16 +103,110 @@ mod:hook(PlayerUnitHealthExtension, "add_damage", function(func, self, attacker_
 			local actual_attacker_unit = AiUtils.get_actual_attacker_unit(attacker_unit)
 			local player_attacker = player_manager:owner(actual_attacker_unit)
 
-			if player_attacker and damage_type ~= "wounded_dot" and damage_type ~= "knockdown_bleed" and damage_type ~= "kinetic" then
+			if player_attacker
+			and damage_type ~= "wounded_dot"
+			and damage_type ~= "knockdown_bleed"
+			and damage_type ~= "temporary_health_degen"
+			and damage_type ~= "kinetic"
+			then
 				local stats_id = player_attacker:stats_id()
 				if actual_attacker_unit ~= self.unit then
 					statistics_db:modify_stat_by_amount(stats_id, "ff", ff_damage)
+				else
+					statistics_db:modify_stat_by_amount(stats_id, "self_dmg", ff_damage)
+					-- mod:echo(damage_type)
+					-- mod:echo(statistics_db:get_stat(stats_id, "self_dmg"))
 				end
 			end
 		end
 	end)
 
 	return func(self, attacker_unit, damage_amount, hit_zone_name, damage_type, ...)
+end)
+
+mod:hook(EndViewStateScore, "_setup_player_scores", function(func, self, players_session_scores)
+	mod.stats_by_index = {}
+	local index = 1
+	for _, player_data in pairs(players_session_scores) do
+		mod.stats_by_index[index] = mod.stats_by_index[index] or {}
+		mod.stats_by_index[index].self_dmg = player_data.self_dmg
+		mod.stats_by_index[index].hs_melee = player_data.hs_melee
+		mod.stats_by_index[index].hs_ranged = player_data.hs_ranged
+		mod.stats_by_index[index].boss_dmg = player_data.boss_dmg
+		index = index + 1
+	end
+	return func(self, players_session_scores)
+end)
+
+mod.bosses = pl.List{
+	"skaven_stormfiend",
+	"skaven_rat_ogre",
+	"chaos_troll",
+	"chaos_spawn"
+}
+
+local Unit_get_data = Unit.get_data
+local Unit_alive = Unit.alive
+mod:hook_safe(StatisticsUtil, "register_damage", function(victim_unit, damage_data, statistics_db)
+	local attacker_unit = damage_data[DamageDataIndex.ATTACKER]
+	attacker_unit = AiUtils.get_actual_attacker_unit(attacker_unit)
+	local player_manager = Managers.player
+	local attacker_player = player_manager:owner(attacker_unit)
+
+	if attacker_player then
+		local breed = Unit_alive(victim_unit) and Unit_get_data(victim_unit, "breed")
+
+		if breed then
+			-- is it a boss? ignore mini-bosses
+			if breed.boss and not mod.bosses:contains(breed.name) then
+				local stats_id = attacker_player:stats_id()
+				local damage_amount = damage_data[DamageDataIndex.DAMAGE_AMOUNT]
+				statistics_db:modify_stat_by_amount(stats_id, "boss_dmg", damage_amount)
+			end
+		end
+	end
+end)
+
+mod:hook_safe(StatisticsUtil, "register_kill", function(victim_unit, damage_data, statistics_db, is_server) -- luacheck: no unused
+	local attacker_unit = AiUtils.get_actual_attacker_unit(damage_data[DamageDataIndex.ATTACKER])
+	local player_manager = Managers.player
+	local attacker_player = player_manager:owner(attacker_unit)
+	local breed = Unit_get_data(victim_unit, "breed")
+
+	if attacker_player then
+		local stats_id = attacker_player:stats_id()
+
+		if breed ~= nil then
+			local hit_zone = damage_data[DamageDataIndex.HIT_ZONE]
+			if hit_zone == "head" then
+				local damage_source = damage_data[DamageDataIndex.DAMAGE_SOURCE_NAME]
+				local master_list_item = rawget(ItemMasterList, damage_source)
+
+				if master_list_item then
+					local slot_type = master_list_item.slot_type
+
+					if slot_type == "melee" then
+						statistics_db:increment_stat(stats_id, "hs_melee")
+					elseif slot_type == "ranged" then
+						statistics_db:increment_stat(stats_id, "hs_ranged")
+					end
+				end
+			end
+		end
+	end
+end)
+
+mod:hook(ScoreboardHelper, "get_grouped_topic_statistics", function(func, statistics_db, profile_synchronizer)
+	local player_list = func(statistics_db, profile_synchronizer)
+	mod:pcall(function()
+		for stats_id, player_data in pairs(player_list) do
+			player_data.self_dmg = statistics_db:get_stat(stats_id, "self_dmg")
+			player_data.hs_melee = statistics_db:get_stat(stats_id, "hs_melee")
+			player_data.hs_ranged = statistics_db:get_stat(stats_id, "hs_ranged")
+			player_data.boss_dmg = statistics_db:get_stat(stats_id, "boss_dmg")
+		end
+	end)
+	return player_list
 end)
 
 local PLAYER_NAME_MAX_LENGTH = 16
@@ -136,7 +235,9 @@ mod:hook_origin(EndViewStateScore, "_setup_score_panel", function(self, score_pa
 				local score_text_name = "score_text" .. line_suffix
 				local row_name = "row_bg" .. line_suffix
 				local row_content = content[row_name]
-				local name = (PLAYER_NAME_MAX_LENGTH < UTF8Utils.string_length(player_name) and UIRenderer.crop_text_width(self.ui_renderer, player_name, player_score_size[1] - 40, style[score_text_name])) or player_name
+				local name = (PLAYER_NAME_MAX_LENGTH < UTF8Utils.string_length(player_name)
+					and UIRenderer.crop_text_width(self.ui_renderer, player_name, player_score_size[1] - 40, style[score_text_name]))
+					or player_name
 				row_content[score_text_name] = name
 			end
 
@@ -168,6 +269,29 @@ mod:hook_origin(EndViewStateScore, "_setup_score_panel", function(self, score_pa
 				local row_name = "row_bg" .. line_suffix
 				local row_content = content[row_name]
 				row_content[score_text_name] = player_score
+				if score_data.stat_name == "damage_taken" then
+					if mod.stats_by_index[player_index] and mod.stats_by_index[player_index].self_dmg then
+						row_content[score_text_name] = player_score
+						.. " / "
+						.. math.round(mod.stats_by_index[player_index].self_dmg)
+					end
+				elseif score_data.stat_name == "headshots" then
+					if mod.stats_by_index[player_index] and mod.stats_by_index[player_index].hs_melee then
+						row_content[score_text_name] =
+							player_score
+							.. " / "
+							.. mod.stats_by_index[player_index].hs_melee
+							.. " / "
+							.. mod.stats_by_index[player_index].hs_ranged
+					end
+				elseif score_data.stat_name == "damage_dealt_bosses" then
+					if mod.stats_by_index[player_index] and mod.stats_by_index[player_index].boss_dmg then
+						row_content[score_text_name] =
+							player_score
+							.. " / "
+							.. math.round(mod.stats_by_index[player_index].boss_dmg)
+					end
+				end
 				row_content.has_background = total_row_index % 2 == 0
 				row_content.has_highscore = has_highscore
 				row_content.has_score = true

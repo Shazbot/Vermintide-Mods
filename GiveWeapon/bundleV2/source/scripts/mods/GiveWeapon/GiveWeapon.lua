@@ -2,7 +2,7 @@ local mod = get_mod("GiveWeapon") -- luacheck: ignore get_mod
 
 -- luacheck: globals get_mod fassert HeroView Managers UIResolutionScale UIResolution InventorySettings
 -- luacheck: globals WeaponProperties WeaponTraits WeaponSkins table ItemMasterList SPProfiles Localize
--- luacheck: globals ItemHelper
+-- luacheck: globals ItemHelper UIUtils
 
 local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
@@ -167,7 +167,7 @@ mod.create_window = function(self, profile_index, loadout_inv_view)
 	mod.create_weapon_button.on_click = function(button) -- luacheck: ignore button
 			local item_type = mod.career_item_types[mod.item_types_dropdown.index]
 			if item_type then
-				local trait_name = mod.trait_names[mod.traits_dropdown.index]
+				local trait_name = mod.trait_names[mod.sorted_trait_names[mod.traits_dropdown.index]]
 				if trait_name then
 					table.insert(mod.traits, trait_name)
 				end
@@ -207,7 +207,7 @@ mod.create_window = function(self, profile_index, loadout_inv_view)
 
 	mod.add_property_button = self.main_window:create_button("add_property_button", {pos_x+180+180+5+5+260+5+40, window_size[2]-70}, {180, 30}, nil, "Add Property", nil)
 	mod.add_property_button.on_click = function(button) -- luacheck: ignore button
-			local property_name = mod.property_names[mod.properties_dropdown.index]
+			local property_name = mod.property_names[mod.sorted_property_names[mod.properties_dropdown.index]]
 			if property_name then
 				table.insert(mod.properties, property_name)
 			end
@@ -221,19 +221,29 @@ mod.create_window = function(self, profile_index, loadout_inv_view)
 	-- 		end
 	-- 	end
 
-	mod.property_names = tablex.pairmap(function(property_key, _) return property_key end, WeaponProperties.properties)
-	local properties_options = tablex.pairmap(function(property_key, property) -- luacheck: ignore property_key
-			return stringx.replace(property.display_name, "properties_", "")
+	mod.property_names = tablex.pairmap(function(property_key, _)
+		local full_prop_description = UIUtils.get_property_description(property_key, 0)
+		local _, _, prop_description = stringx.partition(full_prop_description, " ")
+		prop_description = stringx.replace(prop_description, "Damage", "Dmg")
+		return property_key, prop_description
 		end, WeaponProperties.properties)
-	properties_options = tablex.index_map(properties_options)
+	mod.sorted_property_names = tablex.pairmap(function(property_key, _)
+			local full_prop_description = UIUtils.get_property_description(property_key, 0)
+			local _, _, prop_description = stringx.partition(full_prop_description, " ")
+			prop_description = stringx.replace(prop_description, "Damage", "Dmg")
+			return prop_description
+			end, WeaponProperties.properties)
+	table.sort(mod.sorted_property_names)
+	local properties_options = tablex.index_map(mod.sorted_property_names)
 
 	mod.properties_dropdown = self.main_window:create_dropdown("properties_dropdown", {pos_x+180+180+5+5+260+5, window_size[2]-35},  {260, 30}, nil, properties_options, nil, 1)
 
-	mod.trait_names = tablex.pairmap(function(trait_key, _) return trait_key end, WeaponTraits.traits)
-	local traits_options = tablex.pairmap(function(trait_key, trait) -- luacheck: ignore trait_key
+	mod.trait_names = tablex.pairmap(function(trait_key, trait) return trait_key, Localize(trait.display_name) end, WeaponTraits.traits)
+	mod.sorted_trait_names = tablex.pairmap(function(trait_key, trait) -- luacheck: ignore trait_key
 			return Localize(trait.display_name)
 		end, WeaponTraits.traits)
-	traits_options = tablex.index_map(traits_options)
+	table.sort(mod.sorted_trait_names)
+	local traits_options = tablex.index_map(mod.sorted_trait_names)
 
 	mod.traits_dropdown = self.main_window:create_dropdown("traits_dropdown", {pos_x+180+180+5+5, window_size[2]-35}, {260, 30}, nil, traits_options, nil, 1)
 

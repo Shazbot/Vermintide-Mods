@@ -40,6 +40,9 @@ mod.create_weapon = function(item_type)
 					all_skins = pl.Map.keys(pl.Set(all_skins))
 					skin = all_skins[math.random(#all_skins)]
 				end
+				if mod:get(mod.SETTING_NAMES.NO_SKINS) then
+					skin = nil
+				end
 
 				local custom_properties = "{"
 				for _, prop_name in ipairs( mod.properties ) do
@@ -84,6 +87,10 @@ mod.create_weapon = function(item_type)
 				end
 
 				entry.rarity = "exotic"
+
+				entry.rarity = "default"
+				entry.mod_data.rarity = "default"
+				entry.mod_data.CustomData.rarity = "default"
 
 				mod.more_items_library:add_mod_items_to_local_backend({entry}, "GiveWeapon")
 
@@ -168,8 +175,18 @@ mod.create_window = function(self, profile_index, loadout_inv_view)
 				mod:pcall(function()
 					local backend_items = Managers.backend:get_interface("items")
 					local item = backend_items:get_item_from_id(backend_id)
+
 					item.rarity = "exotic"
+					item.data.rarity = "exotic"
 					item.CustomData.rarity = "exotic"
+
+					if mod:get(mod.SETTING_NAMES.NO_SKINS) then
+						item.rarity = "default"
+						item.data.rarity = "default"
+						item.CustomData.rarity = "default"
+						item.skin = nil
+					end
+
 					if loadout_inv_view then
 						backend_items:_refresh()
 						local inv_item_grid = loadout_inv_view._item_grid

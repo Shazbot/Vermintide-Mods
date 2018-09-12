@@ -487,6 +487,15 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 		-- hide player portrait
 		local hide_player_portrait = mod:get(mod.SETTING_NAMES.HIDE_PLAYER_PORTRAIT)
 		if not self._mod_frame_index then
+			local status_icon_widget = self:_widget_by_feature("status_icon", "dynamic")
+			local status_icon_widget_content = status_icon_widget.content
+			if (hide_player_portrait and status_icon_widget_content.visible)
+			or (hide_player_portrait and status_icon_widget_content.visible == nil)
+			or (not hide_player_portrait and not status_icon_widget_content.visible)
+			then
+				status_icon_widget_content.visible = not hide_player_portrait
+			end
+
 			local def_static_widget = self:_widget_by_feature("default", "static")
 			local def_static_widget_content = def_static_widget.content
 			if (hide_player_portrait and def_static_widget_content.visible)
@@ -515,8 +524,17 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 			local portrait_scale = mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_SCALE)/100
 			self._default_widgets.default_static.style.character_portrait.size = tablex.map("*", self._hb_mod_cached_character_portrait_size, portrait_scale)
 
+			local widget = self:_widget_by_feature("status_icon", "dynamic")
+			widget.style.portrait_icon.size = tablex.map("*", self._hb_mod_cached_character_portrait_size, portrait_scale)
+
 			local team_ui_portrait_offset_x = mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_OFFSET_X)
 			local team_ui_portrait_offset_y = mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_OFFSET_Y)
+
+			local portrait_size = widget.style.portrait_icon.size
+			widget.style.portrait_icon.offset[1] = -portrait_size[1]/2 + team_ui_portrait_offset_x
+			local delta_y = self._hb_mod_cached_character_portrait_size[2] -
+				self._default_widgets.default_static.style.character_portrait.size[2]
+			widget.style.portrait_icon.offset[2] = delta_y/2 + team_ui_portrait_offset_y
 
 			local widgets = self._widgets
 			local previous_widget = widgets.portrait_static

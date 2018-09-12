@@ -287,4 +287,56 @@ return {
 	PERSISTENT_AMMO_COUNTER_T = {
 		en = "Keep the ammo counter visible with melee weapon equipped."
 	},
+	HIDE_BOSS_HP_BAR = {
+		en = "Hide Boss HP Bar"
+	},
+	HIDE_BOSS_HP_BAR_T = {
+		en = "Hide the HP bar on Bosses."
+	},
+
+	PRIORITY_BUFFS_GROUP = {
+		en = "Priority Buffs"
+	},
+	PRIORITY_BUFFS_GROUP_T = {
+		en = "Buffs to show in the Priority Buff Bar."
+	},
+
+	-- priority buffs
+	PACED_STRIKES = {
+		en = "Merc Paced Strikes"
+	},
+	KNIGHT_ULT_BLOCK = {
+		en = "Knight Inf Block After Ult"
+	},
+	KNIGHT_ULT_POWER = {
+		en = "Knight Power After Ult"
+	},
+	WHC_ULT = {
+		en = "WHC Ult"
+	},
+	WHC_PING_AS = {
+		en = "WHC Ping AS Buff"
+	},
+	WHC_PING_CRIT = {
+		en = "WHC Ping Crit Buff"
+	},
+	BW_TRANQUILITY = {
+		en = "BW Tranquility Passive"
+	},
+	BH_CRIT_PASSIVE = {
+		en = "BH Crit/Ammo Passive"
+	},
+	GROMRIL = {
+		en = "Gromril Armour"
+	},
+	SWIFT_SLAYING = {
+		en = "Swift Slaying Trait"
+	},
+	HUNTER = {
+		en = "Hunter Trait"
+	},
+	BARRAGE = {
+		en = "Barrage Trait"
+	},
+
 }

@@ -21,18 +21,6 @@ mod.lookup = {
 	mod.SETTING_NAMES.KERILLIAN_MAIDENGUARD_PASSIVE_STAMINA_REGEN_BUFF,
 }
 
-mod.priority_buffs = pl.List{
-	"victor_bountyhunter_passive_crit_buff",
-	"traits_melee_attack_speed_on_crit_proc",
-	"ranged_power_vs_frenzy",
-	"ranged_power_vs_large",
-	"ranged_power_vs_armored",
-	"ranged_power_vs_unarmored",
-	"consecutive_shot_buff",
-	"victor_bountyhunter_passive_crit_cooldown",
-	-- "grimoire_health_debuff",
-}
-
 mod:hook(BuffUI, "_add_buff", function (func, self, buff, ...)
 	for buff_name, setting_name in pairs( mod.lookup ) do
 		if buff.buff_type == buff_name and mod:get(setting_name) then
@@ -41,9 +29,14 @@ mod:hook(BuffUI, "_add_buff", function (func, self, buff, ...)
 	end
 
 	if mod:get(mod.SETTING_NAMES.SECOND_BUFF_BAR) then
-		local is_priority = mod.priority_buffs:contains(buff.buff_type)
-		if is_priority then
-			return false
+		for setting_name, buff_names in pairs( mod.priority_buff_setting_name_to_buff_name ) do
+			for _, buff_name in ipairs( buff_names ) do
+				if buff_name == buff.buff_type then
+					if mod:get(setting_name) then
+						return false
+					end
+				end
+			end
 		end
 	end
 
@@ -669,6 +662,15 @@ mod:hook(MissionObjectiveUI, "draw", function(func, self, dt)
 		return
 	end
 	return func(self, dt)
+end)
+
+--- Hide boss hp bar.
+mod:hook(BossHealthUI, "_draw", function(func, self, dt, t)
+	if mod:get(mod.SETTING_NAMES.HIDE_BOSS_HP_BAR) then
+		return
+	end
+
+	return func(self, dt, t)
 end)
 
 mod:dofile("scripts/mods/HideBuffs/anim_speedup")

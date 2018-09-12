@@ -177,11 +177,24 @@ PriorityBuffUI._sync_buffs = function (self)
 end
 
 PriorityBuffUI._add_buff = function (self, buff, infinite, end_time)
-	if mod:get(mod.SETTING_NAMES.SECOND_BUFF_BAR) then
-		local is_priority = mod.priority_buffs:contains(buff.buff_type)
-		if not is_priority then
-			return false
+	if not mod:get(mod.SETTING_NAMES.SECOND_BUFF_BAR) then
+		return false
+	end
+
+	local is_priority_buff = false
+	for setting_name, buff_names in pairs( mod.priority_buff_setting_name_to_buff_name ) do
+		for _, buff_name in ipairs( buff_names ) do
+			if buff_name == buff.buff_type then
+				if mod:get(setting_name) then
+					is_priority_buff = true
+					break
+				end
+			end
 		end
+	end
+
+	if not is_priority_buff then
+		return false
 	end
 
 	local buff_template = buff.template

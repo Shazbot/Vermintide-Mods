@@ -48,7 +48,48 @@ mod.SETTING_NAMES = {
 	PLAYER_UI_OFFSET_X = "PLAYER_UI_OFFSET_X",
 	PLAYER_UI_OFFSET_Y = "PLAYER_UI_OFFSET_Y",
 	PERSISTENT_AMMO_COUNTER = "PERSISTENT_AMMO_COUNTER",
+	HIDE_BOSS_HP_BAR = "HIDE_BOSS_HP_BAR",
+	PRIORITY_BUFFS_GROUP = "PRIORITY_BUFFS_GROUP",
 }
+
+mod.priority_buff_setting_name_to_buff_name = {
+	PACED_STRIKES = { "markus_mercenary_passive_proc" },
+	KNIGHT_ULT_BLOCK = { "markus_knight_activated_ability_infinite_block" },
+	KNIGHT_ULT_POWER = { "markus_knight_activated_ability_damage_buff" },
+	GROMRIL = { "bardin_ironbreaker_gromril_armour" },
+	WHC_ULT = { "victor_witchhunter_activated_ability_duration" },
+	WHC_PING_AS = { "victor_witchhunter_ping_target_attack_speed" },
+	WHC_PING_CRIT = { "victor_witchhunter_ping_target_crit_chance" },
+	BH_CRIT_PASSIVE = {
+		"victor_bountyhunter_passive_crit_buff",
+		"victor_bountyhunter_passive_crit_cooldown",
+	},
+	BW_TRANQUILITY = {
+		"sienna_adept_passive",
+		"tranquility",
+	},
+	SWIFT_SLAYING = { "traits_melee_attack_speed_on_crit_proc" },
+	HUNTER = {
+		"ranged_power_vs_frenzy",
+		"ranged_power_vs_large",
+		"ranged_power_vs_armored",
+		"ranged_power_vs_unarmored",
+	},
+	BARRAGE = { "consecutive_shot_buff" },
+}
+
+local priority_buffs_group_subwidgets = {}
+for setting_name, _ in pairs( mod.priority_buff_setting_name_to_buff_name ) do
+	mod.SETTING_NAMES[setting_name] = setting_name
+	table.insert(priority_buffs_group_subwidgets,
+		{
+			["setting_name"] = setting_name,
+			["widget_type"] = "checkbox",
+			["text"] = mod:localize(setting_name),
+			["default_value"] = false,
+		}
+	)
+end
 
 -- Everything here is optional. You can remove unused parts.
 local mod_data = {
@@ -119,6 +160,13 @@ mod_data.options_widgets = {
 		["widget_type"] = "checkbox",
 		["text"] = mod:localize("hide_hotkeys"),
 		["tooltip"] = mod:localize("hide_hotkeys_tooltip"),
+		["default_value"] = false,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.HIDE_BOSS_HP_BAR,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("HIDE_BOSS_HP_BAR"),
+		["tooltip"] = mod:localize("HIDE_BOSS_HP_BAR_T"),
 		["default_value"] = false,
 	},
 	{
@@ -382,6 +430,13 @@ mod_data.options_widgets = {
 				["range"] = {-2500, 2500},
 				["unit_text"] = "px",
 			    ["default_value"] = 0,
+			},
+			{
+				["setting_name"] = mod.SETTING_NAMES.PRIORITY_BUFFS_GROUP,
+				["widget_type"] = "group",
+				["text"] = mod:localize("PRIORITY_BUFFS_GROUP"),
+				["tooltip"] = mod:localize("PRIORITY_BUFFS_GROUP_T"),
+				["sub_widgets"] = priority_buffs_group_subwidgets
 			},
 		},
 	},

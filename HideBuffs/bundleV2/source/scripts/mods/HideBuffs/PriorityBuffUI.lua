@@ -382,6 +382,12 @@ PriorityBuffUI.set_visible = function (self, visible)
 end
 
 PriorityBuffUI.update = function (self, dt, t)
+	for index, data in ipairs(self._active_buffs) do
+		local widget = data.widget
+		local widget_offset = widget.offset
+		widget_offset[3] = 501
+	end
+
 	local dirty = false
 	local gamepad_active = self.input_manager:is_device_active("gamepad")
 

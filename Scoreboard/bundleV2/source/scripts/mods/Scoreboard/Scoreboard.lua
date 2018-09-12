@@ -271,9 +271,14 @@ mod:hook_origin(EndViewStateScore, "_setup_score_panel", function(self, score_pa
 				row_content[score_text_name] = player_score
 				if score_data.stat_name == "damage_taken" then
 					if mod.stats_by_index[player_index] and mod.stats_by_index[player_index].self_dmg then
-						row_content[score_text_name] = player_score
+						local player_score_mutable = player_score
+						local self_dmg = math.round(mod.stats_by_index[player_index].self_dmg)
+						if mod:get(mod.SETTING_NAMES.EXCLUDE_SELF_DMG_FROM_DMG_TAKEN) then
+							player_score_mutable = player_score - self_dmg
+						end
+						row_content[score_text_name] = player_score_mutable
 						.. " / "
-						.. math.round(mod.stats_by_index[player_index].self_dmg)
+						.. self_dmg
 					end
 				elseif score_data.stat_name == "headshots" then
 					if mod.stats_by_index[player_index] and mod.stats_by_index[player_index].hs_melee then

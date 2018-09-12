@@ -190,3 +190,13 @@ mod:hook(RespawnHandler, "update", function(func, self, dt, t, player_statuses)
 	end)
 	return func(self, dt, t, player_statuses)
 end)
+
+mod:hook_safe(ConflictDirector, "update", function(self)
+	local game_mode_key = Managers.state.game_mode:game_mode_key()
+
+	if not self.breed_freezer
+	and game_mode_key == "inn"
+	then
+		self.breed_freezer = BreedFreezer:new(self._world, Managers.state.entity, self._network_event_delegate)
+	end
+end)

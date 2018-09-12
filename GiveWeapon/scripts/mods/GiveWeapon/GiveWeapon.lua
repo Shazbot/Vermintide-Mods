@@ -2,7 +2,7 @@ local mod = get_mod("GiveWeapon") -- luacheck: ignore get_mod
 
 -- luacheck: globals get_mod fassert HeroView Managers UIResolutionScale UIResolution InventorySettings
 -- luacheck: globals WeaponProperties WeaponTraits WeaponSkins table ItemMasterList SPProfiles Localize
--- luacheck: globals ItemHelper UIUtils
+-- luacheck: globals ItemHelper UIUtils HeroWindowLoadoutInventory
 
 local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
@@ -17,6 +17,67 @@ mod.traits = {}
 fassert(mod.simple_ui, "GiveWeapon must be lower than SimpleUI in your launcher's load order.")
 fassert(mod.more_items_library, "GiveWeapon must be lower than MoreItemsLibrary in your launcher's load order.")
 
+mod.create_skins_dropdown = function(item_type, window_size)
+	mod:pcall(function()
+
+		local all_skins = pl.List(mod.get_skins(item_type))
+		mod.skin_names = tablex.pairmap(function(_, skin) return skin, Localize(WeaponSkins.skins[skin].display_name) end, all_skins)
+		mod.sorted_skin_names = all_skins:map(function(skin) return Localize(WeaponSkins.skins[skin].display_name) end)
+
+		table.sort(mod.sorted_skin_names,
+			function(skin_name_first, skin_name_second)
+				local skin_key_first = mod.skin_names[skin_name_first]
+				local skin_key_second = mod.skin_names[skin_name_second]
+
+				if pl.stringx.lfind(skin_key_first, "_runed")
+				and pl.stringx.lfind(skin_key_second, "_runed")
+				then
+					return skin_name_first < skin_name_second
+				end
+
+				if pl.stringx.lfind(skin_key_first, "_runed") then
+					return true
+				elseif pl.stringx.lfind(skin_key_second, "_runed") then
+					return false
+				else
+					return skin_name_first < skin_name_second
+				end
+			end)
+		local skin_options = tablex.index_map(mod.sorted_skin_names)
+
+		if mod.skins_dropdown then
+			mod.skins_dropdown.visible = false
+		end
+
+		mod.skins_dropdown = mod.main_window:create_dropdown("skins_dropdown", {5+180+180+5+5+260+5+260+5, window_size[2]-35},  {200, 30}, nil, skin_options, "skins_dropdown", 1)
+		mod.skins_dropdown:select_index(1)
+	end)
+
+end
+
+mod.get_skins = function(item_type)
+	local current_career_names = mod.current_careers:map(function(career) return career.name end)
+	for _, item in pairs( ItemMasterList ) do
+		if item.item_type == item_type
+		and item.template
+		and item.can_wield
+		and pl.List(item.can_wield) -- check if the item is valid career-wise
+			:map(function(career_name) return current_career_names:contains(career_name) end)
+			:reduce('or')
+		then
+			if item.skin_combination_table or pl.List{"necklace", "ring", "trinket"}:contains(item_type) then
+				if item.skin_combination_table then
+					local all_skins = pl.List()
+					tablex.foreach(WeaponSkins.skin_combinations[item.skin_combination_table], function(value)
+						all_skins:extend(pl.List(value))
+					end)
+					return pl.Map.keys(pl.Set(all_skins))
+				end
+			end
+		end
+	end
+end
+
 mod.create_weapon = function(item_type)
 	local current_career_names = mod.current_careers:map(function(career) return career.name end)
 	for item_key, item in pairs( ItemMasterList ) do
@@ -28,17 +89,9 @@ mod.create_weapon = function(item_type)
 			:reduce('or')
 		then
 			if item.skin_combination_table or pl.List{"necklace", "ring", "trinket"}:contains(item_type) then
-
-				-- get a random valid skin
-				-- dumb way to flatten a map-like-table of lists without duplicates
 				local skin
 				if item.skin_combination_table then
-					local all_skins = pl.List()
-					tablex.foreach(WeaponSkins.skin_combinations[item.skin_combination_table], function(value)
-						all_skins:extend(pl.List(value))
-					end)
-					all_skins = pl.Map.keys(pl.Set(all_skins))
-					skin = all_skins[math.random(#all_skins)]
+					skin = mod.skin_names[mod.sorted_skin_names[mod.skins_dropdown.index]]
 				end
 				if mod:get(mod.SETTING_NAMES.NO_SKINS) then
 					skin = nil
@@ -62,7 +115,7 @@ mod.create_weapon = function(item_type)
 				custom_traits = custom_traits.."]"
 
 				local rnd = math.random(1000000) -- uhh yeah
-				local new_backend_id =  tostring(item_key) .. rnd .. "_from_GiveWeapon"
+				local new_backend_id =  tostring(item_key) .. "_" .. rnd .. "_from_GiveWeapon"
 				local entry = table.clone(ItemMasterList[item_key])
 				entry.mod_data = {
 				    backend_id = new_backend_id,
@@ -148,18 +201,22 @@ mod.create_item_types_dropdown = function(profile_index, window_size)
 	end
 
 	mod.item_types_dropdown = mod.main_window:create_dropdown("item_types_dropdown", {5+180+5, window_size[2]-35},  {180, 30}, nil, item_types_options, "item_types_dropdown", 1)
+	mod.item_types_dropdown.on_index_changed = function(dropdown)
+		local item_type = mod.career_item_types[dropdown.index]
+		mod.create_skins_dropdown(item_type, window_size)
+	end
 	mod.item_types_dropdown:select_index(1)
 end
 
 mod.create_window = function(self, profile_index, loadout_inv_view)
 	local scale = UIResolutionScale()
 	local screen_width, screen_height = UIResolution() -- luacheck: ignore screen_width
-	local window_size = {905, 80}
-	local window_position = {850, screen_height - window_size[2] - 5}
+	local window_size = {905+190+15, 80}
+	local window_position = {850-160, screen_height - window_size[2] - 5}
 
 	self.main_window = mod.simple_ui:create_window("give_weapon", window_position, window_size)
 
-	self.main_window.position = {850*scale, screen_height - window_size[2]*scale - 5}
+	self.main_window.position = {(850-160)*scale, screen_height - window_size[2]*scale - 5}
 
 	local pos_x = 5
 

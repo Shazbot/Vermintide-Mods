@@ -1,4 +1,7 @@
-local mod = get_mod("HideBuffs") -- luacheck: ignore get_mod
+-- luacheck: ignore get_mod
+local mod = get_mod("HideBuffs")
+
+local pl = require'pl.import_into'()
 
 mod.SETTING_NAMES = {
 	VICTOR_BOUNTYHUNTER_PASSIVE_INFINITE_AMMO_BUFF = "victor_bountyhunter_passive_infinite_ammo_buff",
@@ -98,7 +101,44 @@ local mod_data = {
 	is_togglable = true,
 	allow_rehooking = true,
 }
-mod_data.options_widgets = {
+
+mod_data.options_widgets = pl.List()
+mod.localizations = mod.localizations or pl.Map()
+
+mod.add_option = function(setting_name, option_widget, en_text, en_tooltip, group, index)
+	mod.SETTING_NAMES[setting_name] = setting_name
+	option_widget.setting_name = setting_name
+	if en_text then
+		mod.localizations[setting_name] = {
+			en = en_text
+		}
+	end
+	if en_tooltip then
+		mod.localizations[setting_name.."_T"] = {
+			en = en_tooltip
+		}
+	end
+	option_widget.text = mod:localize(setting_name)
+	option_widget.tooltip = mod:localize(setting_name.."_T")
+	if not group then
+		index = index or #mod_data.options_widgets
+		mod_data.options_widgets:insert(index, option_widget)
+	else
+		local group_index = pl.tablex.find_if(mod_data.options_widgets,
+			function(options_widget)
+				return options_widget.setting_name == group
+			end)
+		if group_index then
+			if not mod_data.options_widgets[group_index].sub_widgets then
+				mod_data.options_widgets[group_index].sub_widgets = {}
+			end
+			index = index or #mod_data.options_widgets[group_index].sub_widgets
+			table.insert(mod_data.options_widgets[group_index].sub_widgets, index, option_widget)
+		end
+	end
+end
+
+mod_data.options_widgets:extend({
 	{
 		["setting_name"] = mod.SETTING_NAMES.MINI_HUD_PRESET,
 		["widget_type"] = "checkbox",
@@ -111,13 +151,6 @@ mod_data.options_widgets = {
 		["widget_type"] = "checkbox",
 		["text"] = mod:localize("SPEEDUP_ANIMATIONS"),
 		["tooltip"] = mod:localize("SPEEDUP_ANIMATIONS_T"),
-		["default_value"] = false,
-	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.HIDE_PLAYER_PORTRAIT,
-		["widget_type"] = "checkbox",
-		["text"] = mod:localize("hide_player_portrait"),
-		["tooltip"] = mod:localize("hide_player_portrait_tooltip"),
 		["default_value"] = false,
 	},
 	{
@@ -156,13 +189,6 @@ mod_data.options_widgets = {
 		["default_value"] = false,
 	},
 	{
-		["setting_name"] = mod.SETTING_NAMES.HIDE_HOTKEYS,
-		["widget_type"] = "checkbox",
-		["text"] = mod:localize("hide_hotkeys"),
-		["tooltip"] = mod:localize("hide_hotkeys_tooltip"),
-		["default_value"] = false,
-	},
-	{
 		["setting_name"] = mod.SETTING_NAMES.HIDE_BOSS_HP_BAR,
 		["widget_type"] = "checkbox",
 		["text"] = mod:localize("HIDE_BOSS_HP_BAR"),
@@ -175,6 +201,20 @@ mod_data.options_widgets = {
 		["text"] = mod:localize("PLAYER_UI_GROUP"),
 		["tooltip"] = mod:localize("PLAYER_UI_GROUP_T"),
 		["sub_widgets"] = {
+			{
+				["setting_name"] = mod.SETTING_NAMES.HIDE_PLAYER_PORTRAIT,
+				["widget_type"] = "checkbox",
+				["text"] = mod:localize("hide_player_portrait"),
+				["tooltip"] = mod:localize("hide_player_portrait_tooltip"),
+				["default_value"] = false,
+			},
+			{
+				["setting_name"] = mod.SETTING_NAMES.HIDE_HOTKEYS,
+				["widget_type"] = "checkbox",
+				["text"] = mod:localize("hide_hotkeys"),
+				["tooltip"] = mod:localize("hide_hotkeys_tooltip"),
+				["default_value"] = false,
+			},
 			{
 				["setting_name"] = mod.SETTING_NAMES.PERSISTENT_AMMO_COUNTER,
 				["widget_type"] = "checkbox",
@@ -489,6 +529,29 @@ mod_data.options_widgets = {
 			},
 		},
 	},
-}
+})
+
+mod.add_option(
+	"HIDE_CROSSHAIR_WHEN_INSPECTING",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Hide Crosshair When Inspecting Hero",
+	"Hide the crosshair when inspecting hero.",
+	nil,
+	1
+)
+mod.add_option(
+	"SHOW_RELOAD_REMINDER",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Show Reload Reminder",
+	"Change color of ammo in clip to red when ranged weapon not reloaded.",
+	mod.SETTING_NAMES.PLAYER_UI_GROUP,
+	1
+)
 
 return mod_data

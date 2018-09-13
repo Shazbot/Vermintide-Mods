@@ -2,6 +2,7 @@ local mod = get_mod("HideBuffs") -- luacheck: ignore get_mod
 
 -- luacheck: globals BuffUI EquipmentUI AbilityUI UnitFrameUI MissionObjectiveUI TutorialUI
 -- luacheck: globals local_require math UnitFramesHandler table UIWidget UIRenderer
+-- luacheck: globals CrosshairUI Managers ScriptUnit BossHealthUI Colors
 
 local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
@@ -95,6 +96,14 @@ mod.on_setting_changed = function(setting_name)
 			mod.buff_ui:set_visible(mod:get(mod.SETTING_NAMES.SECOND_BUFF_BAR))
 		end
 	end
+
+	if setting_name == mod.SETTING_NAMES.SPEEDUP_ANIMATIONS then
+		if mod:get(mod.SETTING_NAMES.SPEEDUP_ANIMATIONS) then
+			mod.set_anim_ui_settings()
+		else
+			mod.reset_anim_ui_settings()
+		end
+	end
 end
 
 mod:hook(EquipmentUI, "update", function(func, self, ...)
@@ -151,6 +160,13 @@ mod:hook(EquipmentUI, "update", function(func, self, ...)
 				self._slot_widgets[i].offset = self._slot_widgets[i+num_slots]._hb_mod_offset_cache
 				self:_set_widget_dirty(self._slot_widgets[i])
 			end
+		end
+
+		if mod:get(mod.SETTING_NAMES.SHOW_RELOAD_REMINDER) and mod.player_requires_reload() then
+			local ammo_clip_widget = self._ammo_widgets_by_name.ammo_text_clip
+			local ammo_clip_widget_style = ammo_clip_widget.style.text
+			ammo_clip_widget_style.text_color = Colors.get_color_table_with_alpha("red", 255)
+			self:_set_widget_dirty(ammo_clip_widget)
 		end
 	end)
 	return func(self, ...)
@@ -690,6 +706,44 @@ mod:hook(BossHealthUI, "_draw", function(func, self, dt, t)
 
 	return func(self, dt, t)
 end)
+
+--- Hide crosshair when inspecting.
+mod:hook(CrosshairUI, "draw", function(func, self, ...)
+	if mod:get(mod.SETTING_NAMES.HIDE_CROSSHAIR_WHEN_INSPECTING) then
+		local just_return
+		pcall(function()
+			local player_unit = Managers.player:local_player().player_unit
+			local character_state_machine_ext = ScriptUnit.extension(player_unit, "character_state_machine_system")
+			just_return = character_state_machine_ext:current_state() == "inspecting"
+		end)
+
+		if just_return then
+			return
+		end
+	end
+
+	return func(self, ...)
+end)
+
+--- Return if the player need to reload ranged weapon.
+mod.player_requires_reload = function()
+	local player_unit = Managers.player:local_player().player_unit
+	if player_unit then
+		local inventory_extension = ScriptUnit.extension(player_unit, "inventory_system")
+		local slot_data = inventory_extension:equipment().slots["slot_ranged"]
+		if slot_data then
+			local right_unit = slot_data.right_unit_1p
+			local left_unit = slot_data.left_unit_1p
+			local ammo_extn = (right_unit and ScriptUnit.has_extension(right_unit, "ammo_system")) or
+				(left_unit and ScriptUnit.has_extension(left_unit, "ammo_system"))
+			if ammo_extn and (not ammo_extn:ammo_available_immediately()) and (ammo_extn.reload_time > 0.5) and
+					(ammo_extn:ammo_count() < ammo_extn:clip_size()) then
+				return true
+			end
+		end
+	end
+	return false
+end
 
 mod:dofile("scripts/mods/HideBuffs/anim_speedup")
 mod:dofile("scripts/mods/HideBuffs/second_buff_bar")

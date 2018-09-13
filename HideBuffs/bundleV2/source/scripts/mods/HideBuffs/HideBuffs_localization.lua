@@ -1,4 +1,11 @@
-return {
+-- luacheck: ignore get_mod
+local mod = get_mod("HideBuffs")
+
+local pl = require'pl.import_into'()
+
+mod.localizations = mod.localizations or pl.Map()
+
+mod.localizations:update({
 	mod_description = {
 		en = "UI Tweaks."
 	},
@@ -339,4 +346,6 @@ return {
 		en = "Barrage Trait"
 	},
 
-}
+})
+
+return mod.localizations

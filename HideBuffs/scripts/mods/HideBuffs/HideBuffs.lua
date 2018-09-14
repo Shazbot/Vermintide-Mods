@@ -358,7 +358,6 @@ mod.hp_bg_rect_def =
 	},
 }
 
-mod.ammo_bar_width = 544
 mod.ammo_bar_width = 531
 
 mod.ammo_widget_def =
@@ -525,10 +524,10 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 			end
 
 			local player_ammo_bar_height = mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR_HEIGHT)
-			self._mod_ammo_border.offset[1] = 47 + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
-			self._mod_ammo_border.offset[2] = 28 - player_ammo_bar_height + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
+			self._mod_ammo_border.offset[1] = -33 + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
+			self._mod_ammo_border.offset[2] = 18 - player_ammo_bar_height + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
 			self._mod_ammo_border.offset[3] = -20
-			self._mod_ammo_border.style.border.size = { 533, mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR_HEIGHT) + 2 }
+			self._mod_ammo_border.style.border.size = { mod.ammo_bar_width + 2-10, mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR_HEIGHT) + 2 }
 			self._mod_ammo_border.style.border.color = { 255, 0,0,0 }
 			-- self._mod_ammo_border.style.border.color = { 255, 0,255,0 }
 

@@ -1,0 +1,11 @@
+mod = [
+	"NoGlow"
+]
+
+package = [
+	"resource_packages/NoGlow/NoGlow"
+]
+
+lua = [
+	"scripts/mods/NoGlow/*"
+]

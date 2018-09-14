@@ -2,28 +2,29 @@ local mod = get_mod("HideBuffs") -- luacheck: ignore get_mod
 
 -- luacheck: globals BuffUI EquipmentUI AbilityUI UnitFrameUI MissionObjectiveUI TutorialUI
 -- luacheck: globals local_require math UnitFramesHandler table UIWidget UIRenderer
--- luacheck: globals CrosshairUI Managers ScriptUnit BossHealthUI Colors
+-- luacheck: globals CrosshairUI Managers ScriptUnit BossHealthUI Colors UIWidgets
+-- luacheck: globals RETAINED_MODE_ENABLED BackendUtils
 
 local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
 
-mod.lookup = {
+mod.buff_name_to_setting_name_lookup = {
 	["victor_bountyhunter_passive_infinite_ammo_buff"] =
-	mod.SETTING_NAMES.VICTOR_BOUNTYHUNTER_PASSIVE_INFINITE_AMMO_BUFF,
+		mod.SETTING_NAMES.VICTOR_BOUNTYHUNTER_PASSIVE_INFINITE_AMMO_BUFF,
 	["grimoire_health_debuff"] =
-	mod.SETTING_NAMES.GRIMOIRE_HEALTH_DEBUFF,
+		mod.SETTING_NAMES.GRIMOIRE_HEALTH_DEBUFF,
 	["markus_huntsman_passive_crit_aura_buff"] =
-	mod.SETTING_NAMES.MARKUS_HUNTSMAN_PASSIVE_CRIT_AURA_BUFF,
+		mod.SETTING_NAMES.MARKUS_HUNTSMAN_PASSIVE_CRIT_AURA_BUFF,
 	["markus_knight_passive_defence_aura"] =
-	mod.SETTING_NAMES.MARKUS_KNIGHT_PASSIVE_DEFENCE_AURA,
+		mod.SETTING_NAMES.MARKUS_KNIGHT_PASSIVE_DEFENCE_AURA,
 	["kerillian_waywatcher_passive"] =
-	mod.SETTING_NAMES.KERILLIAN_WAYWATCHER_PASSIVE,
+		mod.SETTING_NAMES.KERILLIAN_WAYWATCHER_PASSIVE,
 	["kerillian_maidenguard_passive_stamina_regen_buff"] =
-	mod.SETTING_NAMES.KERILLIAN_MAIDENGUARD_PASSIVE_STAMINA_REGEN_BUFF,
+		mod.SETTING_NAMES.KERILLIAN_MAIDENGUARD_PASSIVE_STAMINA_REGEN_BUFF,
 }
 
 mod:hook(BuffUI, "_add_buff", function (func, self, buff, ...)
-	for buff_name, setting_name in pairs( mod.lookup ) do
+	for buff_name, setting_name in pairs( mod.buff_name_to_setting_name_lookup ) do
 		if buff.buff_type == buff_name and mod:get(setting_name) then
 			return false
 		end
@@ -108,6 +109,14 @@ end
 
 mod:hook(EquipmentUI, "update", function(func, self, ...)
 	mod:pcall(function()
+		local inventory_extension = ScriptUnit.extension(Managers.player:local_player().player_unit, "inventory_system")
+		local equipment = inventory_extension:equipment()
+		local slot_data = equipment.slots["slot_ranged"]
+		if slot_data then
+			local item_data = slot_data.item_data
+			self:_mod_update_ammo(slot_data.left_unit_1p, slot_data.right_unit_1p, BackendUtils.get_item_template(item_data))
+		end
+
 		if mod.reset_hotkey_alpha then
 			for _, widget in ipairs(self._slot_widgets) do
 				widget.style.input_text.text_color[1] = 255
@@ -160,13 +169,6 @@ mod:hook(EquipmentUI, "update", function(func, self, ...)
 				self._slot_widgets[i].offset = self._slot_widgets[i+num_slots]._hb_mod_offset_cache
 				self:_set_widget_dirty(self._slot_widgets[i])
 			end
-		end
-
-		if mod:get(mod.SETTING_NAMES.SHOW_RELOAD_REMINDER) and mod.player_requires_reload() then
-			local ammo_clip_widget = self._ammo_widgets_by_name.ammo_text_clip
-			local ammo_clip_widget_style = ammo_clip_widget.style.text
-			ammo_clip_widget_style.text_color = Colors.get_color_table_with_alpha("red", 255)
-			self:_set_widget_dirty(ammo_clip_widget)
 		end
 	end)
 	return func(self, ...)
@@ -310,15 +312,12 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 				if ability_dynamic.style.ability_bar.size then
 
 					local ability_progress = ability_dynamic.content.ability_bar.bar_value
-					local bar_length = 448+20+30+10+7
+					local bar_length = 515
 					local size_x = bar_length * ability_progress
 
-					-- ability_dynamic.style.ability_bar.size[2] = 7
 					ability_dynamic.style.ability_bar.size[2] = 9
-					-- ability_dynamic.offset[1] = -30-2 + bar_length/2 - size_x/2
 					ability_dynamic.offset[1] = -30-2 --+ bar_length/2 - size_x/2
-					-- ability_dynamic.offset[2] = 20-1-2-1
-					ability_dynamic.offset[2] = 20-1-2-2
+					ability_dynamic.offset[2] = 16
 					ability_dynamic.offset[3] = 50
 				end
 				self._health_widgets.health_dynamic.style.grimoire_debuff_divider.offset[3] = 200
@@ -344,7 +343,7 @@ mod.hp_bg_rect_def =
 	},
 	style = {
 		hp_bar_rect = {
-			offset = {0, 0},
+			offset = {0, 0, 0},
 			size = {
 				500,
 				10
@@ -358,6 +357,137 @@ mod.hp_bg_rect_def =
 		0
 	},
 }
+
+mod.ammo_bar_width = 544
+mod.ammo_bar_width = 531
+
+mod.ammo_widget_def =
+{
+	scenegraph_id = "background_panel_bg",
+	element = {
+		passes = {
+			{
+				style_id = "ammo_bar",
+				pass_type = "texture_uv",
+				content_id = "ammo_bar",
+				content_change_function = function (content, style)
+					local ammo_progress = content.bar_value
+					local size = style.size
+					local uvs = content.uvs
+					local bar_length = mod.ammo_bar_width
+					uvs[2][2] = ammo_progress
+					size[1] = bar_length*ammo_progress
+				end
+			},
+		},
+	},
+	content = {
+		ammo_bar = {
+			bar_value = 1,
+			texture_id = "hud_teammate_ammo_bar_fill",
+			uvs = {
+				{
+					0,
+					0
+				},
+				{
+					1,
+					1
+				}
+			}
+		},
+	},
+	style = {
+		ammo_bar = {
+			size = {
+				mod.ammo_bar_width,
+				15
+			},
+			offset = {
+				0,
+				0,
+				0
+			},
+			color = {
+				255,
+				255,
+				255,
+				255
+			},
+		},
+	},
+	offset = {
+		0,
+		0,
+		0
+	},
+}
+
+UIWidgets._mod_create_border = function (scenegraph_id, retained, thickness, color, layer)
+	local definition = {
+		element = {
+			passes = {
+				{
+					style_id = "border",
+					pass_type = "border",
+					retained_mode = retained,
+				},
+			}
+		},
+		content = {
+		},
+		style = {
+			border = {
+				thickness = thickness or 1,
+				color = color or {255,255,255,255},
+				offset = {
+					0,
+					0,
+					0
+				},
+				size = {
+					500,
+					50
+				}
+			},
+		},
+		offset = {
+			0,
+			0,
+			layer or 0
+		},
+		scenegraph_id = scenegraph_id
+	}
+
+	return definition
+end
+
+EquipmentUI._mod_update_ammo = function (self, left_hand_wielded_unit, right_hand_wielded_unit, item_template)
+	local ammo_extension
+
+	if not item_template.ammo_data then
+		return
+	end
+
+	local ammo_unit_hand = item_template.ammo_data.ammo_hand
+
+	if ammo_unit_hand == "right" then
+		ammo_extension = ScriptUnit.extension(right_hand_wielded_unit, "ammo_system")
+	elseif ammo_unit_hand == "left" then
+		ammo_extension = ScriptUnit.extension(left_hand_wielded_unit, "ammo_system")
+	else
+		return
+	end
+
+	local max_ammo = ammo_extension:get_max_ammo()
+	local remaining_ammo = ammo_extension:total_remaining_ammo()
+
+	if max_ammo and remaining_ammo then
+		if self._hb_mod_ammo_widget then
+		    self._hb_mod_ammo_widget.content.ammo_bar.bar_value = remaining_ammo / max_ammo
+		end
+	end
+end
 
 mod:hook(EquipmentUI, "draw", function(func, self, dt)
 	if mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET) then
@@ -377,13 +507,53 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 			self._hb_mod_widget = UIWidget.init(mod.hp_bg_rect_def)
 		end
 		mod:pcall(function()
-			self._hb_mod_widget.style.hp_bar_rect.size = { 576-10, 20 }
+			self._hb_mod_widget.style.hp_bar_rect.size = { 576-10, 21 }
 			self._hb_mod_widget.offset[1] = -50 + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
-			self._hb_mod_widget.offset[2] = 20 + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
+			self._hb_mod_widget.offset[2] = 23 + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
 
 			self.ui_scenegraph.slot.position[1] = 149 + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
 			self.ui_scenegraph.slot.position[2] = 44 + 15 + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
 		end)
+
+		mod:pcall(function()
+			if not self._hb_mod_ammo_widget then
+				self._hb_mod_ammo_widget = UIWidget.init(mod.ammo_widget_def)
+			end
+
+			if not self._mod_ammo_border then
+				self._mod_ammo_border = UIWidget.init(UIWidgets._mod_create_border("background_panel_bg", RETAINED_MODE_ENABLED))
+			end
+
+			local player_ammo_bar_height = mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR_HEIGHT)
+			self._mod_ammo_border.offset[1] = 47 + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
+			self._mod_ammo_border.offset[2] = 28 - player_ammo_bar_height + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
+			self._mod_ammo_border.offset[3] = -20
+			self._mod_ammo_border.style.border.size = { 533, mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR_HEIGHT) + 2 }
+			self._mod_ammo_border.style.border.color = { 255, 0,0,0 }
+			-- self._mod_ammo_border.style.border.color = { 255, 0,255,0 }
+
+			self._hb_mod_ammo_widget.offset[1] = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X) - 25
+			self._hb_mod_ammo_widget.offset[2] = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y) + 43
+			self._hb_mod_ammo_widget.style.ammo_bar.color[1] = mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR_ALPHA)
+			self._hb_mod_ammo_widget.style.ammo_bar.size[2] = player_ammo_bar_height
+			self._hb_mod_ammo_widget.style.ammo_bar.offset[1] = -7
+			self._hb_mod_ammo_widget.style.ammo_bar.offset[2] = -24 - player_ammo_bar_height
+			self._hb_mod_ammo_widget.style.ammo_bar.offset[3] = 50
+		end)
+
+		local need_to_reload, any_ammo_in_clip, can_reload = mod.player_requires_reload()
+		if mod:get(mod.SETTING_NAMES.SHOW_RELOAD_REMINDER) and need_to_reload then
+			local ammo_clip_widget = self._ammo_widgets_by_name.ammo_text_clip
+			local ammo_clip_widget_style = ammo_clip_widget.style.text
+			ammo_clip_widget_style.text_color = Colors.get_color_table_with_alpha("red", 255)
+			if any_ammo_in_clip then
+				ammo_clip_widget_style.text_color = Colors.get_color_table_with_alpha("khaki", 255)
+			end
+			if any_ammo_in_clip and not can_reload then
+				ammo_clip_widget_style.text_color = Colors.get_color_table_with_alpha("orange", 255)
+			end
+			self:_set_widget_dirty(ammo_clip_widget)
+		end
 
 		local ui_renderer = self.ui_renderer
 		local ui_scenegraph = self.ui_scenegraph
@@ -391,6 +561,14 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 		local render_settings = self.render_settings
 		UIRenderer.begin_pass(ui_renderer, ui_scenegraph, input_service, dt, nil, render_settings)
 		UIRenderer.draw_widget(ui_renderer, self._hb_mod_widget)
+		if mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR) then
+			if self._hb_mod_ammo_widget then
+				UIRenderer.draw_widget(ui_renderer, self._hb_mod_ammo_widget)
+			end
+			if self._mod_ammo_border then
+				UIRenderer.draw_widget(ui_renderer, self._mod_ammo_border)
+			end
+		end
 		UIRenderer.end_pass(ui_renderer)
 
 		self._static_widgets[2].content.visible = false
@@ -436,10 +614,10 @@ mod:hook(AbilityUI, "draw", function (func, self, dt)
 			self._widgets[1].style.ability_effect_top_right.offset[2] = skull_offsets[2]
 
 			self._widgets[1].offset[1]= -1+3
-			self._widgets[1].offset[2]= 56-30-5-3
+			self._widgets[1].offset[2]= 17
 			self._widgets[1].offset[3]= 60
 			self._widgets[1].style.ability_bar_highlight.texture_size[1] = 576-20
-			self._widgets[1].style.ability_bar_highlight.texture_size[2] = 50
+			self._widgets[1].style.ability_bar_highlight.texture_size[2] = 54
 			self._widgets[1].style.ability_bar_highlight.offset[2] = 22 + 4
 		end)
 	end
@@ -725,7 +903,9 @@ mod:hook(CrosshairUI, "draw", function(func, self, ...)
 	return func(self, ...)
 end)
 
---- Return if the player need to reload ranged weapon.
+--- Return if the player need to reload ranged weapon,
+--- if player has any ammo in clip but not a full clip,
+--- and if the player has enough ammo to reload.
 mod.player_requires_reload = function()
 	local player_unit = Managers.player:local_player().player_unit
 	if player_unit then
@@ -738,7 +918,9 @@ mod.player_requires_reload = function()
 				(left_unit and ScriptUnit.has_extension(left_unit, "ammo_system"))
 			if ammo_extn and (not ammo_extn:ammo_available_immediately()) and (ammo_extn.reload_time > 0.5) and
 					(ammo_extn:ammo_count() < ammo_extn:clip_size()) then
-				return true
+				return true,
+					ammo_extn:ammo_count() > 0 and ammo_extn:ammo_count() ~= ammo_extn:clip_size(),
+					ammo_extn:can_reload()
 			end
 		end
 	end

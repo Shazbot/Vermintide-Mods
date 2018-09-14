@@ -38,7 +38,6 @@ mod.SETTING_NAMES = {
 	CHAT_OFFSET_Y = "CHAT_OFFSET_Y",
 	HIDE_WEAPON_SLOTS = "HIDE_WEAPON_SLOTS",
 	REPOSITION_WEAPON_SLOTS = "REPOSITION_WEAPON_SLOTS",
-	MINI_HUD_PRESET = "MINI_HUD_PRESET",
 	TEAM_UI_PORTRAIT_SCALE = "TEAM_UI_PORTRAIT_SCALE",
 	TEAM_UI_PORTRAIT_OFFSET_X = "TEAM_UI_PORTRAIT_OFFSET_X",
 	TEAM_UI_PORTRAIT_OFFSET_Y = "TEAM_UI_PORTRAIT_OFFSET_Y",
@@ -79,6 +78,9 @@ mod.priority_buff_setting_name_to_buff_name = {
 		"ranged_power_vs_unarmored",
 	},
 	BARRAGE = { "consecutive_shot_buff" },
+	DMG_POT = { "armor penetration" },
+	SPEED_POT = { "movement" },
+	CDR_POT = { "cooldown reduction buff" },
 }
 
 local priority_buffs_group_subwidgets = {}
@@ -120,32 +122,19 @@ mod.add_option = function(setting_name, option_widget, en_text, en_tooltip, grou
 	end
 	option_widget.text = mod:localize(setting_name)
 	option_widget.tooltip = mod:localize(setting_name.."_T")
+	option_widget.sub_widgets = {}
 	if not group then
-		index = index or #mod_data.options_widgets
+		index = index or #mod_data.options_widgets + 1
 		mod_data.options_widgets:insert(index, option_widget)
 	else
-		local group_index = pl.tablex.find_if(mod_data.options_widgets,
-			function(options_widget)
-				return options_widget.setting_name == group
-			end)
-		if group_index then
-			if not mod_data.options_widgets[group_index].sub_widgets then
-				mod_data.options_widgets[group_index].sub_widgets = {}
-			end
-			index = index or #mod_data.options_widgets[group_index].sub_widgets
-			table.insert(mod_data.options_widgets[group_index].sub_widgets, index, option_widget)
-		end
+		index = index or #group + 1
+		table.insert(group, index, option_widget)
 	end
+
+	return option_widget.sub_widgets
 end
 
 mod_data.options_widgets:extend({
-	{
-		["setting_name"] = mod.SETTING_NAMES.MINI_HUD_PRESET,
-		["widget_type"] = "checkbox",
-		["text"] = mod:localize("MINI_HUD_PRESET"),
-		["tooltip"] = mod:localize("MINI_HUD_PRESET_T"),
-		["default_value"] = false,
-	},
 	{
 		["setting_name"] = mod.SETTING_NAMES.SPEEDUP_ANIMATIONS,
 		["widget_type"] = "checkbox",
@@ -194,71 +183,6 @@ mod_data.options_widgets:extend({
 		["text"] = mod:localize("HIDE_BOSS_HP_BAR"),
 		["tooltip"] = mod:localize("HIDE_BOSS_HP_BAR_T"),
 		["default_value"] = false,
-	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.PLAYER_UI_GROUP,
-		["widget_type"] = "group",
-		["text"] = mod:localize("PLAYER_UI_GROUP"),
-		["tooltip"] = mod:localize("PLAYER_UI_GROUP_T"),
-		["sub_widgets"] = {
-			{
-				["setting_name"] = mod.SETTING_NAMES.HIDE_PLAYER_PORTRAIT,
-				["widget_type"] = "checkbox",
-				["text"] = mod:localize("hide_player_portrait"),
-				["tooltip"] = mod:localize("hide_player_portrait_tooltip"),
-				["default_value"] = false,
-			},
-			{
-				["setting_name"] = mod.SETTING_NAMES.HIDE_HOTKEYS,
-				["widget_type"] = "checkbox",
-				["text"] = mod:localize("hide_hotkeys"),
-				["tooltip"] = mod:localize("hide_hotkeys_tooltip"),
-				["default_value"] = false,
-			},
-			{
-				["setting_name"] = mod.SETTING_NAMES.PERSISTENT_AMMO_COUNTER,
-				["widget_type"] = "checkbox",
-				["text"] = mod:localize("PERSISTENT_AMMO_COUNTER"),
-				["tooltip"] = mod:localize("PERSISTENT_AMMO_COUNTER_T"),
-				["default_value"] = true,
-			},
-			{
-				["setting_name"] = mod.SETTING_NAMES.PLAYER_UI_OFFSET_X,
-				["widget_type"] = "numeric",
-				["text"] = mod:localize("PLAYER_UI_OFFSET_X"),
-				["tooltip"] = mod:localize("PLAYER_UI_OFFSET_X_T"),
-				["range"] = {-2500, 2500},
-				["unit_text"] = "px",
-			    ["default_value"] = 0,
-			},
-			{
-				["setting_name"] = mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y,
-				["widget_type"] = "numeric",
-				["text"] = mod:localize("PLAYER_UI_OFFSET_Y"),
-				["tooltip"] = mod:localize("PLAYER_UI_OFFSET_Y_T"),
-				["range"] = {-2500, 2500},
-				["unit_text"] = "px",
-			    ["default_value"] = 0,
-			},
-			{
-				["setting_name"] = mod.SETTING_NAMES.HIDE_WEAPON_SLOTS,
-				["widget_type"] = "checkbox",
-				["text"] = mod:localize("HIDE_WEAPON_SLOTS"),
-				["tooltip"] = mod:localize("HIDE_WEAPON_SLOTS_T"),
-				["default_value"] = false,
-				["sub_widgets"] = {
-					{
-						["setting_name"] = mod.SETTING_NAMES.REPOSITION_WEAPON_SLOTS,
-						["widget_type"] = "numeric",
-						["text"] = mod:localize("REPOSITION_WEAPON_SLOTS"),
-						["tooltip"] = mod:localize("REPOSITION_WEAPON_SLOTS_T"),
-						["range"] = {-2, 0},
-						["unit_text"] = " slots",
-					    ["default_value"] = -2,
-					},
-				},
-			},
-		},
 	},
 	{
 		["setting_name"] = mod.SETTING_NAMES.CHAT_GROUP,
@@ -531,6 +455,74 @@ mod_data.options_widgets:extend({
 	},
 })
 
+local player_ui_group =
+{
+	["setting_name"] = mod.SETTING_NAMES.PLAYER_UI_GROUP,
+	["widget_type"] = "group",
+	["text"] = mod:localize("PLAYER_UI_GROUP"),
+	["tooltip"] = mod:localize("PLAYER_UI_GROUP_T"),
+	["sub_widgets"] = {
+		{
+			["setting_name"] = mod.SETTING_NAMES.HIDE_PLAYER_PORTRAIT,
+			["widget_type"] = "checkbox",
+			["text"] = mod:localize("hide_player_portrait"),
+			["tooltip"] = mod:localize("hide_player_portrait_tooltip"),
+			["default_value"] = false,
+		},
+		{
+			["setting_name"] = mod.SETTING_NAMES.HIDE_HOTKEYS,
+			["widget_type"] = "checkbox",
+			["text"] = mod:localize("hide_hotkeys"),
+			["tooltip"] = mod:localize("hide_hotkeys_tooltip"),
+			["default_value"] = false,
+		},
+		{
+			["setting_name"] = mod.SETTING_NAMES.PERSISTENT_AMMO_COUNTER,
+			["widget_type"] = "checkbox",
+			["text"] = mod:localize("PERSISTENT_AMMO_COUNTER"),
+			["tooltip"] = mod:localize("PERSISTENT_AMMO_COUNTER_T"),
+			["default_value"] = true,
+		},
+		{
+			["setting_name"] = mod.SETTING_NAMES.PLAYER_UI_OFFSET_X,
+			["widget_type"] = "numeric",
+			["text"] = mod:localize("PLAYER_UI_OFFSET_X"),
+			["tooltip"] = mod:localize("PLAYER_UI_OFFSET_X_T"),
+			["range"] = {-2500, 2500},
+			["unit_text"] = "px",
+		    ["default_value"] = 0,
+		},
+		{
+			["setting_name"] = mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y,
+			["widget_type"] = "numeric",
+			["text"] = mod:localize("PLAYER_UI_OFFSET_Y"),
+			["tooltip"] = mod:localize("PLAYER_UI_OFFSET_Y_T"),
+			["range"] = {-2500, 2500},
+			["unit_text"] = "px",
+		    ["default_value"] = 0,
+		},
+		{
+			["setting_name"] = mod.SETTING_NAMES.HIDE_WEAPON_SLOTS,
+			["widget_type"] = "checkbox",
+			["text"] = mod:localize("HIDE_WEAPON_SLOTS"),
+			["tooltip"] = mod:localize("HIDE_WEAPON_SLOTS_T"),
+			["default_value"] = false,
+			["sub_widgets"] = {
+				{
+					["setting_name"] = mod.SETTING_NAMES.REPOSITION_WEAPON_SLOTS,
+					["widget_type"] = "numeric",
+					["text"] = mod:localize("REPOSITION_WEAPON_SLOTS"),
+					["tooltip"] = mod:localize("REPOSITION_WEAPON_SLOTS_T"),
+					["range"] = {-2, 0},
+					["unit_text"] = " slots",
+				    ["default_value"] = -2,
+				},
+			},
+		},
+	},
+}
+mod_data.options_widgets:insert(9, player_ui_group)
+
 mod.add_option(
 	"HIDE_CROSSHAIR_WHEN_INSPECTING",
 	{
@@ -550,8 +542,58 @@ mod.add_option(
 	},
 	"Show Reload Reminder",
 	"Change color of ammo in clip to red when ranged weapon not reloaded.",
-	mod.SETTING_NAMES.PLAYER_UI_GROUP,
+	player_ui_group.sub_widgets,
 	1
+)
+
+local mini_hud_preset_subs = mod.add_option(
+	"MINI_HUD_PRESET",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Mini HUD Preset",
+	"Use console HP bar while keeping the rest of the PC UI elements."
+		.."\nWorks only with the Controller HUD Layout option disabled."
+		.."\nDISABLING AND RETURNING TO NORMAL HUD STATE REQUIRES GAME RESTART",
+	nil,
+	1
+)
+
+local player_ammo_bar_subs = mod.add_option(
+	"PLAYER_AMMO_BAR",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Player Ammo Bar",
+	"Add an ammo bar for the player.",
+	mini_hud_preset_subs
+)
+
+mod.add_option(
+	"PLAYER_AMMO_BAR_HEIGHT",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {1, 8},
+		["unit_text"] = "px",
+	    ["default_value"] = 2,
+	},
+	"Height",
+	"Height of the ammo bar in pixels.",
+	player_ammo_bar_subs
+)
+
+mod.add_option(
+	"PLAYER_AMMO_BAR_ALPHA",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 255},
+	    ["default_value"] = 255,
+	},
+	"Transparency",
+	"Make the ammo bar transparent, 0 being fully invisible.",
+	player_ammo_bar_subs
 )
 
 return mod_data

@@ -213,14 +213,6 @@ mod.localizations:update({
 	REPOSITION_WEAPON_SLOTS_T = {
 		en = "Reposition the visible item slots to the left."
 	},
-	MINI_HUD_PRESET = {
-		en = "Mini HUD Preset"
-	},
-	MINI_HUD_PRESET_T = {
-		en = "Use console HP bar while keeping the rest of the PC UI elements."
-		.."\nWorks only with the Controller HUD Layout option disabled."
-		.."\nDISABLING AND RETURNING TO NORMAL HUD STATE REQUIRES GAME RESTART"
-	},
 	TEAM_UI_PORTRAIT_SCALE = {
 		en = "Portrait Scale"
 	},
@@ -344,6 +336,15 @@ mod.localizations:update({
 	},
 	BARRAGE = {
 		en = "Barrage Trait"
+	},
+	DMG_POT = {
+		en = "Strength Potion"
+	},
+	SPEED_POT = {
+		en = "Speed Potion"
+	},
+	CDR_POT = {
+		en = "CDR Potion"
 	},
 
 })

@@ -251,16 +251,16 @@ mod.localizations:update({
 			.."\nThose are BH crit, Swift Slaying, Barrage, Hunter."
 	},
 	SECOND_BUFF_BAR_OFFSET_X = {
-		en = "Second Buff Bar X Offset"
+		en = "X Offset"
 	},
 	SECOND_BUFF_BAR_OFFSET_X_T = {
-		en = "Optionally offset the second buff bar on the x axis."
+		en = "Optionally offset the Priority Buff Bar on the x axis."
 	},
 	SECOND_BUFF_BAR_OFFSET_Y = {
-		en = "Second Buff Bar Y Offset"
+		en = "Y Offset"
 	},
 	SECOND_BUFF_BAR_OFFSET_Y_T = {
-		en = "Optionally offset the second buff bar on the y axis."
+		en = "Optionally offset the Priority Buff Bar on the y axis."
 	},
 	PLAYER_UI_GROUP = {
 		en = "Player UI Tweaks"

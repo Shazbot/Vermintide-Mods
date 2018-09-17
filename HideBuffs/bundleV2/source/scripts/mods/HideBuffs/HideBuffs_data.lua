@@ -211,93 +211,6 @@ mod_data.options_widgets:extend({
 		},
 	},
 	{
-		["setting_name"] = mod.SETTING_NAMES.TEAM_UI_GROUP,
-		["widget_type"] = "group",
-		["text"] = mod:localize("TEAM_UI_GROUP"),
-		["tooltip"] = mod:localize("TEAM_UI_GROUP_T"),
-		["sub_widgets"] = {
-			{
-				["setting_name"] = mod.SETTING_NAMES.TEAM_UI_FLOWS_HORIZONTALLY,
-				["widget_type"] = "checkbox",
-				["text"] = mod:localize("TEAM_UI_FLOWS_HORIZONTALLY"),
-				["tooltip"] = mod:localize("TEAM_UI_FLOWS_HORIZONTALLY_T"),
-				["default_value"] = false,
-			},
-			{
-				["setting_name"] = mod.SETTING_NAMES.TEAM_UI_OFFSET_X,
-				["widget_type"] = "numeric",
-				["text"] = mod:localize("TEAM_UI_OFFSET_X"),
-				["tooltip"] = mod:localize("TEAM_UI_OFFSET_X_T"),
-				["range"] = {-2500, 2500},
-				["unit_text"] = "px",
-			    ["default_value"] = 0,
-			},
-			{
-				["setting_name"] = mod.SETTING_NAMES.TEAM_UI_OFFSET_Y,
-				["widget_type"] = "numeric",
-				["text"] = mod:localize("TEAM_UI_OFFSET_Y"),
-				["tooltip"] = mod:localize("TEAM_UI_OFFSET_Y_T"),
-				["range"] = {-2500, 2500},
-				["unit_text"] = "px",
-			    ["default_value"] = 0,
-			},
-			{
-				["setting_name"] = mod.SETTING_NAMES.TEAM_UI_SPACING,
-				["widget_type"] = "numeric",
-				["text"] = mod:localize("TEAM_UI_SPACING"),
-				["tooltip"] = mod:localize("TEAM_UI_SPACING_T"),
-				["range"] = {0, 2000},
-				["unit_text"] = "px",
-			    ["default_value"] = 220,
-			},
-			{
-				["setting_name"] = mod.SETTING_NAMES.TEAM_UI_PORTRAIT_SCALE,
-				["widget_type"] = "numeric",
-				["text"] = mod:localize("TEAM_UI_PORTRAIT_SCALE"),
-				["tooltip"] = mod:localize("TEAM_UI_PORTRAIT_SCALE_T"),
-				["range"] = {0, 300},
-				["unit_text"] = "%",
-			    ["default_value"] = 100,
-			},
-			{
-				["setting_name"] = mod.SETTING_NAMES.TEAM_UI_PORTRAIT_OFFSET_X,
-				["widget_type"] = "numeric",
-				["text"] = mod:localize("TEAM_UI_PORTRAIT_OFFSET_X"),
-				["tooltip"] = mod:localize("TEAM_UI_PORTRAIT_OFFSET_X_T"),
-				["range"] = {-2500, 2500},
-				["unit_text"] = "px",
-			    ["default_value"] = 0,
-			},
-			{
-				["setting_name"] = mod.SETTING_NAMES.TEAM_UI_PORTRAIT_OFFSET_Y,
-				["widget_type"] = "numeric",
-				["text"] = mod:localize("TEAM_UI_PORTRAIT_OFFSET_Y"),
-				["tooltip"] = mod:localize("TEAM_UI_PORTRAIT_OFFSET_Y_T"),
-				["range"] = {-2500, 2500},
-				["unit_text"] = "px",
-			    ["default_value"] = 0,
-			},
-			{
-				["setting_name"] = mod.SETTING_NAMES.TEAM_UI_NAME_OFFSET_X,
-				["widget_type"] = "numeric",
-				["text"] = mod:localize("TEAM_UI_NAME_OFFSET_X"),
-				["tooltip"] = mod:localize("TEAM_UI_NAME_OFFSET_X_T"),
-				["range"] = {-2500, 2500},
-				["unit_text"] = "px",
-			    ["default_value"] = 0,
-			},
-			{
-				["setting_name"] = mod.SETTING_NAMES.TEAM_UI_NAME_OFFSET_Y,
-				["widget_type"] = "numeric",
-				["text"] = mod:localize("TEAM_UI_NAME_OFFSET_Y"),
-				["tooltip"] = mod:localize("TEAM_UI_NAME_OFFSET_Y_T"),
-				["range"] = {-2500, 2500},
-				["unit_text"] = "px",
-			    ["default_value"] = 0,
-			},
-		},
-	},
-	{
 		["setting_name"] = mod.SETTING_NAMES.AMMO_COUNTER_GROUP,
 		["widget_type"] = "group",
 		["text"] = mod:localize("AMMO_COUNTER_GROUP"),
@@ -521,7 +434,7 @@ local player_ui_group =
 		},
 	},
 }
-mod_data.options_widgets:insert(9, player_ui_group)
+mod_data.options_widgets:insert(8, player_ui_group)
 
 mod.add_option(
 	"HIDE_CROSSHAIR_WHEN_INSPECTING",
@@ -530,7 +443,7 @@ mod.add_option(
 		["default_value"] = false,
 	},
 	"Hide Crosshair When Inspecting Hero",
-	"Hide the crosshair when inspecting hero.",
+	"Hide the crosshair when inspecting hero. Also hides outlines.",
 	nil,
 	1
 )
@@ -594,6 +507,160 @@ mod.add_option(
 	"Transparency",
 	"Make the ammo bar transparent, 0 being fully invisible.",
 	player_ammo_bar_subs
+)
+
+local team_ui_group =
+{
+	["setting_name"] = mod.SETTING_NAMES.TEAM_UI_GROUP,
+	["widget_type"] = "group",
+	["text"] = mod:localize("TEAM_UI_GROUP"),
+	["tooltip"] = mod:localize("TEAM_UI_GROUP_T"),
+	["sub_widgets"] = {
+		{
+			["setting_name"] = mod.SETTING_NAMES.TEAM_UI_FLOWS_HORIZONTALLY,
+			["widget_type"] = "checkbox",
+			["text"] = mod:localize("TEAM_UI_FLOWS_HORIZONTALLY"),
+			["tooltip"] = mod:localize("TEAM_UI_FLOWS_HORIZONTALLY_T"),
+			["default_value"] = false,
+		},
+		{
+			["setting_name"] = mod.SETTING_NAMES.TEAM_UI_OFFSET_X,
+			["widget_type"] = "numeric",
+			["text"] = mod:localize("TEAM_UI_OFFSET_X"),
+			["tooltip"] = mod:localize("TEAM_UI_OFFSET_X_T"),
+			["range"] = {-2500, 2500},
+			["unit_text"] = "px",
+		    ["default_value"] = 0,
+		},
+		{
+			["setting_name"] = mod.SETTING_NAMES.TEAM_UI_OFFSET_Y,
+			["widget_type"] = "numeric",
+			["text"] = mod:localize("TEAM_UI_OFFSET_Y"),
+			["tooltip"] = mod:localize("TEAM_UI_OFFSET_Y_T"),
+			["range"] = {-2500, 2500},
+			["unit_text"] = "px",
+		    ["default_value"] = 0,
+		},
+		{
+			["setting_name"] = mod.SETTING_NAMES.TEAM_UI_SPACING,
+			["widget_type"] = "numeric",
+			["text"] = mod:localize("TEAM_UI_SPACING"),
+			["tooltip"] = mod:localize("TEAM_UI_SPACING_T"),
+			["range"] = {0, 2000},
+			["unit_text"] = "px",
+		    ["default_value"] = 220,
+		},
+		{
+			["setting_name"] = mod.SETTING_NAMES.TEAM_UI_PORTRAIT_SCALE,
+			["widget_type"] = "numeric",
+			["text"] = mod:localize("TEAM_UI_PORTRAIT_SCALE"),
+			["tooltip"] = mod:localize("TEAM_UI_PORTRAIT_SCALE_T"),
+			["range"] = {0, 300},
+			["unit_text"] = "%",
+		    ["default_value"] = 100,
+		},
+		{
+			["setting_name"] = mod.SETTING_NAMES.TEAM_UI_PORTRAIT_OFFSET_X,
+			["widget_type"] = "numeric",
+			["text"] = mod:localize("TEAM_UI_PORTRAIT_OFFSET_X"),
+			["tooltip"] = mod:localize("TEAM_UI_PORTRAIT_OFFSET_X_T"),
+			["range"] = {-2500, 2500},
+			["unit_text"] = "px",
+		    ["default_value"] = 0,
+		},
+		{
+			["setting_name"] = mod.SETTING_NAMES.TEAM_UI_PORTRAIT_OFFSET_Y,
+			["widget_type"] = "numeric",
+			["text"] = mod:localize("TEAM_UI_PORTRAIT_OFFSET_Y"),
+			["tooltip"] = mod:localize("TEAM_UI_PORTRAIT_OFFSET_Y_T"),
+			["range"] = {-2500, 2500},
+			["unit_text"] = "px",
+		    ["default_value"] = 0,
+		},
+		{
+			["setting_name"] = mod.SETTING_NAMES.TEAM_UI_NAME_OFFSET_X,
+			["widget_type"] = "numeric",
+			["text"] = mod:localize("TEAM_UI_NAME_OFFSET_X"),
+			["tooltip"] = mod:localize("TEAM_UI_NAME_OFFSET_X_T"),
+			["range"] = {-2500, 2500},
+			["unit_text"] = "px",
+		    ["default_value"] = 0,
+		},
+		{
+			["setting_name"] = mod.SETTING_NAMES.TEAM_UI_NAME_OFFSET_Y,
+			["widget_type"] = "numeric",
+			["text"] = mod:localize("TEAM_UI_NAME_OFFSET_Y"),
+			["tooltip"] = mod:localize("TEAM_UI_NAME_OFFSET_Y_T"),
+			["range"] = {-2500, 2500},
+			["unit_text"] = "px",
+		    ["default_value"] = 0,
+		},
+	},
+}
+mod_data.options_widgets:insert(11, team_ui_group)
+
+mod.add_option(
+	"TEAM_UI_HP_BAR_SCALE",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 500},
+		["unit_text"] = "%",
+	    ["default_value"] = 100,
+	},
+	"HP Bar Scale",
+	"Scale the HP Bar.",
+	team_ui_group.sub_widgets,
+	5
+)
+mod.add_option(
+	"TEAM_UI_HP_BAR_OFFSET_X",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1000, 1000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"HP Bar Offset X",
+	"Optionally offset the HP bar on the x axis.",
+	team_ui_group.sub_widgets,
+	6
+)
+mod.add_option(
+	"TEAM_UI_HP_BAR_OFFSET_Y",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1000, 1000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"HP Bar Offset Y",
+	"Optionally offset the HP bar on the y axis.",
+	team_ui_group.sub_widgets,
+	7
+)
+mod.add_option(
+	"TEAM_UI_ITEM_SLOTS_OFFSET_X",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1000, 1000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Item Slots Offset X",
+	"Optionally offset the item slots on the x axis.",
+	team_ui_group.sub_widgets
+)
+mod.add_option(
+	"TEAM_UI_ITEM_SLOTS_OFFSET_Y",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1000, 1000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Item Slots Offset Y",
+	"Optionally offset the item slots on the y axis.",
+	team_ui_group.sub_widgets
 )
 
 return mod_data

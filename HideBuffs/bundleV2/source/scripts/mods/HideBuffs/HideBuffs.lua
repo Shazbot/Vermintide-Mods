@@ -3,7 +3,7 @@ local mod = get_mod("HideBuffs") -- luacheck: ignore get_mod
 -- luacheck: globals BuffUI EquipmentUI AbilityUI UnitFrameUI MissionObjectiveUI TutorialUI
 -- luacheck: globals local_require math UnitFramesHandler table UIWidget UIRenderer
 -- luacheck: globals CrosshairUI Managers ScriptUnit BossHealthUI Colors UIWidgets
--- luacheck: globals RETAINED_MODE_ENABLED BackendUtils
+-- luacheck: globals RETAINED_MODE_ENABLED BackendUtils OutlineSystem
 
 local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
@@ -287,7 +287,7 @@ end)
 
 mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 	mod:pcall(function()
-		if not self._mod_frame_index then
+		if not self._mod_frame_index then -- PLAYER UI
 			self.ui_scenegraph.pivot.position[1] = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
 			self.ui_scenegraph.pivot.position[2] = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
 
@@ -310,7 +310,6 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 
 				local ability_dynamic = self._ability_widgets.ability_dynamic
 				if ability_dynamic.style.ability_bar.size then
-
 					local ability_progress = ability_dynamic.content.ability_bar.bar_value
 					local bar_length = 515
 					local size_x = bar_length * ability_progress
@@ -321,6 +320,129 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 					ability_dynamic.offset[3] = 50
 				end
 				self._health_widgets.health_dynamic.style.grimoire_debuff_divider.offset[3] = 200
+			end
+		else -- TEAMMATE UI
+			-- loadout dynamic offset(item slots)
+			local loadout_dynamic = self._equipment_widgets.loadout_dynamic
+			loadout_dynamic.offset[1] = -15 + mod:get(mod.SETTING_NAMES.TEAM_UI_ITEM_SLOTS_OFFSET_X)
+			loadout_dynamic.offset[2] = -121 + mod:get(mod.SETTING_NAMES.TEAM_UI_ITEM_SLOTS_OFFSET_Y)
+
+			local hp_bar_scale = mod:get(mod.SETTING_NAMES.TEAM_UI_HP_BAR_SCALE) / 100
+			local hp_bar_size = { 92*hp_bar_scale, 9*hp_bar_scale }
+
+			local static_w_style = self:_widget_by_feature("default", "static").style
+			static_w_style.ability_bar_bg.size = { hp_bar_size[1], 5*hp_bar_scale }
+
+			local ability_bar_delta_y = 5*hp_bar_scale - 5
+			local delta_x = hp_bar_size[1] - 92
+			local delta_y = hp_bar_size[2] - 9
+			static_w_style.hp_bar_bg.size = {
+				100 + delta_x,
+				17 + delta_y + ability_bar_delta_y
+			}
+			static_w_style.hp_bar_fg.size = {
+				100 + delta_x,
+				24 + delta_y + ability_bar_delta_y
+			}
+			static_w_style.ability_bar_bg.size = {
+				92 + delta_x,
+				5*hp_bar_scale
+			}
+
+			local hp_bar_offset_x = mod:get(mod.SETTING_NAMES.TEAM_UI_HP_BAR_OFFSET_X)
+			local hp_bar_offset_y = mod:get(mod.SETTING_NAMES.TEAM_UI_HP_BAR_OFFSET_Y)
+
+			local def_dynamic_w = self:_widget_by_feature("default", "dynamic")
+			def_dynamic_w.style.ammo_indicator.offset[1] = 60 + delta_x + hp_bar_offset_x
+			def_dynamic_w.style.ammo_indicator.offset[2] = -40 + delta_y + hp_bar_offset_y
+
+			static_w_style.ability_bar_bg.offset[1] = -46 + hp_bar_offset_x
+			static_w_style.ability_bar_bg.offset[2] = -34 + hp_bar_offset_y
+
+			static_w_style.hp_bar_fg.offset[1] = -50 + hp_bar_offset_x
+			static_w_style.hp_bar_fg.offset[2] = -36 + hp_bar_offset_y
+
+			static_w_style.hp_bar_bg.offset[1] = -50 + hp_bar_offset_x
+			static_w_style.hp_bar_bg.offset[2] = -29 + hp_bar_offset_y
+
+			local hp_dynamic = self:_widget_by_name("health_dynamic")
+			local hp_dynamic_style = hp_dynamic.style
+
+			hp_dynamic_style.hp_bar.offset[1] = -46 + hp_bar_offset_x
+			hp_dynamic_style.hp_bar.offset[2] = -25 + delta_y/2 + hp_bar_offset_y
+
+			hp_dynamic_style.total_health_bar.offset[1] = -46 + hp_bar_offset_x
+			hp_dynamic_style.total_health_bar.offset[2] = -25 + delta_y/2 + hp_bar_offset_y
+
+			hp_dynamic_style.total_health_bar.size = {
+				hp_bar_size[1],
+				hp_bar_size[2]
+			}
+			hp_dynamic_style.hp_bar.size = {
+				hp_bar_size[1],
+				hp_bar_size[2]
+			}
+			hp_dynamic_style.grimoire_bar.size = {
+				hp_bar_size[1],
+				hp_bar_size[2]
+			}
+			hp_dynamic_style.grimoire_debuff_divider.size = { 3, 28 + delta_y }
+
+			local health_bar_size_fraction = 1
+			local original_health_bar_size = {
+				health_bar_size_fraction * 92,
+				health_bar_size_fraction * 9
+			}
+			local health_bar_offset = {
+				-(original_health_bar_size[1] / 2),
+				-25 * health_bar_size_fraction,
+				0
+			}
+			for _, pass in ipairs( hp_dynamic.element.passes ) do
+				if pass.style_id == "grimoire_debuff_divider" then
+					pass.content_change_function = function (content, style)
+						local hp_bar_content = content.hp_bar
+						local internal_bar_value = hp_bar_content.internal_bar_value
+						local actual_active_percentage = content.actual_active_percentage or 1
+						local grim_progress = math.max(internal_bar_value, actual_active_percentage)
+						local offset = style.offset
+						offset[1] = health_bar_offset[1] + hp_bar_size[1] * grim_progress + hp_bar_offset_x
+					end
+				end
+				if pass.style_id == "grimoire_bar" then
+					pass.content_change_function = function (content, style)
+						local parent_content = content.parent
+						local hp_bar_content = parent_content.hp_bar
+						local internal_bar_value = hp_bar_content.internal_bar_value
+						local actual_active_percentage = parent_content.actual_active_percentage or 1
+						local grim_progress = math.max(internal_bar_value, actual_active_percentage)
+						local size = style.size
+						local uvs = content.uvs
+						local offset = style.offset
+						local bar_length = hp_bar_size[1]
+						uvs[1][1] = grim_progress
+						size[1] = bar_length * (1 - grim_progress)
+						offset[1] = 2 + health_bar_offset[1] + bar_length * grim_progress + hp_bar_offset_x
+					end
+				end
+			end
+
+			local ability_dynamic = self:_widget_by_feature("ability", "dynamic")
+			ability_dynamic.style.ability_bar.size[2] = 5*hp_bar_scale
+			ability_dynamic.style.ability_bar.offset[1] = -46 + hp_bar_offset_x
+			ability_dynamic.style.ability_bar.offset[2] = -34 + hp_bar_offset_y
+
+			for _, pass in ipairs( ability_dynamic.element.passes ) do
+				if pass.style_id == "ability_bar" then
+					pass.content_change_function = function (content, style)
+						local ability_progress = content.bar_value
+						local size = style.size
+						local uvs = content.uvs
+						local bar_length = hp_bar_size[1]
+						uvs[2][2] = ability_progress
+						size[1] = bar_length * ability_progress
+					end
+				end
 			end
 		end
 	end)
@@ -729,6 +851,21 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 				self._default_widgets.default_static.style.character_portrait.size[2]
 			widget.style.portrait_icon.offset[2] = delta_y/2 + team_ui_portrait_offset_y
 
+			local def_dynamic_w = self:_widget_by_feature("default", "dynamic")
+
+			local adjust_offsets_of = {
+				def_dynamic_w.style.talk_indicator,
+				def_dynamic_w.style.talk_indicator_highlight,
+				def_dynamic_w.style.talk_indicator_highlight_glow,
+			}
+			for _, talk_widget in ipairs( adjust_offsets_of ) do
+				talk_widget.offset[1] = 60 + team_ui_portrait_offset_x
+				talk_widget.offset[2] = 30 + team_ui_portrait_offset_y
+			end
+
+			def_dynamic_w.style.connecting_icon.offset[1] = -25 + team_ui_portrait_offset_x
+			def_dynamic_w.style.connecting_icon.offset[2] = 34 + team_ui_portrait_offset_y
+
 			local widgets = self._widgets
 			local previous_widget = widgets.portrait_static
 			if (
@@ -748,12 +885,12 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 				self:set_portrait_frame(current_frame_settings_name, previous_widget.content.level_text)
 			end
 
-			local widget = self:_widget_by_feature("player_name", "static")
-			if widget then
-				widget.style.player_name.offset[1] = 0 + mod:get(mod.SETTING_NAMES.TEAM_UI_NAME_OFFSET_X)
-				widget.style.player_name.offset[2] = 110 + mod:get(mod.SETTING_NAMES.TEAM_UI_NAME_OFFSET_Y)
-				widget.style.player_name_shadow.offset[1] = 2 + mod:get(mod.SETTING_NAMES.TEAM_UI_NAME_OFFSET_X)
-				widget.style.player_name_shadow.offset[2] = 110 - 2 + mod:get(mod.SETTING_NAMES.TEAM_UI_NAME_OFFSET_Y)
+			local def_static_widget = self:_widget_by_feature("player_name", "static")
+			if def_static_widget then
+				def_static_widget.style.player_name.offset[1] = 0 + mod:get(mod.SETTING_NAMES.TEAM_UI_NAME_OFFSET_X)
+				def_static_widget.style.player_name.offset[2] = 110 + mod:get(mod.SETTING_NAMES.TEAM_UI_NAME_OFFSET_Y)
+				def_static_widget.style.player_name_shadow.offset[1] = 2 + mod:get(mod.SETTING_NAMES.TEAM_UI_NAME_OFFSET_X)
+				def_static_widget.style.player_name_shadow.offset[2] = 110 - 2 + mod:get(mod.SETTING_NAMES.TEAM_UI_NAME_OFFSET_Y)
 			end
 		end
 	end)
@@ -900,6 +1037,22 @@ mod:hook(CrosshairUI, "draw", function(func, self, ...)
 	end
 
 	return func(self, ...)
+end)
+
+mod:hook(OutlineSystem, "always", function(func, self, unit, extension)
+	if mod:get(mod.SETTING_NAMES.HIDE_CROSSHAIR_WHEN_INSPECTING) then
+		local just_return
+		pcall(function()
+			local player_unit = Managers.player:local_player().player_unit
+			local character_state_machine_ext = ScriptUnit.extension(player_unit, "character_state_machine_system")
+			just_return = character_state_machine_ext:current_state() == "inspecting"
+		end)
+		if just_return then
+			return false
+		end
+	end
+
+	return func(self, unit, extension)
 end)
 
 --- Return if the player need to reload ranged weapon,

@@ -285,6 +285,7 @@ mod.localizations:update({
 	},
 	PERSISTENT_AMMO_COUNTER_T = {
 		en = "Keep the ammo counter visible with melee weapon equipped."
+			.."\nSame thing as the stand-alone mod version of this option."
 	},
 	HIDE_BOSS_HP_BAR = {
 		en = "Hide Boss HP Bar"

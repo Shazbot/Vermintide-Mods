@@ -1,6 +1,7 @@
 local mod = get_mod("NeuterUltEffects") -- luacheck: ignore get_mod
 
 -- luacheck: globals BuffFunctionTemplates MOOD_BLACKBOARD StateInGameRunning BuffExtension PlayerUnitFirstPerson
+-- luacheck: globals World
 
 local pl = require'pl.import_into'()
 
@@ -60,15 +61,21 @@ mod:hook(StateInGameRunning, "update_mood", function (func, ...)
 end)
 
 --- Skip audio distortions.
-local name_to_event = {
+mod.name_to_event = {
 	SLAYER = { "Play_career_ability_bardin_slayer_loop", "Stop_career_ability_bardin_slayer_loop" },
 	HUNTSMAN = { "Play_career_ability_markus_huntsman_loop", "Stop_career_ability_markus_huntsman_loop" },
 	SHADE = { "Play_career_ability_kerillian_shade_loop", "Stop_career_ability_kerillian_shade_loop" },
 	RANGER = { "Play_career_ability_bardin_ranger_loop", "Stop_career_ability_bardin_ranger_loop" },
 	ZEALOT = { "Play_career_ability_victor_zealot_loop", "Stop_career_ability_victor_zealot_loop" },
 }
+mod.pot_to_event = {
+	STR_POT = "hud_gameplay_stance_smiter_activate",
+	SPEED_POT = "hud_gameplay_stance_ninjafencer_activate",
+	CDR_POT = "hud_gameplay_stance_ninjafencer_activate",
+}
 mod:hook(PlayerUnitFirstPerson, "play_hud_sound_event", function (func, self, event_name, ...)
-	for name, event_names in pairs( name_to_event ) do
+	-- ults
+	for name, event_names in pairs( mod.name_to_event ) do
 		if mod:get(mod.SETTING_NAMES[name.."_AUDIO"]) then
 			for _, ult_event_name in ipairs( event_names ) do
 				if ult_event_name == event_name then
@@ -77,17 +84,33 @@ mod:hook(PlayerUnitFirstPerson, "play_hud_sound_event", function (func, self, ev
 			end
 		end
 	end
+
+	-- potions
+	for name, pot_event in pairs( mod.pot_to_event ) do
+		if mod:get(mod.SETTING_NAMES[name.."_AUDIO"]) then
+			if event_name == pot_event then
+				return
+			end
+		end
+	end
+
 	return func(self, event_name, ...)
 end)
 
 --- Skip huntsman, ranger, shade ult swirly screen effect.
-local name_to_fx = {
+mod.ult_name_to_fx = {
 	HUNTSMAN = { "fx/screenspace_huntsman_skill_01", "fx/screenspace_huntsman_skill_02" },
 	SHADE = { "fx/screenspace_shade_skill_01", "fx/screenspace_shade_skill_02" },
 	RANGER = { "fx/screenspace_ranger_skill_01", "fx/screenspace_ranger_skill_02" },
 }
+mod.pot_name_to_fx = {
+	STR_POT = "fx/screenspace_potion_01",
+	SPEED_POT = "fx/screenspace_potion_02",
+	CDR_POT = "fx/screenspace_potion_02",
+}
 mod:hook(BuffExtension, "_play_screen_effect", function (func, self, effect)
-	for name, fxs in pairs( name_to_fx ) do
+	-- ults
+	for name, fxs in pairs( mod.ult_name_to_fx ) do
 		if mod:get(mod.SETTING_NAMES[name.."_VISUAL"]) then
 			for _, fx in ipairs( fxs ) do
 				if fx == effect then
@@ -96,5 +119,15 @@ mod:hook(BuffExtension, "_play_screen_effect", function (func, self, effect)
 			end
 		end
 	end
+
+	-- potions
+	for name, pot_fx in pairs( mod.pot_name_to_fx ) do
+		if mod:get(mod.SETTING_NAMES[name.."_VISUAL"]) then
+			if effect == pot_fx then
+				return
+			end
+		end
+	end
+
 	return func(self, effect)
 end)

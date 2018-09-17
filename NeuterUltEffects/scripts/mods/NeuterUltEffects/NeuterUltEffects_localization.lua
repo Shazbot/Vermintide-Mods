@@ -1,6 +1,12 @@
+-- luacheck: ignore get_mod
+local mod = get_mod("NeuterUltEffects")
+
+local pl = require'pl.import_into'()
 local stringx = require'pl.stringx'
 
-local localization = {
+mod.localizations = mod.localizations or pl.Map()
+
+mod.localizations:update({
 	mod_name= {
 		en = "Neuter Ult Effects"
 	},
@@ -31,11 +37,16 @@ local localization = {
 	HEALING_T = {
 		en = "Disable getting flashbanged when using healing supplies."
 	},
-}
+})
+
+local localization = mod.localizations
 
 for _, name in ipairs( { "SLAYER", "HUNTSMAN", "SHADE", "ZEALOT", "RANGER" } ) do
 	localization[name.."_GROUP"] = {
 		en = stringx.title(name)
+	}
+	localization[name.."_GROUP_T"] = {
+		en = "Disable audio or visual effects on "..stringx.title(name).." ult."
 	}
 	localization[name.."_VISUAL"] = {
 		en = stringx.title(name).." Visual"

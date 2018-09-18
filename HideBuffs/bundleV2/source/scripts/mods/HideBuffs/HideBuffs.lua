@@ -264,11 +264,14 @@ mod:hook(BuffUI, "draw", function(func, self, dt)
 			self:_align_widgets()
 		end
 
-		if self.ui_scenegraph.buff_pivot.position[1] ~= mod:get(mod.SETTING_NAMES.BUFFS_OFFSET_X)
-		or self.ui_scenegraph.buff_pivot.position[2] ~= mod:get(mod.SETTING_NAMES.BUFFS_OFFSET_Y)
+		local buffs_offset_x = mod:get(mod.SETTING_NAMES.BUFFS_OFFSET_X)
+		local buffs_offset_y = mod:get(mod.SETTING_NAMES.BUFFS_OFFSET_Y)
+
+		if self.ui_scenegraph.buff_pivot.position[1] ~= buffs_offset_x
+		or self.ui_scenegraph.buff_pivot.position[2] ~= buffs_offset_y
 		then
-			self.ui_scenegraph.buff_pivot.position[1] = mod:get(mod.SETTING_NAMES.BUFFS_OFFSET_X)
-			self.ui_scenegraph.buff_pivot.position[2] = mod:get(mod.SETTING_NAMES.BUFFS_OFFSET_Y)
+			self.ui_scenegraph.buff_pivot.position[1] = buffs_offset_x
+			self.ui_scenegraph.buff_pivot.position[2] = buffs_offset_y
 			mod.reset_buff_widgets = true
 		end
 
@@ -285,30 +288,83 @@ mod:hook_safe(UnitFrameUI, "_create_ui_elements", function(self, frame_index)
 	self._mod_frame_index = frame_index -- nil for player, 1 2 3 for other players
 end)
 
+mod.player_ability_dynamic_content_change_fun = function (content, style)
+	if not content.uvs then
+		local ability_progress = content.bar_value
+		local size = style.texture_size
+		local offset = style.offset
+		offset[2] = -size[2] + size[2] * ability_progress
+		return
+	end
+	local ability_progress = content.bar_value
+	local size = style.size
+	local uvs = content.uvs
+	local bar_length = 448+20+30+10+7
+	uvs[2][2] = ability_progress
+	size[1] = bar_length * ability_progress
+end
+
+mod.original_health_bar_size = {
+	92,
+	9
+}
+mod.health_bar_offset = {
+	-(mod.original_health_bar_size[1] / 2),
+	-25,
+	0
+}
+mod.team_grimoire_debuff_divider_content_change_fun =  function (content, style)
+	local hp_bar_content = content.hp_bar
+	local internal_bar_value = hp_bar_content.internal_bar_value
+	local actual_active_percentage = content.actual_active_percentage or 1
+	local grim_progress = math.max(internal_bar_value, actual_active_percentage)
+	local offset = style.offset
+	offset[1] = mod.health_bar_offset[1] + mod.hp_bar_size[1] * grim_progress + mod.hp_bar_offset_x
+end
+
+mod.team_grimoire_bar_content_change_fun = function (content, style)
+	local parent_content = content.parent
+	local hp_bar_content = parent_content.hp_bar
+	local internal_bar_value = hp_bar_content.internal_bar_value
+	local actual_active_percentage = parent_content.actual_active_percentage or 1
+	local grim_progress = math.max(internal_bar_value, actual_active_percentage)
+	local size = style.size
+	local uvs = content.uvs
+	local offset = style.offset
+	local bar_length = mod.hp_bar_size[1]
+	uvs[1][1] = grim_progress
+	size[1] = bar_length * (1 - grim_progress)
+	offset[1] = 2 + mod.health_bar_offset[1] + bar_length * grim_progress + mod.hp_bar_offset_x
+end
+
+mod.team_ability_bar_content_change_fun = function (content, style)
+	local ability_progress = content.bar_value
+	local size = style.size
+	local uvs = content.uvs
+	local bar_length = mod.hp_bar_size[1]
+	uvs[2][2] = ability_progress
+	size[1] = bar_length * ability_progress
+end
+
 mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 	mod:pcall(function()
+		if not self._is_visible then
+			return -- just from pcall
+		end
+
+		if not self._dirty then
+			return -- just from pcall
+		end
+
 		if not self._mod_frame_index then -- PLAYER UI
 			self.ui_scenegraph.pivot.position[1] = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
 			self.ui_scenegraph.pivot.position[2] = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
 
 			if mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET) then
-				self._ability_widgets.ability_dynamic.element.passes[1].content_change_function = function (content, style)
-					if not content.uvs then
-						local ability_progress = content.bar_value
-						local size = style.texture_size
-						local offset = style.offset
-						offset[2] = -size[2] + size[2] * ability_progress
-						return
-					end
-					local ability_progress = content.bar_value
-					local size = style.size
-					local uvs = content.uvs
-					local bar_length = 448+20+30+10+7
-					uvs[2][2] = ability_progress
-					size[1] = bar_length * ability_progress
-				end
-
 				local ability_dynamic = self._ability_widgets.ability_dynamic
+
+				ability_dynamic.element.passes[1].content_change_function = mod.player_ability_dynamic_content_change_fun
+
 				if ability_dynamic.style.ability_bar.size then
 					local ability_progress = ability_dynamic.content.ability_bar.bar_value
 					local bar_length = 515
@@ -328,7 +384,8 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 			loadout_dynamic.offset[2] = -121 + mod:get(mod.SETTING_NAMES.TEAM_UI_ITEM_SLOTS_OFFSET_Y)
 
 			local hp_bar_scale = mod:get(mod.SETTING_NAMES.TEAM_UI_HP_BAR_SCALE) / 100
-			local hp_bar_size = { 92*hp_bar_scale, 9*hp_bar_scale }
+			mod.hp_bar_size = { 92*hp_bar_scale, 9*hp_bar_scale }
+			local hp_bar_size = mod.hp_bar_size
 
 			local static_w_style = self:_widget_by_feature("default", "static").style
 			static_w_style.ability_bar_bg.size = { hp_bar_size[1], 5*hp_bar_scale }
@@ -351,6 +408,7 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 
 			local hp_bar_offset_x = mod:get(mod.SETTING_NAMES.TEAM_UI_HP_BAR_OFFSET_X)
 			local hp_bar_offset_y = mod:get(mod.SETTING_NAMES.TEAM_UI_HP_BAR_OFFSET_Y)
+			mod.hp_bar_offset_x = hp_bar_offset_x
 
 			local def_dynamic_w = self:_widget_by_feature("default", "dynamic")
 			def_dynamic_w.style.ammo_indicator.offset[1] = 60 + delta_x + hp_bar_offset_x
@@ -388,42 +446,12 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 			}
 			hp_dynamic_style.grimoire_debuff_divider.size = { 3, 28 + delta_y }
 
-			local health_bar_size_fraction = 1
-			local original_health_bar_size = {
-				health_bar_size_fraction * 92,
-				health_bar_size_fraction * 9
-			}
-			local health_bar_offset = {
-				-(original_health_bar_size[1] / 2),
-				-25 * health_bar_size_fraction,
-				0
-			}
 			for _, pass in ipairs( hp_dynamic.element.passes ) do
 				if pass.style_id == "grimoire_debuff_divider" then
-					pass.content_change_function = function (content, style)
-						local hp_bar_content = content.hp_bar
-						local internal_bar_value = hp_bar_content.internal_bar_value
-						local actual_active_percentage = content.actual_active_percentage or 1
-						local grim_progress = math.max(internal_bar_value, actual_active_percentage)
-						local offset = style.offset
-						offset[1] = health_bar_offset[1] + hp_bar_size[1] * grim_progress + hp_bar_offset_x
-					end
+					pass.content_change_function = mod.team_grimoire_debuff_divider_content_change_fun
 				end
 				if pass.style_id == "grimoire_bar" then
-					pass.content_change_function = function (content, style)
-						local parent_content = content.parent
-						local hp_bar_content = parent_content.hp_bar
-						local internal_bar_value = hp_bar_content.internal_bar_value
-						local actual_active_percentage = parent_content.actual_active_percentage or 1
-						local grim_progress = math.max(internal_bar_value, actual_active_percentage)
-						local size = style.size
-						local uvs = content.uvs
-						local offset = style.offset
-						local bar_length = hp_bar_size[1]
-						uvs[1][1] = grim_progress
-						size[1] = bar_length * (1 - grim_progress)
-						offset[1] = 2 + health_bar_offset[1] + bar_length * grim_progress + hp_bar_offset_x
-					end
+					pass.content_change_function = mod.team_grimoire_bar_content_change_fun
 				end
 			end
 
@@ -434,14 +462,7 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 
 			for _, pass in ipairs( ability_dynamic.element.passes ) do
 				if pass.style_id == "ability_bar" then
-					pass.content_change_function = function (content, style)
-						local ability_progress = content.bar_value
-						local size = style.size
-						local uvs = content.uvs
-						local bar_length = hp_bar_size[1]
-						uvs[2][2] = ability_progress
-						size[1] = bar_length * ability_progress
-					end
+					pass.content_change_function = mod.team_ability_bar_content_change_fun
 				end
 			end
 		end
@@ -611,32 +632,32 @@ EquipmentUI._mod_update_ammo = function (self, left_hand_wielded_unit, right_han
 end
 
 mod:hook(EquipmentUI, "draw", function(func, self, dt)
-	if mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET) then
+	if mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET)
+	and self._is_visible
+	then
 		mod:pcall(function()
+			local player_ui_offset_x = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
+			local player_ui_offset_y = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
 			self._static_widgets[1].content.texture_id = "console_hp_bar_frame"
 			self._static_widgets[1].style.texture_id.size = { 576+10, 36 }
-			self._static_widgets[1].offset[1] = 20 + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
-			self._static_widgets[1].offset[2] = 20 + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
+			self._static_widgets[1].offset[1] = 20 + player_ui_offset_x
+			self._static_widgets[1].offset[2] = 20 + player_ui_offset_y
 			self._static_widgets[1].offset[3] = 0
 
 			self._static_widgets[2].style.texture_id.size = { 576-10, 36 }
-			self._static_widgets[2].offset[1] = -50 + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
-			self._static_widgets[2].offset[2] = 20 + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
-		end)
+			self._static_widgets[2].offset[1] = -50 + player_ui_offset_x
+			self._static_widgets[2].offset[2] = 20 + player_ui_offset_y
 
-		if not self._hb_mod_widget then
-			self._hb_mod_widget = UIWidget.init(mod.hp_bg_rect_def)
-		end
-		mod:pcall(function()
+			if not self._hb_mod_widget then
+				self._hb_mod_widget = UIWidget.init(mod.hp_bg_rect_def)
+			end
 			self._hb_mod_widget.style.hp_bar_rect.size = { 576-10, 21 }
-			self._hb_mod_widget.offset[1] = -50 + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
-			self._hb_mod_widget.offset[2] = 23 + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
+			self._hb_mod_widget.offset[1] = -50 + player_ui_offset_x
+			self._hb_mod_widget.offset[2] = 23 + player_ui_offset_y
 
-			self.ui_scenegraph.slot.position[1] = 149 + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
-			self.ui_scenegraph.slot.position[2] = 44 + 15 + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
-		end)
+			self.ui_scenegraph.slot.position[1] = 149 + player_ui_offset_x
+			self.ui_scenegraph.slot.position[2] = 44 + 15 + player_ui_offset_y
 
-		mod:pcall(function()
 			if not self._hb_mod_ammo_widget then
 				self._hb_mod_ammo_widget = UIWidget.init(mod.ammo_widget_def)
 			end
@@ -646,15 +667,15 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 			end
 
 			local player_ammo_bar_height = mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR_HEIGHT)
-			self._mod_ammo_border.offset[1] = -33 + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
-			self._mod_ammo_border.offset[2] = 18 - player_ammo_bar_height + mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
+			self._mod_ammo_border.offset[1] = -33 + player_ui_offset_x
+			self._mod_ammo_border.offset[2] = 18 - player_ammo_bar_height + player_ui_offset_y
 			self._mod_ammo_border.offset[3] = -20
-			self._mod_ammo_border.style.border.size = { mod.ammo_bar_width + 2-10, mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR_HEIGHT) + 2 }
+			self._mod_ammo_border.style.border.size = { mod.ammo_bar_width + 2-10, player_ammo_bar_height + 2 }
 			self._mod_ammo_border.style.border.color = { 255, 0,0,0 }
 			-- self._mod_ammo_border.style.border.color = { 255, 0,255,0 }
 
-			self._hb_mod_ammo_widget.offset[1] = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X) - 25
-			self._hb_mod_ammo_widget.offset[2] = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y) + 43
+			self._hb_mod_ammo_widget.offset[1] = player_ui_offset_x - 25
+			self._hb_mod_ammo_widget.offset[2] = player_ui_offset_y + 43
 			self._hb_mod_ammo_widget.style.ammo_bar.color[1] = mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR_ALPHA)
 			self._hb_mod_ammo_widget.style.ammo_bar.size[2] = player_ammo_bar_height
 			self._hb_mod_ammo_widget.style.ammo_bar.offset[1] = -7
@@ -662,18 +683,20 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 			self._hb_mod_ammo_widget.style.ammo_bar.offset[3] = 50
 		end)
 
-		local need_to_reload, any_ammo_in_clip, can_reload = mod.player_requires_reload()
-		if mod:get(mod.SETTING_NAMES.SHOW_RELOAD_REMINDER) and need_to_reload then
-			local ammo_clip_widget = self._ammo_widgets_by_name.ammo_text_clip
-			local ammo_clip_widget_style = ammo_clip_widget.style.text
-			ammo_clip_widget_style.text_color = Colors.get_color_table_with_alpha("red", 255)
-			if any_ammo_in_clip then
-				ammo_clip_widget_style.text_color = Colors.get_color_table_with_alpha("khaki", 255)
+		if mod:get(mod.SETTING_NAMES.SHOW_RELOAD_REMINDER) then
+			local need_to_reload, any_ammo_in_clip, can_reload = mod.player_requires_reload()
+			if need_to_reload then
+				local ammo_clip_widget = self._ammo_widgets_by_name.ammo_text_clip
+				local ammo_clip_widget_style = ammo_clip_widget.style.text
+				ammo_clip_widget_style.text_color = Colors.get_color_table_with_alpha("red", 255)
+				if any_ammo_in_clip then
+					ammo_clip_widget_style.text_color = Colors.get_color_table_with_alpha("khaki", 255)
+				end
+				if any_ammo_in_clip and not can_reload then
+					ammo_clip_widget_style.text_color = Colors.get_color_table_with_alpha("orange", 255)
+				end
+				self:_set_widget_dirty(ammo_clip_widget)
 			end
-			if any_ammo_in_clip and not can_reload then
-				ammo_clip_widget_style.text_color = Colors.get_color_table_with_alpha("orange", 255)
-			end
-			self:_set_widget_dirty(ammo_clip_widget)
 		end
 
 		local ui_renderer = self.ui_renderer
@@ -698,12 +721,20 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 	return func(self, dt)
 end)
 
+mod.player_ability_ability_effect_left_content_check_fun = function()
+	return false
+end
+
+mod.player_ability_input_text_content_check_fun = function()
+	return not mod:get(mod.SETTING_NAMES.HIDE_HOTKEYS)
+end
+
 mod:hook(AbilityUI, "draw", function (func, self, dt)
 	if mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET) then
 		for _, pass in ipairs( self._widgets[1].element.passes ) do
 			if pass.style_id == "ability_effect_left"
 				or pass.style_id == "ability_effect_top_left" then
-					pass.content_check_function = function() return false end
+					pass.content_check_function = mod.player_ability_ability_effect_left_content_check_fun
 			end
 		end
 
@@ -711,7 +742,7 @@ mod:hook(AbilityUI, "draw", function (func, self, dt)
 			if pass.style_id == "input_text"
 			or pass.style_id == "input_text_shadow"
 			then
-				pass.content_check_function = function() return not mod:get(mod.SETTING_NAMES.HIDE_HOTKEYS) end
+				pass.content_check_function = mod.player_ability_input_text_content_check_fun
 			end
 		end
 
@@ -1021,6 +1052,10 @@ mod:hook(BossHealthUI, "_draw", function(func, self, dt, t)
 	return func(self, dt, t)
 end)
 
+-- not making this mod.disable_outlines to attempt some optimization
+-- since OutlineSystem.always gets called a crazy amount of times per frame
+local disable_outlines = false
+
 --- Hide crosshair when inspecting.
 mod:hook(CrosshairUI, "draw", function(func, self, ...)
 	if mod:get(mod.SETTING_NAMES.HIDE_CROSSHAIR_WHEN_INSPECTING) then
@@ -1031,6 +1066,7 @@ mod:hook(CrosshairUI, "draw", function(func, self, ...)
 			just_return = character_state_machine_ext:current_state() == "inspecting"
 		end)
 
+		disable_outlines = just_return
 		if just_return then
 			return
 		end
@@ -1039,20 +1075,12 @@ mod:hook(CrosshairUI, "draw", function(func, self, ...)
 	return func(self, ...)
 end)
 
-mod:hook(OutlineSystem, "always", function(func, self, unit, extension)
-	if mod:get(mod.SETTING_NAMES.HIDE_CROSSHAIR_WHEN_INSPECTING) then
-		local just_return
-		pcall(function()
-			local player_unit = Managers.player:local_player().player_unit
-			local character_state_machine_ext = ScriptUnit.extension(player_unit, "character_state_machine_system")
-			just_return = character_state_machine_ext:current_state() == "inspecting"
-		end)
-		if just_return then
-			return false
-		end
+mod:hook(OutlineSystem, "always", function(func, self, ...)
+	if disable_outlines then
+		return false
 	end
 
-	return func(self, unit, extension)
+	return func(self, ...)
 end)
 
 --- Return if the player need to reload ranged weapon,

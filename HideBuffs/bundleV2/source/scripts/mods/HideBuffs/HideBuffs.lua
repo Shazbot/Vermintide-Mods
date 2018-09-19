@@ -365,14 +365,16 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 
 				ability_dynamic.element.passes[1].content_change_function = mod.player_ability_dynamic_content_change_fun
 
+				local ability_bar_height = mod:get(mod.SETTING_NAMES.PLAYER_ULT_BAR_HEIGHT)
+
 				if ability_dynamic.style.ability_bar.size then
 					local ability_progress = ability_dynamic.content.ability_bar.bar_value
 					local bar_length = 515
 					local size_x = bar_length * ability_progress
 
-					ability_dynamic.style.ability_bar.size[2] = 9
+					ability_dynamic.style.ability_bar.size[2] = ability_bar_height
 					ability_dynamic.offset[1] = -30-2 --+ bar_length/2 - size_x/2
-					ability_dynamic.offset[2] = 16
+					ability_dynamic.offset[2] = 16 + 3 - ability_bar_height + ability_bar_height/2
 					ability_dynamic.offset[3] = 50
 				end
 				self._health_widgets.health_dynamic.style.grimoire_debuff_divider.offset[3] = 200

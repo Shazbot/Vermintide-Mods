@@ -472,6 +472,18 @@ local mini_hud_preset_subs = mod.add_option(
 	nil,
 	1
 )
+mod.add_option(
+	"PLAYER_ULT_BAR_HEIGHT",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 11},
+		["unit_text"] = "px",
+	    ["default_value"] = 9,
+	},
+	"Ult Bar Height",
+	"Height of the ult bar in pixels.",
+	mini_hud_preset_subs
+)
 
 local player_ammo_bar_subs = mod.add_option(
 	"PLAYER_AMMO_BAR",

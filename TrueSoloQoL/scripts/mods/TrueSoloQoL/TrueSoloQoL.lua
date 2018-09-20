@@ -220,3 +220,13 @@ mod:hook(BreedFreezer, "try_mark_unit_for_freeze", function(func, self, breed, u
 
 	return func(self, breed, unit)
 end)
+
+mod:hook(BreedFreezer, "_setup_freeze_box", function(func, self)
+	local game_mode_key = Managers.state.game_mode:game_mode_key()
+
+	if game_mode_key == "inn" then
+		return
+	end
+
+	return func(self)
+end)

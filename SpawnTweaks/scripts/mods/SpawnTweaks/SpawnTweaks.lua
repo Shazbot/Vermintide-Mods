@@ -209,7 +209,9 @@ local breeds_specials = {
 --- trash spawn without a spawn_type == ambient trash
 mod:hook(ConflictDirector, "spawn_queued_unit", function(func, self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, optional_data, group_data, unit_data)
 	if mod:get(mod.SETTING_NAMES.SPECIALS) == mod.SPECIALS.DISABLE and tablex.find(breeds_specials, breed.name) then
-		return
+		if not stringx.lfind(debug.traceback(), "CreatureSpawner") then
+			return
+		end
 	end
 
 	if mod:get(mod.SETTING_NAMES.DISABLE_FIXED_SPAWNS) and spawn_category == "raw_spawner" then

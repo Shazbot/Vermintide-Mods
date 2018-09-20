@@ -6,6 +6,12 @@ local localization = {
 	mod_description = {
 		en = "Dump information on screen for stream viewers."
 	},
+	set_lines_command_description = {
+		en = "Lines to show below items, separated by \";\"."
+			.."\ne.g. /set_lines NOTES: ; DRUNK STREAM ; I'M SOOOO DRUNK RIGHT NOW GUYS"
+			.."\nStart with just \";\" for an empty line: /set_lines ; LINE1 ; LINE2"
+			.."\nCall without arguments to clear lines. \"/set_lines\""
+	},
 }
 
 local function concat_upper_lower(first, rest)

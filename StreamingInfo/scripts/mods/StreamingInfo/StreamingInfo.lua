@@ -12,6 +12,8 @@ local stringio = require'pl.stringio'
 
 mod.streaming_data = {}
 
+mod.out_lines = pl.List()
+
 mod.append_traits = function(out, slot)
 	local traits = slot.traits
 	if traits and #traits then
@@ -195,12 +197,13 @@ mod.draw_info = function(owner)
 			mod.drew_rect_at_frame = current_frame
 			local padding_x = font_size > 19 and 10+(font_size-19)*25 or 0
 			local padding_y = font_size > 30 and (font_size-30)*0.8 or 0
+			local num_lines = 6 + #mod.out_lines
 			Gui.rect(self.gui,
-				Vector3(start_x-10, start_y-(font_size*0.08)*6-vertical_spacing*5+padding_y-2, 400),
-				Vector2(450+padding_x, 30+vertical_spacing*5+(font_size*0.08)*6+padding_y),
+				Vector3(start_x-10, start_y-(font_size*0.08)*num_lines-vertical_spacing*(num_lines-1)+padding_y-2, 400),
+				Vector2(450+padding_x, 30+vertical_spacing*(num_lines-1)+(font_size*0.08)*num_lines+padding_y),
 				Color(100, 0, 0, 0)
 			)
-			pl.List(stringx.splitlines(mod.get_streaming_info()))
+			pl.List(stringx.splitlines(mod.get_streaming_info())):extend(mod.out_lines)
 				:foreach(function(line)
 					local pos = Vector3(start_x, start_y-vertical_spacing*i, 500)
 					Gui.text(self.gui, line, mod.font_mtrl, font_size, mod.font, pos, header_color)
@@ -212,3 +215,16 @@ mod.draw_info = function(owner)
 		end
 	end)
 end
+
+mod.set_lines = function(...)
+	local arg={...}
+	if #arg == 0 then
+		mod.out_lines = pl.List()
+	end
+	mod:pcall(function()
+		local input = pl.stringx.join(' ', pl.List(arg):map(pl.stringx.strip))
+		mod.out_lines = pl.stringx.split(input, ';')
+	end)
+end
+
+mod:command("set_lines", mod:localize("set_lines_command_description"), function(...) mod.set_lines(...) end)

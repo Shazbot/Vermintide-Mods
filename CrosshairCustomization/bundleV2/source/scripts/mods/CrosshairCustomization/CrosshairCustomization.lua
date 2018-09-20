@@ -177,7 +177,7 @@ mod:hook(CrosshairUI, "draw_projectile_style_crosshair", function (func, self, u
 		self.crosshair_projectile.content.visible = false
 	end
 	local crosshair_line_visible_temp = self.crosshair_line.content.visible
-	if mod:get(mod.SETTING_NAMES.NO_RANGE_MARKERS) then
+	if mod:get(mod.SETTING_NAMES.NO_LINE_MARKERS) then
 		self.crosshair_line.content.visible = false
 	end
 	local crosshair_dot_visible_temp = self.crosshair_dot.content.visible

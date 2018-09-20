@@ -93,6 +93,10 @@ mod:hook(AreaIndicatorUI, "update", function(func, self, dt)
 			self.area_text_box.style.text.text_color[2] = 255
 			self.area_text_box.style.text.text_color[3] = 0
 			self.area_text_box.style.text.text_color[4] = 0
+			if mod.current_location
+			and mod.current_location == "ASSASSIN_WARNING_ASS_2" then
+				self.area_text_box.style.text.text_color[3] = 255
+			end
 		end)
 	end
 	return func(self, dt)
@@ -110,17 +114,20 @@ mod:hook(ConflictDirector, "spawn_queued_unit", function(func, self, breed, boxe
 	if breed.name == "skaven_gutter_runner" then
 		if mod:get(mod.SETTING_NAMES.ASSASSIN_TEXT_WARNING) then
 			UISettings.area_indicator.wait_time = 0
-			local player_unit = Managers.player:local_player().player_unit
-			local player_hud_extension = ScriptUnit.extension(player_unit, "hud_system")
-			if mod.get_num_alive_assassins() > 0 then
-				player_hud_extension.current_location = "ASSASSIN_WARNING_ASS_"..(mod.get_num_alive_assassins()+1)
-			else
-				if player_hud_extension.current_location == "ASSASSIN_WARNING_ASS!" then
-					player_hud_extension.current_location = "ASSASSIN_WARNING_ASS!_DUPE"
+			mod:pcall(function()
+				local player_unit = Managers.player:local_player().player_unit
+				local player_hud_extension = ScriptUnit.extension(player_unit, "hud_system")
+				if mod.get_num_alive_assassins() > 0 then
+					player_hud_extension.current_location = "ASSASSIN_WARNING_ASS_"..(mod.get_num_alive_assassins()+1)
 				else
-					player_hud_extension.current_location = "ASSASSIN_WARNING_ASS!"
+					if player_hud_extension.current_location == "ASSASSIN_WARNING_ASS!" then
+						player_hud_extension.current_location = "ASSASSIN_WARNING_ASS!_DUPE"
+					else
+						player_hud_extension.current_location = "ASSASSIN_WARNING_ASS!"
+					end
 				end
-			end
+				mod.current_location = player_hud_extension.current_location
+			end)
 		else
 			UISettings.area_indicator.wait_time = 1
 		end

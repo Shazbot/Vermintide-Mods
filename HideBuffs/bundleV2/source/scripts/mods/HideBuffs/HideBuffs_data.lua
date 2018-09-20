@@ -409,18 +409,6 @@ local player_ui_group =
 }
 mod_data.options_widgets:insert(8, player_ui_group)
 
-mod.add_option(
-	"HIDE_CROSSHAIR_WHEN_INSPECTING",
-	{
-		["widget_type"] = "checkbox",
-		["default_value"] = false,
-	},
-	"Hide Crosshair When Inspecting Hero",
-	"Hide the crosshair when inspecting hero. Also hides outlines.",
-	nil,
-	1
-)
-
 local ammo_counter_group_index = pl.tablex.find_if(mod_data.options_widgets,
 	function(option_widget)
 		return option_widget.setting_name == mod.SETTING_NAMES.AMMO_COUNTER_GROUP
@@ -443,6 +431,28 @@ local hide_ui_elements_group_index = pl.tablex.find_if(mod_data.options_widgets,
 		return option_widget.setting_name == mod.SETTING_NAMES.HIDE_UI_ELEMENTS_GROUP
 	end)
 local hide_ui_elements_group = mod_data.options_widgets[hide_ui_elements_group_index]
+mod.add_option(
+	"HIDE_HUD_WHEN_INSPECTING",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Hide HUD When Inspecting Hero",
+	"Hide the HUD when inspecting hero. Also hides outlines.",
+	hide_ui_elements_group.sub_widgets,
+	1
+)
+-- mod.add_option(
+-- 	"HIDE_HUD_HOTKEY",
+-- 	{
+-- 		["widget_type"] = "keybind",
+-- 		["default_value"] = {},
+-- 		["action"] = "hide_hud"
+-- 	},
+-- 	"Hide HUD Hotkey",
+-- 	"Toggle HUD visibility.",
+-- 	hide_ui_elements_group.sub_widgets
+-- )
 mod.add_option(
 	mod.SETTING_NAMES.NO_TUTORIAL_UI,
 	{

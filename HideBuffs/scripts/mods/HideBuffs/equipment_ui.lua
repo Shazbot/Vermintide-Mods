@@ -211,6 +211,45 @@ mod.player_requires_reload = function()
 	return false
 end
 
+UIWidgets._mod_create_border = function (scenegraph_id, retained, thickness, color, layer)
+	local definition = {
+		element = {
+			passes = {
+				{
+					style_id = "border",
+					pass_type = "border",
+					retained_mode = retained,
+				},
+			}
+		},
+		content = {
+		},
+		style = {
+			border = {
+				thickness = thickness or 1,
+				color = color or {255,255,255,255},
+				offset = {
+					0,
+					0,
+					0
+				},
+				size = {
+					500,
+					50
+				}
+			},
+		},
+		offset = {
+			0,
+			0,
+			layer or 0
+		},
+		scenegraph_id = scenegraph_id
+	}
+
+	return definition
+end
+
 mod.hp_bg_rect_def =
 {
 	scenegraph_id = "background_panel_bg",

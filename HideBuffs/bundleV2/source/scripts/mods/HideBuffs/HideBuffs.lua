@@ -1,7 +1,8 @@
 -- luacheck: globals BuffUI EquipmentUI AbilityUI UnitFrameUI MissionObjectiveUI TutorialUI
 -- luacheck: globals local_require math UnitFramesHandler table UIWidget UIRenderer
 -- luacheck: globals CrosshairUI Managers ScriptUnit BossHealthUI Colors UIWidgets
--- luacheck: globals RETAINED_MODE_ENABLED BackendUtils OutlineSystem get_mod
+-- luacheck: globals BackendUtils OutlineSystem get_mod script_data IngameUI
+-- luacheck: globals GameSession
 
 local mod = get_mod("HideBuffs")
 
@@ -285,8 +286,24 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 
 	func(self, dt)
 
+	local has_overcharge
+	if not self.has_ammo and self.has_overcharge then
+		local widget = self._teammate_custom_widget
+		if widget and self.player_unit then
+			pcall(function()
+				local network_manager = Managers.state.network
+				local game = network_manager:game()
+				local go_id = Managers.state.unit_storage:go_id(self.player_unit)
+				local overcharge = GameSession.game_object_field(game, go_id, "overcharge_percentage")
+				widget.content.ammo_bar.bar_value = overcharge
+				has_overcharge = overcharge and overcharge > 0
+			end)
+		end
+	end
+
 	if self._mod_frame_index
 	and self._is_visible
+	and (self.has_ammo or has_overcharge)
 	and mod:get(mod.SETTING_NAMES.TEAM_UI_HP_AMMO_BAR) then
 		local ui_renderer = self.ui_renderer
 		local ui_scenegraph = self.ui_scenegraph
@@ -503,6 +520,18 @@ mod:hook(UnitFramesHandler, "update", function(func, self, ...)
 		self:set_visible(self._is_visible)
 	end
 
+	for _, unit_frame in ipairs(self._unit_frames) do
+		local has_ammo
+		pcall(function()
+			local player_unit = unit_frame.player_data.player_unit
+			local inventory_extension = ScriptUnit.extension(player_unit, "inventory_system")
+			has_ammo = inventory_extension:has_ammo_consuming_weapon_equipped()
+		end)
+
+		unit_frame.widget.has_ammo = has_ammo
+		unit_frame.widget.player_unit = unit_frame.player_data.player_unit
+	end
+
 	return func(self, ...)
 end)
 
@@ -592,9 +621,11 @@ end)
 -- since OutlineSystem.always gets called a crazy amount of times per frame
 local disable_outlines = false
 
---- Hide crosshair when inspecting.
-mod:hook(CrosshairUI, "draw", function(func, self, ...)
-	if mod:get(mod.SETTING_NAMES.HIDE_CROSSHAIR_WHEN_INSPECTING) then
+--- Hide HUD when inspecting.
+mod:hook(IngameUI, "update", function(func, self, dt, t, ...)
+	script_data.disable_ui = mod.keep_hud_hidden
+
+	if mod:get(mod.SETTING_NAMES.HIDE_HUD_WHEN_INSPECTING) then
 		local just_return
 		pcall(function()
 			local player_unit = Managers.player:local_player().player_unit
@@ -602,13 +633,14 @@ mod:hook(CrosshairUI, "draw", function(func, self, ...)
 			just_return = character_state_machine_ext:current_state() == "inspecting"
 		end)
 
-		disable_outlines = just_return
-		if just_return then
-			return
+		disable_outlines = not not just_return
+		script_data.disable_ui = not not just_return
+		if mod.keep_hud_hidden then
+			script_data.disable_ui = true
 		end
 	end
 
-	return func(self, ...)
+	return func(self, dt, t, ...)
 end)
 
 mod:hook(OutlineSystem, "always", function(func, self, ...)
@@ -618,6 +650,10 @@ mod:hook(OutlineSystem, "always", function(func, self, ...)
 
 	return func(self, ...)
 end)
+
+mod.hide_hud = function()
+	mod.keep_hud_hidden = not mod.keep_hud_hidden
+end
 
 mod:dofile("scripts/mods/HideBuffs/teammate_widget_definitions")
 mod:dofile("scripts/mods/HideBuffs/buff_ui")

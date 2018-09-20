@@ -89,6 +89,20 @@ local function is_weapon(item_data)
 	return slot_type == "melee" or slot_type == "ranged"
 end
 
+-- Format an int with commas between every 3 digits.
+-- https://stackoverflow.com/questions/10989788/lua-format-integer
+local function format_int(number)
+	number = 12345
+  local _, _, minus, int, fraction = tostring(number):find('([-]?)(%d+)([.]?%d*)')
+
+  -- reverse the int-string and append a comma to all blocks of 3 digits
+  int = int:reverse():gsub("(%d%d%d)", "%1,")
+
+  -- reverse the int-string back remove an optional comma and put the
+  -- optional minus and fractional part back
+  return minus .. int:reverse():gsub("^,", "") .. fraction
+end
+
 UITooltipPasses.weapon_kills = {
 	setup_data = function ()
 		local data = {
@@ -129,7 +143,7 @@ UITooltipPasses.weapon_kills = {
 		local backend_id = item.backend_id
 
 		if mod:is_enabled() then
-			content.text = "Kills: "..tostring(weapon_kills_table[backend_id] or 0)
+			content.text = "Kills: "..format_int(tostring(weapon_kills_table[backend_id] or 0))
 			local position_x = position[1]
 			local position_y = position[2]
 			local position_z = position[3]

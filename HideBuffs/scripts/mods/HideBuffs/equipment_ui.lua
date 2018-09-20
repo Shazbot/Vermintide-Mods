@@ -241,3 +241,67 @@ mod.hp_bg_rect_def =
 		0
 	},
 }
+
+mod.ammo_bar_width = 531
+
+mod.ammo_widget_def =
+{
+	scenegraph_id = "background_panel_bg",
+	element = {
+		passes = {
+			{
+				style_id = "ammo_bar",
+				pass_type = "texture_uv",
+				content_id = "ammo_bar",
+				content_change_function = function (content, style)
+					local ammo_progress = content.bar_value
+					local size = style.size
+					local uvs = content.uvs
+					local bar_length = mod.ammo_bar_width
+					uvs[2][2] = ammo_progress
+					size[1] = bar_length*ammo_progress
+				end
+			},
+		},
+	},
+	content = {
+		ammo_bar = {
+			bar_value = 1,
+			texture_id = "hud_teammate_ammo_bar_fill",
+			uvs = {
+				{
+					0,
+					0
+				},
+				{
+					1,
+					1
+				}
+			}
+		},
+	},
+	style = {
+		ammo_bar = {
+			size = {
+				mod.ammo_bar_width,
+				15
+			},
+			offset = {
+				0,
+				0,
+				0
+			},
+			color = {
+				255,
+				255,
+				255,
+				255
+			},
+		},
+	},
+	offset = {
+		0,
+		0,
+		0
+	},
+}

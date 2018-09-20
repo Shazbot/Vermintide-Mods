@@ -134,6 +134,11 @@ mod.team_ability_bar_content_change_fun = function (content, style)
 end
 
 mod:hook(UnitFrameUI, "draw", function(func, self, dt)
+	if self._mod_cached_team_ui_hp_ammo_bar ~= mod:get(mod.SETTING_NAMES.TEAM_UI_HP_AMMO_BAR) then
+		self._dirty = true
+		self._mod_cached_team_ui_hp_ammo_bar = mod:get(mod.SETTING_NAMES.TEAM_UI_HP_AMMO_BAR)
+	end
+
 	mod:pcall(function()
 		if not self._is_visible then
 			return -- just from pcall
@@ -254,113 +259,59 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 					pass.content_change_function = mod.team_ability_bar_content_change_fun
 				end
 			end
+
+			if not self._teammate_custom_widget then
+				self._teammate_custom_widget = UIWidget.init(mod.teammate_ui_custom_def)
+			end
+
+			self._teammate_custom_widget.style.hp_bar_fg.size = {
+				100 + delta_x,
+				24 + delta_y + ability_bar_delta_y
+			}
+
+			self._teammate_custom_widget.style.hp_bar_fg.offset[1] = -62 + hp_bar_offset_x
+			self._teammate_custom_widget.style.hp_bar_fg.offset[2] = -37 + hp_bar_offset_y - delta_y + ability_bar_delta_y
+
+			mod.team_ammo_bar_length = 92 + delta_x
+			self._teammate_custom_widget.style.ammo_bar.size = {
+				92 + delta_x,
+				5*hp_bar_scale
+			}
+			self._teammate_custom_widget.style.ammo_bar.offset[1] = -59 + hp_bar_offset_x
+			self._teammate_custom_widget.style.ammo_bar.offset[2] = -35 + hp_bar_offset_y - delta_y + ability_bar_delta_y
+
 		end
 	end)
-	return func(self, dt)
+
+	func(self, dt)
+
+	if self._mod_frame_index
+	and self._is_visible
+	and mod:get(mod.SETTING_NAMES.TEAM_UI_HP_AMMO_BAR) then
+		local ui_renderer = self.ui_renderer
+		local ui_scenegraph = self.ui_scenegraph
+		local input_service = self.input_manager:get_service("ingame_menu")
+		local render_settings = self.render_settings
+		UIRenderer.begin_pass(ui_renderer, ui_scenegraph, input_service, dt, nil, render_settings)
+		UIRenderer.draw_widget(ui_renderer, self._teammate_custom_widget)
+		UIRenderer.end_pass(ui_renderer)
+	end
+
 end)
 
-mod.ammo_bar_width = 531
+mod.team_ammo_bar_length = 92
+mod:hook(UnitFrameUI, "set_ammo_percentage", function (func, self, ammo_percent)
+	if self._mod_frame_index then
+		mod:pcall(function()
+			local widget = self._teammate_custom_widget
+			self:_on_player_ammo_changed("ammo", widget, ammo_percent)
+			self:_set_widget_dirty(widget)
+			self:set_dirty()
+		end)
+	end
 
-mod.ammo_widget_def =
-{
-	scenegraph_id = "background_panel_bg",
-	element = {
-		passes = {
-			{
-				style_id = "ammo_bar",
-				pass_type = "texture_uv",
-				content_id = "ammo_bar",
-				content_change_function = function (content, style)
-					local ammo_progress = content.bar_value
-					local size = style.size
-					local uvs = content.uvs
-					local bar_length = mod.ammo_bar_width
-					uvs[2][2] = ammo_progress
-					size[1] = bar_length*ammo_progress
-				end
-			},
-		},
-	},
-	content = {
-		ammo_bar = {
-			bar_value = 1,
-			texture_id = "hud_teammate_ammo_bar_fill",
-			uvs = {
-				{
-					0,
-					0
-				},
-				{
-					1,
-					1
-				}
-			}
-		},
-	},
-	style = {
-		ammo_bar = {
-			size = {
-				mod.ammo_bar_width,
-				15
-			},
-			offset = {
-				0,
-				0,
-				0
-			},
-			color = {
-				255,
-				255,
-				255,
-				255
-			},
-		},
-	},
-	offset = {
-		0,
-		0,
-		0
-	},
-}
-
-UIWidgets._mod_create_border = function (scenegraph_id, retained, thickness, color, layer)
-	local definition = {
-		element = {
-			passes = {
-				{
-					style_id = "border",
-					pass_type = "border",
-					retained_mode = retained,
-				},
-			}
-		},
-		content = {
-		},
-		style = {
-			border = {
-				thickness = thickness or 1,
-				color = color or {255,255,255,255},
-				offset = {
-					0,
-					0,
-					0
-				},
-				size = {
-					500,
-					50
-				}
-			},
-		},
-		offset = {
-			0,
-			0,
-			layer or 0
-		},
-		scenegraph_id = scenegraph_id
-	}
-
-	return definition
-end
+	return func(self, ammo_percent)
+end)
 
 mod:hook_safe(UnitFrameUI, "set_portrait_frame", function(self)
 	if self._mod_frame_index then
@@ -668,6 +619,7 @@ mod:hook(OutlineSystem, "always", function(func, self, ...)
 	return func(self, ...)
 end)
 
+mod:dofile("scripts/mods/HideBuffs/teammate_widget_definitions")
 mod:dofile("scripts/mods/HideBuffs/buff_ui")
 mod:dofile("scripts/mods/HideBuffs/ability_ui")
 mod:dofile("scripts/mods/HideBuffs/equipment_ui")

@@ -60,13 +60,13 @@ mod.localizations:update({
 	hide_hotkeys = {
 		en = "Hide Hotkeys"
 	},
-	hide_levels_tooltip = {
+	hide_levels_T = {
 		en = "Hide levels."
 	},
 	hide_levels = {
 		en = "Hide Levels"
 	},
-	hide_frames_tooltip = {
+	hide_frames_T = {
 		en = "Hide portrait frames."
 	},
 	hide_frames = {
@@ -75,13 +75,13 @@ mod.localizations:update({
 	no_tutorial_ui = {
 		en = "Hide Floating Objective Marker"
 	},
-	no_tutorial_ui_tooltip = {
+	no_tutorial_ui_T = {
 		en = "Disable objective markers like \"Set Free\" for dead players."
 	},
 	no_mission_objective = {
 		en = "Hide Mission Objective"
 	},
-	no_mission_objective_tooltip = {
+	no_mission_objective_T = {
 		en = "Hide the mission objective on top of the screen."
 	},
 	force_default_frame = {
@@ -248,7 +248,7 @@ mod.localizations:update({
 	},
 	SECOND_BUFF_BAR_T = {
 		en = "Add a second buff bar for priority buffs."
-			.."\nThose are BH crit, Swift Slaying, Barrage, Hunter."
+			.."\nCustomize below what buffs go into this bar."
 	},
 	SECOND_BUFF_BAR_OFFSET_X = {
 		en = "X Offset"
@@ -299,6 +299,12 @@ mod.localizations:update({
 	},
 	PRIORITY_BUFFS_GROUP_T = {
 		en = "Buffs to show in the Priority Buff Bar."
+	},
+	HIDE_UI_ELEMENTS_GROUP = {
+		en = "Hide UI Elements"
+	},
+	HIDE_UI_ELEMENTS_GROUP_T = {
+		en = "Hide some of the UI elements."
 	},
 
 	-- priority buffs

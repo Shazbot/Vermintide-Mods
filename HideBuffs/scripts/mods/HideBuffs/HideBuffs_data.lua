@@ -52,6 +52,7 @@ mod.SETTING_NAMES = {
 	PERSISTENT_AMMO_COUNTER = "PERSISTENT_AMMO_COUNTER",
 	HIDE_BOSS_HP_BAR = "HIDE_BOSS_HP_BAR",
 	PRIORITY_BUFFS_GROUP = "PRIORITY_BUFFS_GROUP",
+	HIDE_UI_ELEMENTS_GROUP = "HIDE_UI_ELEMENTS_GROUP",
 }
 
 mod.priority_buff_setting_name_to_buff_name = {
@@ -150,39 +151,11 @@ mod_data.options_widgets:extend({
 		["default_value"] = false,
 	},
 	{
-		["setting_name"] = mod.SETTING_NAMES.NO_TUTORIAL_UI,
-		["widget_type"] = "checkbox",
-		["text"] = mod:localize("no_tutorial_ui"),
-		["tooltip"] = mod:localize("no_tutorial_ui_tooltip"),
-		["default_value"] = false,
-	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.NO_MISSION_OBJECTIVE,
-		["widget_type"] = "checkbox",
-		["text"] = mod:localize("no_mission_objective"),
-		["tooltip"] = mod:localize("no_mission_objective_tooltip"),
-		["default_value"] = false,
-	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.HIDE_FRAMES,
-		["widget_type"] = "checkbox",
-		["text"] = mod:localize("hide_frames"),
-		["tooltip"] = mod:localize("hide_frames_tooltip"),
-		["default_value"] = false,
-	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.HIDE_LEVELS,
-		["widget_type"] = "checkbox",
-		["text"] = mod:localize("hide_levels"),
-		["tooltip"] = mod:localize("hide_levels_tooltip"),
-		["default_value"] = false,
-	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.HIDE_BOSS_HP_BAR,
-		["widget_type"] = "checkbox",
-		["text"] = mod:localize("HIDE_BOSS_HP_BAR"),
-		["tooltip"] = mod:localize("HIDE_BOSS_HP_BAR_T"),
-		["default_value"] = false,
+		["setting_name"] = mod.SETTING_NAMES.HIDE_UI_ELEMENTS_GROUP,
+		["widget_type"] = "group",
+		["text"] = mod:localize("HIDE_UI_ELEMENTS_GROUP"),
+		["tooltip"] = mod:localize("HIDE_UI_ELEMENTS_GROUP_T"),
+		["sub_widgets"] = {},
 	},
 	{
 		["setting_name"] = mod.SETTING_NAMES.CHAT_GROUP,
@@ -447,6 +420,12 @@ mod.add_option(
 	nil,
 	1
 )
+
+local ammo_counter_group_index = pl.tablex.find_if(mod_data.options_widgets,
+	function(option_widget)
+		return option_widget.setting_name == mod.SETTING_NAMES.AMMO_COUNTER_GROUP
+	end)
+local ammo_counter_group = mod_data.options_widgets[ammo_counter_group_index]
 mod.add_option(
 	"SHOW_RELOAD_REMINDER",
 	{
@@ -455,8 +434,64 @@ mod.add_option(
 	},
 	"Show Reload Reminder",
 	"Change color of ammo in clip to red when ranged weapon not reloaded.",
-	player_ui_group.sub_widgets,
+	ammo_counter_group.sub_widgets,
 	1
+)
+
+local hide_ui_elements_group_index = pl.tablex.find_if(mod_data.options_widgets,
+	function(option_widget)
+		return option_widget.setting_name == mod.SETTING_NAMES.HIDE_UI_ELEMENTS_GROUP
+	end)
+local hide_ui_elements_group = mod_data.options_widgets[hide_ui_elements_group_index]
+mod.add_option(
+	mod.SETTING_NAMES.NO_TUTORIAL_UI,
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	nil,
+	nil,
+	hide_ui_elements_group.sub_widgets
+)
+mod.add_option(
+	mod.SETTING_NAMES.NO_MISSION_OBJECTIVE,
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	nil,
+	nil,
+	hide_ui_elements_group.sub_widgets
+)
+mod.add_option(
+	mod.SETTING_NAMES.HIDE_FRAMES,
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	nil,
+	nil,
+	hide_ui_elements_group.sub_widgets
+)
+mod.add_option(
+	mod.SETTING_NAMES.HIDE_LEVELS,
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	nil,
+	nil,
+	hide_ui_elements_group.sub_widgets
+)
+mod.add_option(
+	mod.SETTING_NAMES.HIDE_BOSS_HP_BAR,
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	nil,
+	nil,
+	hide_ui_elements_group.sub_widgets
 )
 
 local mini_hud_preset_subs = mod.add_option(
@@ -610,6 +645,18 @@ local team_ui_group =
 	},
 }
 mod_data.options_widgets:insert(11, team_ui_group)
+
+mod.add_option(
+	"TEAM_UI_HP_AMMO_BAR",
+	{
+		["widget_type"] = "checkbox",
+	    ["default_value"] = false,
+	},
+	"Ammo Bar",
+	"Add an ammo bar to teammate UI.",
+	team_ui_group.sub_widgets,
+	1
+)
 
 mod.add_option(
 	"TEAM_UI_HP_BAR_SCALE",

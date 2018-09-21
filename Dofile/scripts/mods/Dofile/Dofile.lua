@@ -13,3 +13,5 @@ mod.do_exec = function() -- luacheck: ignore self
 		loadstring(pl.utils.readfile("../mods/exec.lua"))()
 	end)
 end
+
+mod:dofile("scripts/mods/"..mod:get_name().."/ddraw")

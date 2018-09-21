@@ -11,4 +11,11 @@ return {
 	exec_hotkey_tooltip = {
 		en = "Execute the file when you press this hotkey."
 	},
+	F1_EXEC = {
+		en = "Bind Execute To F1"
+	},
+	F1_EXEC_T = {
+		en = "Bind the hotkey in code so it can be used inside game menus."
+			.."\nIf hotkey is F1 as well the file will be executed twice!"
+	},
 }

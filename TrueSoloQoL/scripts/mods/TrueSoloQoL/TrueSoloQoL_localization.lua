@@ -5,26 +5,11 @@ return {
 	mod_description = {
 		en = "Hide UI of dead bots and restart level on defeat."
 	},
-	assassin_stinger_fix = {
-		en = "Assassin Warning Fix"
-	},
-	assassin_stinger_fix_tooltip = {
-		en = "Tweak assassin spawn warning sound so it plays more reliably."
-	},
-	default = {
-		en = "Default"
-	},
-	custom_sound = {
-		en = "Custom Sound"
-	},
-	fixed = {
-		en = "Fixed"
-	},
 	assassin_text_warning = {
-		en = "Assassin Text Warning"
+		en = "Assassin/Pack Text Warning"
 	},
 	assassin_text_warning_tooltip = {
-		en = "Make a notification on assassin spawn."
+		en = "Make a notification on assassin and packmaster spawn."
 	},
 	DONT_RESPAWN_BOTS = {
 		en = "Bots Don't Respawn"

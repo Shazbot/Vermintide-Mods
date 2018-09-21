@@ -1,10 +1,10 @@
-local mod = get_mod("TrueSoloQoL") -- luacheck: ignore get_mod
-
 -- luacheck: globals LevelTransitionHandler get_mod
 -- luacheck: globals ConflictDirector Breeds Managers WwiseWorld GameModeManager UnitFrameUI
 -- luacheck: globals TerrorEventBlueprints NetworkLookup fassert ScriptUnit TutorialUI
 -- luacheck: globals PlayerHud AreaIndicatorUI script_data UISettings GenericStatusExtension
 -- luacheck: globals RespawnHandler
+
+local mod = get_mod("TrueSoloQoL")
 
 local pl = require'pl.import_into'()
 
@@ -68,12 +68,15 @@ mod.update = function()
 end
 
 mod:hook("Localize", function(func, key)
-	if pl.stringx.count(key, "ASSASSIN_WARNING_") > 0 then
-		key = pl.stringx.replace(key, "ASSASSIN_WARNING_", "")
-		key = pl.stringx.replace(key, "_DUPE", "")
-		key = pl.stringx.replace(key, "_", " ")
-		return key
+	for _, string in ipairs( { "ASSASSIN_WARNING_", "PACK_WARNING_" } ) do
+		if pl.stringx.count(key, string) > 0 then
+			key = pl.stringx.replace(key, string, "")
+			key = pl.stringx.replace(key, "_DUPE", "")
+			key = pl.stringx.replace(key, "_", " ")
+			return key
+		end
 	end
+
 	return func(key)
 end)
 
@@ -87,80 +90,6 @@ mod:hook(PlayerHud, "set_current_location", function(func, self, location)
 	end
 	return func(self, location)
 end)
-
-mod:hook(AreaIndicatorUI, "update", function(func, self, dt)
-	if mod:get(mod.SETTING_NAMES.ASSASSIN_TEXT_WARNING) then
-		mod:pcall(function()
-			self.area_text_box.style.text.text_color[2] = 255
-			self.area_text_box.style.text.text_color[3] = 0
-			self.area_text_box.style.text.text_color[4] = 0
-			if mod.current_location
-			and mod.current_location == "ASSASSIN_WARNING_ASS_2" then
-				self.area_text_box.style.text.text_color[3] = 255
-			end
-		end)
-	end
-	return func(self, dt)
-end)
-
-mod:hook(ConflictDirector, "spawn_queued_unit", function(func, self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, optional_data, group_data, unit_data)
-	-- local assassin_spawn_option = mod:get(mod.SETTING_NAMES.ASSASSIN_STINGER_FIX)
-
-	-- if assassin_spawn_option == mod.ASSASSIN_SOUND_OPTIONS.DEFAULT then
-	-- 	Breeds.skaven_gutter_runner.special_spawn_stinger = "enemy_gutterrunner_stinger"
-	-- else
-	-- 	Breeds.skaven_gutter_runner.special_spawn_stinger = nil
-	-- end
-
-	if breed.name == "skaven_gutter_runner" then
-		if mod:get(mod.SETTING_NAMES.ASSASSIN_TEXT_WARNING) then
-			UISettings.area_indicator.wait_time = 0
-			mod:pcall(function()
-				local player_unit = Managers.player:local_player().player_unit
-				local player_hud_extension = ScriptUnit.extension(player_unit, "hud_system")
-				if mod.get_num_alive_assassins() > 0 then
-					player_hud_extension.current_location = "ASSASSIN_WARNING_ASS_"..(mod.get_num_alive_assassins()+1)
-				else
-					if player_hud_extension.current_location == "ASSASSIN_WARNING_ASS!" then
-						player_hud_extension.current_location = "ASSASSIN_WARNING_ASS!_DUPE"
-					else
-						player_hud_extension.current_location = "ASSASSIN_WARNING_ASS!"
-					end
-				end
-				mod.current_location = player_hud_extension.current_location
-			end)
-		else
-			UISettings.area_indicator.wait_time = 1
-		end
-
-		-- local wwise_world = Managers.world:wwise_world(self._world)
-		-- if assassin_spawn_option == mod.ASSASSIN_SOUND_OPTIONS.FIXED then
-		-- 	WwiseWorld.trigger_event(wwise_world, "enemy_gutterrunner_stinger")
-		-- elseif assassin_spawn_option == mod.ASSASSIN_SOUND_OPTIONS.KRENCH then
-		-- 	Managers.state.network.network_transmit:send_rpc_all("rpc_server_audio_event", NetworkLookup.sound_events["Play_hud_matchmaking_countdown"])
-		-- 	self._mod_times_to_play_sound = self._mod_times_to_play_sound or {}
-		-- 	table.insert(self._mod_times_to_play_sound, self._time + 1)
-		-- 	table.insert(self._mod_times_to_play_sound, self._time + 2)
-		-- end
-	end
-
-	return func(self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, optional_data, group_data, unit_data)
-end)
-
--- mod:hook(ConflictDirector, "update", function(func, self, dt, t)
--- 	self._mod_times_to_play_sound = self._mod_times_to_play_sound or {}
--- 	for _, time in ipairs( self._mod_times_to_play_sound ) do
--- 		if time < t then
--- 			Managers.state.network.network_transmit:send_rpc_all("rpc_server_audio_event", NetworkLookup.sound_events["Play_hud_matchmaking_countdown"])
--- 		end
--- 	end
--- 	for i=#self._mod_times_to_play_sound, 1, -1 do
--- 	    if self._mod_times_to_play_sound[i] < t then
--- 	        table.remove(self._mod_times_to_play_sound, i)
--- 	    end
--- 	end
--- 	return func(self, dt, t)
--- end)
 
 mod:hook(RespawnHandler, "update", function(func, self, dt, t, player_statuses)
 	mod:pcall(function()
@@ -199,42 +128,74 @@ mod:hook(RespawnHandler, "update", function(func, self, dt, t, player_statuses)
 	return func(self, dt, t, player_statuses)
 end)
 
-mod:hook_safe(ConflictDirector, "update", function(self)
-	local game_mode_key = Managers.state.game_mode:game_mode_key()
+mod.get_num_alive_packmasters = function()
+	return Managers.state.conflict:count_units_by_breed("skaven_pack_master")
+end
 
-	if not self.breed_freezer
-	and game_mode_key == "inn"
-	then
-		self.breed_freezer = BreedFreezer:new(self._world, Managers.state.entity, self._network_event_delegate)
+mod.breed_notification_data = {
+	skaven_gutter_runner = {
+		num_alive_func = mod.get_num_alive_assassins,
+		text_alone = "ASSASSIN_WARNING_ASS!",
+		text_alone_dupe = "ASSASSIN_WARNING_ASS!_DUPE",
+		text_multi = "ASSASSIN_WARNING_ASS_",
+	},
+	skaven_pack_master = {
+		num_alive_func = mod.get_num_alive_packmasters,
+		text_alone = "PACK_WARNING_PACK!",
+		text_alone_dupe = "PACK_WARNING_PACK!_DUPE",
+		text_multi = "PACK_WARNING_PACK_",
+	},
+}
+
+mod:hook(AreaIndicatorUI, "update", function(func, self, dt)
+	self.area_text_box.offset[2] = 0
+
+	if mod:get(mod.SETTING_NAMES.ASSASSIN_TEXT_WARNING) then
+		mod:pcall(function()
+			self.area_text_box.style.text.text_color = { 255, 255, 0, 0 }
+			if mod.current_location then
+				if mod.current_location == "ASSASSIN_WARNING_ASS_2" then
+					self.area_text_box.style.text.text_color = { 255, 255, 255, 0}
+				end
+				if pl.stringx.lfind(mod.current_location, "PACK_WARNING_") then
+					self.area_text_box.offset[2] = -550
+					self.area_text_box.style.text.text_color = { 255, 0, 255, 0}
+				end
+				if mod.current_location == "PACK_WARNING_PACK_2" then
+					self.area_text_box.style.text.text_color = { 255, 255, 165, 0}
+				end
+			end
+		end)
 	end
+
+	return func(self, dt)
 end)
 
-mod:hook(BreedFreezer, "commit_freezes", function(func, self)
-	local game_mode_key = Managers.state.game_mode:game_mode_key()
-
-	if game_mode_key == "inn" then
-		self.units_to_freeze = {}
+mod:hook(ConflictDirector, "spawn_queued_unit", function(func, self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, optional_data, group_data, unit_data)
+	local notification_data = mod.breed_notification_data[breed.name]
+	if notification_data then
+		if mod:get(mod.SETTING_NAMES.ASSASSIN_TEXT_WARNING) then
+			UISettings.area_indicator.wait_time = 0
+			mod:pcall(function()
+				local player_unit = Managers.player:local_player().player_unit
+				local player_hud_extension = ScriptUnit.extension(player_unit, "hud_system")
+				if notification_data.num_alive_func() > 0 then
+					player_hud_extension.current_location = notification_data.text_multi..(notification_data.num_alive_func()+1)
+				else
+					if player_hud_extension.current_location == notification_data.text_alone then
+						player_hud_extension.current_location = notification_data.text_alone_dupe
+					else
+						player_hud_extension.current_location = notification_data.text_alone
+					end
+				end
+				mod.current_location = player_hud_extension.current_location
+			end)
+		else
+			UISettings.area_indicator.wait_time = 1
+		end
 	end
 
-	return func(self)
+	return func(self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, optional_data, group_data, unit_data)
 end)
 
-mod:hook(BreedFreezer, "try_mark_unit_for_freeze", function(func, self, breed, unit)
-	local game_mode_key = Managers.state.game_mode:game_mode_key()
-
-	if game_mode_key == "inn" then
-		return false
-	end
-
-	return func(self, breed, unit)
-end)
-
-mod:hook(BreedFreezer, "_setup_freeze_box", function(func, self)
-	local game_mode_key = Managers.state.game_mode:game_mode_key()
-
-	if game_mode_key == "inn" then
-		return
-	end
-
-	return func(self)
-end)
+mod:dofile("scripts/mods/"..mod:get_name().."/keep_spawning_fix")

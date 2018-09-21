@@ -36,8 +36,9 @@ end)
 --- Make sure bots UI doesn't reappear.
 mod:hook(UnitFrameUI, "update", function (func, self, ...)
 	mod:pcall(function()
-		if self._mod_stay_hidden then
-			self:set_visible(self.data.level_text ~= "BOT")
+		local is_visible = self.data.level_text ~= "BOT"
+		if self._mod_stay_hidden and self._is_visible ~= is_visible then
+			self:set_visible(is_visible)
 		end
 	end)
 	func(self, ...)

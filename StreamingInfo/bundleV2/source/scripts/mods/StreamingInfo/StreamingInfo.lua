@@ -216,6 +216,8 @@ mod.draw_info = function(owner)
 	end)
 end
 
+mod.out_lines_setting_key = "out_lines"
+
 mod.set_lines = function(...)
 	local arg={...}
 	if #arg == 0 then
@@ -225,6 +227,13 @@ mod.set_lines = function(...)
 		local input = pl.stringx.join(' ', pl.List(arg):map(pl.stringx.strip))
 		mod.out_lines = pl.stringx.split(input, ';')
 	end)
+
+	mod:set(mod.out_lines_setting_key, mod.out_lines)
 end
 
 mod:command("set_lines", mod:localize("set_lines_command_description"), function(...) mod.set_lines(...) end)
+
+local out_lines = mod:get(mod.out_lines_setting_key)
+if out_lines then
+	mod.out_lines = pl.List(out_lines)
+end

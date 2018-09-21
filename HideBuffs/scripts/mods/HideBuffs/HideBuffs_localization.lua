@@ -353,6 +353,24 @@ mod.localizations:update({
 	CDR_POT = {
 		en = "CDR Potion"
 	},
+	MARKUS_HUNTSMAN_ACTIVATED_ABILITY = {
+		en = "Huntsman Ult"
+	},
+	KERILLIAN_SHADE_ACTIVATED_ABILITY = {
+		en = "Shade Ult"
+	},
+	VICTOR_ZEALOT_ACTIVATED_ABILITY = {
+		en = "Zealot Ult"
+	},
+	BARDIN_RANGER_ACTIVATED_ABILITY = {
+		en = "Ranger Ult"
+	},
+	BARDIN_IRONBREAKER_ACTIVATED_ABILITY = {
+		en = "Ironbreaker Ult"
+	},
+	BARDIN_SLAYER_ACTIVATED_ABILITY = {
+		en = "Slayer Ult"
+	},
 
 })
 

@@ -82,6 +82,12 @@ mod.priority_buff_setting_name_to_buff_name = {
 	DMG_POT = { "armor penetration" },
 	SPEED_POT = { "movement" },
 	CDR_POT = { "cooldown reduction buff" },
+	MARKUS_HUNTSMAN_ACTIVATED_ABILITY = { "markus_huntsman_activated_ability" },
+	KERILLIAN_SHADE_ACTIVATED_ABILITY = { "kerillian_shade_activated_ability" },
+	VICTOR_ZEALOT_ACTIVATED_ABILITY = { "victor_zealot_activated_ability" },
+	BARDIN_RANGER_ACTIVATED_ABILITY = { "bardin_ranger_activated_ability" },
+	BARDIN_IRONBREAKER_ACTIVATED_ABILITY = { "bardin_ironbreaker_activated_ability" },
+	BARDIN_SLAYER_ACTIVATED_ABILITY = { "bardin_slayer_activated_ability" },
 }
 
 local priority_buffs_group_subwidgets = {}

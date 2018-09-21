@@ -1,12 +1,16 @@
-local mod = get_mod("CrosshairCustomization") -- luacheck: ignore get_mod
+-- luacheck: globals get_mod UIRenderer table ScriptUnit CrosshairUI
 
--- luacheck: globals UIRenderer table ScriptUnit CrosshairUI
+local mod = get_mod("CrosshairCustomization")
 
 local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
 
+mod.on_setting_changed = function()
+	mod.do_refresh = true
+end
+
 mod.get_color = function()
-	local color_index = mod:is_enabled() and mod:get(mod.SETTING_NAMES.COLOR) or mod.COLOR_INDEX.DEFAULT
+	local color_index = mod:get(mod.SETTING_NAMES.COLOR) or mod.COLOR_INDEX.DEFAULT
 	local color = mod.COLORS[color_index] or { 255, mod:get(mod.SETTING_NAMES.CUSTOM_RED), mod:get(mod.SETTING_NAMES.CUSTOM_GREEN), mod:get(mod.SETTING_NAMES.CUSTOM_BLUE) }
 	return color
 end
@@ -64,7 +68,7 @@ mod.change_crosshair_color = function(crosshair_ui)
 end
 
 --- Change color of hit markers.
-mod:hook_safe(CrosshairUI, "configure_hit_marker_color_and_size", function (self, hit_marker, hit_marker_data)
+mod:hook_safe(CrosshairUI, "configure_hit_marker_color_and_size", function (self, hit_marker, hit_marker_data) -- luacheck: ignore self
 	local damage_amount = hit_marker_data.damage_amount
 	local hit_critical = hit_marker_data.hit_critical
 	local has_armor = hit_marker_data.has_armor
@@ -92,7 +96,7 @@ end)
 
 local do_once = false -- DEBUG
 --- Show the hit markers for debugging.
-mod.simulate_hit = function(crosshair_ui) -- luacheck: ignore unused simulate_hit
+mod.simulate_hit = function(crosshair_ui)
 	if not do_once then
 		local player_unit = crosshair_ui.local_player.player_unit
 		local hud_extension = ScriptUnit.extension(player_unit, "hud_system")
@@ -103,12 +107,18 @@ mod.simulate_hit = function(crosshair_ui) -- luacheck: ignore unused simulate_hi
 	end
 end
 
-mod.draw_crosshair_prehook = function(crosshair_ui)
+mod.draw_crosshair_prehook = function(crosshair_ui, need_to_refresh)
 	mod:pcall(function()
-		crosshair_ui._mod_last_crosshair_style = crosshair_ui.crosshair_style
+		if need_to_refresh
+		or mod.do_refresh
+		or crosshair_ui._mod_last_crosshair_style ~= crosshair_ui.crosshair_style
+		then
+			crosshair_ui._mod_last_crosshair_style = crosshair_ui.crosshair_style
+			mod.do_refresh = false
+			mod.change_crosshair_size(crosshair_ui)
+			mod.change_crosshair_color(crosshair_ui)
+		end
 		-- mod.simulate_hit(crosshair_ui)
-		mod.change_crosshair_size(crosshair_ui)
-		mod.change_crosshair_color(crosshair_ui)
 	end)
 end
 
@@ -117,7 +127,7 @@ mod:hook(CrosshairUI, "draw_circle_style_crosshair", function(func, self, ...)
 	-- or we're off center for a single frame when enlarged
 	if self._mod_last_crosshair_style ~= self.crosshair_style then
 		self._mod_last_crosshair_style = self.crosshair_style
-		mod.draw_crosshair_prehook(self)
+		mod.draw_crosshair_prehook(self, true)
 		return
 	end
 	mod.draw_crosshair_prehook(self)
@@ -128,13 +138,12 @@ end)
 mod:hook(CrosshairUI, "draw_dot_style_crosshair", function(func, self, ...)
 	if self._mod_last_crosshair_style == "circle" then
 		self._mod_last_crosshair_style = self.crosshair_style
-		mod.draw_crosshair_prehook(self)
+		mod.draw_crosshair_prehook(self, true)
 		return
 	end
 	mod.draw_crosshair_prehook(self)
 
-	if mod:is_enabled()
-	and mod:get(mod.SETTING_NAMES.NO_MELEE_DOT)
+	if mod:get(mod.SETTING_NAMES.NO_MELEE_DOT)
 	and self.crosshair_style
 	and self.crosshair_style == "dot" then
 		return
@@ -146,13 +155,12 @@ end)
 mod.generic_ranged_hook = function(func, self, ...)
 	mod.draw_crosshair_prehook(self)
 
-	if mod:is_enabled() and mod:get(mod.SETTING_NAMES.DOT) then
+	if mod:get(mod.SETTING_NAMES.DOT) then
 		return self:draw_dot_style_crosshair(...)
 	end
 
 	local crosshair_dot_visible_temp = self.crosshair_dot.content.visible
-	if mod:is_enabled()
-	and mod:get(mod.SETTING_NAMES.NO_RANGED_DOT) then
+	if mod:get(mod.SETTING_NAMES.NO_RANGED_DOT) then
 		self.crosshair_dot.content.visible = false
 	end
 
@@ -168,7 +176,7 @@ mod:hook(CrosshairUI, "draw_arrows_style_crosshair", mod.generic_ranged_hook)
 
 --- Hide projectile markers.
 mod:hook(CrosshairUI, "draw_projectile_style_crosshair", function (func, self, ui_renderer, pitch_percentage, yaw_percentage)
-	if mod:is_enabled() and mod:get(mod.SETTING_NAMES.DOT) then
+	if mod:get(mod.SETTING_NAMES.DOT) then
 		return self:draw_dot_style_crosshair(ui_renderer, pitch_percentage, yaw_percentage)
 	end
 
@@ -181,8 +189,7 @@ mod:hook(CrosshairUI, "draw_projectile_style_crosshair", function (func, self, u
 		self.crosshair_line.content.visible = false
 	end
 	local crosshair_dot_visible_temp = self.crosshair_dot.content.visible
-	if mod:is_enabled()
-	and mod:get(mod.SETTING_NAMES.NO_RANGED_DOT) then
+	if mod:get(mod.SETTING_NAMES.NO_RANGED_DOT) then
 		self.crosshair_dot.content.visible = false
 	end
 

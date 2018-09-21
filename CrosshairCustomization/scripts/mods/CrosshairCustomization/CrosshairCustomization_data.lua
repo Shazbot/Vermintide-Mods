@@ -35,7 +35,7 @@ mod.SETTING_NAMES = {
 local mod_data = {
 	name = mod:localize("mod_name"),
 	description = mod:localize("mod_description"),
-	is_togglable = true,
+	is_togglable = false,
 }
 mod_data.options_widgets = {
    {

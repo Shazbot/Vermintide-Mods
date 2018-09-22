@@ -69,6 +69,12 @@ mod.on_setting_changed = function(setting_name)
 			mod.reset_anim_ui_settings()
 		end
 	end
+
+	if setting_name == mod.SETTING_NAMES.SECOND_BUFF_BAR_SIZE_ADJUST_X
+	or setting_name == mod.SETTING_NAMES.SECOND_BUFF_BAR_SIZE_ADJUST_Y
+	then
+		mod.need_to_refresh_priority_bar = true
+	end
 end
 
 --- Store frame_index in a new variable.

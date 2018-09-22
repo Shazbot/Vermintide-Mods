@@ -204,7 +204,7 @@ mod.player_requires_reload = function()
 					(ammo_extn:ammo_count() < ammo_extn:clip_size()) then
 				return true,
 					ammo_extn:ammo_count() > 0 and ammo_extn:ammo_count() ~= ammo_extn:clip_size(),
-					ammo_extn:can_reload()
+					(ammo_extn:is_reloading() or ammo_extn:can_reload())
 			end
 		end
 	end

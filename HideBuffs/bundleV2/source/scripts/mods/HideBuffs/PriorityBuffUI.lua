@@ -384,6 +384,12 @@ PriorityBuffUI.set_visible = function (self, visible)
 end
 
 PriorityBuffUI.update = function (self, dt, t)
+	if mod.need_to_refresh_priority_bar then
+		mod.need_to_refresh_priority_bar = false
+		self:_align_widgets()
+		self:_on_resolution_modified()
+	end
+
 	for index, data in ipairs(self._active_buffs) do
 		local widget = data.widget
 		local widget_offset = widget.offset

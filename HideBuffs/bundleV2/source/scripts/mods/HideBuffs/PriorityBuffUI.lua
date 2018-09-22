@@ -25,7 +25,7 @@ scenegraph_definition.pivot = {
 }
 local ALIGNMENT_DURATION_TIME = 0.3
 local MAX_NUMBER_OF_BUFFS = definitions.MAX_NUMBER_OF_BUFFS
-local BUFF_SIZE = definitions.BUFF_SIZE
+local BUFF_SIZE = table.clone(definitions.BUFF_SIZE)
 local BUFF_SPACING = definitions.BUFF_SPACING
 PriorityBuffUI = class(PriorityBuffUI)
 
@@ -266,7 +266,8 @@ PriorityBuffUI._add_buff = function (self, buff, infinite, end_time)
 	self:_set_widget_time_progress(widget, 1, duration, is_cooldown)
 
 	num_buffs = #self._active_buffs
-	local horizontal_spacing = BUFF_SIZE[1] + BUFF_SPACING
+	local buff_size_x = BUFF_SIZE[1] + mod:get(mod.SETTING_NAMES.SECOND_BUFF_BAR_SIZE_ADJUST_X)
+	local horizontal_spacing = buff_size_x + BUFF_SPACING
 	local total_length = num_buffs * horizontal_spacing - BUFF_SPACING
 	local start_position_x = total_length - horizontal_spacing
 	local widget_offset = widget.offset
@@ -335,7 +336,8 @@ end
 
 PriorityBuffUI._align_widgets = function (self)
 	local gamepad_active = self.input_manager:is_device_active("gamepad")
-	local horizontal_spacing = BUFF_SIZE[1] + BUFF_SPACING
+	local buff_size_x = BUFF_SIZE[1] + mod:get(mod.SETTING_NAMES.SECOND_BUFF_BAR_SIZE_ADJUST_X)
+	local horizontal_spacing = buff_size_x + BUFF_SPACING
 	local num_buffs = #self._active_buffs
 	local total_length = num_buffs * horizontal_spacing - BUFF_SPACING
 
@@ -434,6 +436,28 @@ PriorityBuffUI._on_resolution_modified = function (self)
 end
 
 PriorityBuffUI.draw = function (self, dt)
+	for _, data in ipairs(self._active_buffs) do
+		local widget = data.widget
+
+		if not widget.cloned then
+			widget.cloned = pl.tablex.pairmap(function(k,v)
+				local parent_temp = v.parent
+				v.parent = nil
+				local cloned = table.clone(v)
+				v.parent = parent_temp
+				return cloned,k end, widget.style)
+		end
+
+		for name, style in pairs( widget.style ) do
+			if style.size then
+				style.size[1] = widget.cloned[name].size[1] + mod:get(mod.SETTING_NAMES.SECOND_BUFF_BAR_SIZE_ADJUST_X)
+				style.size[2] = widget.cloned[name].size[2] + mod:get(mod.SETTING_NAMES.SECOND_BUFF_BAR_SIZE_ADJUST_Y)
+			end
+		end
+
+		widget.style.texture_icon_bg.color[1] = mod:get(mod.SETTING_NAMES.SECOND_BUFF_BAR_SIZE_ALPHA)
+	end
+
 	self.ui_scenegraph.buff_pivot.position[1] = mod:get(mod.SETTING_NAMES.SECOND_BUFF_BAR_OFFSET_X)
 	self.ui_scenegraph.buff_pivot.position[2] = mod:get(mod.SETTING_NAMES.SECOND_BUFF_BAR_OFFSET_Y)
 

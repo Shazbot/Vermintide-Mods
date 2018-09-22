@@ -738,4 +738,48 @@ mod.add_option(
 	team_ui_group.sub_widgets
 )
 
+local priority_buff_bar_group_index = pl.tablex.find_if(mod_data.options_widgets,
+	function(option_widget)
+		return option_widget.setting_name == mod.SETTING_NAMES.SECOND_BUFF_BAR
+	end)
+local priority_buff_bar_group = mod_data.options_widgets[priority_buff_bar_group_index]
+mod.add_option(
+	"SECOND_BUFF_BAR_SIZE_ADJUST_X",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-30, 200},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Buff Width Adjustement",
+	"Change the buff icon width.",
+	priority_buff_bar_group.sub_widgets,
+	3
+)
+mod.add_option(
+	"SECOND_BUFF_BAR_SIZE_ADJUST_Y",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-30, 200},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Buff Height Adjustement",
+	"Change the buff icon height.",
+	priority_buff_bar_group.sub_widgets,
+	4
+)
+mod.add_option(
+	"SECOND_BUFF_BAR_SIZE_ALPHA",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 255},
+	    ["default_value"] = 255,
+	},
+	"Buff Icon Opacity",
+	"Adjust buff icon transparency, 0 is fully transparent.",
+	priority_buff_bar_group.sub_widgets,
+	5
+)
+
 return mod_data

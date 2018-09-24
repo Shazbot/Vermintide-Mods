@@ -152,10 +152,10 @@ mod:hook(AreaIndicatorUI, "update", function(func, self, dt)
 
 	if mod:get(mod.SETTING_NAMES.ASSASSIN_TEXT_WARNING) then
 		mod:pcall(function()
-			self.area_text_box.style.text.text_color = { 255, 255, 0, 0 }
+			self.area_text_box.style.text.text_color = { 255, 255, 255, 0}
 			if mod.current_location then
 				if mod.current_location == "ASSASSIN_WARNING_ASS_2" then
-					self.area_text_box.style.text.text_color = { 255, 255, 255, 0}
+					self.area_text_box.style.text.text_color = { 255, 255, 0, 0 }
 				end
 				if pl.stringx.lfind(mod.current_location, "PACK_WARNING_") then
 					self.area_text_box.offset[2] = -550
@@ -199,3 +199,4 @@ mod:hook(ConflictDirector, "spawn_queued_unit", function(func, self, breed, boxe
 end)
 
 mod:dofile("scripts/mods/"..mod:get_name().."/keep_spawning_fix")
+mod:dofile("scripts/mods/"..mod:get_name().."/assassin_hero_warning")

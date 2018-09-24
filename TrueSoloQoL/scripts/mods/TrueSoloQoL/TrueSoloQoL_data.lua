@@ -4,6 +4,7 @@ mod.SETTING_NAMES = {
 	ASSASSIN_TEXT_WARNING = "assassin_text_warning",
 	DONT_RESPAWN_BOTS = "DONT_RESPAWN_BOTS",
 	AUTO_KILL_BOTS = "AUTO_KILL_BOTS",
+	ASSASSIN_HERO_WARNING = "ASSASSIN_HERO_WARNING",
 }
 
 local mod_data = {
@@ -32,6 +33,13 @@ mod_data.options_widgets = {
 		["widget_type"] = "checkbox",
 		["text"] = mod:localize("AUTO_KILL_BOTS"),
 		["tooltip"] = mod:localize("AUTO_KILL_BOTS_T"),
+		["default_value"] = false,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.ASSASSIN_HERO_WARNING,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("ASSASSIN_HERO_WARNING"),
+		["tooltip"] = mod:localize("ASSASSIN_HERO_WARNING_T"),
 		["default_value"] = false,
 	},
 }

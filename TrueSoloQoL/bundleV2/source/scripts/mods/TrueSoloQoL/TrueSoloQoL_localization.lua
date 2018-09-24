@@ -23,4 +23,10 @@ return {
 	AUTO_KILL_BOTS_T = {
 		en = "Kill the bots on map start."
 	},
+	ASSASSIN_HERO_WARNING = {
+		en = "Assassin/Pack Hero Warning"
+	},
+	ASSASSIN_HERO_WARNING_T = {
+		en = "Play hero warning dialogue on assassin and pack spawns."
+	},
 }

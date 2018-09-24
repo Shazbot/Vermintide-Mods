@@ -2,7 +2,7 @@
 -- luacheck: globals local_require math UnitFramesHandler table UIWidget UIRenderer
 -- luacheck: globals CrosshairUI Managers ScriptUnit BossHealthUI Colors UIWidgets
 -- luacheck: globals BackendUtils OutlineSystem get_mod script_data IngameUI
--- luacheck: globals GameSession
+-- luacheck: globals GameSession InventorySettings
 
 local mod = get_mod("HideBuffs")
 
@@ -93,7 +93,7 @@ mod.player_ability_dynamic_content_change_fun = function (content, style)
 	local ability_progress = content.bar_value
 	local size = style.size
 	local uvs = content.uvs
-	local bar_length = 448+20+30+10+7
+	local bar_length = 515
 	uvs[2][2] = ability_progress
 	size[1] = bar_length * ability_progress
 end
@@ -167,19 +167,15 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 				local ability_bar_height = mod:get(mod.SETTING_NAMES.PLAYER_ULT_BAR_HEIGHT)
 
 				if ability_dynamic.style.ability_bar.size then
-					local ability_progress = ability_dynamic.content.ability_bar.bar_value
-					local bar_length = 515
-					local size_x = bar_length * ability_progress
-
 					ability_dynamic.style.ability_bar.size[2] = ability_bar_height
-					ability_dynamic.offset[1] = -30-2 --+ bar_length/2 - size_x/2
+					ability_dynamic.offset[1] = -30-2
 					ability_dynamic.offset[2] = 16 + 3 - ability_bar_height + ability_bar_height/2
 					ability_dynamic.offset[3] = 50
 				end
 				self._health_widgets.health_dynamic.style.grimoire_debuff_divider.offset[3] = 200
 			end
 		else -- TEAMMATE UI
-			-- loadout dynamic offset(item slots)
+			-- adjust loadout dynamic offset(item slots)
 			local loadout_dynamic = self._equipment_widgets.loadout_dynamic
 			loadout_dynamic.offset[1] = -15 + mod:get(mod.SETTING_NAMES.TEAM_UI_ITEM_SLOTS_OFFSET_X)
 			loadout_dynamic.offset[2] = -121 + mod:get(mod.SETTING_NAMES.TEAM_UI_ITEM_SLOTS_OFFSET_Y)
@@ -233,18 +229,14 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 			hp_dynamic_style.total_health_bar.offset[1] = -46 + hp_bar_offset_x
 			hp_dynamic_style.total_health_bar.offset[2] = -25 + delta_y/2 + hp_bar_offset_y
 
-			hp_dynamic_style.total_health_bar.size = {
+			local hp_bar_size_to_clone = {
 				hp_bar_size[1],
 				hp_bar_size[2]
 			}
-			hp_dynamic_style.hp_bar.size = {
-				hp_bar_size[1],
-				hp_bar_size[2]
-			}
-			hp_dynamic_style.grimoire_bar.size = {
-				hp_bar_size[1],
-				hp_bar_size[2]
-			}
+			hp_dynamic_style.total_health_bar.size = table.clone(hp_bar_size_to_clone)
+			hp_dynamic_style.hp_bar.size = table.clone(hp_bar_size_to_clone)
+			hp_dynamic_style.grimoire_bar.size = table.clone(hp_bar_size_to_clone)
+
 			hp_dynamic_style.grimoire_debuff_divider.size = { 3, 28 + delta_y }
 
 			for _, pass in ipairs( hp_dynamic.element.passes ) do
@@ -292,7 +284,6 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 
 	func(self, dt)
 
-	local has_overcharge
 	if not self.has_ammo and self.has_overcharge then
 		local widget = self._teammate_custom_widget
 		if widget and self.player_unit then
@@ -302,14 +293,13 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 				local go_id = Managers.state.unit_storage:go_id(self.player_unit)
 				local overcharge = GameSession.game_object_field(game, go_id, "overcharge_percentage")
 				widget.content.ammo_bar.bar_value = overcharge
-				has_overcharge = overcharge and overcharge > 0
 			end)
 		end
 	end
 
 	if self._mod_frame_index
 	and self._is_visible
-	and (self.has_ammo or has_overcharge)
+	and (self.has_ammo or self.has_overcharge)
 	and mod:get(mod.SETTING_NAMES.TEAM_UI_HP_AMMO_BAR) then
 		local ui_renderer = self.ui_renderer
 		local ui_scenegraph = self.ui_scenegraph
@@ -399,6 +389,7 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 			or (not hide_player_portrait and not status_icon_widget_content.visible)
 			then
 				status_icon_widget_content.visible = not hide_player_portrait
+				self:_set_widget_dirty(status_icon_widget)
 			end
 
 			local def_static_widget = self:_widget_by_feature("default", "static")
@@ -528,13 +519,26 @@ mod:hook(UnitFramesHandler, "update", function(func, self, ...)
 
 	for _, unit_frame in ipairs(self._unit_frames) do
 		local has_ammo
+		local has_overcharge
 		pcall(function()
 			local player_unit = unit_frame.player_data.player_unit
 			local inventory_extension = ScriptUnit.extension(player_unit, "inventory_system")
 			has_ammo = inventory_extension:has_ammo_consuming_weapon_equipped()
+
+			local equipment = inventory_extension:equipment()
+			if equipment then
+				local slot_data = equipment.slots["slot_ranged"]
+				local item_data = slot_data and slot_data.item_data
+
+				if item_data then
+					local item_template = BackendUtils.get_item_template(item_data)
+					has_overcharge = not not item_template.overcharge_data
+				end
+			end
 		end)
 
 		unit_frame.widget.has_ammo = has_ammo
+		unit_frame.widget.has_overcharge = has_overcharge
 		unit_frame.widget.player_unit = unit_frame.player_data.player_unit
 	end
 
@@ -659,6 +663,12 @@ end)
 
 mod.hide_hud = function()
 	mod.keep_hud_hidden = not mod.keep_hud_hidden
+end
+
+mod.on_all_mods_loaded = function()
+	if get_mod("NumericUI") then
+		mod:echo("WARNING: UI Tweaks is not compatible with Numeric UI!")
+	end
 end
 
 mod:dofile("scripts/mods/HideBuffs/teammate_widget_definitions")

@@ -187,7 +187,7 @@ EquipmentUI._mod_update_ammo = function (self, left_hand_wielded_unit, right_han
 	end
 end
 
---- Return if the player need to reload ranged weapon,
+--- Return if the player needs to reload ranged weapon,
 --- if player has any ammo in clip but not a full clip,
 --- and if the player has enough ammo to reload.
 mod.player_requires_reload = function()

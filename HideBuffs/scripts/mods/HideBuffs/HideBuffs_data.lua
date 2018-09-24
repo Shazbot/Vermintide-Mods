@@ -751,7 +751,7 @@ mod.add_option(
 		["unit_text"] = "px",
 	    ["default_value"] = 0,
 	},
-	"Buff Width Adjustement",
+	"Buff Width Adjustment",
 	"Change the buff icon width.",
 	priority_buff_bar_group.sub_widgets,
 	3
@@ -764,7 +764,7 @@ mod.add_option(
 		["unit_text"] = "px",
 	    ["default_value"] = 0,
 	},
-	"Buff Height Adjustement",
+	"Buff Height Adjustment",
 	"Change the buff icon height.",
 	priority_buff_bar_group.sub_widgets,
 	4

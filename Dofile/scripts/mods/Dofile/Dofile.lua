@@ -1,4 +1,6 @@
-local mod = get_mod("Dofile") -- luacheck: ignore get_mod
+-- luacheck: ignore get_mod Keyboard GameStateMachine
+
+local mod = get_mod("Dofile")
 
 local pl = require'pl.import_into'()
 
@@ -13,5 +15,12 @@ mod.do_exec = function() -- luacheck: ignore self
 		loadstring(pl.utils.readfile("../mods/exec.lua"))()
 	end)
 end
+
+mod:hook_safe(GameStateMachine, "pre_update", function()
+	if Keyboard.pressed(Keyboard.button_id("f1"))
+	and mod:get(mod.SETTING_NAMES.F1_EXEC) then
+		mod.do_exec()
+	end
+end)
 
 mod:dofile("scripts/mods/"..mod:get_name().."/ddraw")

@@ -9,6 +9,18 @@ local mod = get_mod("HideBuffs")
 local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
 
+mod.on_all_mods_loaded = function()
+	if get_mod("NumericUI") then
+		mod:echo(string.rep("=", 35))
+		mod:echo("WARNING: UI Tweaks is not compatible with Numeric UI!")
+		mod:echo(string.rep("=", 35))
+	end
+end
+
+if get_mod("NumericUI") then
+	return
+end
+
 mod.reset_hotkey_alpha = false
 mod.reset_portrait_frame_alpha = false
 mod.reset_level_alpha = false
@@ -141,9 +153,12 @@ mod.team_ability_bar_content_change_fun = function (content, style)
 end
 
 mod:hook(UnitFrameUI, "draw", function(func, self, dt)
-	if self._mod_cached_team_ui_hp_ammo_bar ~= mod:get(mod.SETTING_NAMES.TEAM_UI_HP_AMMO_BAR) then
-		self._dirty = true
-		self._mod_cached_team_ui_hp_ammo_bar = mod:get(mod.SETTING_NAMES.TEAM_UI_HP_AMMO_BAR)
+	if self._mod_frame_index then
+		local team_ui_hp_ammo_bar = mod:get(mod.SETTING_NAMES.TEAM_UI_HP_AMMO_BAR)
+		if self._mod_cached_team_ui_hp_ammo_bar ~= team_ui_hp_ammo_bar then
+			self._dirty = true
+			self._mod_cached_team_ui_hp_ammo_bar = team_ui_hp_ammo_bar
+		end
 	end
 
 	mod:pcall(function()
@@ -279,37 +294,57 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 			self._teammate_custom_widget.style.ammo_bar.offset[1] = -59 + hp_bar_offset_x
 			self._teammate_custom_widget.style.ammo_bar.offset[2] = -35 + hp_bar_offset_y - delta_y + ability_bar_delta_y
 
+			local icons_start_offset_x = 45
+			local icons_start_offset_y = -33
+			local custom_widget_style = self._teammate_custom_widget.style
+			custom_widget_style.icon_natural_bond.offset = {
+				icons_start_offset_x + delta_x + hp_bar_offset_x,
+				icons_start_offset_y + hp_bar_offset_y + delta_y/2
+			}
+			custom_widget_style.frame_natural_bond.offset = {
+				custom_widget_style.icon_natural_bond.offset[1] - 2,
+				custom_widget_style.icon_natural_bond.offset[2] - 2
+			}
+
+			custom_widget_style.icon_is_wounded.offset = {
+				icons_start_offset_x + (self.has_natural_bond and 33 or 0) + delta_x + hp_bar_offset_x,
+				icons_start_offset_y + hp_bar_offset_y + delta_y/2
+			}
+			custom_widget_style.frame_is_wounded.offset = {
+				custom_widget_style.icon_is_wounded.offset[1] - 2,
+				custom_widget_style.icon_is_wounded.offset[2] - 2
+			}
 		end
 	end)
 
 	func(self, dt)
 
-	if not self.has_ammo and self.has_overcharge then
-		local widget = self._teammate_custom_widget
-		if widget and self.player_unit then
-			pcall(function()
-				local network_manager = Managers.state.network
-				local game = network_manager:game()
-				local go_id = Managers.state.unit_storage:go_id(self.player_unit)
-				local overcharge = GameSession.game_object_field(game, go_id, "overcharge_percentage")
-				widget.content.ammo_bar.bar_value = overcharge
-			end)
+	if self._mod_frame_index
+	and self._is_visible then
+		if not self.has_ammo and self.has_overcharge then
+			local widget = self._teammate_custom_widget
+			if widget and self.player_unit then
+				pcall(function()
+					local network_manager = Managers.state.network
+					local game = network_manager:game()
+					local go_id = Managers.state.unit_storage:go_id(self.player_unit)
+					local overcharge = GameSession.game_object_field(game, go_id, "overcharge_percentage")
+					widget.content.ammo_bar.bar_value = overcharge
+				end)
+			end
+		end
+
+		if (self.has_ammo or self.has_overcharge)
+		and mod:get(mod.SETTING_NAMES.TEAM_UI_HP_AMMO_BAR) then
+			local ui_renderer = self.ui_renderer
+			local ui_scenegraph = self.ui_scenegraph
+			local input_service = self.input_manager:get_service("ingame_menu")
+			local render_settings = self.render_settings
+			UIRenderer.begin_pass(ui_renderer, ui_scenegraph, input_service, dt, nil, render_settings)
+			UIRenderer.draw_widget(ui_renderer, self._teammate_custom_widget)
+			UIRenderer.end_pass(ui_renderer)
 		end
 	end
-
-	if self._mod_frame_index
-	and self._is_visible
-	and (self.has_ammo or self.has_overcharge)
-	and mod:get(mod.SETTING_NAMES.TEAM_UI_HP_AMMO_BAR) then
-		local ui_renderer = self.ui_renderer
-		local ui_scenegraph = self.ui_scenegraph
-		local input_service = self.input_manager:get_service("ingame_menu")
-		local render_settings = self.render_settings
-		UIRenderer.begin_pass(ui_renderer, ui_scenegraph, input_service, dt, nil, render_settings)
-		UIRenderer.draw_widget(ui_renderer, self._teammate_custom_widget)
-		UIRenderer.end_pass(ui_renderer)
-	end
-
 end)
 
 mod.team_ammo_bar_length = 92
@@ -414,6 +449,16 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 
 		-- changes to the non-player portraits UI
 		if self._mod_frame_index then
+			-- has_natural_bond and is_wounded updates
+			if self._teammate_custom_widget.content.has_natural_bond ~= self.has_natural_bond
+			or self._teammate_custom_widget.content.is_wounded ~= self.is_wounded
+			then
+				self._teammate_custom_widget.content.has_natural_bond = self.has_natural_bond
+				self._teammate_custom_widget.content.is_wounded = self.is_wounded
+				self:_set_widget_dirty(self._teammate_custom_widget)
+				self:set_dirty()
+			end
+
 			if not self._hb_mod_cached_character_portrait_size then
 				self._hb_mod_cached_character_portrait_size = table.clone(self._default_widgets.default_static.style.character_portrait.size)
 			end
@@ -520,10 +565,10 @@ mod:hook(UnitFramesHandler, "update", function(func, self, ...)
 	for _, unit_frame in ipairs(self._unit_frames) do
 		local has_ammo
 		local has_overcharge
+		local player_unit = unit_frame.player_data.player_unit
 		pcall(function()
-			local player_unit = unit_frame.player_data.player_unit
-			local inventory_extension = ScriptUnit.extension(player_unit, "inventory_system")
-			has_ammo = inventory_extension:has_ammo_consuming_weapon_equipped()
+			local inventory_extension = ScriptUnit.has_extension(player_unit, "inventory_system")
+			has_ammo = inventory_extension and inventory_extension:has_ammo_consuming_weapon_equipped()
 
 			local equipment = inventory_extension:equipment()
 			if equipment then
@@ -537,7 +582,13 @@ mod:hook(UnitFramesHandler, "update", function(func, self, ...)
 			end
 		end)
 
+		local buff_extension = ScriptUnit.has_extension(player_unit, "buff_system")
+		unit_frame.widget.has_natural_bond = buff_extension and buff_extension:has_buff_type("trait_necklace_no_healing_health_regen")
+
+		unit_frame.widget.is_wounded = unit_frame.data.is_wounded
+
 		unit_frame.widget.has_ammo = has_ammo
+		unit_frame.widget.has_overcharge = has_overcharge
 		unit_frame.widget.has_overcharge = has_overcharge
 		unit_frame.widget.player_unit = unit_frame.player_data.player_unit
 	end
@@ -663,12 +714,6 @@ end)
 
 mod.hide_hud = function()
 	mod.keep_hud_hidden = not mod.keep_hud_hidden
-end
-
-mod.on_all_mods_loaded = function()
-	if get_mod("NumericUI") then
-		mod:echo("WARNING: UI Tweaks is not compatible with Numeric UI!")
-	end
 end
 
 mod:dofile("scripts/mods/HideBuffs/teammate_widget_definitions")

@@ -8,6 +8,7 @@ mod.SETTING_NAMES = {}
 local mod_data = {
 	name = "Scoreboard Tweaks",
 	description = mod:localize("mod_description"),
+	allow_rehooking = true,
 }
 
 mod_data.options_widgets = pl.List()

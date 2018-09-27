@@ -1,9 +1,8 @@
-local mod = get_mod("NeuterUltEffects") -- luacheck: ignore get_mod
-
--- luacheck: globals BuffFunctionTemplates MOOD_BLACKBOARD StateInGameRunning BuffExtension PlayerUnitFirstPerson
--- luacheck: globals World
+local mod = get_mod("NeuterUltEffects")
 
 local pl = require'pl.import_into'()
+
+fassert(pl, "Neuter Ult Effects must be lower than Penlight Lua Libraries in your launcher's load order.")
 
 --- Disable blood splatters.
 mod:hook(World, "create_particles", function(func, world, particle_name, ...)
@@ -12,6 +11,12 @@ mod:hook(World, "create_particles", function(func, world, particle_name, ...)
 			particle_name == "fx/screenspace_blood_drops"
 			or particle_name == "fx/screenspace_blood_drops_heavy"
 		)
+	then
+		return
+	end
+
+	if mod:get(mod.SETTING_NAMES.DISABLE_DAMAGE_TAKEN_FLASH)
+	and particle_name == "fx/screenspace_damage_indicator"
 	then
 		return
 	end
@@ -28,7 +33,7 @@ mod:hook(BuffFunctionTemplates.functions, "apply_huntsman_activated_ability", fu
 	return func(...)
 end)
 
---- Stop mood activation for specific skills.
+--- Stop moods from getting activated.
 local name_to_mood = {
 	SLAYER = "skill_slayer",
 	ZEALOT = "skill_zealot",
@@ -60,7 +65,8 @@ mod:hook(StateInGameRunning, "update_mood", function (func, ...)
 	return func(...)
 end)
 
---- Skip audio distortions.
+--- Skip ult audio distortions.
+--- Skip potions audio.
 mod.name_to_event = {
 	SLAYER = { "Play_career_ability_bardin_slayer_loop", "Stop_career_ability_bardin_slayer_loop" },
 	HUNTSMAN = { "Play_career_ability_markus_huntsman_loop", "Stop_career_ability_markus_huntsman_loop" },
@@ -98,6 +104,7 @@ mod:hook(PlayerUnitFirstPerson, "play_hud_sound_event", function (func, self, ev
 end)
 
 --- Skip huntsman, ranger, shade ult swirly screen effect.
+--- Skip potions visuals.
 mod.ult_name_to_fx = {
 	HUNTSMAN = { "fx/screenspace_huntsman_skill_01", "fx/screenspace_huntsman_skill_02" },
 	SHADE = { "fx/screenspace_shade_skill_01", "fx/screenspace_shade_skill_02" },
@@ -130,4 +137,17 @@ mod:hook(BuffExtension, "_play_screen_effect", function (func, self, effect)
 	end
 
 	return func(self, effect)
+end)
+--- No projectile trails.
+mod:hook(Unit, "flow_event", function(func, unit, event_name)
+	if mod:get(mod.SETTING_NAMES.DISABLE_PROJECTILE_TRAILS)
+	and (
+			event_name == "lua_trail"
+			or event_name == "lua_bullet_trail"
+		)
+	then
+		return
+	end
+	
+	return func(unit, event_name)
 end)

@@ -1,4 +1,3 @@
--- luacheck: ignore get_mod
 local mod = get_mod("NeuterUltEffects")
 
 local pl = require'pl.import_into'()

@@ -1,4 +1,4 @@
-local mod = get_mod("NeuterUltEffects") -- luacheck: ignore get_mod
+local mod = get_mod("NeuterUltEffects")
 
 local pl = require'pl.import_into'()
 local stringx = require'pl.stringx'
@@ -18,6 +18,35 @@ local mod_data = {
 
 mod_data.options_widgets = pl.List()
 mod.localizations = mod.localizations or pl.Map()
+
+mod.add_option = function(setting_name, option_widget, en_text, en_tooltip, group, index)
+	mod.SETTING_NAMES[setting_name] = setting_name
+	option_widget.setting_name = setting_name
+	if en_text then
+		mod.localizations[setting_name] = {
+			en = en_text
+		}
+	end
+	if en_tooltip then
+		mod.localizations[setting_name.."_T"] = {
+			en = en_tooltip
+		}
+	end
+	option_widget.text = mod:localize(setting_name)
+	if en_tooltip then
+		option_widget.tooltip = mod:localize(setting_name.."_T")
+	end
+	option_widget.sub_widgets = {}
+	if not group then
+		index = index or #mod_data.options_widgets + 1
+		mod_data.options_widgets:insert(index, option_widget)
+	else
+		index = index or #group + 1
+		table.insert(group, index, option_widget)
+	end
+
+	return option_widget.sub_widgets
+end
 
 mod_data.options_widgets:extend({
 	{
@@ -50,6 +79,28 @@ mod_data.options_widgets:extend({
 	},
 })
 
+mod.add_option(
+	"DISABLE_DAMAGE_TAKEN_FLASH",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Disable Damage Taken Warning",
+	"Disable the red flash upon taking damage.",
+	nil
+)
+
+mod.add_option(
+	"DISABLE_PROJECTILE_TRAILS",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Disable Projectile Trails",
+	"Disable the white trail that gets left behind by ranged weapon projectiles.",
+	nil
+)
+
 for _, name in ipairs( { "SLAYER", "HUNTSMAN", "SHADE", "ZEALOT", "RANGER" } ) do
 	mod.SETTING_NAMES[name.."_GROUP"] = name.."_GROUP"
 	mod.SETTING_NAMES[name.."_GROUP_T"] = name.."_GROUP_T"
@@ -79,35 +130,6 @@ for _, name in ipairs( { "SLAYER", "HUNTSMAN", "SHADE", "ZEALOT", "RANGER" } ) d
 			},
 		}
 	)
-end
-
-mod.add_option = function(setting_name, option_widget, en_text, en_tooltip, group, index)
-	mod.SETTING_NAMES[setting_name] = setting_name
-	option_widget.setting_name = setting_name
-	if en_text then
-		mod.localizations[setting_name] = {
-			en = en_text
-		}
-	end
-	if en_tooltip then
-		mod.localizations[setting_name.."_T"] = {
-			en = en_tooltip
-		}
-	end
-	option_widget.text = mod:localize(setting_name)
-	if en_tooltip then
-		option_widget.tooltip = mod:localize(setting_name.."_T")
-	end
-	option_widget.sub_widgets = {}
-	if not group then
-		index = index or #mod_data.options_widgets + 1
-		mod_data.options_widgets:insert(index, option_widget)
-	else
-		index = index or #group + 1
-		table.insert(group, index, option_widget)
-	end
-
-	return option_widget.sub_widgets
 end
 
 local potion_filters_subs = mod.add_option(

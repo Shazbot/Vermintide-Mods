@@ -11,7 +11,8 @@ globals = {
 	"BackendUtils", "OutlineSystem", "script_data", "IngameUI", "GameSession",
 	"InventorySettings", "UISceneGraph", "RESOLUTION_LOOKUP", "GamePadEquipmentUI",
 	"UISettings", "RewardPopupUI", "EndViewStateChest", "EndViewStateSummary",
-	"UIAnimator",
+	"UIAnimator", "BuffFunctionTemplates", "MOOD_BLACKBOARD", "StateInGameRunning",
+	"BuffExtension", "Unit",
 
 	"PriorityBuffUI",
 }

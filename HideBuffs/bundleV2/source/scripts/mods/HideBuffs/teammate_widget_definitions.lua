@@ -33,7 +33,7 @@ mod.teammate_ui_custom_def =
 				texture_id = "icon_natural_bond",
 				retained_mode = false,
 				content_check_function = function (content)
-					return content.has_natural_bond
+					return content.has_natural_bond and content.important_icons_enabled
 				end,
 			},
 			{
@@ -42,7 +42,7 @@ mod.teammate_ui_custom_def =
 				texture_id = "talent_frame",
 				retained_mode = false,
 				content_check_function = function (content)
-					return content.has_natural_bond
+					return content.has_natural_bond and content.important_icons_enabled
 				end,
 			},
 			{
@@ -51,7 +51,7 @@ mod.teammate_ui_custom_def =
 				texture_id = "icon_is_wounded",
 				retained_mode = false,
 				content_check_function = function (content)
-					return content.is_wounded
+					return content.is_wounded and content.important_icons_enabled
 				end,
 			},
 			{
@@ -60,12 +60,13 @@ mod.teammate_ui_custom_def =
 				texture_id = "talent_frame",
 				retained_mode = false,
 				content_check_function = function (content)
-					return content.is_wounded
+					return content.is_wounded and content.important_icons_enabled
 				end,
 			},
 		},
 	},
 	content = {
+		important_icons_enabled = false,
 		is_wounded = false,
 		has_natural_bond = false,
 		talent_frame = "talent_frame",

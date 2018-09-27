@@ -738,6 +738,41 @@ mod.add_option(
 	team_ui_group.sub_widgets
 )
 
+local teammate_important_icons_subs = mod.add_option(
+	"TEAM_UI_ICONS_GROUP",
+	{
+		["widget_type"] = "checkbox",
+	    ["default_value"] = false,
+	},
+	"Important Icons",
+	"Show icons for natural bond and when the player is on death's door.",
+	team_ui_group.sub_widgets
+)
+mod.add_option(
+	"TEAM_UI_ICONS_OFFSET_X",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1000, 1000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Offset X",
+	"Optionally offset the icons on the x axis.",
+	teammate_important_icons_subs
+)
+mod.add_option(
+	"TEAM_UI_ICONS_OFFSET_Y",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1000, 1000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Offset Y",
+	"Optionally offset the icons on the y axis.",
+	teammate_important_icons_subs
+)
+
 local priority_buff_bar_group_index = pl.tablex.find_if(mod_data.options_widgets,
 	function(option_widget)
 		return option_widget.setting_name == mod.SETTING_NAMES.SECOND_BUFF_BAR

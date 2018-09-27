@@ -290,8 +290,8 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 
 			local important_icons_offset_x = mod:get(mod.SETTING_NAMES.TEAM_UI_ICONS_OFFSET_X)
 			local important_icons_offset_y = mod:get(mod.SETTING_NAMES.TEAM_UI_ICONS_OFFSET_Y)
-			local icons_start_offset_x = 45
-			local icons_start_offset_y = -33
+			local icons_start_offset_x = 44
+			local icons_start_offset_y = -31
 			local custom_widget_style = self._teammate_custom_widget.style
 			custom_widget_style.icon_natural_bond.offset = {
 				icons_start_offset_x + delta_x + hp_bar_offset_x + important_icons_offset_x,
@@ -303,7 +303,7 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 			}
 
 			custom_widget_style.icon_is_wounded.offset = {
-				icons_start_offset_x + (self.has_natural_bond and 33 or 0) + delta_x + hp_bar_offset_x + important_icons_offset_x,
+				icons_start_offset_x + (self.has_natural_bond and 30 or 0) + delta_x + hp_bar_offset_x + important_icons_offset_x,
 				icons_start_offset_y + hp_bar_offset_y + delta_y/2 + important_icons_offset_y
 			}
 			custom_widget_style.frame_is_wounded.offset = {
@@ -446,19 +446,21 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 		-- changes to the non-player portraits UI
 		if self._mod_frame_index then
 			-- has_natural_bond and is_wounded updates
-			local important_icons_enabled = mod:get(mod.SETTING_NAMES.TEAM_UI_ICONS_GROUP)
-			if self._teammate_custom_widget.content.important_icons_enabled ~= important_icons_enabled then
-				self._teammate_custom_widget.content.important_icons_enabled = important_icons_enabled
-				self:_set_widget_dirty(self._teammate_custom_widget)
-				self:set_dirty()
-			end
-			if self._teammate_custom_widget.content.has_natural_bond ~= self.has_natural_bond
-			or self._teammate_custom_widget.content.is_wounded ~= self.is_wounded
-			then
-				self._teammate_custom_widget.content.has_natural_bond = self.has_natural_bond
-				self._teammate_custom_widget.content.is_wounded = self.is_wounded
-				self:_set_widget_dirty(self._teammate_custom_widget)
-				self:set_dirty()
+			if self._teammate_custom_widget then
+				local important_icons_enabled = mod:get(mod.SETTING_NAMES.TEAM_UI_ICONS_GROUP)
+				if self._teammate_custom_widget.content.important_icons_enabled ~= important_icons_enabled then
+					self._teammate_custom_widget.content.important_icons_enabled = important_icons_enabled
+					self:_set_widget_dirty(self._teammate_custom_widget)
+					self:set_dirty()
+				end
+				if self._teammate_custom_widget.content.has_natural_bond ~= self.has_natural_bond
+				or self._teammate_custom_widget.content.is_wounded ~= self.is_wounded
+				then
+					self._teammate_custom_widget.content.has_natural_bond = self.has_natural_bond
+					self._teammate_custom_widget.content.is_wounded = self.is_wounded
+					self:_set_widget_dirty(self._teammate_custom_widget)
+					self:set_dirty()
+				end
 			end
 
 			if not self._hb_mod_cached_character_portrait_size then

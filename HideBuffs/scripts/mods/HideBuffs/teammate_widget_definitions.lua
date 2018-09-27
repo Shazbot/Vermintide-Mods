@@ -89,8 +89,8 @@ mod.teammate_ui_custom_def =
 	style = {
 		frame_is_wounded = {
 			size = {
-				28,
-				28
+				26,
+				26
 			},
 			offset = {
 				400,
@@ -106,8 +106,8 @@ mod.teammate_ui_custom_def =
 		},
 		frame_natural_bond = {
 			size = {
-				28,
-				28
+				26,
+				26
 			},
 			offset = {
 				300,
@@ -123,8 +123,8 @@ mod.teammate_ui_custom_def =
 		},
 		icon_natural_bond = {
 			size = {
-				24,
-				24
+				22,
+				22
 			},
 			offset = {
 				300,
@@ -140,8 +140,8 @@ mod.teammate_ui_custom_def =
 		},
 		icon_is_wounded = {
 			size = {
-				24,
-				24
+				22,
+				22
 			},
 			offset = {
 				400,

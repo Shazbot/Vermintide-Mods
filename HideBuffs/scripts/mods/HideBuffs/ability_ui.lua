@@ -1,4 +1,3 @@
--- luacheck: globals get_mod AbilityUI
 local mod = get_mod("HideBuffs")
 
 mod.player_ability_ability_effect_left_content_check_fun = function()

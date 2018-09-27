@@ -1,9 +1,3 @@
--- luacheck: globals BuffUI EquipmentUI AbilityUI UnitFrameUI MissionObjectiveUI TutorialUI
--- luacheck: globals local_require math UnitFramesHandler table UIWidget UIRenderer
--- luacheck: globals CrosshairUI Managers ScriptUnit BossHealthUI Colors UIWidgets
--- luacheck: globals BackendUtils OutlineSystem get_mod script_data IngameUI
--- luacheck: globals GameSession InventorySettings
-
 local mod = get_mod("HideBuffs")
 
 local pl = require'pl.import_into'()

@@ -1,6 +1,3 @@
--- luacheck: globals get_mod EquipmentUI ScriptUnit UIRenderer UIWidget BackendUtils
--- luacheck: globals Managers table UIWidgets RETAINED_MODE_ENABLED Colors
-
 local mod = get_mod("HideBuffs")
 
 mod:hook(EquipmentUI, "update", function(func, self, ...)
@@ -102,7 +99,7 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 			end
 
 			if not self._mod_ammo_border then
-				self._mod_ammo_border = UIWidget.init(UIWidgets._mod_create_border("background_panel_bg", RETAINED_MODE_ENABLED))
+				self._mod_ammo_border = UIWidget.init(UIWidgets._mod_create_border("background_panel_bg", false))
 			end
 
 			local player_ammo_bar_height = mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR_HEIGHT)

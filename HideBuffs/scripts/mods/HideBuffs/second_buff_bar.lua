@@ -1,6 +1,4 @@
-local mod = get_mod("HideBuffs") -- luacheck: ignore get_mod
-
--- luacheck: globals BuffUI PriorityBuffUI
+local mod = get_mod("HideBuffs")
 
 mod:dofile("scripts/mods/HideBuffs/PriorityBuffUI")
 

@@ -1,5 +1,3 @@
--- luacheck: globals get_mod RETAINED_MODE_ENABLED
-
 local mod = get_mod("HideBuffs")
 
 mod.teammate_ui_custom_def =

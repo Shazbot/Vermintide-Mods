@@ -1,6 +1,4 @@
-local mod = get_mod("HideBuffs") -- luacheck: ignore get_mod math
-
--- luacheck: globals BuffUI local_require
+local mod = get_mod("HideBuffs")
 
 mod.buff_name_to_setting_name_lookup = {
 	["victor_bountyhunter_passive_infinite_ammo_buff"] =

@@ -1,5 +1,3 @@
--- luacheck: globals get_mod EquipmentUI GamePadEquipmentUI
-
 local mod = get_mod("HideBuffs")
 
 mod._animate_ammo_counter_hook = function (func, self, ...)

@@ -1,8 +1,4 @@
-local mod = get_mod("HideBuffs") -- luacheck: ignore get_mod
-
--- luacheck: globals local_require PriorityBuffUI class
--- luacheck: globals UISceneGraph UIWidget UIRenderer Managers ScriptUnit
--- luacheck: globals table ripairs math RESOLUTION_LOOKUP
+local mod = get_mod("HideBuffs")
 
 local pl = require'pl.import_into'()
 

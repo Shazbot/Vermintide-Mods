@@ -727,3 +727,9 @@ mod:dofile("scripts/mods/HideBuffs/equipment_ui")
 mod:dofile("scripts/mods/HideBuffs/anim_speedup")
 mod:dofile("scripts/mods/HideBuffs/second_buff_bar")
 mod:dofile("scripts/mods/HideBuffs/persistent_ammo_counter")
+mod:dofile("scripts/mods/HideBuffs/locked_and_loaded_compat")
+
+fassert(not mod.update, "Overwriting existing function!")
+mod.update = function()
+	mod.locked_and_loaded_update()
+end

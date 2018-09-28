@@ -148,10 +148,10 @@ end
 
 mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 	if self._mod_frame_index then
-		local team_ui_hp_ammo_bar = mod:get(mod.SETTING_NAMES.TEAM_UI_HP_AMMO_BAR)
-		if self._mod_cached_team_ui_hp_ammo_bar ~= team_ui_hp_ammo_bar then
+		local team_ui_ammo_bar = mod:get(mod.SETTING_NAMES.TEAM_UI_AMMO_BAR)
+		if self._mod_cached_team_ui_ammo_bar ~= team_ui_ammo_bar then
 			self._dirty = true
-			self._mod_cached_team_ui_hp_ammo_bar = team_ui_hp_ammo_bar
+			self._mod_cached_team_ui_ammo_bar = team_ui_ammo_bar
 		end
 	end
 
@@ -218,7 +218,7 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 
 			local def_dynamic_w = self:_widget_by_feature("default", "dynamic")
 			def_dynamic_w.style.ammo_indicator.offset[1] = 60 + delta_x + hp_bar_offset_x
-			def_dynamic_w.style.ammo_indicator.offset[2] = -40 + delta_y + hp_bar_offset_y
+			def_dynamic_w.style.ammo_indicator.offset[2] = -40 + delta_y/2 + hp_bar_offset_y
 
 			static_w_style.ability_bar_bg.offset[1] = -46 + hp_bar_offset_x
 			static_w_style.ability_bar_bg.offset[2] = -34 + hp_bar_offset_y
@@ -310,10 +310,31 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 				custom_widget_style.icon_is_wounded.offset[1] - 2,
 				custom_widget_style.icon_is_wounded.offset[2] - 2
 			}
+
+			if self.important_icons_enabled then
+				def_dynamic_w.style.ammo_indicator.offset[1] = def_dynamic_w.style.ammo_indicator.offset[1]
+					+ (self.is_wounded and 30 or 0)
+					+ (self.has_natural_bond and 30 or 0)
+			end
 		end
 	end)
 
+	-- option to hide the ammo indicator
+	-- by making it transparent during the draw call
+	local teammate_ammo_indicator_alpha_temp
+	if self._mod_frame_index and mod:get(mod.SETTING_NAMES.TEAM_UI_AMMO_HIDE_INDICATOR) then
+		local def_dynamic_w = self:_widget_by_feature("default", "dynamic")
+		teammate_ammo_indicator_alpha_temp = def_dynamic_w.style.ammo_indicator.color[1]
+		def_dynamic_w.style.ammo_indicator.color[1] = 0
+	end
+
 	func(self, dt)
+
+	-- restore old ammo indicator alpha color value
+	if self._mod_frame_index and teammate_ammo_indicator_alpha_temp then
+		local def_dynamic_w = self:_widget_by_feature("default", "dynamic")
+		def_dynamic_w.style.ammo_indicator.color[1] = teammate_ammo_indicator_alpha_temp
+	end
 
 	if self._mod_frame_index
 	and self._is_visible then
@@ -331,7 +352,7 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 		end
 
 		if (self.has_ammo or self.has_overcharge)
-		and mod:get(mod.SETTING_NAMES.TEAM_UI_HP_AMMO_BAR) then
+		and mod:get(mod.SETTING_NAMES.TEAM_UI_AMMO_BAR) then
 			local ui_renderer = self.ui_renderer
 			local ui_scenegraph = self.ui_scenegraph
 			local input_service = self.input_manager:get_service("ingame_menu")
@@ -448,6 +469,7 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 			-- has_natural_bond and is_wounded updates
 			if self._teammate_custom_widget then
 				local important_icons_enabled = mod:get(mod.SETTING_NAMES.TEAM_UI_ICONS_GROUP)
+				self.important_icons_enabled = important_icons_enabled
 				if self._teammate_custom_widget.content.important_icons_enabled ~= important_icons_enabled then
 					self._teammate_custom_widget.content.important_icons_enabled = important_icons_enabled
 					self:_set_widget_dirty(self._teammate_custom_widget)

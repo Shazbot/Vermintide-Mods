@@ -661,8 +661,8 @@ local team_ui_group =
 }
 mod_data.options_widgets:insert(11, team_ui_group)
 
-mod.add_option(
-	"TEAM_UI_HP_AMMO_BAR",
+local team_ui_ammo_bar_group = mod.add_option(
+	"TEAM_UI_AMMO_BAR",
 	{
 		["widget_type"] = "checkbox",
 	    ["default_value"] = false,
@@ -671,6 +671,16 @@ mod.add_option(
 	"Add an ammo bar to teammate UI.",
 	team_ui_group.sub_widgets,
 	1
+)
+mod.add_option(
+	"TEAM_UI_AMMO_HIDE_INDICATOR",
+	{
+		["widget_type"] = "checkbox",
+	    ["default_value"] = false,
+	},
+	"Hide Ammo Indicator",
+	"Hide the default teammate yellow/red ammo indicator.",
+	team_ui_ammo_bar_group
 )
 
 mod.add_option(

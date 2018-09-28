@@ -801,6 +801,18 @@ local priority_buff_bar_group_index = pl.tablex.find_if(mod_data.options_widgets
 	end)
 local priority_buff_bar_group = mod_data.options_widgets[priority_buff_bar_group_index]
 mod.add_option(
+	"SECOND_BUFF_BAR_DISABLE_BUFF_POPUPS",
+	{
+		["widget_type"] = "checkbox",
+	    ["default_value"] = false,
+	},
+	"Disable Default Buff Popups",
+	"Disable the middle-of-screen popups some buffs normally have."
+		.."\ne.g. Paced Strikes, Tranquility",
+	priority_buff_bar_group.sub_widgets,
+	1
+)
+mod.add_option(
 	"SECOND_BUFF_BAR_SIZE_ADJUST_X",
 	{
 		["widget_type"] = "numeric",
@@ -811,7 +823,7 @@ mod.add_option(
 	"Buff Width Adjustment",
 	"Change the buff icon width.",
 	priority_buff_bar_group.sub_widgets,
-	3
+	4
 )
 mod.add_option(
 	"SECOND_BUFF_BAR_SIZE_ADJUST_Y",
@@ -824,7 +836,7 @@ mod.add_option(
 	"Buff Height Adjustment",
 	"Change the buff icon height.",
 	priority_buff_bar_group.sub_widgets,
-	4
+	5
 )
 mod.add_option(
 	"SECOND_BUFF_BAR_SIZE_ALPHA",
@@ -836,7 +848,7 @@ mod.add_option(
 	"Buff Icon Opacity",
 	"Adjust buff icon transparency, 0 is fully transparent.",
 	priority_buff_bar_group.sub_widgets,
-	5
+	6
 )
 
 return mod_data

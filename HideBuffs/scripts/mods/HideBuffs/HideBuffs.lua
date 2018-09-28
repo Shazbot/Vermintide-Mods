@@ -705,6 +705,17 @@ mod:hook(BossHealthUI, "_draw", function(func, self, dt, t)
 	return func(self, dt, t)
 end)
 
+--- Disable priority_buff popups.
+--- e.g. Paced Strikes, Tranquility
+mod:hook(BuffPresentationUI, "draw", function(func, self, dt)
+	if mod:get(mod.SETTING_NAMES.SECOND_BUFF_BAR)
+	and mod:get(mod.SETTING_NAMES.SECOND_BUFF_BAR_DISABLE_BUFF_POPUPS) then
+		return
+	end
+
+	return func(self, dt)
+end)
+
 -- not making this mod.disable_outlines to attempt some optimization
 -- since OutlineSystem.always gets called a crazy amount of times per frame
 local disable_outlines = false

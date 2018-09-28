@@ -189,14 +189,15 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 			loadout_dynamic.offset[1] = -15 + mod:get(mod.SETTING_NAMES.TEAM_UI_ITEM_SLOTS_OFFSET_X)
 			loadout_dynamic.offset[2] = -121 + mod:get(mod.SETTING_NAMES.TEAM_UI_ITEM_SLOTS_OFFSET_Y)
 
-			local hp_bar_scale = mod:get(mod.SETTING_NAMES.TEAM_UI_HP_BAR_SCALE) / 100
-			mod.hp_bar_size = { 92*hp_bar_scale, 9*hp_bar_scale }
+			local hp_bar_scale_x = mod:get(mod.SETTING_NAMES.TEAM_UI_HP_BAR_SCALE_WIDTH) / 100
+			local hp_bar_scale_y = mod:get(mod.SETTING_NAMES.TEAM_UI_HP_BAR_SCALE_HEIGHT) / 100
+			mod.hp_bar_size = { 92*hp_bar_scale_x, 9*hp_bar_scale_y }
 			local hp_bar_size = mod.hp_bar_size
 
 			local static_w_style = self:_widget_by_feature("default", "static").style
-			static_w_style.ability_bar_bg.size = { hp_bar_size[1], 5*hp_bar_scale }
+			static_w_style.ability_bar_bg.size = { hp_bar_size[1], 5*hp_bar_scale_y }
 
-			local ability_bar_delta_y = 5*hp_bar_scale - 5
+			local ability_bar_delta_y = 5*hp_bar_scale_y - 5
 			local delta_x = hp_bar_size[1] - 92
 			local delta_y = hp_bar_size[2] - 9
 			static_w_style.hp_bar_bg.size = {
@@ -209,7 +210,7 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 			}
 			static_w_style.ability_bar_bg.size = {
 				92 + delta_x,
-				5*hp_bar_scale
+				5*hp_bar_scale_y
 			}
 
 			local hp_bar_offset_x = mod:get(mod.SETTING_NAMES.TEAM_UI_HP_BAR_OFFSET_X)
@@ -258,7 +259,7 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 			end
 
 			local ability_dynamic = self:_widget_by_feature("ability", "dynamic")
-			ability_dynamic.style.ability_bar.size[2] = 5*hp_bar_scale
+			ability_dynamic.style.ability_bar.size[2] = 5*hp_bar_scale_y
 			ability_dynamic.style.ability_bar.offset[1] = -46 + hp_bar_offset_x
 			ability_dynamic.style.ability_bar.offset[2] = -34 + hp_bar_offset_y
 
@@ -283,7 +284,7 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 			mod.team_ammo_bar_length = 92 + delta_x
 			self._teammate_custom_widget.style.ammo_bar.size = {
 				92 + delta_x,
-				5*hp_bar_scale
+				5*hp_bar_scale_y
 			}
 			self._teammate_custom_widget.style.ammo_bar.offset[1] = -59 + hp_bar_offset_x
 			self._teammate_custom_widget.style.ammo_bar.offset[2] = -35 + hp_bar_offset_y - delta_y + ability_bar_delta_y

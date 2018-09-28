@@ -684,17 +684,30 @@ mod.add_option(
 )
 
 mod.add_option(
-	"TEAM_UI_HP_BAR_SCALE",
+	"TEAM_UI_HP_BAR_SCALE_WIDTH",
 	{
 		["widget_type"] = "numeric",
 		["range"] = {0, 500},
 		["unit_text"] = "%",
 	    ["default_value"] = 100,
 	},
-	"HP Bar Scale",
-	"Scale the HP Bar.",
+	"HP Bar Width Scale",
+	"Scale the width of the HP Bar.",
 	team_ui_group.sub_widgets,
 	5
+)
+mod.add_option(
+	"TEAM_UI_HP_BAR_SCALE_HEIGHT",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 500},
+		["unit_text"] = "%",
+	    ["default_value"] = 100,
+	},
+	"HP Bar Height Scale",
+	"Scale the height of the HP Bar.",
+	team_ui_group.sub_widgets,
+	6
 )
 mod.add_option(
 	"TEAM_UI_HP_BAR_OFFSET_X",
@@ -707,7 +720,7 @@ mod.add_option(
 	"HP Bar Offset X",
 	"Optionally offset the HP bar on the x axis.",
 	team_ui_group.sub_widgets,
-	6
+	7
 )
 mod.add_option(
 	"TEAM_UI_HP_BAR_OFFSET_Y",
@@ -720,7 +733,7 @@ mod.add_option(
 	"HP Bar Offset Y",
 	"Optionally offset the HP bar on the y axis.",
 	team_ui_group.sub_widgets,
-	7
+	8
 )
 mod.add_option(
 	"TEAM_UI_ITEM_SLOTS_OFFSET_X",

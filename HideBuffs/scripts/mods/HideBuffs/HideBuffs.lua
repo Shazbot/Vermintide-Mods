@@ -200,18 +200,15 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 			local ability_bar_delta_y = 5*hp_bar_scale_y - 5
 			local delta_x = hp_bar_size[1] - 92
 			local delta_y = hp_bar_size[2] - 9
-			static_w_style.hp_bar_bg.size = {
-				100 + delta_x,
-				17 + delta_y + ability_bar_delta_y
-			}
-			static_w_style.hp_bar_fg.size = {
-				100 + delta_x,
-				24 + delta_y + ability_bar_delta_y
-			}
-			static_w_style.ability_bar_bg.size = {
-				92 + delta_x,
-				5*hp_bar_scale_y
-			}
+
+			static_w_style.hp_bar_bg.size[1] = 100 + delta_x
+			static_w_style.hp_bar_bg.size[2] = 17 + delta_y + ability_bar_delta_y
+
+			static_w_style.hp_bar_fg.size[1] = 100 + delta_x
+			static_w_style.hp_bar_fg.size[2] = 24 + delta_y + ability_bar_delta_y
+
+			static_w_style.ability_bar_bg.size[1] = 92 + delta_x
+			static_w_style.ability_bar_bg.size[2] = 5*hp_bar_scale_y
 
 			local hp_bar_offset_x = mod:get(mod.SETTING_NAMES.TEAM_UI_HP_BAR_OFFSET_X)
 			local hp_bar_offset_y = mod:get(mod.SETTING_NAMES.TEAM_UI_HP_BAR_OFFSET_Y)
@@ -239,15 +236,15 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 			hp_dynamic_style.total_health_bar.offset[1] = -46 + hp_bar_offset_x
 			hp_dynamic_style.total_health_bar.offset[2] = -25 + delta_y/2 + hp_bar_offset_y
 
-			local hp_bar_size_to_clone = {
-				hp_bar_size[1],
-				hp_bar_size[2]
-			}
-			hp_dynamic_style.total_health_bar.size = table.clone(hp_bar_size_to_clone)
-			hp_dynamic_style.hp_bar.size = table.clone(hp_bar_size_to_clone)
-			hp_dynamic_style.grimoire_bar.size = table.clone(hp_bar_size_to_clone)
+			hp_dynamic_style.total_health_bar.size[1] = hp_bar_size[1]
+			hp_dynamic_style.total_health_bar.size[2] = hp_bar_size[2]
+			hp_dynamic_style.hp_bar.size[1] = hp_bar_size[1]
+			hp_dynamic_style.hp_bar.size[2] = hp_bar_size[2]
+			hp_dynamic_style.grimoire_bar.size[1] = hp_bar_size[1]
+			hp_dynamic_style.grimoire_bar.size[2] = hp_bar_size[2]
 
-			hp_dynamic_style.grimoire_debuff_divider.size = { 3, 28 + delta_y }
+			hp_dynamic_style.grimoire_debuff_divider.size[1] = 3
+			hp_dynamic_style.grimoire_debuff_divider.size[2] = 28 + delta_y
 
 			for _, pass in ipairs( hp_dynamic.element.passes ) do
 				if pass.style_id == "grimoire_debuff_divider" then
@@ -273,19 +270,16 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 				self._teammate_custom_widget = UIWidget.init(mod.teammate_ui_custom_def)
 			end
 
-			self._teammate_custom_widget.style.hp_bar_fg.size = {
-				100 + delta_x,
-				24 + delta_y + ability_bar_delta_y
-			}
+			self._teammate_custom_widget.style.hp_bar_fg.size[1] = 100 + delta_x
+			self._teammate_custom_widget.style.hp_bar_fg.size[2] = 24 + delta_y + ability_bar_delta_y
 
 			self._teammate_custom_widget.style.hp_bar_fg.offset[1] = -62 + hp_bar_offset_x
 			self._teammate_custom_widget.style.hp_bar_fg.offset[2] = -37 + hp_bar_offset_y - delta_y + ability_bar_delta_y
 
 			mod.team_ammo_bar_length = 92 + delta_x
-			self._teammate_custom_widget.style.ammo_bar.size = {
-				92 + delta_x,
-				5*hp_bar_scale_y
-			}
+			self._teammate_custom_widget.style.ammo_bar.size[1] = 92 + delta_x
+			self._teammate_custom_widget.style.ammo_bar.size[2] = 5*hp_bar_scale_y
+
 			self._teammate_custom_widget.style.ammo_bar.offset[1] = -59 + hp_bar_offset_x
 			self._teammate_custom_widget.style.ammo_bar.offset[2] = -35 + hp_bar_offset_y - delta_y + ability_bar_delta_y
 
@@ -294,23 +288,17 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 			local icons_start_offset_x = 44
 			local icons_start_offset_y = -31
 			local custom_widget_style = self._teammate_custom_widget.style
-			custom_widget_style.icon_natural_bond.offset = {
-				icons_start_offset_x + delta_x + hp_bar_offset_x + important_icons_offset_x,
-				icons_start_offset_y + hp_bar_offset_y + delta_y/2 + important_icons_offset_y
-			}
-			custom_widget_style.frame_natural_bond.offset = {
-				custom_widget_style.icon_natural_bond.offset[1] - 2,
-				custom_widget_style.icon_natural_bond.offset[2] - 2
-			}
+			custom_widget_style.icon_natural_bond.offset[1] = icons_start_offset_x + delta_x + hp_bar_offset_x + important_icons_offset_x
+			custom_widget_style.icon_natural_bond.offset[2] = icons_start_offset_y + hp_bar_offset_y + delta_y/2 + important_icons_offset_y
 
-			custom_widget_style.icon_is_wounded.offset = {
-				icons_start_offset_x + (self.has_natural_bond and 30 or 0) + delta_x + hp_bar_offset_x + important_icons_offset_x,
-				icons_start_offset_y + hp_bar_offset_y + delta_y/2 + important_icons_offset_y
-			}
-			custom_widget_style.frame_is_wounded.offset = {
-				custom_widget_style.icon_is_wounded.offset[1] - 2,
-				custom_widget_style.icon_is_wounded.offset[2] - 2
-			}
+			custom_widget_style.frame_natural_bond.offset[1] = custom_widget_style.icon_natural_bond.offset[1] - 2
+			custom_widget_style.frame_natural_bond.offset[2] = custom_widget_style.icon_natural_bond.offset[2] - 2
+
+			custom_widget_style.icon_is_wounded.offset[1] = icons_start_offset_x + (self.has_natural_bond and 30 or 0) + delta_x + hp_bar_offset_x + important_icons_offset_x
+			custom_widget_style.icon_is_wounded.offset[2] = icons_start_offset_y + hp_bar_offset_y + delta_y/2 + important_icons_offset_y
+
+			custom_widget_style.frame_is_wounded.offset[1] = custom_widget_style.icon_is_wounded.offset[1] - 2
+			custom_widget_style.frame_is_wounded.offset[2] = custom_widget_style.icon_is_wounded.offset[2] - 2
 
 			if self.important_icons_enabled then
 				def_dynamic_w.style.ammo_indicator.offset[1] = def_dynamic_w.style.ammo_indicator.offset[1]

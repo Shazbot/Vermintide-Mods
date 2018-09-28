@@ -108,18 +108,16 @@ mod.simulate_hit = function(crosshair_ui)
 end
 
 mod.draw_crosshair_prehook = function(crosshair_ui, need_to_refresh)
-	mod:pcall(function()
-		if need_to_refresh
-		or mod.do_refresh
-		or crosshair_ui._mod_last_crosshair_style ~= crosshair_ui.crosshair_style
-		then
-			crosshair_ui._mod_last_crosshair_style = crosshair_ui.crosshair_style
-			mod.do_refresh = false
-			mod.change_crosshair_size(crosshair_ui)
-			mod.change_crosshair_color(crosshair_ui)
-		end
-		-- mod.simulate_hit(crosshair_ui)
-	end)
+	if need_to_refresh
+	or mod.do_refresh
+	or crosshair_ui._mod_last_crosshair_style ~= crosshair_ui.crosshair_style
+	then
+		crosshair_ui._mod_last_crosshair_style = crosshair_ui.crosshair_style
+		mod.do_refresh = false
+		mod.change_crosshair_size(crosshair_ui)
+		mod.change_crosshair_color(crosshair_ui)
+	end
+	-- mod.simulate_hit(crosshair_ui)
 end
 
 mod:hook(CrosshairUI, "draw_circle_style_crosshair", function(func, self, ...)

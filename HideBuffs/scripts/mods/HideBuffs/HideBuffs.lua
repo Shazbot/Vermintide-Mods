@@ -15,6 +15,8 @@ if get_mod("NumericUI") then
 	return
 end
 
+mod.persistent_storage = mod:persistent_table("cache")
+
 mod.reset_hotkey_alpha = false
 mod.reset_portrait_frame_alpha = false
 mod.reset_level_alpha = false
@@ -80,6 +82,12 @@ mod.on_setting_changed = function(setting_name)
 	or setting_name == mod.SETTING_NAMES.SECOND_BUFF_BAR_SIZE_ADJUST_Y
 	then
 		mod.need_to_refresh_priority_bar = true
+	end
+
+	if setting_name == mod.SETTING_NAMES.HIDE_PICKUP_OUTLINES
+	or setting_name == mod.SETTING_NAMES.HIDE_OTHER_OUTLINES
+	then
+		mod.reapply_pickup_ranges()
 	end
 end
 
@@ -755,3 +763,25 @@ fassert(not mod.update, "Overwriting existing function!")
 mod.update = function()
 	mod.locked_and_loaded_update()
 end
+
+if not mod.persistent_storage.outline_ranges_backup then
+	mod.persistent_storage.outline_ranges_backup = table.clone(OutlineSettings.ranges)
+end
+
+mod.reapply_pickup_ranges = function()
+	OutlineSettings.ranges = table.clone(mod.persistent_storage.outline_ranges_backup)
+	if mod:get(mod.SETTING_NAMES.HIDE_PICKUP_OUTLINES) then
+		OutlineSettings.ranges.pickup = 0
+	end
+	if mod:get(mod.SETTING_NAMES.HIDE_OTHER_OUTLINES) then
+		OutlineSettings.ranges.doors = 0
+		OutlineSettings.ranges.objective = 0
+		OutlineSettings.ranges.objective_light = 0
+		OutlineSettings.ranges.interactable = 0
+		OutlineSettings.ranges.revive = 0
+		OutlineSettings.ranges.player_husk = 0
+		OutlineSettings.ranges.elevators = 0
+	end
+end
+
+mod.reapply_pickup_ranges()

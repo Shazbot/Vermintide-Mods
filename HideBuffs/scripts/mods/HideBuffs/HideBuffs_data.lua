@@ -508,6 +508,28 @@ mod.add_option(
 	nil,
 	hide_ui_elements_group.sub_widgets
 )
+mod.add_option(
+	"HIDE_PICKUP_OUTLINES",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Hide Pickup Outlines",
+	"Hides the white outline around pickups."
+		.."\nChanging this won't affect already spawned objects.",
+	hide_ui_elements_group.sub_widgets
+)
+mod.add_option(
+	"HIDE_OTHER_OUTLINES",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Hide Objective Outlines",
+	"Hides the white outline around objectives."
+		.."\nChanging this won't affect already spawned objects.",
+	hide_ui_elements_group.sub_widgets
+)
 
 local mini_hud_preset_subs = mod.add_option(
 	"MINI_HUD_PRESET",

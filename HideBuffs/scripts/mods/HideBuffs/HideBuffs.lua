@@ -15,7 +15,7 @@ if get_mod("NumericUI") then
 	return
 end
 
-mod.persistent_storage = mod:persistent_table("cache")
+mod.persistent_storage = mod:persistent_table("persistent_storage")
 
 mod.reset_hotkey_alpha = false
 mod.reset_portrait_frame_alpha = false
@@ -699,17 +699,6 @@ mod:hook(BossHealthUI, "_draw", function(func, self, dt, t)
 	end
 
 	return func(self, dt, t)
-end)
-
---- Disable priority_buff popups.
---- e.g. Paced Strikes, Tranquility
-mod:hook(BuffPresentationUI, "draw", function(func, self, dt)
-	if mod:get(mod.SETTING_NAMES.SECOND_BUFF_BAR)
-	and mod:get(mod.SETTING_NAMES.SECOND_BUFF_BAR_DISABLE_BUFF_POPUPS) then
-		return
-	end
-
-	return func(self, dt)
 end)
 
 -- not making this mod.disable_outlines to attempt some optimization

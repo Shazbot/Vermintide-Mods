@@ -75,19 +75,21 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 			local player_ui_offset_x = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
 			local player_ui_offset_y = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
 			self._static_widgets[1].content.texture_id = "console_hp_bar_frame"
-			self._static_widgets[1].style.texture_id.size = { 576+10, 36 }
+			self._static_widgets[1].style.texture_id.size[1] = 576+10
+			self._static_widgets[1].style.texture_id.size[2] = 36
 			self._static_widgets[1].offset[1] = 20 + player_ui_offset_x
 			self._static_widgets[1].offset[2] = 20 + player_ui_offset_y
 			self._static_widgets[1].offset[3] = 0
 
-			self._static_widgets[2].style.texture_id.size = { 576-10, 36 }
+			self._static_widgets[2].style.texture_id.size[1] = 576-10
+			self._static_widgets[2].style.texture_id.size[2] = 36
 			self._static_widgets[2].offset[1] = -50 + player_ui_offset_x
 			self._static_widgets[2].offset[2] = 20 + player_ui_offset_y
 
 			if not self._hb_mod_widget then
 				self._hb_mod_widget = UIWidget.init(mod.hp_bg_rect_def)
+				self._hb_mod_widget.style.hp_bar_rect.size = { 576-10, 21 }
 			end
-			self._hb_mod_widget.style.hp_bar_rect.size = { 576-10, 21 }
 			self._hb_mod_widget.offset[1] = -50 + player_ui_offset_x
 			self._hb_mod_widget.offset[2] = 23 + player_ui_offset_y
 
@@ -100,14 +102,15 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 
 			if not self._mod_ammo_border then
 				self._mod_ammo_border = UIWidget.init(UIWidgets._mod_create_border("background_panel_bg", false))
+				self._mod_ammo_border.style.border.color = { 255, 0, 0, 0 }
 			end
 
 			local player_ammo_bar_height = mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR_HEIGHT)
 			self._mod_ammo_border.offset[1] = -33 + player_ui_offset_x
 			self._mod_ammo_border.offset[2] = 18 - player_ammo_bar_height + player_ui_offset_y
 			self._mod_ammo_border.offset[3] = -20
-			self._mod_ammo_border.style.border.size = { mod.ammo_bar_width + 2-10, player_ammo_bar_height + 2 }
-			self._mod_ammo_border.style.border.color = { 255, 0,0,0 }
+			self._mod_ammo_border.style.border.size[1] = mod.ammo_bar_width + 2-10
+			self._mod_ammo_border.style.border.size[2] = player_ammo_bar_height + 2
 			-- self._mod_ammo_border.style.border.color = { 255, 0,255,0 }
 
 			self._hb_mod_ammo_widget.offset[1] = player_ui_offset_x - 25

@@ -1,6 +1,6 @@
 local mod = get_mod("HideBuffs")
 
-mod.persistent_storage = mod:persistent_table("persistent_storage")
+mod.persistent_storage = mod.persistent_storage or mod:persistent_table("persistent_storage")
 if not mod.persistent_storage.ui_settings_backup then
 	local ui_settings_backup = {}
 	mod.persistent_storage.ui_settings_backup = ui_settings_backup

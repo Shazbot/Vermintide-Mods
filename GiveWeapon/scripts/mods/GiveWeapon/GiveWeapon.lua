@@ -32,6 +32,20 @@ mod.create_skins_dropdown = function(item_type, window_size)
 				if pl.stringx.lfind(skin_key_first, "_runed")
 				and pl.stringx.lfind(skin_key_second, "_runed")
 				then
+					if pl.stringx.lfind(skin_key_first, "_runed_02")
+					and pl.stringx.lfind(skin_key_second, "_runed_02")
+					then
+						return skin_name_first < skin_name_second
+					end
+
+					if pl.stringx.lfind(skin_key_first, "_runed_02") then
+						return true
+					end
+
+					if pl.stringx.lfind(skin_key_second, "_runed_02") then
+						return false
+					end
+
 					return skin_name_first < skin_name_second
 				end
 
@@ -78,7 +92,12 @@ mod.get_skins = function(item_type)
 	end
 end
 
-mod.create_weapon = function(item_type)
+mod.create_weapon = function(item_type, give_random_skin)
+	if not mod.current_careers then
+		local player = Managers.player:local_player()
+		local profile_index = player:profile_index()
+		mod.current_careers = pl.List(SPProfiles[profile_index].careers)
+	end
 	local current_career_names = mod.current_careers:map(function(career) return career.name end)
 	for item_key, item in pairs( ItemMasterList ) do
 		if item.item_type == item_type
@@ -90,11 +109,15 @@ mod.create_weapon = function(item_type)
 		then
 			if item.skin_combination_table or pl.List{"necklace", "ring", "trinket"}:contains(item_type) then
 				local skin
-				if item.skin_combination_table then
+				if item.skin_combination_table and mod.skin_names then
 					skin = mod.skin_names[mod.sorted_skin_names[mod.skins_dropdown.index]]
 				end
 				if mod:get(mod.SETTING_NAMES.NO_SKINS) then
 					skin = nil
+				end
+				if give_random_skin then
+					local skins = mod.get_skins(item_type)
+					skin = skins[math.random(#skins)]
 				end
 
 				local custom_properties = "{"

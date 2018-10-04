@@ -74,17 +74,25 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 		mod:pcall(function()
 			local player_ui_offset_x = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
 			local player_ui_offset_y = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
-			self._static_widgets[1].content.texture_id = "console_hp_bar_frame"
-			self._static_widgets[1].style.texture_id.size[1] = 576+10
-			self._static_widgets[1].style.texture_id.size[2] = 36
-			self._static_widgets[1].offset[1] = 20 + player_ui_offset_x
-			self._static_widgets[1].offset[2] = 20 + player_ui_offset_y
-			self._static_widgets[1].offset[3] = 0
+			local static_widget_1 = self._static_widgets[1]
+			static_widget_1.content.texture_id = "console_hp_bar_frame"
+			if not static_widget_1.style.texture_id.size then
+				static_widget_1.style.texture_id.size = {}
+			end
+			static_widget_1.style.texture_id.size[1] = 576+10
+			static_widget_1.style.texture_id.size[2] = 36
+			static_widget_1.offset[1] = 20 + player_ui_offset_x
+			static_widget_1.offset[2] = 20 + player_ui_offset_y
+			static_widget_1.offset[3] = 0
 
-			self._static_widgets[2].style.texture_id.size[1] = 576-10
-			self._static_widgets[2].style.texture_id.size[2] = 36
-			self._static_widgets[2].offset[1] = -50 + player_ui_offset_x
-			self._static_widgets[2].offset[2] = 20 + player_ui_offset_y
+			local static_widget_2 = self._static_widgets[2]
+			if not static_widget_2.style.texture_id.size then
+				static_widget_2.style.texture_id.size = {}
+			end
+			static_widget_2.style.texture_id.size[1] = 576-10
+			static_widget_2.style.texture_id.size[2] = 36
+			static_widget_2.offset[1] = -50 + player_ui_offset_x
+			static_widget_2.offset[2] = 20 + player_ui_offset_y
 
 			if not self._hb_mod_widget then
 				self._hb_mod_widget = UIWidget.init(mod.hp_bg_rect_def)
@@ -105,21 +113,23 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 				self._mod_ammo_border.style.border.color = { 255, 0, 0, 0 }
 			end
 
+			local mod_ammo_border = self._mod_ammo_border
 			local player_ammo_bar_height = mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR_HEIGHT)
-			self._mod_ammo_border.offset[1] = -33 + player_ui_offset_x
-			self._mod_ammo_border.offset[2] = 18 - player_ammo_bar_height + player_ui_offset_y
-			self._mod_ammo_border.offset[3] = -20
-			self._mod_ammo_border.style.border.size[1] = mod.ammo_bar_width + 2-10
-			self._mod_ammo_border.style.border.size[2] = player_ammo_bar_height + 2
-			-- self._mod_ammo_border.style.border.color = { 255, 0,255,0 }
+			mod_ammo_border.offset[1] = -33 + player_ui_offset_x
+			mod_ammo_border.offset[2] = 18 - player_ammo_bar_height + player_ui_offset_y
+			mod_ammo_border.offset[3] = -20
+			mod_ammo_border.style.border.size[1] = mod.ammo_bar_width + 2-10
+			mod_ammo_border.style.border.size[2] = player_ammo_bar_height + 2
+			-- mod_ammo_border.style.border.color = { 255, 0,255,0 }
 
-			self._hb_mod_ammo_widget.offset[1] = player_ui_offset_x - 25
-			self._hb_mod_ammo_widget.offset[2] = player_ui_offset_y + 43
-			self._hb_mod_ammo_widget.style.ammo_bar.color[1] = mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR_ALPHA)
-			self._hb_mod_ammo_widget.style.ammo_bar.size[2] = player_ammo_bar_height
-			self._hb_mod_ammo_widget.style.ammo_bar.offset[1] = -7
-			self._hb_mod_ammo_widget.style.ammo_bar.offset[2] = -24 - player_ammo_bar_height
-			self._hb_mod_ammo_widget.style.ammo_bar.offset[3] = 50
+			local mod_ammo_widget = self._hb_mod_ammo_widget
+			mod_ammo_widget.offset[1] = player_ui_offset_x - 25
+			mod_ammo_widget.offset[2] = player_ui_offset_y + 43
+			mod_ammo_widget.style.ammo_bar.color[1] = mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR_ALPHA)
+			mod_ammo_widget.style.ammo_bar.size[2] = player_ammo_bar_height
+			mod_ammo_widget.style.ammo_bar.offset[1] = -7
+			mod_ammo_widget.style.ammo_bar.offset[2] = -24 - player_ammo_bar_height
+			mod_ammo_widget.style.ammo_bar.offset[3] = 50
 		end)
 
 		if mod:get(mod.SETTING_NAMES.SHOW_RELOAD_REMINDER) then

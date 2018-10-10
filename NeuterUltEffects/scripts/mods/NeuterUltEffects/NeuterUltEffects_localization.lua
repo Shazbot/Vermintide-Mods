@@ -36,6 +36,12 @@ mod.localizations:update({
 	HEALING_T = {
 		en = "Disable getting flashbanged when using healing supplies."
 	},
+	NO_POTION_GLOW = {
+		en = "Disable Potion Glow"
+	},
+	NO_POTION_GLOW_T = {
+		en = "Disable the glow around potions."
+	},
 })
 
 local localization = mod.localizations

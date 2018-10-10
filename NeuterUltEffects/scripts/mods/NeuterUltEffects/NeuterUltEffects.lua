@@ -138,6 +138,7 @@ mod:hook(BuffExtension, "_play_screen_effect", function (func, self, effect)
 
 	return func(self, effect)
 end)
+
 --- No projectile trails.
 mod:hook(Unit, "flow_event", function(func, unit, event_name)
 	if mod:get(mod.SETTING_NAMES.DISABLE_PROJECTILE_TRAILS)
@@ -148,6 +149,8 @@ mod:hook(Unit, "flow_event", function(func, unit, event_name)
 	then
 		return
 	end
-	
+
 	return func(unit, event_name)
 end)
+
+mod:dofile("scripts/mods/"..mod:get_name().."/no_potion_glow")

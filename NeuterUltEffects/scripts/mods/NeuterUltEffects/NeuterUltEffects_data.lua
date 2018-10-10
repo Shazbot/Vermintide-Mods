@@ -101,6 +101,17 @@ mod.add_option(
 	nil
 )
 
+mod.add_option(
+	"NO_POTION_GLOW",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Disable Potion Glow",
+	"Disable the glow around potions.",
+	nil
+)
+
 for _, name in ipairs( { "SLAYER", "HUNTSMAN", "SHADE", "ZEALOT", "RANGER" } ) do
 	mod.SETTING_NAMES[name.."_GROUP"] = name.."_GROUP"
 	mod.SETTING_NAMES[name.."_GROUP_T"] = name.."_GROUP_T"

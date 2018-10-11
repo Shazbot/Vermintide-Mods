@@ -16,7 +16,8 @@ globals = {
 	"HordeSpawner", "SpawnerSystem", "ConflictUtils", "CurrentHordeSettings",
 	"DoorSystem", "TerrorEventMixer", "ConflictDirector", "Breeds", "AIInterestPointSystem",
 	"SpecialsPacing", "CurrentSpecialsSettings", "SpawnZoneBaker", "DamageUtils",
-	"CurrentBossSettings", "Application", "HordeSettings",
+	"CurrentBossSettings", "Application", "HordeSettings", "PlayerHud", "StateLoading",
+	"OutlineSettings",
 
 	"PriorityBuffUI",
 }

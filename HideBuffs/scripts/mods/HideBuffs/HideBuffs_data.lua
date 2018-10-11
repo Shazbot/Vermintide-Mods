@@ -531,6 +531,16 @@ mod.add_option(
 	hide_ui_elements_group.sub_widgets
 )
 mod.add_option(
+	"HIDE_NEW_AREA_TEXT",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Hide New Area Popup",
+	"Hide location name popup when entering new location.",
+	hide_ui_elements_group.sub_widgets
+)
+mod.add_option(
 	"DISABLE_LEVEL_INTRO_AUDIO",
 	{
 		["widget_type"] = "checkbox",

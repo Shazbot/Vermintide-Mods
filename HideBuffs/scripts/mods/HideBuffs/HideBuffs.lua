@@ -748,6 +748,15 @@ mod:hook(StateLoading, "_trigger_sound_events", function(func, self, level_key)
 	return func(self, level_key)
 end)
 
+--- Hide name of new location text.
+mod:hook(PlayerHud, "set_current_location", function(func, self, ...)
+	if mod:get(mod.SETTING_NAMES.HIDE_NEW_AREA_TEXT) then
+		return
+	end
+
+	return func(self, ...)
+end)
+
 mod:dofile("scripts/mods/HideBuffs/teammate_widget_definitions")
 mod:dofile("scripts/mods/HideBuffs/buff_ui")
 mod:dofile("scripts/mods/HideBuffs/ability_ui")

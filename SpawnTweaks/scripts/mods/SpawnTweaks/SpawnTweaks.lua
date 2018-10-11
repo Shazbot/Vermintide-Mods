@@ -1,10 +1,4 @@
-local mod = get_mod("SpawnTweaks") -- luacheck: ignore get_mod
-
--- luacheck: globals math ConflictUtils unpack table BossSettings CurrentSpecialsSettings
--- luacheck: globals RecycleSettings CurrentPacing Breeds Unit DamageUtils Managers CurrentBossSettings
--- luacheck: globals HordeSpawner SpawnerSystem SpecialsPacing ConflictDirector TerrorEventMixer DoorSystem
--- luacheck: globals AIInterestPointSystem SpawnZoneBaker Pacing get_mod Application
--- luacheck: globals CurrentHordeSettings HordeSettings
+local mod = get_mod("SpawnTweaks")
 
 local vmf = get_mod("VMF")
 
@@ -12,9 +6,7 @@ local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
 local stringx = require'pl.stringx'
 
---- "table.pack" and "unpack" replacements that are more reliable with nil values.
-local function pack2(...) return {n=select('#', ...), ...} end
-local function unpack2(t) return unpack(t, 1, t.n) end
+fassert(pl, "Spawn Tweaks must be lower than Penlight Lua Libraries in your launcher's load order.")
 
 --- Don't play horde warning sound when hordes disabled.
 mod:hook(HordeSpawner, "play_sound", function(func, ...)

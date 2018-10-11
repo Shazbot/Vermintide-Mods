@@ -1,6 +1,4 @@
-local mod = get_mod("SpawnTweaks") -- luacheck: ignore get_mod
-
--- luacheck: globals Localize Breeds table
+local mod = get_mod("SpawnTweaks")
 
 local pl = require'pl.import_into'()
 

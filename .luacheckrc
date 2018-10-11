@@ -4,7 +4,7 @@ globals = {
 	"local_require", "class", "ripairs",
 	"BuffUI", "EquipmentUI", "AbilityUI", "UnitFrameUI", "MissionObjectiveUI",
 	"TutorialUI", "math", "UnitFramesHandler", "table", "UIWidget",
-	"UIRenderer", "CrosshairUI", ScriptUnit", "BossHealthUI", "Colors", "UIWidgets",
+	"UIRenderer", "CrosshairUI", "ScriptUnit", "BossHealthUI", "Colors", "UIWidgets",
 	"fassert", "HeroView", "Managers", "UIResolutionScale", "UIResolution",
 	"WeaponProperties", "WeaponTraits", "WeaponSkins", "ItemMasterList",
 	"SPProfiles", "Localize", "ItemHelper", "UIUtils", "HeroWindowLoadoutInventory",
@@ -12,7 +12,11 @@ globals = {
 	"InventorySettings", "UISceneGraph", "RESOLUTION_LOOKUP", "GamePadEquipmentUI",
 	"UISettings", "RewardPopupUI", "EndViewStateChest", "EndViewStateSummary",
 	"UIAnimator", "BuffFunctionTemplates", "MOOD_BLACKBOARD", "StateInGameRunning",
-	"BuffExtension", "Unit",
+	"BuffExtension", "Unit", "Pacing", "RecycleSettings", "CurrentPacing",
+	"HordeSpawner", "SpawnerSystem", "ConflictUtils", "CurrentHordeSettings",
+	"DoorSystem", "TerrorEventMixer", "ConflictDirector", "Breeds", "AIInterestPointSystem",
+	"SpecialsPacing", "CurrentSpecialsSettings", "SpawnZoneBaker", "DamageUtils",
+	"CurrentBossSettings", "Application", "HordeSettings",
 
 	"PriorityBuffUI",
 }

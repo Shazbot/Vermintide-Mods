@@ -265,6 +265,7 @@ mod_data.options_widgets = {
 	{
 		["setting_name"] = mod.SETTING_NAMES.HORDES,
 		["widget_type"] = "dropdown",
+		["default_value"] = mod.HORDES.DEFAULT,
 		["text"] = mod:localize("hordes"),
 		["tooltip"] = mod:localize("hordes_tooltip"),
 		["options"] = {
@@ -373,6 +374,7 @@ mod_data.options_widgets = {
 	{
 		["setting_name"] = mod.SETTING_NAMES.SPECIALS,
 		["widget_type"] = "dropdown",
+		["default_value"] = mod.SPECIALS.DEFAULT,
 		["text"] = mod:localize("specials"),
 		["tooltip"] = mod:localize("specials_tooltip"),
 		["options"] = {
@@ -462,6 +464,7 @@ mod_data.options_widgets = {
 	{
 		["setting_name"] = mod.SETTING_NAMES.AMBIENTS,
 		["widget_type"] = "dropdown",
+		["default_value"] = mod.AMBIENTS.DEFAULT,
 		["text"] = mod:localize("ambients"),
 		["tooltip"] = mod:localize("ambients_tooltip"),
 		["options"] = {
@@ -501,6 +504,7 @@ mod_data.options_widgets = {
 	{
 		["setting_name"] = mod.SETTING_NAMES.BOSSES,
 		["widget_type"] = "dropdown",
+		["default_value"] = mod.BOSSES.DEFAULT,
 		["text"] = mod:localize("bosses"),
 		["tooltip"] = mod:localize("bosses_tooltip"),
 		["options"] = {

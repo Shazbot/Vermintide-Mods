@@ -199,6 +199,21 @@ mod:hook(CrosshairUI, "draw_projectile_style_crosshair", function (func, self, u
 	self.crosshair_projectile.content.visible = crosshair_projectile_visible_temp
 end)
 
+--- Disable hit markers.
+mod:hook(CrosshairUI, "set_hit_marker_animation", function(func, self, hit_markers, hit_markers_n, hit_marker_animations, hit_marker_data)
+	if self.crosshair_style then
+		if mod:get(mod.SETTING_NAMES.NO_MELEE_HIT_MARKERS)
+		and self.crosshair_style == "dot" then
+			return
+		end
+		if mod:get(mod.SETTING_NAMES.NO_RANGED_HIT_MARKERS)
+		and self.crosshair_style ~= "dot" then
+			return
+		end
+	end
+	return func(self, hit_markers, hit_markers_n, hit_marker_animations, hit_marker_data)
+end)
+
 --- Actions ---
 --- Dot only on_toggle.
 mod.dot_toggle = function()

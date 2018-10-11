@@ -29,6 +29,8 @@ mod.SETTING_NAMES = {
     NO_RANGE_MARKERS = "no_range_markers",
     NO_LINE_MARKERS = "no_line_markers",
     NO_RANGED_DOT = "NO_RANGED_DOT",
+    NO_MELEE_HIT_MARKERS = "NO_MELEE_HIT_MARKERS",
+    NO_RANGED_HIT_MARKERS = "NO_RANGED_HIT_MARKERS",
 }
 ---! Enums ---
 
@@ -130,6 +132,20 @@ mod_data.options_widgets = {
 		["widget_type"] = "checkbox",
 		["text"] = mod:localize("no_range_markers"),
 		["tooltip"] = mod:localize("no_range_markers_tooltip"),
+		["default_value"] = false
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.NO_MELEE_HIT_MARKERS,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("NO_MELEE_HIT_MARKERS"),
+		["tooltip"] = mod:localize("NO_MELEE_HIT_MARKERS_T"),
+		["default_value"] = false
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.NO_RANGED_HIT_MARKERS,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("NO_RANGED_HIT_MARKERS"),
+		["tooltip"] = mod:localize("NO_RANGED_HIT_MARKERS_T"),
 		["default_value"] = false
 	},
 }

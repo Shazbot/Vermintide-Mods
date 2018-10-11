@@ -86,4 +86,16 @@ return {
 	NO_RANGED_DOT_T = {
 		en = "No center dot with ranged weapons."
 	},
+	NO_MELEE_HIT_MARKERS = {
+		en = "No Melee Hit Markers"
+	},
+	NO_MELEE_HIT_MARKERS_T = {
+		en = "Hide hit markers when connecting with melee weapons."
+	},
+	NO_RANGED_HIT_MARKERS = {
+		en = "No Ranged Hit Markers"
+	},
+	NO_RANGED_HIT_MARKERS_T = {
+		en = "Hide hit markers when connecting with ranged weapons."
+	},
 }

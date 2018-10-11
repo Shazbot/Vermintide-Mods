@@ -29,4 +29,10 @@ return {
 	ASSASSIN_HERO_WARNING_T = {
 		en = "Play hero warning dialogue on assassin and pack spawns."
 	},
+	DISABLE_LEVEL_INTRO_AUDIO = {
+		en = "Disable Level Intro Audio"
+	},
+	DISABLE_LEVEL_INTRO_AUDIO_T = {
+		en = "Disable Lohner's level intro spiel."
+	},
 }

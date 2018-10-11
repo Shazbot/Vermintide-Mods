@@ -5,6 +5,7 @@ mod.SETTING_NAMES = {
 	DONT_RESPAWN_BOTS = "DONT_RESPAWN_BOTS",
 	AUTO_KILL_BOTS = "AUTO_KILL_BOTS",
 	ASSASSIN_HERO_WARNING = "ASSASSIN_HERO_WARNING",
+	DISABLE_LEVEL_INTRO_AUDIO = "DISABLE_LEVEL_INTRO_AUDIO",
 }
 
 local mod_data = {
@@ -40,6 +41,13 @@ mod_data.options_widgets = {
 		["widget_type"] = "checkbox",
 		["text"] = mod:localize("ASSASSIN_HERO_WARNING"),
 		["tooltip"] = mod:localize("ASSASSIN_HERO_WARNING_T"),
+		["default_value"] = false,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.DISABLE_LEVEL_INTRO_AUDIO,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("DISABLE_LEVEL_INTRO_AUDIO"),
+		["tooltip"] = mod:localize("DISABLE_LEVEL_INTRO_AUDIO_T"),
 		["default_value"] = false,
 	},
 }

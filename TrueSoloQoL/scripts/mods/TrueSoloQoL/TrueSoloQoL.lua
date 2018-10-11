@@ -198,5 +198,13 @@ mod:hook(ConflictDirector, "spawn_queued_unit", function(func, self, breed, boxe
 	return func(self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, optional_data, group_data, unit_data)
 end)
 
-mod:dofile("scripts/mods/"..mod:get_name().."/keep_spawning_fix")
+--- Disable level intro audio.
+mod:hook(StateLoading, "_trigger_sound_events", function(func, self, level_key)
+	if mod:get(mod.SETTING_NAMES.DISABLE_LEVEL_INTRO_AUDIO) then
+		return
+	end
+
+	return func(self, level_key)
+end)
+
 mod:dofile("scripts/mods/"..mod:get_name().."/assassin_hero_warning")

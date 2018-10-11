@@ -53,6 +53,7 @@ mod.SETTING_NAMES = {
 	CHAOS_HORDE_TOGGLE_GROUP = "chaos_horde_toggle_group",
 	HORDE_TYPES = "horde_types",
 	AMBIENTS_NO_THREAT = "ambients_no_threat",
+	CUSTOM_AMBIENTS_TOGGLE_GROUP = "CUSTOM_AMBIENTS_TOGGLE_GROUP",
 }
 
 mod.BOSSES = {
@@ -91,6 +92,9 @@ local unused_specials = pl.List{
 	"chaos_tentacle_sorcerer",
 	"chaos_tentacle",
 	"chaos_plague_sorcerer",
+
+	"pet_rat",
+	"pet_pig",
 }
 
 mod.all_breeds = table.clone(Breeds)
@@ -133,6 +137,31 @@ breeds_dmg_group_widget.sub_widgets = (function()
 				["range"] = {0, 1000},
 				["unit_text"] = "%",
 				["default_value"] = 100,
+			})
+	end
+	return breed_options
+end)()
+
+local custom_ambients_group_widget = {
+	["show_widget_condition"] = {3},
+	["setting_name"] = mod.SETTING_NAMES.CUSTOM_AMBIENTS_TOGGLE_GROUP,
+	["widget_type"] = "checkbox",
+	["text"] = mod:localize("CUSTOM_AMBIENTS_TOGGLE_GROUP"),
+	["tooltip"] = mod:localize("CUSTOM_AMBIENTS_TOGGLE_GROUP_tooltip"),
+	["sub_widgets"] = {},
+	["default_value"] = false,
+}
+custom_ambients_group_widget.sub_widgets = (function()
+	local breed_options = {}
+	for breed_name, breed_data in pairs(mod.all_breeds) do
+		table.insert(breed_options,
+			{
+				["setting_name"] = breed_name.."_ambient_weight",
+				["widget_type"] = "numeric",
+				["text"] = breed_data.localized_name,
+				["tooltip"] = "Set spawn weight for "..breed_data.localized_name..".",
+				["range"] = {0, 20},
+				["default_value"] = 0,
 			})
 	end
 	return breed_options
@@ -497,6 +526,7 @@ mod_data.options_widgets = {
 				["tooltip"] = mod:localize("ambients_no_threat_tooltip"),
 				["default_value"] = false,
 			},
+			custom_ambients_group_widget,
 		},
 	},
 	{

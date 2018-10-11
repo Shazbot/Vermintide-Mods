@@ -211,7 +211,23 @@ mod:hook(ConflictDirector, "spawn_queued_unit", function(func, self, breed, boxe
 	end
 
 	if mod:get(mod.SETTING_NAMES.AMBIENTS) == mod.AMBIENTS.CUSTOMIZE then
-		if mod:get(mod.SETTING_NAMES.MORE_AMBIENT_ELITES) then
+		if mod:get(mod.SETTING_NAMES.CUSTOM_AMBIENTS_TOGGLE_GROUP) then
+			local total = 0
+			for breed_name, _ in pairs( mod.all_breeds ) do
+				total = total + mod:get(breed_name.."_ambient_weight")
+			end
+
+			local rnd = math.random(total)
+
+			local count = 0
+			for breed_name, _ in pairs( mod.all_breeds ) do
+				count = count + mod:get(breed_name.."_ambient_weight")
+				if count >= rnd then
+					breed = Breeds[breed_name]
+					break
+				end
+			end
+		elseif mod:get(mod.SETTING_NAMES.MORE_AMBIENT_ELITES) then
 			if not spawn_type then
 				if breed.name == "skaven_clan_rat" then
 					breed = ({Breeds["skaven_plague_monk"], Breeds["skaven_storm_vermin_commander"], Breeds["skaven_storm_vermin_with_shield"]})[math.random(1,6)] or breed

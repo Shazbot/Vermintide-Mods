@@ -310,4 +310,13 @@ return {
 	ambients_no_threat_tooltip = {
 		en = "Make ambient mini-patrols keep spawning at high threat.",
 	},
+	CUSTOM_AMBIENTS_TOGGLE_GROUP = {
+		en = "Weighted Ambient Makeup",
+	},
+	CUSTOM_AMBIENTS_TOGGLE_GROUP_tooltip = {
+		en = "Specify ambient makeup with weights."
+			.."\ne.g. having Plague Monks at 1 and Stormvermin at 1 will make a 50/50 ambient split."
+			.."\nSome breeds could cause crashes, don't have the time to test."
+			.."\nIgnores More Ambient Elites.",
+	},
 }

@@ -140,6 +140,34 @@ mod:hook(CrosshairUI, "draw_dot_style_crosshair", function(func, self, ...)
 		return
 	end
 	mod.draw_crosshair_prehook(self)
+	
+	if mod:get(mod.SETTING_NAMES.FORCE_MELEE_CROSSHAIR_GROUP) then
+		local pitch_percentage = mod:get(mod.SETTING_NAMES.MELEE_CROSSHAIR_PITCH) / 100
+		local yaw_percentage = mod:get(mod.SETTING_NAMES.MELEE_CROSSHAIR_YAW) / 100
+
+		local num_points = 4
+		local start_degrees = 45
+		local pitch_offset = 5
+		local yaw_offset = 5
+		pitch_percentage = math.max(0.0001, pitch_percentage)
+		yaw_percentage = math.max(0.0001, yaw_percentage)
+
+		if not mod:get(mod.SETTING_NAMES.FORCE_MELEE_CROSSHAIR_NO_DOT) then
+			UIRenderer.draw_widget(self.ui_renderer, self.crosshair_dot)
+		end
+
+		local only_lower_markers = mod:get(mod.SETTING_NAMES.ONLY_LOWER_MARKERS)
+		for i = 1, num_points, 1 do
+			if not only_lower_markers
+			or (only_lower_markers and i ~= 3 and i ~= 4)
+			then
+				self:_set_widget_point_offset(self.crosshair_line, i, num_points, pitch_percentage, yaw_percentage, start_degrees, pitch_offset, yaw_offset)
+				UIRenderer.draw_widget(self.ui_renderer, self.crosshair_line)
+			end
+		end
+
+		return
+	end
 
 	if mod:get(mod.SETTING_NAMES.NO_MELEE_DOT)
 	and self.crosshair_style

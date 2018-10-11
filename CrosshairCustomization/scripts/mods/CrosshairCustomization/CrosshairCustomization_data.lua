@@ -31,6 +31,11 @@ mod.SETTING_NAMES = {
     NO_RANGED_DOT = "NO_RANGED_DOT",
     NO_MELEE_HIT_MARKERS = "NO_MELEE_HIT_MARKERS",
     NO_RANGED_HIT_MARKERS = "NO_RANGED_HIT_MARKERS",
+    FORCE_MELEE_CROSSHAIR_GROUP = "FORCE_MELEE_CROSSHAIR_GROUP",
+    MELEE_CROSSHAIR_PITCH = "MELEE_CROSSHAIR_PITCH",
+    MELEE_CROSSHAIR_YAW = "MELEE_CROSSHAIR_YAW",
+    ONLY_LOWER_MARKERS = "ONLY_LOWER_MARKERS",
+    FORCE_MELEE_CROSSHAIR_NO_DOT = "FORCE_MELEE_CROSSHAIR_NO_DOT",
 }
 ---! Enums ---
 
@@ -147,6 +152,45 @@ mod_data.options_widgets = {
 		["text"] = mod:localize("NO_RANGED_HIT_MARKERS"),
 		["tooltip"] = mod:localize("NO_RANGED_HIT_MARKERS_T"),
 		["default_value"] = false
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.FORCE_MELEE_CROSSHAIR_GROUP,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("FORCE_MELEE_CROSSHAIR_GROUP"),
+		["tooltip"] = mod:localize("FORCE_MELEE_CROSSHAIR_GROUP_T"),
+		["default_value"] = false,
+		["sub_widgets"] = {
+			{
+				["setting_name"] = mod.SETTING_NAMES.MELEE_CROSSHAIR_YAW,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("MELEE_CROSSHAIR_YAW"),
+				["tooltip"] = mod:localize("MELEE_CROSSHAIR_YAW_T"),
+				["range"] = {0, 100},
+				["default_value"] = 0,
+			},
+			{
+				["setting_name"] = mod.SETTING_NAMES.MELEE_CROSSHAIR_PITCH,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("MELEE_CROSSHAIR_PITCH"),
+				["tooltip"] = mod:localize("MELEE_CROSSHAIR_PITCH_T"),
+				["range"] = {0, 100},
+				["default_value"] = 0,
+			},
+			{
+				["setting_name"] = mod.SETTING_NAMES.FORCE_MELEE_CROSSHAIR_NO_DOT,
+				["widget_type"] = "checkbox",
+				["text"] = mod:localize("FORCE_MELEE_CROSSHAIR_NO_DOT"),
+				["tooltip"] = mod:localize("FORCE_MELEE_CROSSHAIR_NO_DOT_T"),
+				["default_value"] = false,
+			},
+			{
+				["setting_name"] = mod.SETTING_NAMES.ONLY_LOWER_MARKERS,
+				["widget_type"] = "checkbox",
+				["text"] = mod:localize("ONLY_LOWER_MARKERS"),
+				["tooltip"] = mod:localize("ONLY_LOWER_MARKERS_T"),
+				["default_value"] = false,
+			},
+		},
 	},
 }
 

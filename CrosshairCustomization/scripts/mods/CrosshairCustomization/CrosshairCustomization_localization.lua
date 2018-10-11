@@ -98,4 +98,34 @@ return {
 	NO_RANGED_HIT_MARKERS_T = {
 		en = "Hide hit markers when connecting with ranged weapons."
 	},
+	FORCE_MELEE_CROSSHAIR_GROUP = {
+		en = "Force Melee Crosshair"
+	},
+	FORCE_MELEE_CROSSHAIR_GROUP_T = {
+		en = "Use a ranged crosshair on melee weapons."
+	},
+	MELEE_CROSSHAIR_YAW = {
+		en = "Yaw"
+	},
+	MELEE_CROSSHAIR_YAW_T = {
+		en = "X offset for markers."
+	},
+	MELEE_CROSSHAIR_PITCH = {
+		en = "Pitch"
+	},
+	MELEE_CROSSHAIR_PITCH_T = {
+		en = "Y offset for markers."
+	},
+	FORCE_MELEE_CROSSHAIR_NO_DOT = {
+		en = "No Dot"
+	},
+	FORCE_MELEE_CROSSHAIR_NO_DOT_T = {
+		en = "Don't draw the center dot."
+	},
+	ONLY_LOWER_MARKERS = {
+		en = "Only Lower Marker Pair"
+	},
+	ONLY_LOWER_MARKERS_T = {
+		en = "Only draw the lower markers."
+	},
 }

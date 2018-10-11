@@ -739,6 +739,15 @@ mod.hide_hud = function()
 	mod.keep_hud_hidden = not mod.keep_hud_hidden
 end
 
+--- Disable level intro audio.
+mod:hook(StateLoading, "_trigger_sound_events", function(func, self, level_key)
+	if mod:get(mod.SETTING_NAMES.DISABLE_LEVEL_INTRO_AUDIO) then
+		return
+	end
+
+	return func(self, level_key)
+end)
+
 mod:dofile("scripts/mods/HideBuffs/teammate_widget_definitions")
 mod:dofile("scripts/mods/HideBuffs/buff_ui")
 mod:dofile("scripts/mods/HideBuffs/ability_ui")

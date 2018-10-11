@@ -530,6 +530,16 @@ mod.add_option(
 		.."\nChanging this won't affect already spawned objects.",
 	hide_ui_elements_group.sub_widgets
 )
+mod.add_option(
+	"DISABLE_LEVEL_INTRO_AUDIO",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Disable Level Intro Audio",
+	"Disable Lohner's level intro spiel.",
+	hide_ui_elements_group.sub_widgets
+)
 
 local mini_hud_preset_subs = mod.add_option(
 	"MINI_HUD_PRESET",

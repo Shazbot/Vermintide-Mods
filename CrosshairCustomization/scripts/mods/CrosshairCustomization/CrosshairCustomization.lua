@@ -140,8 +140,11 @@ mod:hook(CrosshairUI, "draw_dot_style_crosshair", function(func, self, ...)
 		return
 	end
 	mod.draw_crosshair_prehook(self)
-	
-	if mod:get(mod.SETTING_NAMES.FORCE_MELEE_CROSSHAIR_GROUP) then
+
+	if mod:get(mod.SETTING_NAMES.FORCE_MELEE_CROSSHAIR_GROUP)
+	and self.crosshair_style
+	and self.crosshair_style == "dot"
+	then
 		local pitch_percentage = mod:get(mod.SETTING_NAMES.MELEE_CROSSHAIR_PITCH) / 100
 		local yaw_percentage = mod:get(mod.SETTING_NAMES.MELEE_CROSSHAIR_YAW) / 100
 

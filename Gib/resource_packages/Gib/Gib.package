@@ -1,0 +1,11 @@
+mod = [
+	"Gib"
+]
+
+package = [
+	"resource_packages/Gib/Gib"
+]
+
+lua = [
+	"scripts/mods/Gib/*"
+]

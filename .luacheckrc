@@ -17,7 +17,7 @@ globals = {
 	"DoorSystem", "TerrorEventMixer", "ConflictDirector", "Breeds", "AIInterestPointSystem",
 	"SpecialsPacing", "CurrentSpecialsSettings", "SpawnZoneBaker", "DamageUtils",
 	"CurrentBossSettings", "Application", "HordeSettings", "PlayerHud", "StateLoading",
-	"OutlineSettings",
+	"OutlineSettings", "GenericHitReactionExtension", "UnitGibSettings",
 
 	"PriorityBuffUI",
 }

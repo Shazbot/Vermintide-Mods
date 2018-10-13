@@ -18,6 +18,8 @@ globals = {
 	"SpecialsPacing", "CurrentSpecialsSettings", "SpawnZoneBaker", "DamageUtils",
 	"CurrentBossSettings", "Application", "HordeSettings", "PlayerHud", "StateLoading",
 	"OutlineSettings", "GenericHitReactionExtension", "UnitGibSettings",
+	"FrameTable", "NetworkUnit", "CareerSettings",
+	"ActionBulletSpray", "ActionShotgun", "ActionHandgunLock", "ActionHandgun"
 
 	"PriorityBuffUI",
 }

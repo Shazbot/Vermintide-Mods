@@ -34,6 +34,10 @@ mod.get_rpc_trigger_dialogue_event_data = function(action_career_object)
 end
 
 mod:hook(DialogueSystem, "rpc_play_dialogue_event", function(func, self, sender, go_id, is_level_unit, dialogue_id, dialogue_index)
+	if mod:get(mod.SETTING_NAMES.ONLY_DISABLE_OWN_LINES) then
+		return func(self, sender, go_id, is_level_unit, dialogue_id, dialogue_index)
+	end
+
 	local dialogue_name = NetworkLookup.dialogues[dialogue_id]
 	if string.find(dialogue_name, "special_ability_") then
 		local unit = Managers.state.unit_storage:unit(go_id)

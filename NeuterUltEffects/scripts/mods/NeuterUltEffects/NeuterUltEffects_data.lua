@@ -112,12 +112,21 @@ mod.add_option(
 	nil
 )
 
+local ults_subs = mod.add_option(
+	"ULTS_GROUP",
+	{
+		["widget_type"] = "group",
+	},
+	"Ult Effects",
+	"Disable visual or audio effects on ults."
+)
+
 for _, name in ipairs( { "SLAYER", "HUNTSMAN", "SHADE", "ZEALOT", "RANGER" } ) do
 	mod.SETTING_NAMES[name.."_GROUP"] = name.."_GROUP"
 	mod.SETTING_NAMES[name.."_GROUP_T"] = name.."_GROUP_T"
 	mod.SETTING_NAMES[name.."_VISUAL"] = name.."_VISUAL"
 	mod.SETTING_NAMES[name.."_AUDIO"] = name.."_AUDIO"
-	table.insert(mod_data.options_widgets,
+	table.insert(ults_subs,
 		{
 			["setting_name"] = mod.SETTING_NAMES[name.."_GROUP"],
 			["widget_type"] = "group",
@@ -148,7 +157,7 @@ local potion_filters_subs = mod.add_option(
 	{
 		["widget_type"] = "group",
 	},
-	"Potion Visual Effects",
+	"Potion Effects",
 	"Disable audio or visual effects on potion use.",
 	nil
 )
@@ -206,5 +215,16 @@ for career_key, career in pairs( CareerSettings ) do
 		)
 	end
 end
+
+mod.add_option(
+	"ONLY_DISABLE_OWN_LINES",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Only Disable Own Ult Lines",
+	"Disable ult lines when you're the one ulting, but don't disable lines from other players.",
+	nil
+)
 
 return mod_data

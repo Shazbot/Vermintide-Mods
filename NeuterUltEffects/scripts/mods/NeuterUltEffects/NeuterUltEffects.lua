@@ -141,3 +141,4 @@ end)
 
 mod:dofile("scripts/mods/"..mod:get_name().."/no_potion_glow")
 mod:dofile("scripts/mods/"..mod:get_name().."/no_projectile_trails")
+mod:dofile("scripts/mods/"..mod:get_name().."/no_ult_vo")

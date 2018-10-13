@@ -182,4 +182,29 @@ for _, name in ipairs( { "STR_POT", "SPEED_POT", "CDR_POT" } ) do
 	end
 end
 
+local ult_voice_lines_subs = mod.add_option(
+	"ULT_VOICE_LINES_GROUP",
+	{
+		["widget_type"] = "group",
+	},
+	"Ult Voice Lines",
+	"Disable voice lines on ult."
+)
+
+for career_key, career in pairs( CareerSettings ) do
+	if career_key ~= "empire_soldier_tutorial" then
+		local career_name = career.display_name
+		mod.add_option(
+			career_name.."_vo",
+			{
+				["widget_type"] = "checkbox",
+				["default_value"] = false,
+			},
+			Localize(career_name),
+			"Disable "..Localize(career_name).." ult voice line.",
+			ult_voice_lines_subs
+		)
+	end
+end
+
 return mod_data

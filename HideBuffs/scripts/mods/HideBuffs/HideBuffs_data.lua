@@ -801,6 +801,17 @@ mod.add_option(
 	"Optionally offset the item slots on the y axis.",
 	team_ui_group.sub_widgets
 )
+mod.add_option(
+	"TEAM_UI_PORTRAIT_ALPHA",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 255},
+	    ["default_value"] = 255,
+	},
+	"Portrait Transparency",
+	"Set portrait transparency, 0 is fully transparent.",
+	team_ui_group.sub_widgets
+)
 
 local teammate_important_icons_subs = mod.add_option(
 	"TEAM_UI_ICONS_GROUP",

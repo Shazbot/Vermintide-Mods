@@ -93,7 +93,7 @@ end
 
 --- Store frame_index in a new variable.
 mod:hook_safe(UnitFrameUI, "_create_ui_elements", function(self, frame_index)
-	self._mod_frame_index = frame_index -- nil for player, 1 2 3 for other players
+	self._mod_frame_index = frame_index -- nil for player, 2 3 4 for other players
 end)
 
 mod.player_ability_dynamic_content_change_fun = function (content, style)
@@ -375,7 +375,8 @@ mod:hook(UnitFrameUI, "set_ammo_percentage", function (func, self, ammo_percent)
 	return func(self, ammo_percent)
 end)
 
-mod:hook_safe(UnitFrameUI, "set_portrait_frame", function(self)
+mod.adjust_portrait_size_and_position = function(unit_frame_ui)
+	local self = unit_frame_ui
 	if self._mod_frame_index then
 		local widgets = self._widgets
 		local team_ui_portrait_offset_x = mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_OFFSET_X)
@@ -393,6 +394,10 @@ mod:hook_safe(UnitFrameUI, "set_portrait_frame", function(self)
 		widgets.portrait_static.offset[2] = team_ui_portrait_offset_y
 		self:_set_widget_dirty(widgets.portrait_static)
 	end
+end
+
+mod:hook_safe(UnitFrameUI, "set_portrait_frame", function(self)
+	mod.adjust_portrait_size_and_position(self)
 end)
 
 mod:hook(UnitFrameUI, "update", function(func, self, ...)
@@ -519,6 +524,11 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 			def_dynamic_w.style.connecting_icon.offset[1] = -25 + team_ui_portrait_offset_x
 			def_dynamic_w.style.connecting_icon.offset[2] = 34 + team_ui_portrait_offset_y
 
+			if not self._hb_mod_adjusted_portraits then
+				self._hb_mod_adjusted_portraits = true
+				mod.adjust_portrait_size_and_position(self)
+			end
+
 			local widgets = self._widgets
 			local previous_widget = widgets.portrait_static
 			if (
@@ -548,6 +558,34 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 		end
 	end)
 	return func(self, ...)
+end)
+
+mod:hook(UnitFrameUI, "_update_portrait_opacity", function(func, self, is_dead, is_knocked_down, needs_help, assisted_respawn)
+	local widget = self:_widget_by_feature("default", "static")
+	local color = widget.style.character_portrait.color
+
+	local normal_state = not is_dead
+			and not is_knocked_down
+			and not needs_help
+			and not assisted_respawn
+
+	local alpha_temp = color[1]
+	if normal_state then
+		color[1] = 255 -- skip an if check that dirties the widget
+	end
+
+	local is_dirtied = func(self, is_dead, is_knocked_down, needs_help, assisted_respawn)
+
+	local portrait_alpha = mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_ALPHA)
+	if not is_dirtied and normal_state then
+		color[1] = portrait_alpha
+		if alpha_temp ~= portrait_alpha then
+			self:_set_widget_dirty(widget)
+			return true
+		end
+	end
+
+	return is_dirtied
 end)
 
 mod:hook(UnitFramesHandler, "_create_unit_frame_by_type", function(func, self, frame_type, frame_index)

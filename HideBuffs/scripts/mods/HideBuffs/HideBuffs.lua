@@ -335,16 +335,16 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 
 	if self._mod_frame_index
 	and self._is_visible then
-		if not self.has_ammo and self.has_overcharge then
-			local widget = self._teammate_custom_widget
-			if widget and self.player_unit then
-				pcall(function()
-					local network_manager = Managers.state.network
-					local game = network_manager:game()
-					local go_id = Managers.state.unit_storage:go_id(self.player_unit)
-					local overcharge = GameSession.game_object_field(game, go_id, "overcharge_percentage")
-					widget.content.ammo_bar.bar_value = overcharge
-				end)
+		local network_manager = Managers.state.network
+		local game = network_manager:game()
+		local widget = self._teammate_custom_widget
+		if widget and self.player_unit then
+			local go_id = Managers.state.unit_storage:go_id(self.player_unit)
+			if self.has_ammo then
+				widget.content.ammo_bar.bar_value = GameSession.game_object_field(game, go_id, "ammo_percentage")
+			elseif self.has_overcharge then
+				local overcharge = GameSession.game_object_field(game, go_id, "overcharge_percentage")
+				widget.content.ammo_bar.bar_value = overcharge
 			end
 		end
 
@@ -397,6 +397,10 @@ end)
 
 mod:hook(UnitFrameUI, "update", function(func, self, ...)
 	mod:pcall(function()
+		if self.unit_frame_index then
+			self._mod_frame_index = self.unit_frame_index > 1 and self.unit_frame_index or nil
+		end
+
 		local portrait_static = self._widgets.portrait_static
 
 		-- portrait frame
@@ -589,21 +593,26 @@ mod:hook(UnitFramesHandler, "update", function(func, self, ...)
 		local has_ammo
 		local has_overcharge
 		local player_unit = unit_frame.player_data.player_unit
-		pcall(function()
+		local player_ui_id = unit_frame.player_data.player_ui_id
+
+		mod:pcall(function()
 			local inventory_extension = ScriptUnit.has_extension(player_unit, "inventory_system")
-			has_ammo = inventory_extension and inventory_extension:has_ammo_consuming_weapon_equipped()
+			if inventory_extension then
+				local equipment = inventory_extension:equipment()
+				if equipment then
+					local slot_data = equipment.slots["slot_ranged"]
+					local item_data = slot_data and slot_data.item_data
 
-			local equipment = inventory_extension:equipment()
-			if equipment then
-				local slot_data = equipment.slots["slot_ranged"]
-				local item_data = slot_data and slot_data.item_data
-
-				if item_data then
-					local item_template = BackendUtils.get_item_template(item_data)
-					has_overcharge = not not item_template.overcharge_data
+					if item_data then
+						local item_template = BackendUtils.get_item_template(item_data)
+						has_overcharge = not not item_template.overcharge_data
+						has_ammo = not not item_template.ammo_data
+					end
 				end
 			end
 		end)
+
+		unit_frame.widget.unit_frame_index = self.unit_frame_index_by_ui_id[player_ui_id]
 
 		local buff_extension = ScriptUnit.has_extension(player_unit, "buff_system")
 		unit_frame.widget.has_natural_bond = buff_extension and buff_extension:has_buff_type("trait_necklace_no_healing_health_regen")
@@ -611,7 +620,6 @@ mod:hook(UnitFramesHandler, "update", function(func, self, ...)
 		unit_frame.widget.is_wounded = unit_frame.data.is_wounded
 
 		unit_frame.widget.has_ammo = has_ammo
-		unit_frame.widget.has_overcharge = has_overcharge
 		unit_frame.widget.has_overcharge = has_overcharge
 		unit_frame.widget.player_unit = unit_frame.player_data.player_unit
 	end

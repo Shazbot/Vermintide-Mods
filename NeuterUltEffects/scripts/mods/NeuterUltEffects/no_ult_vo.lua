@@ -1,5 +1,6 @@
 local mod = get_mod("NeuterUltEffects")
 
+--- Get data needed for rpc call.
 mod.get_rpc_trigger_dialogue_event_data = function(action_career_object)
 	local self = action_career_object
 
@@ -27,19 +28,20 @@ mod.get_rpc_trigger_dialogue_event_data = function(action_career_object)
 			event_data_array_temp[i] = value_id
 			event_data_array_temp_types[i] = false
 		end
-
 	end
 
 	return go_id, event_id, event_data_array_temp, event_data_array_temp_types
 end
 
+--- Catch host requests to play ult lines.
 mod:hook(DialogueSystem, "rpc_play_dialogue_event", function(func, self, sender, go_id, is_level_unit, dialogue_id, dialogue_index)
 	if mod:get(mod.SETTING_NAMES.ONLY_DISABLE_OWN_LINES) then
 		return func(self, sender, go_id, is_level_unit, dialogue_id, dialogue_index)
 	end
 
 	local dialogue_name = NetworkLookup.dialogues[dialogue_id]
-	if string.find(dialogue_name, "special_ability_") then
+	if string.find(dialogue_name, "special_ability_")
+	or string.find(dialogue_name, "activate_ability_") then
 		local unit = Managers.state.unit_storage:unit(go_id)
 		if unit then
 			local career_extension = ScriptUnit.has_extension(unit, "career_system")
@@ -54,24 +56,20 @@ mod:hook(DialogueSystem, "rpc_play_dialogue_event", function(func, self, sender,
 	return func(self, sender, go_id, is_level_unit, dialogue_id, dialogue_index)
 end)
 
+--- Handle ults local player makes.
 mod.get_vo_hook = function(career_name)
 	return
 		function(func, self, ...)
 			if mod:get(career_name.."_vo") then
 				local network_manager = Managers.state.network
-				if self._is_server then
-					local go_id, event_id, event_data_array_temp, event_data_array_temp_types =
-							mod.get_rpc_trigger_dialogue_event_data(self)
-					network_manager.network_transmit:send_rpc_clients("rpc_trigger_dialogue_event",
-							go_id, event_id, event_data_array_temp, event_data_array_temp_types)
-				else
+				if not self._is_server then
 					local go_id, event_id, event_data_array_temp, event_data_array_temp_types =
 							mod.get_rpc_trigger_dialogue_event_data(self)
 					network_manager.network_transmit:send_rpc_server("rpc_trigger_dialogue_event",
 							go_id, event_id, event_data_array_temp, event_data_array_temp_types)
-				end
 
-				return
+					return
+				end
 			end
 
 			return func(self, ...)

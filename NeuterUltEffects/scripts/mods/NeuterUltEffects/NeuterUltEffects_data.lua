@@ -196,8 +196,8 @@ local ult_voice_lines_subs = mod.add_option(
 	{
 		["widget_type"] = "group",
 	},
-	"Ult Voice Lines",
-	"Disable voice lines on ult."
+	"Ult Voice Lines, Client Only",
+	"Disable voice lines on ult. Doesn't work as host due to very different code."
 )
 
 for career_key, career in pairs( CareerSettings ) do

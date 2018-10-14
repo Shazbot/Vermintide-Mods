@@ -18,8 +18,10 @@ globals = {
 	"SpecialsPacing", "CurrentSpecialsSettings", "SpawnZoneBaker", "DamageUtils",
 	"CurrentBossSettings", "Application", "HordeSettings", "PlayerHud", "StateLoading",
 	"OutlineSettings", "GenericHitReactionExtension", "UnitGibSettings",
-	"FrameTable", "NetworkUnit", "CareerSettings",
-	"ActionBulletSpray", "ActionShotgun", "ActionHandgunLock", "ActionHandgun"
+	"FrameTable", "NetworkUnit", "CareerSettings", "NetworkLookup", "DialogueSystem",
+	"ActionBulletSpray", "ActionShotgun", "ActionHandgunLock", "ActionHandgun",
+	"ActionCareerWEWaywatcher", "ActionCareerBWScholar", "ActionCareerDRRanger",
+	"ActionCareerWHBountyhunter",
 
 	"PriorityBuffUI",
 }

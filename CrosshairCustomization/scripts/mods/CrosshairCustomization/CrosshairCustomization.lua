@@ -7,6 +7,11 @@ local tablex = require'pl.tablex'
 
 mod.on_setting_changed = function()
 	mod.do_refresh = true
+	mod.set_hit_marker_duration()
+end
+
+mod.set_hit_marker_duration = function()
+	UISettings.crosshair.hit_marker_fade = mod:get(mod.SETTING_NAMES.HIT_MARKERS_DURATION)
 end
 
 mod.get_color = function()
@@ -87,10 +92,41 @@ mod:hook_safe(CrosshairUI, "configure_hit_marker_color_and_size", function (self
 	end
 
 	if not is_armored and not friendly_fire and not is_critical then
-		local color = mod.get_color()
+		if mod:get(mod.SETTING_NAMES.HIT_MARKERS_COLOR_GROUP) then
+			hit_marker.style.rotating_texture.color[2] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_RED)
+			hit_marker.style.rotating_texture.color[3] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_GREEN)
+			hit_marker.style.rotating_texture.color[4] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_BLUE)
+		else
+			local color = mod.get_color()
+			hit_marker.style.rotating_texture.color = table.clone(color)
+		end
 
-		hit_marker.style.rotating_texture.color = table.clone(color)
 		hit_marker.style.rotating_texture.color[1] = 0
+	end
+
+	-- change the headshot hit marker color
+	if is_critical and mod:get(mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_COLOR_GROUP) then
+		hit_marker.style.rotating_texture.color[2] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_RED)
+		hit_marker.style.rotating_texture.color[3] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_GREEN)
+		hit_marker.style.rotating_texture.color[4] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_BLUE)
+	end
+
+	-- change hit marker size
+	local hit_marker_width = mod:get(mod.SETTING_NAMES.HIT_MARKERS_SIZE)
+	hit_marker.style.rotating_texture.size = {
+		hit_marker_width,
+		4
+	}
+	if not hit_marker.style.rotating_texture.original_offset then
+		hit_marker.style.rotating_texture.original_offset = table.clone(hit_marker.style.rotating_texture.offset)
+	end
+	hit_marker.style.rotating_texture.offset[1] = hit_marker.style.rotating_texture.original_offset[1]
+	hit_marker.style.rotating_texture.offset[2] = hit_marker.style.rotating_texture.original_offset[2]
+	if hit_marker.style.rotating_texture.offset[1] == -6 then
+		hit_marker.style.rotating_texture.offset[1] = -hit_marker_width + 4
+	end
+	if hit_marker.style.rotating_texture.offset[2] == 6 then
+		hit_marker.style.rotating_texture.offset[2] = hit_marker_width - 4
 	end
 end)
 
@@ -242,7 +278,13 @@ mod:hook(CrosshairUI, "set_hit_marker_animation", function(func, self, hit_marke
 			return
 		end
 	end
-	return func(self, hit_markers, hit_markers_n, hit_marker_animations, hit_marker_data)
+
+	func(self, hit_markers, hit_markers_n, hit_marker_animations, hit_marker_data)
+
+	-- change hit marker transparency, need to edit the animation table
+	for _, hit_marker_anim in ipairs( hit_marker_animations ) do
+		hit_marker_anim.data_array[4] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_ALPHA)
+	end
 end)
 
 --- Actions ---
@@ -251,3 +293,5 @@ mod.dot_toggle = function()
 	local current_dot_only = mod:get(mod.SETTING_NAMES.DOT)
 	mod:set(mod.SETTING_NAMES.DOT, not current_dot_only, true)
 end
+
+mod.set_hit_marker_duration()

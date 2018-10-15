@@ -128,4 +128,37 @@ return {
 	ONLY_LOWER_MARKERS_T = {
 		en = "Only draw the lower markers."
 	},
+	HIT_MARKERS_ALPHA = {
+		en = "Hit Markers Transparency"
+	},
+	HIT_MARKERS_ALPHA_T = {
+		en = "Make the hit markers transparent. 0 is fully transparent. Default is 255."
+	},
+	HIT_MARKERS_SIZE = {
+		en = "Hit Markers Length"
+	},
+	HIT_MARKERS_SIZE_T = {
+		en = "Length of the hit markers. Default is 10."
+	},
+	HIT_MARKERS_COLOR_GROUP = {
+		en = "Hit Markers Color"
+	},
+	HIT_MARKERS_COLOR_GROUP_T = {
+		en = "Set RGB color of the hit markers."
+	},
+	HIT_MARKERS_CRITICAL_COLOR_GROUP = {
+		en = "Headshot Hit Markers Color"
+	},
+	HIT_MARKERS_CRITICAL_COLOR_GROUP_T = {
+		en = "Set RGB color of the headshot hit markers."
+	},
+	HIT_MARKERS_DURATION = {
+		en = "Hit Markers Duration"
+	},
+	HIT_MARKERS_DURATION_T = {
+		en = "Hit marker duration in seconds. Default is 0.6."
+	},
+	HIT_MARKERS_GROUP = {
+		en = "Hit Markers"
+	},
 }

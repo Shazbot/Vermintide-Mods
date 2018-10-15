@@ -1,7 +1,5 @@
 local mod = get_mod("NeuterUltEffects")
 
-local pl = require'pl.import_into'()
-
 --- Keep this disabled when not needed.
 mod:hook(Unit, "flow_event", function(func, unit, event_name, ...)
 	if mod:get(mod.SETTING_NAMES.DISABLE_PROJECTILE_TRAILS)

@@ -200,6 +200,17 @@ local ult_voice_lines_subs = mod.add_option(
 	"Disable voice lines on ult. Doesn't work as host due to very different code."
 )
 
+mod.add_option(
+	"ONLY_DISABLE_OWN_LINES",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Only Disable Own Ult Lines",
+	"Disable ult lines when you're the one ulting, but don't disable lines from other players.",
+	ult_voice_lines_subs
+)
+
 for career_key, career in pairs( CareerSettings ) do
 	if career_key ~= "empire_soldier_tutorial" then
 		local career_name = career.display_name
@@ -215,16 +226,5 @@ for career_key, career in pairs( CareerSettings ) do
 		)
 	end
 end
-
-mod.add_option(
-	"ONLY_DISABLE_OWN_LINES",
-	{
-		["widget_type"] = "checkbox",
-		["default_value"] = false,
-	},
-	"Only Disable Own Ult Lines",
-	"Disable ult lines when you're the one ulting, but don't disable lines from other players.",
-	nil
-)
 
 return mod_data

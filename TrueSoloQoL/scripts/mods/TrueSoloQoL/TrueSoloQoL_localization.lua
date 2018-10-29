@@ -35,4 +35,10 @@ return {
 	DISABLE_LEVEL_INTRO_AUDIO_T = {
 		en = "Disable Lohner's level intro spiel."
 	},
+	DISABLE_ULT_VOICE_LINE = {
+		en = "Disable Ult Voice Line"
+	},
+	DISABLE_ULT_VOICE_LINE_T = {
+		en = "Disable voice line on ult."
+	},
 }

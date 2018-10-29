@@ -207,4 +207,37 @@ mod:hook(StateLoading, "_trigger_sound_events", function(func, self, level_key)
 	return func(self, level_key)
 end)
 
+--- Disable ult voice line from local player.
+mod.get_vo_hook = function(career_name) -- luacheck: ignore career_name
+	return
+		function(func, self, ...)
+			if mod:get(mod.SETTING_NAMES.DISABLE_ULT_VOICE_LINE) then
+				return
+			end
+
+			return func(self, ...)
+		end
+end
+
+local career_name_to_action_object = {
+	bw_scholar = ActionCareerBWScholar,
+	wh_bountyhunter = ActionCareerWHBountyhunter,
+	dr_ranger = ActionCareerDRRanger,
+	we_waywatcher = ActionCareerWEWaywatcher,
+}
+
+mod:pcall(function()
+	for career_key, career in pairs( CareerSettings ) do
+		if career.activated_ability.ability_class
+		and career_key ~= "empire_soldier_tutorial"
+		then
+			mod:hook(career.activated_ability.ability_class, "_play_vo",
+					mod.get_vo_hook(career.display_name))
+		end
+	end
+	for career_name, action_career_object in pairs( career_name_to_action_object ) do
+		mod:hook(action_career_object, "_play_vo", mod.get_vo_hook(career_name))
+	end
+end)
+
 mod:dofile("scripts/mods/"..mod:get_name().."/assassin_hero_warning")

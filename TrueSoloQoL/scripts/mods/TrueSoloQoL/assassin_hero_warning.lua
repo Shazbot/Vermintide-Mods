@@ -19,7 +19,7 @@ mod:hook_safe(BTSpawningAction, "enter", function(self, unit, blackboard, t)
 	end
 end)
 
-mod:hook(DialogueSystem, "update_currently_playing_dialogues", function(func, self, dt)
+mod:hook(DialogueSystem, "_update_currently_playing_dialogues", function(func, self, dt)
 	if not mod:get(mod.SETTING_NAMES.ASSASSIN_HERO_WARNING) then
 		return func(self, dt)
 	end

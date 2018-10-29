@@ -559,7 +559,7 @@ local mini_hud_preset_subs = mod.add_option(
 	},
 	"Mini HUD Preset",
 	"Use console HP bar while keeping the rest of the PC UI elements."
-		.."\nWorks only with the Controller HUD Layout option disabled."
+		.."\nWorks only with the Controller HUD Layout option disabled!"
 		.."\nDISABLING AND RETURNING TO NORMAL HUD STATE REQUIRES GAME RESTART",
 	nil,
 	1

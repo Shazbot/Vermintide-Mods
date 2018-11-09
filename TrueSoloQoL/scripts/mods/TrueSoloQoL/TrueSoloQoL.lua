@@ -1,9 +1,3 @@
--- luacheck: globals LevelTransitionHandler get_mod
--- luacheck: globals ConflictDirector Breeds Managers WwiseWorld GameModeManager UnitFrameUI
--- luacheck: globals TerrorEventBlueprints NetworkLookup fassert ScriptUnit TutorialUI
--- luacheck: globals PlayerHud AreaIndicatorUI script_data UISettings GenericStatusExtension
--- luacheck: globals RespawnHandler
-
 local mod = get_mod("TrueSoloQoL")
 
 local pl = require'pl.import_into'()
@@ -65,7 +59,39 @@ mod.update = function()
 			end)
 		end
 	end
+
+	script_data.cap_num_bots = mod:get(mod.SETTING_NAMES.AUTO_KILL_BOTS) and 0 or nil
 end
+
+--- Fix for bug with mission not ending when bots are disabled.
+mod:hook(SpawnManager, "all_players_disabled", function(func, self, ...)
+	if script_data.cap_num_bots ~= 0 then
+		return func(self, ...)
+	end
+
+	-- fix the auto-fail on map start when with other people
+	local game_mode_manager = Managers.state.game_mode
+	if not game_mode_manager then
+		return false
+	end
+
+	local round_started = game_mode_manager:is_round_started()
+	if not round_started then
+		for _, status in ipairs(self._player_statuses) do
+			if status.spawn_state == "initial_spawning" then
+				return false
+			end
+		end
+	end
+
+	for _, status in ipairs(self._player_statuses) do
+		if status.health_state == "alive" and status.spawn_state == "spawned" then
+			return false
+		end
+	end
+
+	return true
+end)
 
 mod:hook("Localize", function(func, key)
 	for _, string in ipairs( { "ASSASSIN_WARNING_", "PACK_WARNING_" } ) do

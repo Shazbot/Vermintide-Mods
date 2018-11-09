@@ -21,8 +21,10 @@ globals = {
 	"FrameTable", "NetworkUnit", "CareerSettings", "NetworkLookup", "DialogueSystem",
 	"ActionBulletSpray", "ActionShotgun", "ActionHandgunLock", "ActionHandgun",
 	"ActionCareerWEWaywatcher", "ActionCareerBWScholar", "ActionCareerDRRanger",
-	"ActionCareerWHBountyhunter", "ActionBountyHunterHandgun", "GenericTrailExtension", "PlayerProjectileHuskExtension", "PlayerProjectileUnitExtension",
-	"PickupUnitExtension", "AllPickups", "GearUtils", "Light",
+	"ActionCareerWHBountyhunter", "ActionBountyHunterHandgun", "GenericTrailExtension",
+	"PlayerProjectileHuskExtension", "PlayerProjectileUnitExtension", "SpawnManager",
+	"PickupUnitExtension", "AllPickups", "GearUtils", "Light", "GameModeManager",
+	"RespawnHandler", "AreaIndicatorUI",
 
 	"PriorityBuffUI",
 }

@@ -92,17 +92,26 @@ return {
 	special_to_boss_chance_tooltip = {
 		en = "Chance for a spawned special to be a boss instead."
 	},
+	SPECIAL_TO_BOSS_CHANCE_ALLOW_BOSS_STACKING = {
+		en = "Replace Special With Boss Chance Always Active"
+	},
+	SPECIAL_TO_BOSS_CHANCE_ALLOW_BOSS_STACKING_T = {
+		en = "Special to boss chance checks if a boss is already alive to keep things fair."
+			.."\nEnable to skip this check, allowing bosses to stack up."
+	},
 	spawn_cooldown_min = {
 		en = "Min Cooldown For New Special"
 	},
 	spawn_cooldown_min_tooltip = {
-		en = "Minimal cooldown for a new special to spawn. Game randomly chooses between min and max. Default is 50."
+		en = "Minimal cooldown for a new special to spawn. Game randomly chooses between min and max."
+			.."\nDefault is 50."
 	},
 	spawn_cooldown_max = {
 		en = "Max Cooldown For New Special"
 	},
 	spawn_cooldown_max_tooltip = {
-		en = "Maximal cooldown for a new special to spawn. Game randomly chooses between min and max. Default is 90."
+		en = "Maximal cooldown for a new special to spawn. Game randomly chooses between min and max."
+			.."\nDefault is 90."
 	},
 	safe_zone_delay_min = {
 		en = "Min Delay After Leaving Safe Zone"
@@ -111,13 +120,15 @@ return {
 		en = "Horde Initial Map Delay Min"
 	},
 	horde_startup_min_tooltip = {
-		en = "Minimal delay after start of the map for the first horde to appear. Default is 40."
+		en = "Minimal delay after start of the map for the first horde to appear."
+			.."\nDefault is 40."
 	},
 	horde_startup_max = {
 		en = "Horde Initial Map Delay Max"
 	},
 	horde_startup_max_tooltip = {
-		en = "Maximal delay after start of the map for the first horde to appear. Default is 120."
+		en = "Maximal delay after start of the map for the first horde to appear."
+			.."\nDefault is 120."
 	},
 	safe_zone_delay_min_tooltip = {
 		en = "Minimal delay after start of the map and when timed specials start to spawn."
@@ -162,25 +173,29 @@ return {
 		en = "Max Specials"
 	},
 	max_specials_tooltip = {
-		en = "Maximum number of specials alive at the same time. Default is 4."
+		en = "Maximum number of specials alive at the same time."
+			.."\nDefault is 4."
 	},
 	max_same_specials = {
 		en = "Max Of Same Special"
 	},
 	max_same_specials_tooltip = {
-		en = "Maximum number of duplicate specials alive at the same time. Default is 2."
+		en = "Maximum number of duplicate specials alive at the same time."
+			.."\nDefault is 2."
 	},
 	horde_frequency_min = {
 		en = "Min Horde Cooldown"
 	},
 	horde_frequency_min_tooltip = {
-		en = "Min bound of horde cooldown. Game chooses between those two for time of next horde. Default is 50."
+		en = "Min bound of horde cooldown. Game chooses between those two for time of next horde."
+			.."\nDefault is 50."
 	},
 	horde_frequency_max = {
 		en = "Max Horde Cooldown"
 	},
 	horde_frequency_max_tooltip = {
-		en = "Max bound of horde cooldown. Game chooses between those two for time of next horde. Default is 100."
+		en = "Max bound of horde cooldown. Game chooses between those two for time of next horde."
+			.."\nDefault is 100."
 	},
 	threat_multiplier = {
 		en = "Threat And Intensity Multiplier"
@@ -192,13 +207,15 @@ return {
 		en = "Max Horde Trash"
 	},
 	max_grunts_tooltip = {
-		en = "Max horde trash alive, stops spawning new trash if this number is hit. Default is 90."
+		en = "Max horde trash alive, stops spawning new trash if this number is hit."
+			.."\nDefault is 90."
 	},
 	horde_grunt_limit = {
 		en = "Max Trash Limiting Horde Start"
 	},
 	horde_grunt_limit_tooltip = {
-		en = "Cutoff for number of trash alive that prevents a new wave or horde to start. Default is 60."
+		en = "Cutoff for number of trash alive that prevents a new wave or horde to start."
+			.."\nDefault is 60."
 	},
 	more_ambient_elites = {
 		en = "More Ambient Elites"

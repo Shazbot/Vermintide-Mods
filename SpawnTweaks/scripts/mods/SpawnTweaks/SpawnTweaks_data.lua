@@ -54,6 +54,7 @@ mod.SETTING_NAMES = {
 	HORDE_TYPES = "horde_types",
 	AMBIENTS_NO_THREAT = "ambients_no_threat",
 	CUSTOM_AMBIENTS_TOGGLE_GROUP = "CUSTOM_AMBIENTS_TOGGLE_GROUP",
+	SPECIAL_TO_BOSS_CHANCE_ALLOW_BOSS_STACKING = "SPECIAL_TO_BOSS_CHANCE_ALLOW_BOSS_STACKING",
 }
 
 mod.BOSSES = {
@@ -416,7 +417,7 @@ mod_data.options_widgets = {
 				["widget_type"] = "numeric",
 				["text"] = mod:localize("max_specials"),
 				["tooltip"] = mod:localize("max_specials_tooltip"),
-				["range"] = {0, 30},
+				["range"] = {0, 50},
 				["default_value"] = 4,
 			},
 			{
@@ -425,7 +426,7 @@ mod_data.options_widgets = {
 				["widget_type"] = "numeric",
 				["text"] = mod:localize("max_same_specials"),
 				["tooltip"] = mod:localize("max_same_specials_tooltip"),
-				["range"] = {0, 30},
+				["range"] = {0, 50},
 				["default_value"] = 2,
 			},
 			{
@@ -616,6 +617,14 @@ mod_data.options_widgets = {
 				["range"] = {0, 100},
 				["unit_text"] = "%",
 				["default_value"] = 0,
+			},
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.SPECIAL_TO_BOSS_CHANCE_ALLOW_BOSS_STACKING,
+				["widget_type"] = "checkbox",
+				["text"] = mod:localize("SPECIAL_TO_BOSS_CHANCE_ALLOW_BOSS_STACKING"),
+				["tooltip"] = mod:localize("SPECIAL_TO_BOSS_CHANCE_ALLOW_BOSS_STACKING_T"),
+				["default_value"] = false,
 			},
 		},
 	},

@@ -248,13 +248,16 @@ return {
 		en = "Replace Stormfiend with another random boss."
 	},
 	save_preset_command_description = {
-		en = "Save current SpawnTweaks options into a preset!"
+		en = "Save current Spawn Tweaks options into a preset!"
 	},
 	load_preset_command_description = {
-		en = "Load a SpawnTweaks preset."
+		en = "Load a Spawn Tweaks preset."
 	},
 	delete_preset_command_description = {
-		en = "Delete a SpawnTweaks preset."
+		en = "Delete a Spawn Tweaks preset."
+	},
+	dump_settings_command_description = {
+		en = "Dump Spawn Tweaks settings to a file in launcher folder."
 	},
 	specials_toggle_group = {
 		en = "Disable Specials By Type"

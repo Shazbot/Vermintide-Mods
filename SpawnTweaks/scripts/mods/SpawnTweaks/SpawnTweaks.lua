@@ -1,7 +1,5 @@
 local mod = get_mod("SpawnTweaks")
 
-local vmf = get_mod("VMF")
-
 local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
 local stringx = require'pl.stringx'
@@ -626,87 +624,6 @@ mod:hook_safe(ConflictDirector, "set_updated_settings", function(self, conflict_
 	end
 end)
 
---- Presets ---
-mod.save_preset = function(preset_name)
-	mod:pcall(function()
-		if not preset_name then
-			mod:echo("Preset needs a name:")
-			mod:echo("/save_preset name")
-			return
-		end
-
-		local mods_settings = Application.user_setting("mods_settings")
-		if mods_settings then
-			local mod_settings = mods_settings[mod:get_name()]
-			if mod_settings then
-				local presets = mod:get("presets") or {}
-				local cloned_settings = table.clone(mod_settings)
-				cloned_settings.presets = nil
-				presets[preset_name] = cloned_settings
-				mod:set("presets", presets)
-
-				vmf.save_unsaved_settings_to_file()
-				mod:echo("Saved preset "..preset_name)
-			end
-		end
-	end)
-end
-
-mod.load_preset = function(preset_name)
-	mod:pcall(function()
-		if not preset_name then
-			local presets = pl.Map(mod:get("presets"))
-			if not presets or presets:len() == 0 then
-				mod:echo("No presets to load! Save a new one with /save_preset")
-				return
-			end
-
-			mod:echo("Available presets:\n"..presets:keys():join("\n"))
-			mod:echo("Load using: /load_preset name")
-			return
-		end
-
-		local presets = mod:get("presets")
-		if presets then
-			local preset = presets[preset_name]
-			if not preset then
-				mod:echo("Preset with that name doesn't exist!")
-				return
-			end
-
-			for setting_name, setting_value in pairs( preset ) do
-				mod:set(setting_name, setting_value, true)
-			end
-
-			mod:echo("Loaded preset "..preset_name.."!")
-		end
-	end)
-end
-
-mod.delete_preset = function(preset_name)
-	mod:pcall(function()
-		if not preset_name then
-			mod:echo("Need a name of preset to delete: /delete_preset name")
-			return
-		end
-
-		local presets = mod:get("presets")
-		if presets then
-			local preset = presets[preset_name]
-			if not preset then
-				mod:echo("Preset with that name doesn't exist!")
-				return
-			end
-
-			presets[preset_name] = nil
-			mod:set("presets", presets)
-			vmf.save_unsaved_settings_to_file()
-
-			mod:echo("Deleted preset "..preset_name.."!")
-		end
-	end)
-end
-
 mod.reset_breed_dmg = function()
 	for breed_name, _ in pairs(mod.all_breeds) do
 		mod:set(breed_name.."_dmg_toggle", 100)
@@ -714,7 +631,6 @@ mod.reset_breed_dmg = function()
 	vmf.save_unsaved_settings_to_file()
 end
 
-mod:command("save_preset", mod:localize("save_preset_command_description"), mod.save_preset)
-mod:command("load_preset", mod:localize("load_preset_command_description"), mod.load_preset)
-mod:command("delete_preset", mod:localize("delete_preset_command_description"), mod.delete_preset)
 mod:command("reset_breed_dmg", mod:localize("reset_breed_dmg_description"), mod.reset_breed_dmg)
+
+mod:dofile("scripts/mods/"..mod:get_name().."/presets")

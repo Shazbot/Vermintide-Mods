@@ -639,4 +639,21 @@ mod_data.options_widgets = {
 	},
 }
 
+mod.get_defaults = function()
+	local defaults = {}
+	local function subwidget_search(subwidgets)
+		for _, setting_widget in ipairs( subwidgets ) do
+			defaults[setting_widget.setting_name] = setting_widget.default_value
+			if setting_widget.sub_widgets then
+				subwidget_search(setting_widget.sub_widgets)
+			end
+		end
+	end
+
+	subwidget_search(mod_data.options_widgets)
+
+	return defaults
+end
+mod.setting_defaults = mod.get_defaults()
+
 return mod_data

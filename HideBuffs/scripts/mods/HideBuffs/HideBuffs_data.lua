@@ -52,6 +52,8 @@ mod.SETTING_NAMES = {
 	HIDE_BOSS_HP_BAR = "HIDE_BOSS_HP_BAR",
 	PRIORITY_BUFFS_GROUP = "PRIORITY_BUFFS_GROUP",
 	HIDE_UI_ELEMENTS_GROUP = "HIDE_UI_ELEMENTS_GROUP",
+	UNOBTRUSIVE_FLOATING_OBJECTIVE = "UNOBTRUSIVE_FLOATING_OBJECTIVE",
+	UNOBTRUSIVE_MISSION_TOOLTIP = "UNOBTRUSIVE_MISSION_TOOLTIP",
 }
 
 mod.priority_buff_setting_name_to_buff_name = {
@@ -153,6 +155,20 @@ mod_data.options_widgets:extend({
 		["widget_type"] = "checkbox",
 		["text"] = mod:localize("force_default_frame"),
 		["tooltip"] = mod:localize("force_default_frame_tooltip"),
+		["default_value"] = false,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.UNOBTRUSIVE_FLOATING_OBJECTIVE,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("UNOBTRUSIVE_FLOATING_OBJECTIVE"),
+		["tooltip"] = mod:localize("UNOBTRUSIVE_FLOATING_OBJECTIVE_T"),
+		["default_value"] = false,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.UNOBTRUSIVE_MISSION_TOOLTIP,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("UNOBTRUSIVE_MISSION_TOOLTIP"),
+		["tooltip"] = mod:localize("UNOBTRUSIVE_MISSION_TOOLTIP_T"),
 		["default_value"] = false,
 	},
 	{

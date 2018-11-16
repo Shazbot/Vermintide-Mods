@@ -712,11 +712,30 @@ mod:hook("ChatGui", "update", function(func, self, ...)
 	return func(self, ...)
 end)
 
+--- Hide or make less obtrusive the floating mission marker.
+--- Used for "Set Free" on respawned player.
 mod:hook(TutorialUI, "update_mission_tooltip", function(func, self, ...)
 	if mod:get(mod.SETTING_NAMES.NO_TUTORIAL_UI) then
 		return
 	end
-	return func(self, ...)
+
+	func(self, ...)
+
+	if mod:get(mod.SETTING_NAMES.UNOBTRUSIVE_MISSION_TOOLTIP) then
+		mod:pcall(function()
+			local widget = self.tooltip_mission_widget
+			widget.style.texture_id.size = nil
+			widget.style.texture_id.offset = { 0, 0 }
+			if widget.style.text.text_color[1] ~= 0 then
+				widget.style.texture_id.color[1] = 100
+				widget.style.text.text_color[1] = 100
+				widget.style.text_shadow.text_color[1] = 100
+			else
+				widget.style.texture_id.size = { 32, 32 }
+				widget.style.texture_id.offset = { 16+16, 16 }
+			end
+		end)
+	end
 end)
 
 mod:hook(TutorialUI, "pre_render_update", function(func, self, ...)
@@ -729,6 +748,24 @@ mod:hook(TutorialUI, "pre_render_update", function(func, self, ...)
 		end)
 	end
 	return func(self, ...)
+end)
+
+--- Change size and transparency of floating objective icon.
+mod:hook(TutorialUI, "update_objective_tooltip_widget", function(func, self, widget_holder, player_unit, dt)
+	func(self, widget_holder, player_unit, dt)
+
+	if mod:get(mod.SETTING_NAMES.UNOBTRUSIVE_FLOATING_OBJECTIVE) then
+		local widget = self.objective_tooltip_widget_holders[1].widget
+		local icon_style = widget.style.texture_id
+		icon_style.size = { 32, 32 }
+		icon_style.offset = { 16, 16 }
+		icon_style.color[1] = 75
+
+		if widget.style.text.text_color[1] ~= 0 then
+			widget.style.text.text_color[1] = 100
+			widget.style.text_shadow.text_color[1] = 100
+		end
+	end
 end)
 
 mod:hook(MissionObjectiveUI, "draw", function(func, self, dt)

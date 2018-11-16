@@ -305,6 +305,19 @@ mod.localizations:update({
 	HIDE_UI_ELEMENTS_GROUP_T = {
 		en = "Hide some of the UI elements."
 	},
+	UNOBTRUSIVE_FLOATING_OBJECTIVE = {
+		en = "Unobtrusive Objective Marker"
+	},
+	UNOBTRUSIVE_FLOATING_OBJECTIVE_T = {
+		en = "Make the floating objective marker smaller and always transparent."
+	},
+	UNOBTRUSIVE_MISSION_TOOLTIP = {
+		en = "Unobtrusive Mission Marker"
+	},
+	UNOBTRUSIVE_MISSION_TOOLTIP_T = {
+		en = "Make the floating mission marker smaller and always transparent."
+			.."\nUsed for revive warning."
+	},
 
 	-- priority buffs
 	PACED_STRIKES = {

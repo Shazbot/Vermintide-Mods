@@ -303,7 +303,7 @@ PriorityBuffUI._update_pivot_alignment = function (self, dt)
 
 	alignment_duration = math.min(alignment_duration + dt, ALIGNMENT_DURATION_TIME)
 	local progress = alignment_duration / ALIGNMENT_DURATION_TIME
-	if mod:get(mod.SETTING_NAMES.BUFFS_DISABLE_ALIGN_ANIMATION) then
+	if mod:get(mod.SETTING_NAMES.PRIORITY_BUFFS_DISABLE_ALIGN_ANIMATION) then
 		progress = 1
 	end
 	local anim_progress = math.easeOutCubic(progress, 0, 1)

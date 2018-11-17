@@ -882,6 +882,17 @@ mod.add_option(
 	1
 )
 mod.add_option(
+	"PRIORITY_BUFFS_DISABLE_ALIGN_ANIMATION",
+	{
+		["widget_type"] = "checkbox",
+	    ["default_value"] = false,
+	},
+	"Disable Align Animation",
+	"Disable the animation of a new buff sliding into place.",
+	priority_buff_bar_group.sub_widgets,
+	2
+)
+mod.add_option(
 	"SECOND_BUFF_BAR_SIZE_ADJUST_X",
 	{
 		["widget_type"] = "numeric",
@@ -892,7 +903,7 @@ mod.add_option(
 	"Buff Width Adjustment",
 	"Change the buff icon width.",
 	priority_buff_bar_group.sub_widgets,
-	4
+	5
 )
 mod.add_option(
 	"SECOND_BUFF_BAR_SIZE_ADJUST_Y",
@@ -905,7 +916,7 @@ mod.add_option(
 	"Buff Height Adjustment",
 	"Change the buff icon height.",
 	priority_buff_bar_group.sub_widgets,
-	5
+	6
 )
 mod.add_option(
 	"SECOND_BUFF_BAR_SIZE_ALPHA",
@@ -917,7 +928,7 @@ mod.add_option(
 	"Buff Icon Opacity",
 	"Adjust buff icon transparency, 0 is fully transparent.",
 	priority_buff_bar_group.sub_widgets,
-	6
+	7
 )
 
 return mod_data

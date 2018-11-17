@@ -348,8 +348,12 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 			end
 		end
 
-		if (self.has_ammo or self.has_overcharge)
-		and mod:get(mod.SETTING_NAMES.TEAM_UI_AMMO_BAR) then
+		if (
+			self.has_ammo
+			or self.has_overcharge and mod:get(mod.SETTING_NAMES.TEAM_UI_AMMO_SHOW_HEAT)
+			)
+			and mod:get(mod.SETTING_NAMES.TEAM_UI_AMMO_BAR)
+		then
 			local ui_renderer = self.ui_renderer
 			local ui_scenegraph = self.ui_scenegraph
 			local input_service = self.input_manager:get_service("ingame_menu")

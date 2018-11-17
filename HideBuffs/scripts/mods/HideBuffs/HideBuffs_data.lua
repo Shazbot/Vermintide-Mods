@@ -731,6 +731,16 @@ local team_ui_ammo_bar_group = mod.add_option(
 	1
 )
 mod.add_option(
+	"TEAM_UI_AMMO_SHOW_HEAT",
+	{
+		["widget_type"] = "checkbox",
+	    ["default_value"] = false,
+	},
+	"Show Heat",
+	"Show wizard/drake generated heat on the bar.",
+	team_ui_ammo_bar_group
+)
+mod.add_option(
 	"TEAM_UI_AMMO_HIDE_INDICATOR",
 	{
 		["widget_type"] = "checkbox",

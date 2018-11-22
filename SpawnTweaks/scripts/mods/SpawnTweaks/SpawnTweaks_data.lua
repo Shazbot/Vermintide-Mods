@@ -55,6 +55,7 @@ mod.SETTING_NAMES = {
 	AMBIENTS_NO_THREAT = "ambients_no_threat",
 	CUSTOM_AMBIENTS_TOGGLE_GROUP = "CUSTOM_AMBIENTS_TOGGLE_GROUP",
 	SPECIAL_TO_BOSS_CHANCE_ALLOW_BOSS_STACKING = "SPECIAL_TO_BOSS_CHANCE_ALLOW_BOSS_STACKING",
+	LORD_DMG_MULTIPLIER = "LORD_DMG_MULTIPLIER",
 }
 
 mod.BOSSES = {
@@ -109,6 +110,14 @@ for breed_name, breed_data in pairs(mod.all_breeds) do
 		if breed_name == "chaos_corruptor_sorcerer" then
 			breed_data.localized_name = "Lifeleech Sorcerer"
 		end
+	end
+end
+
+mod.lord_breeds = pl.Map(table.clone(mod.all_breeds))
+for breed_name, breed_data in pairs(mod.lord_breeds) do
+	if not breed_data.armored_boss_damage_reduction
+	and not breed_data.lord_damage_reduction then
+		mod.lord_breeds[breed_name] = nil
 	end
 end
 
@@ -604,6 +613,16 @@ mod_data.options_widgets = {
 				["widget_type"] = "numeric",
 				["text"] = mod:localize("boss_dmg_multiplier"),
 				["tooltip"] = mod:localize("boss_dmg_multiplier_tooltip"),
+				["range"] = {0, 1000},
+				["unit_text"] = "%",
+				["default_value"] = 100,
+			},
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.LORD_DMG_MULTIPLIER,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("LORD_DMG_MULTIPLIER"),
+				["tooltip"] = mod:localize("LORD_DMG_MULTIPLIER_T"),
 				["range"] = {0, 1000},
 				["unit_text"] = "%",
 				["default_value"] = 100,

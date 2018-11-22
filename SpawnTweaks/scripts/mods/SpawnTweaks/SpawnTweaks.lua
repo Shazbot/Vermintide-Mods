@@ -553,6 +553,12 @@ mod:hook(DamageUtils, "calculate_damage", function(func, damage_output, target_u
 				dmg = dmg * mod:get(mod.SETTING_NAMES.BOSS_DMG_MULTIPLIER) / 100
 				return dmg
 			end
+
+			if mod.lord_breeds:keys():contains(breed.name)
+			and mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.CUSTOMIZE then
+				dmg = dmg * mod:get(mod.SETTING_NAMES.LORD_DMG_MULTIPLIER) / 100
+				return dmg
+			end
 		end
 	end
 
@@ -628,6 +634,8 @@ mod.reset_breed_dmg = function()
 	for breed_name, _ in pairs(mod.all_breeds) do
 		mod:set(breed_name.."_dmg_toggle", 100)
 	end
+
+	local vmf = get_mod("VMF")
 	vmf.save_unsaved_settings_to_file()
 end
 

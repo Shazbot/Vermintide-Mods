@@ -339,4 +339,10 @@ return {
 			.."\nSome breeds could cause crashes, don't have the time to test."
 			.."\nIgnores More Ambient Elites.",
 	},
+	LORD_DMG_MULTIPLIER = {
+		en = "Damage To Lords Multiplier",
+	},
+	LORD_DMG_MULTIPLIER_T = {
+		en = "Multiplies damage all players do to lords(big bosses).",
+	},
 }

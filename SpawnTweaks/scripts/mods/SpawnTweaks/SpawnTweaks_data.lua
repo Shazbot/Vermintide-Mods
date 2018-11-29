@@ -56,6 +56,10 @@ mod.SETTING_NAMES = {
 	CUSTOM_AMBIENTS_TOGGLE_GROUP = "CUSTOM_AMBIENTS_TOGGLE_GROUP",
 	SPECIAL_TO_BOSS_CHANCE_ALLOW_BOSS_STACKING = "SPECIAL_TO_BOSS_CHANCE_ALLOW_BOSS_STACKING",
 	LORD_DMG_MULTIPLIER = "LORD_DMG_MULTIPLIER",
+	BOSS_EVENTS = "BOSS_EVENTS",
+	HORDES_BOTH_DIRECTIONS = "HORDES_BOTH_DIRECTIONS",
+	AGGRO_PATROLS = "AGGRO_PATROLS",
+	DISABLE_BLOC_VECTOR_HORDE = "DISABLE_BLOC_VECTOR_HORDE",
 }
 
 mod.BOSSES = {
@@ -87,6 +91,12 @@ mod.HORDE_TYPES = {
 	CUSTOM = 2,
 	SKAVEN = 3,
 	CHAOS = 4,
+}
+
+mod.BOSS_EVENTS = {
+	ONLY_BOSSES = 1,
+	ONLY_PATROLS = 2,
+	BOTH = 3,
 }
 
 local unused_specials = pl.List{
@@ -330,6 +340,22 @@ mod_data.options_widgets = {
 				["range"] = {0, 300},
 				["unit_text"] = "%",
 				["default_value"] = 100,
+			},
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.DISABLE_BLOC_VECTOR_HORDE,
+				["widget_type"] = "checkbox",
+				["text"] = mod:localize("DISABLE_BLOC_VECTOR_HORDE"),
+				["tooltip"] = mod:localize("DISABLE_BLOC_VECTOR_HORDE_T"),
+				["default_value"] = false,
+			},
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.HORDES_BOTH_DIRECTIONS,
+				["widget_type"] = "checkbox",
+				["text"] = mod:localize("HORDES_BOTH_DIRECTIONS"),
+				["tooltip"] = mod:localize("HORDES_BOTH_DIRECTIONS_T"),
+				["default_value"] = false,
 			},
 			{
 				["show_widget_condition"] = {3},
@@ -597,6 +623,28 @@ mod_data.options_widgets = {
 				["widget_type"] = "checkbox",
 				["text"] = mod:localize("no_empty_events"),
 				["tooltip"] = mod:localize("no_empty_events_tooltip"),
+				["default_value"] = false,
+				["sub_widgets"] = {
+					{
+						["setting_name"] = mod.SETTING_NAMES.BOSS_EVENTS,
+						["widget_type"] = "dropdown",
+						["default_value"] = mod.BOSS_EVENTS.ONLY_BOSSES,
+						["text"] = mod:localize("BOSS_EVENTS"),
+						["tooltip"] = mod:localize("BOSS_EVENTS_T"),
+						["options"] = {
+							{ text = mod:localize("BOSS_EVENTS_ONLY_BOSSES"), value = mod.BOSS_EVENTS.ONLY_BOSSES }, --1
+							{ text = mod:localize("BOSS_EVENTS_ONLY_PATROLS"), value = mod.BOSS_EVENTS.ONLY_PATROLS }, --2
+							{ text = mod:localize("BOSS_EVENTS_BOTH"), value = mod.BOSS_EVENTS.BOTH }, --3
+						},
+					},
+				},
+			},
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.AGGRO_PATROLS,
+				["widget_type"] = "checkbox",
+				["text"] = mod:localize("AGGRO_PATROLS"),
+				["tooltip"] = mod:localize("AGGRO_PATROLS_T"),
 				["default_value"] = false,
 			},
 			{

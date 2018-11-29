@@ -578,9 +578,20 @@ mod:hook(DamageUtils, "add_damage_network_player", function(func, ...)
 	mod:hook_disable(DamageUtils, "calculate_damage")
 end)
 
-mod.no_empty_events = {
+mod.no_empty_events_bosses = {
 	"event_boss",
-	-- "event_patrol"
+}
+mod.no_empty_events_patrols = {
+	"event_patrol"
+}
+mod.no_empty_events_both = {
+	"event_boss",
+	"event_patrol",
+}
+mod.boss_events_lookup = {
+	[mod.BOSS_EVENTS.ONLY_BOSSES] = mod.no_empty_events_bosses,
+	[mod.BOSS_EVENTS.ONLY_PATROLS] = mod.no_empty_events_patrols,
+	[mod.BOSS_EVENTS.BOTH] = mod.no_empty_events_both,
 }
 
 mod:hook_safe(ConflictDirector, "set_updated_settings", function(self, conflict_settings_name) -- luacheck: ignore self conflict_settings_name
@@ -589,7 +600,7 @@ mod:hook_safe(ConflictDirector, "set_updated_settings", function(self, conflict_
 
 		if mod:get(mod.SETTING_NAMES.NO_EMPTY_EVENTS) then
 			if CurrentBossSettings.boss_events then
-				CurrentBossSettings.boss_events.events = mod.no_empty_events
+				CurrentBossSettings.boss_events.events = table.clone(mod.boss_events_lookup[mod:get(mod.SETTING_NAMES.BOSS_EVENTS)])
 				CurrentBossSettings.boss_events.max_events_of_this_kind = {}
 			end
 		end
@@ -629,6 +640,80 @@ mod:hook_safe(ConflictDirector, "set_updated_settings", function(self, conflict_
 		end
 	end
 end)
+
+--- Spawn hordes from both directions.
+mod:hook(HordeSpawner, "find_good_vector_horde_pos", function(func, self, main_target_pos, distance, check_reachable)
+	if mod:get(mod.SETTING_NAMES.HORDES) ~= mod.HORDES.CUSTOMIZE
+	or not mod:get(mod.SETTING_NAMES.HORDES_BOTH_DIRECTIONS) then
+		return func(self, main_target_pos, distance, check_reachable)
+	end
+
+	local success, horde_spawners, found_cover_points, epicenter_pos = func(self, main_target_pos, distance, check_reachable)
+
+	local o_horde_spawners = nil
+	local o_found_cover_points = nil
+
+	if success then
+		o_horde_spawners = table.clone(horde_spawners)
+		o_found_cover_points = table.clone(found_cover_points)
+
+		local new_epicenter_pos = self:get_point_on_main_path(main_target_pos, -distance, check_reachable)
+		if new_epicenter_pos then
+			local new_success, new_horde_spawners, new_found_cover_points = self:find_vector_horde_spawners(new_epicenter_pos, main_target_pos)
+
+			if new_success then
+				for _,horde_spawner in ipairs(new_horde_spawners) do
+					table.insert(o_horde_spawners, horde_spawner)
+				end
+				for _,cover_point in ipairs(new_found_cover_points) do
+					table.insert(o_found_cover_points, cover_point)
+				end
+			end
+		end
+	end
+
+	return success, o_horde_spawners, o_found_cover_points, epicenter_pos
+end)
+
+--- Patrols start aggroed.
+mod:hook(AIGroupTemplates.spline_patrol, "update", function(func, world, nav_world, group, t, dt)
+	if not mod.are_bosses_customized()
+	or not mod:get(mod.SETTING_NAMES.AGGRO_PATROLS) then
+		return func(world, nav_world, group, t, dt)
+	end
+
+	local state = group.state
+	if state == "patrolling" then
+		group.target_units = table.clone(VALID_TARGETS_PLAYERS_AND_BOTS)
+		group.has_targets = true
+	end
+
+	return func(world, nav_world, group, t, dt)
+end)
+
+--- Disable blob vector hordes.
+mod:hook(HordeSpawner, "horde", function(func, self, horde_type, extra_data, no_fallback)
+	if not mod.are_hordes_customized() then
+		return func(self, horde_type, extra_data, no_fallback)
+	end
+
+	local temp_vector_blob_chance = CurrentHordeSettings.chance_of_vector_blob
+	if mod:get(mod.SETTING_NAMES.DISABLE_BLOC_VECTOR_HORDE) then
+		CurrentHordeSettings.chance_of_vector_blob = 0
+	end
+
+	func(self, horde_type, extra_data, no_fallback)
+
+	CurrentHordeSettings.chance_of_vector_blob = temp_vector_blob_chance
+end)
+
+mod.are_hordes_customized = function()
+	return mod:get(mod.SETTING_NAMES.HORDES) == mod.HORDES.CUSTOMIZE
+end
+
+mod.are_bosses_customized = function()
+	return mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.CUSTOMIZE
+end
 
 mod.reset_breed_dmg = function()
 	for breed_name, _ in pairs(mod.all_breeds) do

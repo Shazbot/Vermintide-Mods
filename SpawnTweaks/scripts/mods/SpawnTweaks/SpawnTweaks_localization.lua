@@ -345,4 +345,39 @@ return {
 	LORD_DMG_MULTIPLIER_T = {
 		en = "Multiplies damage all players do to lords(big bosses).",
 	},
+	BOSS_EVENTS = {
+		en = "Possible Events",
+	},
+	BOSS_EVENTS_T = {
+		en = "Choose between possible events to trigger.",
+	},
+	BOSS_EVENTS_ONLY_BOSSES = {
+		en = "Only Bosses",
+	},
+	BOSS_EVENTS_ONLY_PATROLS = {
+		en = "Only Patrols",
+	},
+	BOSS_EVENTS_BOTH = {
+		en = "Both",
+	},
+	HORDES_BOTH_DIRECTIONS = {
+		en = "From Both Directions",
+	},
+	HORDES_BOTH_DIRECTIONS_T = {
+		en = "Hordes will be spawned from both directions.",
+	},
+	AGGRO_PATROLS = {
+		en = "Patrols Start Aggroed",
+	},
+	AGGRO_PATROLS_T = {
+		en = "Patrols will aggro on spawn.",
+	},
+	DISABLE_BLOC_VECTOR_HORDE = {
+		en = "Disable Blob Vector Hordes",
+	},
+	DISABLE_BLOC_VECTOR_HORDE_T = {
+		en = "There are ambush hordes and 2 types of vector hordes: normal and blob."
+			.."\nBlob vector horde doesn't support changing composition and direction."
+			.."\nSo this option replaces bloc vector hordes with normal vector hordes.",
+	},
 }

@@ -99,7 +99,7 @@ for setting_name, _ in pairs( mod.priority_buff_setting_name_to_buff_name ) do
 			["setting_name"] = setting_name,
 			["widget_type"] = "checkbox",
 			["text"] = mod:localize(setting_name),
-			["default_value"] = false,
+			["default_value"] = true,
 		}
 	)
 end
@@ -883,7 +883,7 @@ mod.add_option(
 	"SECOND_BUFF_BAR_DISABLE_BUFF_POPUPS",
 	{
 		["widget_type"] = "checkbox",
-	    ["default_value"] = false,
+	    ["default_value"] = true,
 	},
 	"Disable Default Buff Popups",
 	"Disable the middle-of-screen popups some buffs normally have."
@@ -895,7 +895,7 @@ mod.add_option(
 	"PRIORITY_BUFFS_DISABLE_ALIGN_ANIMATION",
 	{
 		["widget_type"] = "checkbox",
-	    ["default_value"] = false,
+	    ["default_value"] = true,
 	},
 	"Disable Align Animation",
 	"Disable the animation of a new buff sliding into place.",

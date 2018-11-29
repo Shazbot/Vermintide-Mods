@@ -9,10 +9,10 @@ mod.localizations:update({
 		en = "UI Tweaks."
 	},
 	SPEEDUP_ANIMATIONS = {
-		en = "Speed Up UI Animations"
+		en = "Speed Up Some UI Animations"
 	},
 	SPEEDUP_ANIMATIONS_T = {
-		en = "Speed up some UI screens like the end of level xp screen and chest presentation."
+		en = "Speed up reward popup UI screen."
 	},
 	victor_bountyhunter_passive_infinite_ammo_buff = {
 		en = "Bounty Hunter Passive"

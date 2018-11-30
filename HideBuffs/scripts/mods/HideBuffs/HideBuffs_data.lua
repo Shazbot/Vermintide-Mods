@@ -16,7 +16,6 @@ mod.SETTING_NAMES = {
 	NO_MISSION_OBJECTIVE = "no_mission_objective",
 	FORCE_DEFAULT_FRAME = "force_default_frame",
 	HIDE_PLAYER_PORTRAIT = "hide_player_portrait",
-	SPEEDUP_ANIMATIONS = "SPEEDUP_ANIMATIONS",
 	AMMO_COUNTER_GROUP = "AMMO_COUNTER_GROUP",
 	AMMO_COUNTER_OFFSET_X = "AMMO_COUNTER_OFFSET_X",
 	AMMO_COUNTER_OFFSET_Y = "AMMO_COUNTER_OFFSET_Y",
@@ -143,13 +142,6 @@ mod.add_option = function(setting_name, option_widget, en_text, en_tooltip, grou
 end
 
 mod_data.options_widgets:extend({
-	{
-		["setting_name"] = mod.SETTING_NAMES.SPEEDUP_ANIMATIONS,
-		["widget_type"] = "checkbox",
-		["text"] = mod:localize("SPEEDUP_ANIMATIONS"),
-		["tooltip"] = mod:localize("SPEEDUP_ANIMATIONS_T"),
-		["default_value"] = false,
-	},
 	{
 		["setting_name"] = mod.SETTING_NAMES.FORCE_DEFAULT_FRAME,
 		["widget_type"] = "checkbox",

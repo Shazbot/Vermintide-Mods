@@ -70,14 +70,6 @@ mod.on_setting_changed = function(setting_name)
 		end
 	end
 
-	if setting_name == mod.SETTING_NAMES.SPEEDUP_ANIMATIONS then
-		if mod:get(mod.SETTING_NAMES.SPEEDUP_ANIMATIONS) then
-			mod.set_anim_ui_settings()
-		else
-			mod.reset_anim_ui_settings()
-		end
-	end
-
 	if setting_name == mod.SETTING_NAMES.SECOND_BUFF_BAR_SIZE_ADJUST_X
 	or setting_name == mod.SETTING_NAMES.SECOND_BUFF_BAR_SIZE_ADJUST_Y
 	then
@@ -848,7 +840,6 @@ mod:dofile("scripts/mods/HideBuffs/teammate_widget_definitions")
 mod:dofile("scripts/mods/HideBuffs/buff_ui")
 mod:dofile("scripts/mods/HideBuffs/ability_ui")
 mod:dofile("scripts/mods/HideBuffs/equipment_ui")
-mod:dofile("scripts/mods/HideBuffs/anim_speedup")
 mod:dofile("scripts/mods/HideBuffs/second_buff_bar")
 mod:dofile("scripts/mods/HideBuffs/persistent_ammo_counter")
 mod:dofile("scripts/mods/HideBuffs/locked_and_loaded_compat")

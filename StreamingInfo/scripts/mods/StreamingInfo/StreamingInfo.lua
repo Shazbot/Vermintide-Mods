@@ -166,7 +166,7 @@ mod.destroy_gui = function(func, self, ...)
 	return func(self, ...)
 end
 
-for _, obj in ipairs( { EndScreenUI, GameModeManager, IngameUI } ) do
+for _, obj in ipairs( { LevelEndView, EndScreenUI, GameModeManager, IngameUI } ) do
 	mod:hook(obj, "destroy", mod.destroy_gui)
 end
 mod:hook(StateLoading, "on_exit", mod.destroy_gui)

@@ -155,22 +155,6 @@ mod:hook_safe(IngameUI, "update", function(self, dt, t, disable_ingame_ui, end_o
 	mod.draw_info(self)
 end)
 
---- self._mod_gui cleanup
-mod.destroy_gui = function(func, self, ...)
-	if self._mod_gui then
-		local world = self.world or self._world or self.world_manager:world("level_world")
-		World.destroy_gui(world, self._mod_gui)
-		self._mod_gui = nil
-	end
-
-	return func(self, ...)
-end
-
-for _, obj in ipairs( { LevelEndView, EndScreenUI, GameModeManager, IngameUI } ) do
-	mod:hook(obj, "destroy", mod.destroy_gui)
-end
-mod:hook(StateLoading, "on_exit", mod.destroy_gui)
-
 mod.draw_info = function(owner)
 	local self = owner
 
@@ -245,4 +229,29 @@ mod:command("set_lines", mod:localize("set_lines_command_description"), function
 local out_lines = mod:get(mod.out_lines_setting_key)
 if out_lines then
 	mod.out_lines = pl.List(out_lines)
+end
+
+--- self._mod_gui cleanup
+mod.destroy_gui = function(func, self, ...)
+	if self._mod_gui then
+		local world = self.world or self._world or self.world_manager:world("level_world")
+		World.destroy_gui(world, self._mod_gui)
+		self._mod_gui = nil
+	end
+
+	return func(self, ...)
+end
+
+local objects_to_hook_destroy = { LevelEndView, EndScreenUI, GameModeManager, IngameUI }
+
+for _, obj in ipairs( objects_to_hook_destroy ) do
+	mod:hook(obj, "destroy", mod.destroy_gui)
+end
+mod:hook(StateLoading, "on_exit", mod.destroy_gui)
+
+mod.on_disabled = function(init_call) -- luacheck: ignore init_call
+	for _, obj in ipairs( objects_to_hook_destroy ) do
+		mod:hook_enable(obj, "destroy")
+	end
+	mod:hook_enable(StateLoading, "on_exit")
 end

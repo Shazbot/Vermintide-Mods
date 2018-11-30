@@ -1,4 +1,4 @@
-local mod = get_mod("StreamingInfo") -- luacheck: ignore get_mod
+local mod = get_mod("StreamingInfo")
 
 mod.SETTING_NAMES = {}
 

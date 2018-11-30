@@ -24,8 +24,9 @@ globals = {
 	"ActionCareerWHBountyhunter", "ActionBountyHunterHandgun", "GenericTrailExtension",
 	"PlayerProjectileHuskExtension", "PlayerProjectileUnitExtension", "SpawnManager",
 	"PickupUnitExtension", "AllPickups", "GearUtils", "Light", "GameModeManager",
-	"RespawnHandler", "AreaIndicatorUI", "AIGroupTemplates",
-	"VALID_TARGETS_PLAYERS_AND_BOTS",
+	"RespawnHandler", "AreaIndicatorUI", "AIGroupTemplates", "DifficultyManager",
+	"VALID_TARGETS_PLAYERS_AND_BOTS", "DifficultySettings", "LevelEndView",
+	"EndScreenUI", "Color", "Vector2", "Vector3", "Gui", "World",
 
 	"PriorityBuffUI",
 }

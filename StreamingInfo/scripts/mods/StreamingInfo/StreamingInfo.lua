@@ -1,9 +1,4 @@
-local mod = get_mod("StreamingInfo") -- luacheck: ignore get_mod
-
--- luacheck: globals Localize WeaponTraits UIUtils DifficultyManager BackendUtils
--- luacheck: globals DifficultySettings Managers ScriptUnit RESOLUTION_LOOKUP Vector3
--- luacheck: globals Gui World Color IngameUI GameModeManager EndScreenUI
--- luacheck: globals EndScreenUI LevelEndView StateLoading Application Vector2
+local mod = get_mod("StreamingInfo")
 
 local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
@@ -160,21 +155,35 @@ mod:hook_safe(IngameUI, "update", function(self, dt, t, disable_ingame_ui, end_o
 	mod.draw_info(self)
 end)
 
+--- self._mod_gui cleanup
+mod.destroy_gui = function(func, self, ...)
+	if self._mod_gui then
+		local world = self.world or self._world or self.world_manager:world("level_world")
+		World.destroy_gui(world, self._mod_gui)
+		self._mod_gui = nil
+	end
+
+	return func(self, ...)
+end
+
+for _, obj in ipairs( { EndScreenUI, GameModeManager, IngameUI } ) do
+	mod:hook(obj, "destroy", mod.destroy_gui)
+end
+mod:hook(StateLoading, "on_exit", mod.destroy_gui)
+
 mod.draw_info = function(owner)
 	local self = owner
 
-	if
-	not self.world
-	and not self._world
-	and not self.world_manager
-	and not self.world_manager:world("level_world") then
+	if not (self.world or self._world or (self.world_manager and self.world_manager:world("level_world"))) then
 		return
 	end
 
 	local world = self.world or self._world or self.world_manager:world("level_world")
 
-	if not self.gui then
-		self.gui = World.create_screen_gui(world, "material", "materials/fonts/gw_fonts", "immediate")
+	local gui = self.gui or self._mod_gui
+	if not gui then
+		self._mod_gui = World.create_screen_gui(world, "material", "materials/fonts/gw_fonts", "immediate")
+		gui = self._mod_gui
 	end
 
 	local header_color = Color(
@@ -182,7 +191,7 @@ mod.draw_info = function(owner)
 		mod:get(mod.SETTING_NAMES.RED),
 		mod:get(mod.SETTING_NAMES.GREEN),
 		mod:get(mod.SETTING_NAMES.BLUE)
-		)
+	)
 
 	local font_size = mod:get(mod.SETTING_NAMES.FONT_SIZE)
 	local vertical_spacing = mod:get(mod.SETTING_NAMES.SPACING)
@@ -198,7 +207,7 @@ mod.draw_info = function(owner)
 			local padding_x = font_size > 19 and 10+(font_size-19)*25 or 0
 			local padding_y = font_size > 30 and (font_size-30)*0.8 or 0
 			local num_lines = 6 + #mod.out_lines
-			Gui.rect(self.gui,
+			Gui.rect(gui,
 				Vector3(start_x-10, start_y-(font_size*0.08)*num_lines-vertical_spacing*(num_lines-1)+padding_y-2, 400),
 				Vector2(450+padding_x, 30+vertical_spacing*(num_lines-1)+(font_size*0.08)*num_lines+padding_y),
 				Color(100, 0, 0, 0)
@@ -206,7 +215,7 @@ mod.draw_info = function(owner)
 			pl.List(stringx.splitlines(mod.get_streaming_info())):extend(mod.out_lines)
 				:foreach(function(line)
 					local pos = Vector3(start_x, start_y-vertical_spacing*i, 500)
-					Gui.text(self.gui, line, mod.font_mtrl, font_size, mod.font, pos, header_color)
+					Gui.text(gui, line, mod.font_mtrl, font_size, mod.font, pos, header_color)
 						-- shadow?
 						-- pos = Vector3(start_x+2, start_y-vertical_spacing*i-2, 450)
 						-- Gui.text(self.gui, line, mod.font_mtrl, font_size, mod.font, pos, Color(255, 0, 0, 0))

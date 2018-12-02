@@ -288,22 +288,47 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 			local icons_start_offset_x = 44
 			local icons_start_offset_y = -31
 			local custom_widget_style = self._teammate_custom_widget.style
-			custom_widget_style.icon_natural_bond.offset[1] = icons_start_offset_x + delta_x + hp_bar_offset_x + important_icons_offset_x
-			custom_widget_style.icon_natural_bond.offset[2] = icons_start_offset_y + hp_bar_offset_y + delta_y/2 + important_icons_offset_y
+
+			local icons_offset_x = icons_start_offset_x + delta_x + hp_bar_offset_x + important_icons_offset_x
+			local icons_offset_y = icons_start_offset_y + hp_bar_offset_y + delta_y/2 + important_icons_offset_y
+
+			custom_widget_style.icon_natural_bond.offset[1] = icons_offset_x
+			custom_widget_style.icon_natural_bond.offset[2] = icons_offset_y
+			custom_widget_style.icon_natural_bond.color = {200,255,255,255}
 
 			custom_widget_style.frame_natural_bond.offset[1] = custom_widget_style.icon_natural_bond.offset[1] - 2
 			custom_widget_style.frame_natural_bond.offset[2] = custom_widget_style.icon_natural_bond.offset[2] - 2
 
-			custom_widget_style.icon_is_wounded.offset[1] = icons_start_offset_x + (self.has_natural_bond and 30 or 0) + delta_x + hp_bar_offset_x + important_icons_offset_x
-			custom_widget_style.icon_is_wounded.offset[2] = icons_start_offset_y + hp_bar_offset_y + delta_y/2 + important_icons_offset_y
+			local next_icon_offset = (self.has_natural_bond and 30 or 0)
 
-			custom_widget_style.frame_is_wounded.offset[1] = custom_widget_style.icon_is_wounded.offset[1] - 2
-			custom_widget_style.frame_is_wounded.offset[2] = custom_widget_style.icon_is_wounded.offset[2] - 2
+			custom_widget_style.icon_hand_of_shallya.offset[1] = icons_offset_x + next_icon_offset
+			custom_widget_style.icon_hand_of_shallya.offset[2] = icons_offset_y
+			custom_widget_style.icon_hand_of_shallya.color = {200,255,255,255}
+
+			custom_widget_style.frame_hand_of_shallya.offset[1] = custom_widget_style.icon_hand_of_shallya.offset[1] - 2
+			custom_widget_style.frame_hand_of_shallya.offset[2] = custom_widget_style.icon_hand_of_shallya.offset[2] - 2
+
+			next_icon_offset = next_icon_offset + (self.has_hand_of_shallya and 30 or 0)
+
+			custom_widget_style.icon_healshare_talent.offset[1] = icons_offset_x + next_icon_offset
+			custom_widget_style.icon_healshare_talent.offset[2] = icons_offset_y
+			custom_widget_style.icon_healshare_talent.color = {200,255,255,255}
+
+			next_icon_offset = next_icon_offset + (self.has_healshare_talent and 28 or 0)
+
+			custom_widget_style.icon_is_wounded.offset[1] = icons_offset_x + next_icon_offset - 10
+			custom_widget_style.icon_is_wounded.offset[2] = icons_offset_y - 10
+
+			custom_widget_style.icon_is_wounded.color = {150,255,0,0}
+
+			custom_widget_style.frame_is_wounded.offset[1] = custom_widget_style.icon_is_wounded.offset[1] - 2 + 10
+			custom_widget_style.frame_is_wounded.offset[2] = custom_widget_style.icon_is_wounded.offset[2] - 2 + 10
+			custom_widget_style.frame_is_wounded.size[1] = 0
+
+			next_icon_offset = next_icon_offset + (self.is_wounded and 30 or 0)
 
 			if self.important_icons_enabled then
-				def_dynamic_w.style.ammo_indicator.offset[1] = def_dynamic_w.style.ammo_indicator.offset[1]
-					+ (self.is_wounded and 30 or 0)
-					+ (self.has_natural_bond and 30 or 0)
+				def_dynamic_w.style.ammo_indicator.offset[1] = def_dynamic_w.style.ammo_indicator.offset[1] + next_icon_offset
 			end
 		end
 	end)
@@ -468,7 +493,7 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 
 		-- changes to the non-player portraits UI
 		if self._mod_frame_index then
-			-- has_natural_bond and is_wounded updates
+			-- update important icons
 			if self._teammate_custom_widget then
 				local important_icons_enabled = mod:get(mod.SETTING_NAMES.TEAM_UI_ICONS_GROUP)
 				self.important_icons_enabled = important_icons_enabled
@@ -479,9 +504,13 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 				end
 				if self._teammate_custom_widget.content.has_natural_bond ~= self.has_natural_bond
 				or self._teammate_custom_widget.content.is_wounded ~= self.is_wounded
+				or self._teammate_custom_widget.content.has_healshare_talent ~= self.has_healshare_talent
+				or self._teammate_custom_widget.content.has_hand_of_shallya ~= self.has_hand_of_shallya
 				then
 					self._teammate_custom_widget.content.has_natural_bond = self.has_natural_bond
 					self._teammate_custom_widget.content.is_wounded = self.is_wounded
+					self._teammate_custom_widget.content.has_healshare_talent = self.has_healshare_talent
+					self._teammate_custom_widget.content.has_hand_of_shallya = self.has_hand_of_shallya
 					self:_set_widget_dirty(self._teammate_custom_widget)
 					self:set_dirty()
 				end
@@ -546,10 +575,12 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 
 			local def_static_widget = self:_widget_by_feature("player_name", "static")
 			if def_static_widget then
-				def_static_widget.style.player_name.offset[1] = 0 + mod:get(mod.SETTING_NAMES.TEAM_UI_NAME_OFFSET_X)
-				def_static_widget.style.player_name.offset[2] = 110 + mod:get(mod.SETTING_NAMES.TEAM_UI_NAME_OFFSET_Y)
-				def_static_widget.style.player_name_shadow.offset[1] = 2 + mod:get(mod.SETTING_NAMES.TEAM_UI_NAME_OFFSET_X)
-				def_static_widget.style.player_name_shadow.offset[2] = 110 - 2 + mod:get(mod.SETTING_NAMES.TEAM_UI_NAME_OFFSET_Y)
+				local team_ui_name_offset_x = mod:get(mod.SETTING_NAMES.TEAM_UI_NAME_OFFSET_X)
+				local team_ui_name_offset_y = mod:get(mod.SETTING_NAMES.TEAM_UI_NAME_OFFSET_Y)
+				def_static_widget.style.player_name.offset[1] = 0 + team_ui_name_offset_x
+				def_static_widget.style.player_name.offset[2] = 110 + team_ui_name_offset_y
+				def_static_widget.style.player_name_shadow.offset[1] = 2 + team_ui_name_offset_x
+				def_static_widget.style.player_name_shadow.offset[2] = 110 - 2 + team_ui_name_offset_y
 			end
 		end
 	end)
@@ -593,6 +624,24 @@ mod:hook(UnitFramesHandler, "_create_unit_frame_by_type", function(func, self, f
 	end
 	return unit_frame
 end)
+
+mod.healshare_buff_names = {
+	"bardin_ranger_conqueror",
+	"bardin_ironbreaker_conqueror",
+	"bardin_slayer_conqueror",
+	"kerillian_waywatcher_conqueror",
+	"kerillian_maidenguard_conqueror",
+	"kerillian_shade_conqueror",
+	"markus_mercenary_conqueror",
+	"markus_huntsman_conqueror",
+	"markus_knight_conqueror",
+	"sienna_adept_conqueror",
+	"sienna_scholar_conqueror",
+	"sienna_unchained_conqueror",
+	"victor_witchhunter_conqueror",
+	"victor_bountyhunter_conqueror",
+	"victor_zealot_conqueror",
+}
 
 --- Teammate UI update hook to catch when we need to realign teammate portraits.
 mod:hook(UnitFramesHandler, "update", function(func, self, ...)
@@ -649,9 +698,26 @@ mod:hook(UnitFramesHandler, "update", function(func, self, ...)
 		unit_frame.widget.unit_frame_index = self.unit_frame_index_by_ui_id[player_ui_id]
 
 		local buff_extension = ScriptUnit.has_extension(player_unit, "buff_system")
-		unit_frame.widget.has_natural_bond = buff_extension and buff_extension:has_buff_type("trait_necklace_no_healing_health_regen")
+		if buff_extension then
+			unit_frame.widget.has_natural_bond = buff_extension:has_buff_type("trait_necklace_no_healing_health_regen")
+			unit_frame.widget.has_hand_of_shallya = buff_extension:has_buff_type("trait_necklace_heal_self_on_heal_other")
+
+			unit_frame.widget.has_healshare_talent = false
+			for _, hs_buff_name in ipairs( mod.healshare_buff_names ) do
+				if buff_extension:has_buff_type(hs_buff_name) then
+					unit_frame.widget.has_healshare_talent = true
+					break
+				end
+			end
+		end
 
 		unit_frame.widget.is_wounded = unit_frame.data.is_wounded
+
+		-- for debugging
+		-- unit_frame.widget.is_wounded = true
+		-- unit_frame.widget.has_natural_bond = true
+		-- unit_frame.widget.has_hand_of_shallya = true
+		-- unit_frame.widget.has_healshare_talent = true
 
 		unit_frame.widget.has_ammo = has_ammo
 		unit_frame.widget.has_overcharge = has_overcharge

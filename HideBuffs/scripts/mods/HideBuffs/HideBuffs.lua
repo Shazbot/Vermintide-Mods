@@ -294,7 +294,6 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 
 			custom_widget_style.icon_natural_bond.offset[1] = icons_offset_x
 			custom_widget_style.icon_natural_bond.offset[2] = icons_offset_y
-			custom_widget_style.icon_natural_bond.color = {200,255,255,255}
 
 			custom_widget_style.frame_natural_bond.offset[1] = custom_widget_style.icon_natural_bond.offset[1] - 2
 			custom_widget_style.frame_natural_bond.offset[2] = custom_widget_style.icon_natural_bond.offset[2] - 2
@@ -303,7 +302,6 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 
 			custom_widget_style.icon_hand_of_shallya.offset[1] = icons_offset_x + next_icon_offset
 			custom_widget_style.icon_hand_of_shallya.offset[2] = icons_offset_y
-			custom_widget_style.icon_hand_of_shallya.color = {200,255,255,255}
 
 			custom_widget_style.frame_hand_of_shallya.offset[1] = custom_widget_style.icon_hand_of_shallya.offset[1] - 2
 			custom_widget_style.frame_hand_of_shallya.offset[2] = custom_widget_style.icon_hand_of_shallya.offset[2] - 2
@@ -312,14 +310,11 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 
 			custom_widget_style.icon_healshare_talent.offset[1] = icons_offset_x + next_icon_offset
 			custom_widget_style.icon_healshare_talent.offset[2] = icons_offset_y
-			custom_widget_style.icon_healshare_talent.color = {200,255,255,255}
 
 			next_icon_offset = next_icon_offset + (self.has_healshare_talent and 28 or 0)
 
 			custom_widget_style.icon_is_wounded.offset[1] = icons_offset_x + next_icon_offset - 10
 			custom_widget_style.icon_is_wounded.offset[2] = icons_offset_y - 10
-
-			custom_widget_style.icon_is_wounded.color = {150,255,0,0}
 
 			custom_widget_style.frame_is_wounded.offset[1] = custom_widget_style.icon_is_wounded.offset[1] - 2 + 10
 			custom_widget_style.frame_is_wounded.offset[2] = custom_widget_style.icon_is_wounded.offset[2] - 2 + 10

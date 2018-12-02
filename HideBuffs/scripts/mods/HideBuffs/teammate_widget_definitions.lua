@@ -180,7 +180,7 @@ mod.teammate_ui_custom_def =
 				21
 			},
 			color = {
-				255,
+				200,
 				255,
 				255,
 				255
@@ -197,10 +197,10 @@ mod.teammate_ui_custom_def =
 				21
 			},
 			color = {
+				150,
 				255,
-				255,
-				255,
-				255
+				0,
+				0
 			}
 		},
 		icon_hand_of_shallya = {
@@ -214,7 +214,7 @@ mod.teammate_ui_custom_def =
 				21
 			},
 			color = {
-				255,
+				200,
 				255,
 				255,
 				255
@@ -231,7 +231,7 @@ mod.teammate_ui_custom_def =
 				21
 			},
 			color = {
-				255,
+				200,
 				255,
 				255,
 				255

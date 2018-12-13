@@ -13,6 +13,10 @@ mod.buff_name_to_setting_name_lookup = {
 		mod.SETTING_NAMES.KERILLIAN_WAYWATCHER_PASSIVE,
 	["kerillian_maidenguard_passive_stamina_regen_buff"] =
 		mod.SETTING_NAMES.KERILLIAN_MAIDENGUARD_PASSIVE_STAMINA_REGEN_BUFF,
+	["victor_witchhunter_damage_on_grimoire_picked_up"] =
+		mod.SETTING_NAMES.HIDE_WHC_GRIMOIRE_POWER_BUFF,
+	["kerillian_shade_damage_on_grimoire_picked_up"] =
+		mod.SETTING_NAMES.HIDE_SHADE_GRIMOIRE_POWER_BUFF,
 }
 
 mod:hook(BuffUI, "_add_buff", function (func, self, buff, ...)

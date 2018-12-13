@@ -9,6 +9,8 @@ mod.SETTING_NAMES = {
 	MARKUS_KNIGHT_PASSIVE_DEFENCE_AURA = "markus_knight_passive_defence_aura",
 	KERILLIAN_WAYWATCHER_PASSIVE = "kerillian_waywatcher_passive",
 	KERILLIAN_MAIDENGUARD_PASSIVE_STAMINA_REGEN_BUFF = "kerillian_maidenguard_passive_stamina_regen_buff",
+	HIDE_SHADE_GRIMOIRE_POWER_BUFF = "HIDE_SHADE_GRIMOIRE_POWER_BUFF",
+	HIDE_WHC_GRIMOIRE_POWER_BUFF = "HIDE_WHC_GRIMOIRE_POWER_BUFF",
 	HIDE_FRAMES = "hide_frames",
 	HIDE_LEVELS = "hide_levels",
 	HIDE_HOTKEYS = "hide_hotkeys",
@@ -88,6 +90,8 @@ mod.priority_buff_setting_name_to_buff_name = {
 	BARDIN_RANGER_ACTIVATED_ABILITY = { "bardin_ranger_activated_ability" },
 	BARDIN_IRONBREAKER_ACTIVATED_ABILITY = { "bardin_ironbreaker_activated_ability" },
 	BARDIN_SLAYER_ACTIVATED_ABILITY = { "bardin_slayer_activated_ability" },
+	HUNTSMAN_HS_CRIT_BUFF = { "markus_huntsman_passive_crit_buff" },
+	HUNTSMAN_HS_RELOAD_SPEED_BUFF = { "markus_huntsman_headshots_increase_reload_speed_buff" },
 }
 
 local priority_buffs_group_subwidgets = {}
@@ -281,7 +285,7 @@ mod_data.options_widgets:extend({
 		["widget_type"] = "checkbox",
 		["text"] = mod:localize("SECOND_BUFF_BAR"),
 		["tooltip"] = mod:localize("SECOND_BUFF_BAR_T"),
-		["default_value"] = false,
+		["default_value"] = true,
 		["sub_widgets"] = {
 			{
 				["setting_name"] = mod.SETTING_NAMES.SECOND_BUFF_BAR_OFFSET_X,
@@ -357,6 +361,20 @@ mod_data.options_widgets:extend({
 				["tooltip"] = mod:localize("kerillian_maidenguard_passive_stamina_regen_buff_tooltip"),
 				["default_value"] = false,
 			},
+			{
+				["setting_name"] = mod.SETTING_NAMES.HIDE_WHC_GRIMOIRE_POWER_BUFF ,
+				["widget_type"] = "checkbox",
+				["text"] = mod:localize("HIDE_WHC_GRIMOIRE_POWER_BUFF"),
+				["tooltip"] = mod:localize("HIDE_WHC_GRIMOIRE_POWER_BUFF_T"),
+				["default_value"] = false,
+			},
+			{
+				["setting_name"] = mod.SETTING_NAMES.HIDE_SHADE_GRIMOIRE_POWER_BUFF ,
+				["widget_type"] = "checkbox",
+				["text"] = mod:localize("HIDE_SHADE_GRIMOIRE_POWER_BUFF"),
+				["tooltip"] = mod:localize("HIDE_SHADE_GRIMOIRE_POWER_BUFF_T"),
+				["default_value"] = false,
+			},
 		},
 	},
 })
@@ -380,7 +398,7 @@ local player_ui_group =
 			["widget_type"] = "checkbox",
 			["text"] = mod:localize("hide_hotkeys"),
 			["tooltip"] = mod:localize("hide_hotkeys_tooltip"),
-			["default_value"] = false,
+			["default_value"] = true,
 		},
 		{
 			["setting_name"] = mod.SETTING_NAMES.PLAYER_UI_OFFSET_X,
@@ -835,10 +853,10 @@ local teammate_important_icons_subs = mod.add_option(
 	"TEAM_UI_ICONS_GROUP",
 	{
 		["widget_type"] = "checkbox",
-	    ["default_value"] = false,
+	    ["default_value"] = true,
 	},
 	"Important Icons",
-	"Show icons for natural bond and when the player is on death's door.",
+	"Show icons for Hand of Shallya, Natural Bond, the healshare talent, and when a player is on death's door.",
 	team_ui_group.sub_widgets
 )
 mod.add_option(

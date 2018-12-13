@@ -44,6 +44,18 @@ mod.localizations:update({
 	kerillian_maidenguard_passive_stamina_regen_buff_tooltip = {
 		en = "Handmaiden passive."
 	},
+	HIDE_WHC_GRIMOIRE_POWER_BUFF = {
+		en = "WHC Grimoire Power Buff"
+	},
+	HIDE_WHC_GRIMOIRE_POWER_BUFF_T = {
+		en = "WHC grimoire power buff."
+	},
+	HIDE_SHADE_GRIMOIRE_POWER_BUFF = {
+		en = "Shade Grimoire Power Buff"
+	},
+	HIDE_SHADE_GRIMOIRE_POWER_BUFF_T = {
+		en = "Shade grimoire power buff."
+	},
 	buffs_group = {
 		en = "Buffs Tweaks"
 	},
@@ -54,10 +66,10 @@ mod.localizations:update({
 		en = "Hide Hotkeys"
 	},
 	hide_levels_T = {
-		en = "Hide levels."
+		en = "Hide player levels."
 	},
 	hide_levels = {
-		en = "Hide Levels"
+		en = "Hide Player Levels"
 	},
 	hide_frames_T = {
 		en = "Hide portrait frames."
@@ -78,10 +90,10 @@ mod.localizations:update({
 		en = "Hide the mission objective on top of the screen."
 	},
 	force_default_frame = {
-		en = "Use Default Frames"
+		en = "Use Default Portrait Frames"
 	},
 	force_default_frame_tooltip = {
-		en = "Always use the default frame."
+		en = "Always use the default portrait frame."
 	},
 	hide_player_portrait = {
 		en = "Hide Player Portrait"
@@ -195,7 +207,7 @@ mod.localizations:update({
 		en = "Optionally offset on the y axis."
 	},
 	HIDE_WEAPON_SLOTS = {
-		en = "Hide Weapon Slots"
+		en = "Hide Melee and Ranged Item Slots"
 	},
 	HIDE_WEAPON_SLOTS_T = {
 		en = "Hide the first 2 item slots(melee and ranged weapon)."
@@ -376,6 +388,12 @@ mod.localizations:update({
 	},
 	BARDIN_SLAYER_ACTIVATED_ABILITY = {
 		en = "Slayer Ult"
+	},
+	HUNTSMAN_HS_CRIT_BUFF = {
+		en = "Huntsman Makin' It Look Easy"
+	},
+	HUNTSMAN_HS_RELOAD_SPEED_BUFF = {
+		en = "Huntsman Thrill of the Hunt"
 	},
 
 })

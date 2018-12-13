@@ -266,4 +266,34 @@ mod:pcall(function()
 	end
 end)
 
+script_data.unlock_all_levels = true
+
+mod.start_dlc_level = function()
+	mod:pcall(function()
+		local vote_data = {
+			private_game = true,
+			quick_game = false,
+			strict_matchmaking = false,
+			always_host = true,
+			game_mode = "event",
+			level_key = "plaza",
+			difficulty = DefaultDifficulties[4]
+		}
+
+		local local_player_unit = Managers.player:local_player().player_unit
+		local interaction_player = Managers.player:owner(local_player_unit)
+
+		Managers.state.voting:request_vote("game_settings_vote", vote_data, interaction_player.peer_id)
+	end)
+end
+
+mod:command("dlc", mod:localize("dlc_level_command_description"), function() mod.start_dlc_level() end)
+
+mod:hook(WwiseWorld, "trigger_event", function(func, wwise_world, sound_event, ...)
+	if string.find(sound_event, "nfl_holly_level_memory") then
+		return
+	end
+	return func(wwise_world, sound_event, ...)
+end)
+
 mod:dofile("scripts/mods/"..mod:get_name().."/assassin_hero_warning")

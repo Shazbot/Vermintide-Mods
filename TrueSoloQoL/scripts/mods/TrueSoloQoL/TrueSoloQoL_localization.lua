@@ -41,4 +41,7 @@ return {
 	DISABLE_ULT_VOICE_LINE_T = {
 		en = "Disable voice line on ult."
 	},
+	dlc_level_command_description = {
+		en = "Start plaza dlc level."
+	},
 }

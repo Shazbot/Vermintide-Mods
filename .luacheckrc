@@ -26,7 +26,8 @@ globals = {
 	"PickupUnitExtension", "AllPickups", "GearUtils", "Light", "GameModeManager",
 	"RespawnHandler", "AreaIndicatorUI", "AIGroupTemplates", "DifficultyManager",
 	"VALID_TARGETS_PLAYERS_AND_BOTS", "DifficultySettings", "LevelEndView",
-	"EndScreenUI", "Color", "Vector2", "Vector3", "Gui", "World",
+	"EndScreenUI", "Color", "Vector2", "Vector3", "Gui", "World", "WwiseWorld",
+	"DefaultDifficulties",
 
 	"PriorityBuffUI",
 }

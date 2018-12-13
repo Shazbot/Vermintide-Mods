@@ -12,6 +12,9 @@ local localization = {
 			.."\nStart with just \";\" for an empty line: /set_lines ; LINE1 ; LINE2"
 			.."\nCall without arguments to clear lines. \"/set_lines\""
 	},
+	LINE_SPACING_T = {
+		en = "Adjust vertical space between lines."
+	}
 }
 
 local function concat_upper_lower(first, rest)
@@ -20,6 +23,10 @@ end
 
 mod.original_localize = mod.localize
 mod.localize = function (self, text_id, ...)
+	if localization[text_id] then
+		return mod.original_localize(self, text_id, ...)
+	end
+
 	local name = stringx.replace(text_id, "_", " ")
 
 	if stringx.lfind(text_id, "_T") == #text_id-1 then

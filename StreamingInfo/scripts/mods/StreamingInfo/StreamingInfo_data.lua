@@ -47,16 +47,16 @@ mod.add_option(
 	{
 		["widget_type"] = "numeric",
 		["range"] = {10, 40},
-		["default_value"] = 18,
+		["default_value"] = 24,
 	}
 )
 mod.add_option(
-	"SPACING",
+	"LINE_SPACING",
 	{
 		["widget_type"] = "numeric",
-		["range"] = {0, 50},
+		["range"] = {-50, 50},
 		["unit_text"] = "px",
-		["default_value"] = 22,
+		["default_value"] = -2,
 	}
 )
 mod.add_option(

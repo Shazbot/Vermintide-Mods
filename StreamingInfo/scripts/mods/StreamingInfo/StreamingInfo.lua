@@ -155,6 +155,24 @@ mod:hook_safe(IngameUI, "update", function(self, dt, t, disable_ingame_ui, end_o
 	mod.draw_info(self)
 end)
 
+mod.text_size = function (gui, text, font_material, font_size, ...)
+	local min, max = Gui.text_extents(gui, text, font_material, font_size, ...)
+	local inv_scaling = RESOLUTION_LOOKUP.inv_scale
+	local width = (max.x + min.x) * inv_scaling
+	local height = (max.y - min.y) * inv_scaling
+
+	return width, height, min
+end
+
+mod.get_text_size = function (gui, font_size, line)
+	local _, font_min, font_max = UIGetFontHeight(gui, mod.font, font_size)
+	local inv_scale = RESOLUTION_LOOKUP.inv_scale
+	local full_font_height = (font_max + math.abs(font_min)) * inv_scale
+	local width = mod.text_size(gui, line, mod.font_mtrl, font_size, full_font_height)
+
+	return width, full_font_height
+end
+
 mod.draw_info = function(owner)
 	local self = owner
 
@@ -178,33 +196,37 @@ mod.draw_info = function(owner)
 	)
 
 	local font_size = mod:get(mod.SETTING_NAMES.FONT_SIZE)
-	local vertical_spacing = mod:get(mod.SETTING_NAMES.SPACING)
+	local vertical_spacing = mod:get(mod.SETTING_NAMES.LINE_SPACING)
 
-	local start_x = 10 + mod:get(mod.SETTING_NAMES.OFFSET_X)
-	local start_y = RESOLUTION_LOOKUP.res_h - 30  + mod:get(mod.SETTING_NAMES.OFFSET_Y)
+	local start_x = mod:get(mod.SETTING_NAMES.OFFSET_X)
+	local start_y = RESOLUTION_LOOKUP.res_h + mod:get(mod.SETTING_NAMES.OFFSET_Y)
 	local i = 0
 
 	mod:pcall(function()
 		local current_frame = Application.time_since_launch()
 		if mod.drew_rect_at_frame ~= current_frame then
 			mod.drew_rect_at_frame = current_frame
-			local padding_x = font_size > 19 and 10+(font_size-19)*25 or 0
-			local padding_y = font_size > 30 and (font_size-30)*0.8 or 0
-			local num_lines = 6 + #mod.out_lines
-			Gui.rect(gui,
-				Vector3(start_x-10, start_y-(font_size*0.08)*num_lines-vertical_spacing*(num_lines-1)+padding_y-2, 400),
-				Vector2(450+padding_x, 30+vertical_spacing*(num_lines-1)+(font_size*0.08)*num_lines+padding_y),
-				Color(100, 0, 0, 0)
-			)
+
+			local bg_w = 0
+			local bg_h = 0
 			pl.List(stringx.splitlines(mod.get_streaming_info())):extend(mod.out_lines)
 				:foreach(function(line)
-					local pos = Vector3(start_x, start_y-vertical_spacing*i, 500)
+					local line_width, line_height = mod.get_text_size(gui, font_size, line)
+					if line_width > bg_w then
+						bg_w = line_width
+					end
+					bg_h = bg_h + line_height
+					local pos = Vector3(start_x, start_y-bg_h, 1002)
+					bg_h = bg_h + vertical_spacing
 					Gui.text(gui, line, mod.font_mtrl, font_size, mod.font, pos, header_color)
-						-- shadow?
-						-- pos = Vector3(start_x+2, start_y-vertical_spacing*i-2, 450)
-						-- Gui.text(self.gui, line, mod.font_mtrl, font_size, mod.font, pos, Color(255, 0, 0, 0))
 					i = i + 1
 				end)
+			bg_h = bg_h - vertical_spacing
+			Gui.rect(gui,
+				Vector3(start_x - 10, start_y - bg_h - 10, 1001),
+				Vector2(bg_w + 20, bg_h),
+				Color(100, 0, 0, 0)
+			)
 		end
 	end)
 end

@@ -1,0 +1,11 @@
+mod = [
+	"Baubles"
+]
+
+package = [
+	"resource_packages/Baubles/Baubles"
+]
+
+lua = [
+	"scripts/mods/Baubles/*"
+]

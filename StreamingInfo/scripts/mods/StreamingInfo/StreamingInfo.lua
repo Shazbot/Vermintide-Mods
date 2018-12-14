@@ -89,7 +89,7 @@ mod.get_streaming_info = function()
 			out:write(talents)
 			out:write("\n")
 		end
-		
+
 		if mod.streaming_data.difficulty then
 			out:write(mod.streaming_data.difficulty)
 			out:write("\n")

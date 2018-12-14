@@ -951,4 +951,16 @@ mod.add_option(
 	7
 )
 
+mod.add_option(
+	"FASTER_CHEST_OPENING",
+	{
+		["widget_type"] = "checkbox",
+	    ["default_value"] = false,
+	},
+	"Faster Chest Opening",
+	"Make the chest opening animations faster.",
+	nil,
+	2
+)
+
 return mod_data

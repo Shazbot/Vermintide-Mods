@@ -68,6 +68,24 @@ mod:hook(EquipmentUI, "update", function(func, self, ...)
 end)
 
 mod:hook(EquipmentUI, "draw", function(func, self, dt)
+	if mod:get(mod.SETTING_NAMES.SHOW_RELOAD_REMINDER)
+	and self._is_visible
+	then
+		local need_to_reload, any_ammo_in_clip, can_reload = mod.player_requires_reload()
+		if need_to_reload then
+			local ammo_clip_widget = self._ammo_widgets_by_name.ammo_text_clip
+			local ammo_clip_widget_style = ammo_clip_widget.style.text
+			ammo_clip_widget_style.text_color = Colors.get_color_table_with_alpha("red", 255)
+			if any_ammo_in_clip then
+				ammo_clip_widget_style.text_color = Colors.get_color_table_with_alpha("khaki", 255)
+			end
+			if any_ammo_in_clip and not can_reload then
+				ammo_clip_widget_style.text_color = Colors.get_color_table_with_alpha("orange", 255)
+			end
+			self:_set_widget_dirty(ammo_clip_widget)
+		end
+	end
+
 	if mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET)
 	and self._is_visible
 	then
@@ -131,22 +149,6 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 			mod_ammo_widget.style.ammo_bar.offset[2] = -24 - player_ammo_bar_height
 			mod_ammo_widget.style.ammo_bar.offset[3] = 50
 		end)
-
-		if mod:get(mod.SETTING_NAMES.SHOW_RELOAD_REMINDER) then
-			local need_to_reload, any_ammo_in_clip, can_reload = mod.player_requires_reload()
-			if need_to_reload then
-				local ammo_clip_widget = self._ammo_widgets_by_name.ammo_text_clip
-				local ammo_clip_widget_style = ammo_clip_widget.style.text
-				ammo_clip_widget_style.text_color = Colors.get_color_table_with_alpha("red", 255)
-				if any_ammo_in_clip then
-					ammo_clip_widget_style.text_color = Colors.get_color_table_with_alpha("khaki", 255)
-				end
-				if any_ammo_in_clip and not can_reload then
-					ammo_clip_widget_style.text_color = Colors.get_color_table_with_alpha("orange", 255)
-				end
-				self:_set_widget_dirty(ammo_clip_widget)
-			end
-		end
 
 		local ui_renderer = self.ui_renderer
 		local ui_scenegraph = self.ui_scenegraph

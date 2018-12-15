@@ -240,7 +240,7 @@ mod.localizations:update({
 		en = "Player Name X Offset"
 	},
 	TEAM_UI_NAME_OFFSET_X_T = {
-		en = "Optionally offset the layer name on the x axis."
+		en = "Optionally offset the player name on the x axis."
 	},
 	TEAM_UI_NAME_OFFSET_Y = {
 		en = "Player Name Y Offset"

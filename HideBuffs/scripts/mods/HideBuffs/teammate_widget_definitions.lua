@@ -9,7 +9,7 @@ mod.teammate_ui_custom_def =
 				pass_type = "texture",
 				style_id = "hp_bar_fg",
 				texture_id = "hp_bar_fg",
-				retained_mode = false
+				retained_mode = false,
 			},
 			{
 				style_id = "ammo_bar",
@@ -23,7 +23,10 @@ mod.teammate_ui_custom_def =
 					local bar_length = mod.team_ammo_bar_length
 					uvs[2][2] = ammo_progress
 					size[1] = bar_length*ammo_progress
-				end
+				end,
+				content_check_function = function (content)
+					return content.draw_ammo_bar
+				end,
 			},
 			{
 				pass_type = "texture",
@@ -103,6 +106,7 @@ mod.teammate_ui_custom_def =
 		icon_natural_bond = "necklace_no_healing_health_regen",
 		hp_bar_fg = "hud_teammate_hp_bar_frame",
 		ammo_bar = {
+			draw_ammo_bar = false,
 			bar_value = 1,
 			texture_id = "hud_teammate_ammo_bar_fill",
 			uvs = {

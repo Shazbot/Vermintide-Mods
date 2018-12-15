@@ -147,11 +147,11 @@ mod.team_ability_bar_content_change_fun = function (content, style)
 end
 
 mod:hook(UnitFrameUI, "draw", function(func, self, dt)
+	local team_ui_ammo_bar_enabled = mod:get(mod.SETTING_NAMES.TEAM_UI_AMMO_BAR)
 	if self._mod_frame_index then
-		local team_ui_ammo_bar = mod:get(mod.SETTING_NAMES.TEAM_UI_AMMO_BAR)
-		if self._mod_cached_team_ui_ammo_bar ~= team_ui_ammo_bar then
+		if self._mod_cached_team_ui_ammo_bar ~= team_ui_ammo_bar_enabled then
 			self._dirty = true
-			self._mod_cached_team_ui_ammo_bar = team_ui_ammo_bar
+			self._mod_cached_team_ui_ammo_bar = team_ui_ammo_bar_enabled
 		end
 	end
 
@@ -188,6 +188,10 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 			local loadout_dynamic = self._equipment_widgets.loadout_dynamic
 			loadout_dynamic.offset[1] = -15 + mod:get(mod.SETTING_NAMES.TEAM_UI_ITEM_SLOTS_OFFSET_X)
 			loadout_dynamic.offset[2] = -121 + mod:get(mod.SETTING_NAMES.TEAM_UI_ITEM_SLOTS_OFFSET_Y)
+
+			if team_ui_ammo_bar_enabled then
+				loadout_dynamic.offset[2] = loadout_dynamic.offset[2] - 8
+			end
 
 			local hp_bar_scale_x = mod:get(mod.SETTING_NAMES.TEAM_UI_HP_BAR_SCALE_WIDTH) / 100
 			local hp_bar_scale_y = mod:get(mod.SETTING_NAMES.TEAM_UI_HP_BAR_SCALE_HEIGHT) / 100
@@ -360,20 +364,23 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 			end
 		end
 
-		if (
-			self.has_ammo
-			or self.has_overcharge and mod:get(mod.SETTING_NAMES.TEAM_UI_AMMO_SHOW_HEAT)
-			)
-			and mod:get(mod.SETTING_NAMES.TEAM_UI_AMMO_BAR)
-		then
-			local ui_renderer = self.ui_renderer
-			local ui_scenegraph = self.ui_scenegraph
-			local input_service = self.input_manager:get_service("ingame_menu")
-			local render_settings = self.render_settings
-			UIRenderer.begin_pass(ui_renderer, ui_scenegraph, input_service, dt, nil, render_settings)
-			UIRenderer.draw_widget(ui_renderer, self._teammate_custom_widget)
-			UIRenderer.end_pass(ui_renderer)
-		end
+		-- adjust teammate ammo bar visibility
+		local draw_ammo_bar =
+			team_ui_ammo_bar_enabled
+			and (
+				self.has_ammo
+				or self.has_overcharge and mod:get(mod.SETTING_NAMES.TEAM_UI_AMMO_SHOW_HEAT)
+				)
+		self._teammate_custom_widget.content.ammo_bar.draw_ammo_bar = draw_ammo_bar
+		self._teammate_custom_widget.style.hp_bar_fg.color[1] = draw_ammo_bar and 255 or 0
+
+		local ui_renderer = self.ui_renderer
+		local ui_scenegraph = self.ui_scenegraph
+		local input_service = self.input_manager:get_service("ingame_menu")
+		local render_settings = self.render_settings
+		UIRenderer.begin_pass(ui_renderer, ui_scenegraph, input_service, dt, nil, render_settings)
+		UIRenderer.draw_widget(ui_renderer, self._teammate_custom_widget)
+		UIRenderer.end_pass(ui_renderer)
 	end
 end)
 

@@ -856,7 +856,7 @@ local teammate_important_icons_subs = mod.add_option(
 	    ["default_value"] = true,
 	},
 	"Important Icons",
-	"Show icons for Hand of Shallya, Natural Bond, the healshare talent, and when a player is on death's door.",
+	"Show icons for Hand of Shallya, Natural Bond, the healshare talent(icon is a hp pot), and when a player is on death's door.",
 	team_ui_group.sub_widgets
 )
 mod.add_option(

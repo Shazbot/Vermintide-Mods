@@ -87,7 +87,10 @@ mod.priority_buff_setting_name_to_buff_name = {
 	MARKUS_HUNTSMAN_ACTIVATED_ABILITY = { "markus_huntsman_activated_ability" },
 	KERILLIAN_SHADE_ACTIVATED_ABILITY = { "kerillian_shade_activated_ability" },
 	VICTOR_ZEALOT_ACTIVATED_ABILITY = { "victor_zealot_activated_ability" },
-	BARDIN_RANGER_ACTIVATED_ABILITY = { "bardin_ranger_activated_ability" },
+	BARDIN_RANGER_ACTIVATED_ABILITY = {
+		"bardin_ranger_activated_ability",
+		"bardin_ranger_activated_ability_duration",
+	},
 	BARDIN_IRONBREAKER_ACTIVATED_ABILITY = { "bardin_ironbreaker_activated_ability" },
 	BARDIN_SLAYER_ACTIVATED_ABILITY = { "bardin_slayer_activated_ability" },
 	HUNTSMAN_HS_CRIT_BUFF = { "markus_huntsman_passive_crit_buff" },

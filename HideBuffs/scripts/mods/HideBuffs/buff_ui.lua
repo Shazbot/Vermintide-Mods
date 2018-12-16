@@ -146,6 +146,8 @@ mod:hook(BuffUI, "draw", function(func, self, dt)
 			mod.reset_buff_widgets = false
 			self:_on_resolution_modified()
 		end
+
+		mod.custom_buffs_BuffUI_draw(self)
 	end)
 	return func(self, dt)
 end)

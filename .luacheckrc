@@ -28,7 +28,8 @@ globals = {
 	"VALID_TARGETS_PLAYERS_AND_BOTS", "DifficultySettings", "LevelEndView",
 	"EndScreenUI", "Color", "Vector2", "Vector3", "Gui", "World", "WwiseWorld",
 	"DefaultDifficulties", "UIGetFontHeight", "HeroViewStateLoot",
-	"PlayerUnitFirstPerson", "PlayerUnitMovementSettings",
+	"PlayerUnitFirstPerson", "PlayerUnitMovementSettings", "BuffTemplates",
+	"GenericAmmoUserExtension", "PlayerUnitHealthExtension",
 
 	"PriorityBuffUI",
 }

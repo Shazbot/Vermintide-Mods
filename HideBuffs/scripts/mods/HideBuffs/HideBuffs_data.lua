@@ -443,6 +443,57 @@ local player_ui_group =
 }
 mod_data.options_widgets:insert(8, player_ui_group)
 
+local custom_buffs_subs = mod.add_option(
+	"PLAYER_UI_CUSTOM_BUFFS_GROUP",
+	{
+		["widget_type"] = "group",
+	},
+	"Add New Buffs",
+	"Add some new custom buffs.",
+	player_ui_group.sub_widgets
+)
+
+mod.add_option(
+	"PLAYER_UI_CUSTOM_BUFFS_WOUNDED",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = true,
+	},
+	"Buff For Death's Door",
+	"Show a buff when about to die.",
+	custom_buffs_subs
+)
+mod.add_option(
+	"PLAYER_UI_CUSTOM_BUFFS_AMMO",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Buff For Gained Ammo",
+	"Show a buff that tracks ammo gained.",
+	custom_buffs_subs
+)
+mod.add_option(
+	"PLAYER_UI_CUSTOM_BUFFS_TEMP_HP",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Buff For Gained Temp HP",
+	"Show a buff that tracks temp HP gained.",
+	custom_buffs_subs
+)
+mod.add_option(
+	"PLAYER_UI_CUSTOM_BUFFS_DMG_TAKEN",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Buff For Recent Damage Taken",
+	"Show a buff that tracks temp recent damage taken.",
+	custom_buffs_subs
+)
+
 local ammo_counter_group_index = pl.tablex.find_if(mod_data.options_widgets,
 	function(option_widget)
 		return option_widget.setting_name == mod.SETTING_NAMES.AMMO_COUNTER_GROUP

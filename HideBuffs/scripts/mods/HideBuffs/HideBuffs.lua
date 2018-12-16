@@ -713,7 +713,25 @@ mod:hook(UnitFramesHandler, "update", function(func, self, ...)
 			end
 		end
 
-		unit_frame.widget.is_wounded = unit_frame.data.is_wounded
+		local is_wounded = unit_frame.data.is_wounded
+		unit_frame.widget.is_wounded = is_wounded
+
+		-- wounded buff handling for local player
+		if player_unit then
+			local buff_ext = ScriptUnit.extension(player_unit, "buff_system")
+
+			if unit_frame.widget.unit_frame_index == 1
+			and is_wounded
+			and mod:get(mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_WOUNDED)
+			then
+				buff_ext:add_buff("custom_wounded")
+			else
+				local wounded_buff = buff_ext:get_non_stacking_buff("custom_wounded")
+				if wounded_buff then
+					buff_ext:remove_buff(wounded_buff.id)
+				end
+			end
+		end
 
 		-- for debugging
 		-- unit_frame.widget.is_wounded = true
@@ -912,6 +930,7 @@ mod:dofile("scripts/mods/HideBuffs/second_buff_bar")
 mod:dofile("scripts/mods/HideBuffs/persistent_ammo_counter")
 mod:dofile("scripts/mods/HideBuffs/locked_and_loaded_compat")
 mod:dofile("scripts/mods/HideBuffs/faster_chest_opening")
+mod:dofile("scripts/mods/HideBuffs/custom_buffs")
 
 fassert(not mod.update, "Overwriting existing function!")
 mod.update = function()

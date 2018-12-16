@@ -281,6 +281,29 @@ end)()
 
 mod_data.options_widgets = {
 	{
+		["setting_name"] = mod.SETTING_NAMES.THREAT_MULTIPLIER,
+		["widget_type"] = "numeric",
+		["text"] = mod:localize("threat_multiplier"),
+		["tooltip"] = mod:localize("threat_multiplier_tooltip"),
+		["range"] = {0, 1},
+		["decimals_number"] = 1,
+		["default_value"] = 1,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.SPECIALS_NO_THREAT_DELAY,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("specials_no_threat_delay"),
+		["tooltip"] = mod:localize("specials_no_threat_delay_tooltip"),
+		["default_value"] = false,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.ALWAYS_SPECIALS,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("always_specials"),
+		["tooltip"] = mod:localize("always_specials_tooltip"),
+		["default_value"] = false,
+	},
+	{
 		["setting_name"] = mod.SETTING_NAMES.DISABLE_PATROLS,
 		["widget_type"] = "checkbox",
 		["text"] = mod:localize("disable_patrols"),
@@ -504,22 +527,6 @@ mod_data.options_widgets = {
 				["unit_text"] = " sec",
 				["default_value"] = 60,
 			},
-			{
-				["show_widget_condition"] = {3},
-				["setting_name"] = mod.SETTING_NAMES.ALWAYS_SPECIALS,
-				["widget_type"] = "checkbox",
-				["text"] = mod:localize("always_specials"),
-				["tooltip"] = mod:localize("always_specials_tooltip"),
-				["default_value"] = false,
-			},
-			{
-				["show_widget_condition"] = {3},
-				["setting_name"] = mod.SETTING_NAMES.SPECIALS_NO_THREAT_DELAY,
-				["widget_type"] = "checkbox",
-				["text"] = mod:localize("specials_no_threat_delay"),
-				["tooltip"] = mod:localize("specials_no_threat_delay_tooltip"),
-				["default_value"] = false,
-			},
 			specials_toggle_widget,
 			specials_weights_toggle_widget,
 		},
@@ -694,15 +701,6 @@ mod_data.options_widgets = {
 				["default_value"] = false,
 			},
 		},
-	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.THREAT_MULTIPLIER,
-		["widget_type"] = "numeric",
-		["text"] = mod:localize("threat_multiplier"),
-		["tooltip"] = mod:localize("threat_multiplier_tooltip"),
-		["range"] = {0, 1},
-		["decimals_number"] = 1,
-		["default_value"] = 1,
 	},
 }
 

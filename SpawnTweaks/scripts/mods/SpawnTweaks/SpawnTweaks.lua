@@ -402,7 +402,6 @@ end)
 
 --- Threat and intensity tweaking.
 mod:hook_safe(ConflictDirector, "calculate_threat_value", function(self)
-
 	self.threat_value = self.threat_value * mod:get(mod.SETTING_NAMES.THREAT_MULTIPLIER)
 	local threat_value = self.threat_value
 
@@ -410,8 +409,7 @@ mod:hook_safe(ConflictDirector, "calculate_threat_value", function(self)
 	self.delay_mini_patrol = self.delay_mini_patrol_threat_value < threat_value
 	self.delay_specials = self.delay_specials_threat_value < threat_value
 
-	if mod:get(mod.SETTING_NAMES.SPECIALS) == mod.SPECIALS.CUSTOMIZE
-	and mod:get(mod.SETTING_NAMES.SPECIALS_NO_THREAT_DELAY) then
+	if mod:get(mod.SETTING_NAMES.SPECIALS_NO_THREAT_DELAY) then
 		self.delay_specials = false
 	end
 end)
@@ -512,8 +510,7 @@ end)
 
 --- Specials always enabled.
 mod:hook(TerrorEventMixer.init_functions, "control_specials", function(func, event, element, t)
-	if mod:get(mod.SETTING_NAMES.SPECIALS) == mod.SPECIALS.CUSTOMIZE
-	and mod:get(mod.SETTING_NAMES.ALWAYS_SPECIALS) then
+	if mod:get(mod.SETTING_NAMES.ALWAYS_SPECIALS) then
 		element.enable = true
 	end
 
@@ -522,10 +519,11 @@ end)
 
 --- Specials always enabled.
 mod:hook(SpecialsPacing, "update", function(func, self, t, alive_specials, specials_population, player_positions)
+	if mod:get(mod.SETTING_NAMES.ALWAYS_SPECIALS) then
+		specials_population = 1
+	end
+
 	if mod:get(mod.SETTING_NAMES.SPECIALS) == mod.SPECIALS.CUSTOMIZE then
-		if mod:get(mod.SETTING_NAMES.ALWAYS_SPECIALS) then
-			specials_population = 1
-		end
 		if mod.are_all_specials_disabled() then
 			return
 		end

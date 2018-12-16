@@ -132,15 +132,17 @@ return {
 	},
 	safe_zone_delay_min_tooltip = {
 		en = "Minimal delay after start of the map and when timed specials start to spawn."
+			.."\nDefault is 30."
 	},
 	safe_zone_delay_max = {
 		en = "Max Delay After Leaving Safe Zone"
 	},
 	safe_zone_delay_max_tooltip = {
 		en = "Maximal delay after start of the map and when timed specials start to spawn."
+			.."\nDefault is 60."
 	},
 	always_specials = {
-		en = "Keep Spawning During Events"
+		en = "Keep Spawning Timed Specials During Events"
 	},
 	always_specials_tooltip = {
 		en = "Some events disable timed specials spawning, choose to keep them always spawning."
@@ -149,7 +151,7 @@ return {
 		en = "Specials Ignore Threat"
 	},
 	specials_no_threat_delay_tooltip = {
-		en = "Keep spawning specials even when threat(what the game uses to calculate current intensity for dynamic difficulty scaling) is high."
+		en = "Keep spawning specials even when threat (what the game uses to calculate current intensity for dynamic difficulty scaling) is high."
 	},
 	max_one_boss = {
 		en = "Only One Random Boss"
@@ -202,6 +204,7 @@ return {
 	},
 	threat_multiplier_tooltip = {
 		en = "Decrease global threat and intensity level so the game increases spawn rates."
+			.."\nDefault is 1."
 	},
 	max_grunts = {
 		en = "Max Horde Trash"

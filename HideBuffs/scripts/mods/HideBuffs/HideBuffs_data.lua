@@ -110,7 +110,6 @@ for setting_name, _ in pairs( mod.priority_buff_setting_name_to_buff_name ) do
 	)
 end
 
--- Everything here is optional. You can remove unused parts.
 local mod_data = {
 	name = "UI Tweaks",
 	description = mod:localize("mod_description"),

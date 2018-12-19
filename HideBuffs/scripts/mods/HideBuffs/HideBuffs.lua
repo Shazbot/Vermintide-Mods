@@ -120,6 +120,7 @@ mod.team_grimoire_debuff_divider_content_change_fun =  function (content, style)
 	local grim_progress = math.max(internal_bar_value, actual_active_percentage)
 	local offset = style.offset
 	offset[1] = mod.health_bar_offset[1] + mod.hp_bar_size[1] * grim_progress + mod.hp_bar_offset_x
+	offset[2] = mod.health_bar_offset[2] + mod.hp_bar_offset_y
 end
 
 mod.team_grimoire_bar_content_change_fun = function (content, style)
@@ -135,6 +136,7 @@ mod.team_grimoire_bar_content_change_fun = function (content, style)
 	uvs[1][1] = grim_progress
 	size[1] = bar_length * (1 - grim_progress)
 	offset[1] = 2 + mod.health_bar_offset[1] + bar_length * grim_progress + mod.hp_bar_offset_x
+	offset[2] = mod.health_bar_offset[2] + mod.hp_bar_offset_y
 end
 
 mod.team_ability_bar_content_change_fun = function (content, style)
@@ -217,6 +219,7 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 			local hp_bar_offset_x = mod:get(mod.SETTING_NAMES.TEAM_UI_HP_BAR_OFFSET_X)
 			local hp_bar_offset_y = mod:get(mod.SETTING_NAMES.TEAM_UI_HP_BAR_OFFSET_Y)
 			mod.hp_bar_offset_x = hp_bar_offset_x
+			mod.hp_bar_offset_y = hp_bar_offset_y
 
 			local def_dynamic_w = self:_widget_by_feature("default", "dynamic")
 			def_dynamic_w.style.ammo_indicator.offset[1] = 60 + delta_x + hp_bar_offset_x

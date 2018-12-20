@@ -108,13 +108,13 @@ mod.localizations:update({
 		en = "Tweaks related to the ammo counter."
 	},
 	AMMO_COUNTER_OFFSET_X = {
-		en = "X Offset"
+		en = "Offset X"
 	},
 	AMMO_COUNTER_OFFSET_X_T = {
 		en = "Optionally offset on the x axis."
 	},
 	AMMO_COUNTER_OFFSET_Y = {
-		en = "Y Offset"
+		en = "Offset Y"
 	},
 	AMMO_COUNTER_OFFSET_Y_T = {
 		en = "Optionally offset on the y axis."
@@ -126,13 +126,13 @@ mod.localizations:update({
 		en = "Tweaks related to active buffs indicators."
 	},
 	BUFFS_OFFSET_X = {
-		en = "X Offset"
+		en = "Offset X"
 	},
 	BUFFS_OFFSET_X_T = {
 		en = "Optionally offset on the x axis."
 	},
 	BUFFS_OFFSET_Y = {
-		en = "Y Offset"
+		en = "Offset Y"
 	},
 	BUFFS_OFFSET_Y_T = {
 		en = "Optionally offset on the y axis."
@@ -162,13 +162,13 @@ mod.localizations:update({
 		en = "Tweaks related to the teammate portraits."
 	},
 	TEAM_UI_OFFSET_X = {
-		en = "X Offset"
+		en = "Offset X"
 	},
 	TEAM_UI_OFFSET_X_T = {
 		en = "Optionally offset on the x axis."
 	},
 	TEAM_UI_OFFSET_Y = {
-		en = "Y Offset"
+		en = "Offset Y"
 	},
 	TEAM_UI_OFFSET_Y_T = {
 		en = "Optionally offset on the y axis."
@@ -195,13 +195,13 @@ mod.localizations:update({
 		en = "Tweaks related to the chat UI."
 	},
 	CHAT_OFFSET_X = {
-		en = "X Offset"
+		en = "Offset X"
 	},
 	CHAT_OFFSET_X_T = {
 		en = "Optionally offset on the x axis."
 	},
 	CHAT_OFFSET_Y = {
-		en = "Y Offset"
+		en = "Offset Y"
 	},
 	CHAT_OFFSET_Y_T = {
 		en = "Optionally offset on the y axis."
@@ -225,25 +225,25 @@ mod.localizations:update({
 		en = "Scale the portraits."
 	},
 	TEAM_UI_PORTRAIT_OFFSET_X = {
-		en = "Portraits X Offset"
+		en = "Portraits Offset X"
 	},
 	TEAM_UI_PORTRAIT_OFFSET_X_T = {
 		en = "Optionally offset the portraits on the x axis."
 	},
 	TEAM_UI_PORTRAIT_OFFSET_Y = {
-		en = "Portraits Y Offset"
+		en = "Portraits Offset Y"
 	},
 	TEAM_UI_PORTRAIT_OFFSET_Y_T = {
 		en = "Optionally offset the portraits on the y axis."
 	},
 	TEAM_UI_NAME_OFFSET_X = {
-		en = "Player Name X Offset"
+		en = "Player Name Offset X"
 	},
 	TEAM_UI_NAME_OFFSET_X_T = {
 		en = "Optionally offset the player name on the x axis."
 	},
 	TEAM_UI_NAME_OFFSET_Y = {
-		en = "Player Name Y Offset"
+		en = "Player Name Offset Y"
 	},
 	TEAM_UI_NAME_OFFSET_Y_T = {
 		en = "Optionally offset the player name on the y axis."
@@ -256,13 +256,13 @@ mod.localizations:update({
 			.."\nCustomize below what buffs go into this bar."
 	},
 	SECOND_BUFF_BAR_OFFSET_X = {
-		en = "X Offset"
+		en = "Offset X"
 	},
 	SECOND_BUFF_BAR_OFFSET_X_T = {
 		en = "Optionally offset the Priority Buff Bar on the x axis."
 	},
 	SECOND_BUFF_BAR_OFFSET_Y = {
-		en = "Y Offset"
+		en = "Offset Y"
 	},
 	SECOND_BUFF_BAR_OFFSET_Y_T = {
 		en = "Optionally offset the Priority Buff Bar on the y axis."
@@ -274,13 +274,13 @@ mod.localizations:update({
 		en = "Tweaks related to the player UI on the bottom of the screen."
 	},
 	PLAYER_UI_OFFSET_X = {
-		en = "X Offset"
+		en = "Offset X"
 	},
 	PLAYER_UI_OFFSET_X_T = {
 		en = "Optionally offset the Player UI on the x axis."
 	},
 	PLAYER_UI_OFFSET_Y = {
-		en = "Y Offset"
+		en = "Offset Y"
 	},
 	PLAYER_UI_OFFSET_Y_T = {
 		en = "Optionally offset the Player UI on the y axis."

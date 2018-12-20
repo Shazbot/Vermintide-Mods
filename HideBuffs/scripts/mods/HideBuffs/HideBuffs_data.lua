@@ -866,6 +866,15 @@ mod.add_option(
 	team_ui_group.sub_widgets,
 	8
 )
+local team_ui_item_slots_subs = mod.add_option(
+	"TEAM_UI_ITEM_SLOTS_GROUP",
+	{
+		["widget_type"] = "group",
+	},
+	"Item Slots",
+	"Tweaks related to the teammate item slots.",
+	team_ui_group.sub_widgets
+)
 mod.add_option(
 	"TEAM_UI_ITEM_SLOTS_OFFSET_X",
 	{
@@ -874,9 +883,9 @@ mod.add_option(
 		["unit_text"] = "px",
 	    ["default_value"] = 0,
 	},
-	"Item Slots Offset X",
+	"Offset X",
 	"Optionally offset the item slots on the x axis.",
-	team_ui_group.sub_widgets
+	team_ui_item_slots_subs
 )
 mod.add_option(
 	"TEAM_UI_ITEM_SLOTS_OFFSET_Y",
@@ -886,9 +895,33 @@ mod.add_option(
 		["unit_text"] = "px",
 	    ["default_value"] = 0,
 	},
-	"Item Slots Offset Y",
+	"Offset Y",
 	"Optionally offset the item slots on the y axis.",
-	team_ui_group.sub_widgets
+	team_ui_item_slots_subs
+)
+mod.add_option(
+	"TEAM_UI_ITEM_SLOTS_SIZE",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 100},
+		["unit_text"] = "px",
+	    ["default_value"] = 25,
+	},
+	"Size",
+	"Size of the item slots.\nDefault is 25.",
+	team_ui_item_slots_subs
+)
+mod.add_option(
+	"TEAM_UI_ITEM_SLOTS_SPACING",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 300},
+		["unit_text"] = "px",
+	    ["default_value"] = 35,
+	},
+	"Spacing",
+	"Distance between slots.\nDefault is 35.",
+	team_ui_item_slots_subs
 )
 mod.add_option(
 	"TEAM_UI_PORTRAIT_ALPHA",

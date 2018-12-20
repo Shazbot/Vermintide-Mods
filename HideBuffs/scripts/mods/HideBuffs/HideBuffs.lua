@@ -148,6 +148,12 @@ mod.team_ability_bar_content_change_fun = function (content, style)
 	size[1] = bar_length * ability_progress
 end
 
+mod.item_slot_widgets = {
+	"item_slot_bg_",
+	"item_slot_frame_",
+	"item_slot_highlight_",
+}
+
 mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 	local team_ui_ammo_bar_enabled = mod:get(mod.SETTING_NAMES.TEAM_UI_AMMO_BAR)
 	if self._mod_frame_index then
@@ -193,6 +199,22 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 
 			if team_ui_ammo_bar_enabled then
 				loadout_dynamic.offset[2] = loadout_dynamic.offset[2] - 8
+			end
+
+			local start_x = -35
+			local item_spacing = mod:get(mod.SETTING_NAMES.TEAM_UI_ITEM_SLOTS_SPACING)
+			local item_size = mod:get(mod.SETTING_NAMES.TEAM_UI_ITEM_SLOTS_SIZE) + 4
+
+			for i = 1, 3 do
+				loadout_dynamic.style["item_slot_"..i].offset[1] = start_x+2.5+item_spacing*(i-1)
+				loadout_dynamic.style["item_slot_"..i].size[1] = item_size-4
+				loadout_dynamic.style["item_slot_"..i].size[2] = item_size-4
+
+				for _, item_slot_name in ipairs( mod.item_slot_widgets ) do
+					loadout_dynamic.style[item_slot_name..i].offset[1] = start_x+item_spacing*(i-1)
+					loadout_dynamic.style[item_slot_name..i].size[1] = item_size
+					loadout_dynamic.style[item_slot_name..i].size[2] = item_size
+				end
 			end
 
 			local hp_bar_scale_x = mod:get(mod.SETTING_NAMES.TEAM_UI_HP_BAR_SCALE_WIDTH) / 100

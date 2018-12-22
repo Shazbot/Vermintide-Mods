@@ -1,6 +1,4 @@
-local mod = get_mod("AllHats") -- luacheck: ignore get_mod
-
--- luacheck: globals ItemMasterList table get_mod PlayFabMirror Managers
+local mod = get_mod("AllHats")
 
 mod.loadout_cache = {}
 
@@ -71,3 +69,19 @@ mod.update = function()
 		end)
 	end
 end
+
+mod:hook_origin(AttachmentUtils, "link", function(world, source, target, node_linking)
+	for _, link_data in ipairs(node_linking) do
+		local source_node = link_data.source
+		local target_node = link_data.target
+
+		local target_node_valid = type(target_node) ~= "string" and true or Unit.has_node(target, target_node)
+		local source_node_valid = type(source_node) ~= "string" and true or Unit.has_node(source, source_node)
+		if target_node_valid and source_node_valid then
+			local source_node_index = (type(source_node) == "string" and Unit.node(source, source_node)) or source_node
+			local target_node_index = (type(target_node) == "string" and Unit.node(target, target_node)) or target_node
+
+			World.link_unit(world, target, target_node_index, source, source_node_index)
+		end
+	end
+end)

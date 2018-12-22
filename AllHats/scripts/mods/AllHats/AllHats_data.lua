@@ -1,4 +1,4 @@
-local mod = get_mod("AllHats") -- luacheck: ignore get_mod
+local mod = get_mod("AllHats")
 
 local mod_data = {
 	name = "AllHats",

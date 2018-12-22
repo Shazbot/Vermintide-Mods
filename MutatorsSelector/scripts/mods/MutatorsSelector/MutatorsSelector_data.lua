@@ -1,6 +1,4 @@
-local mod = get_mod("MutatorsSelector") -- luacheck: ignore get_mod
-
--- luacheck: globals Localize MutatorTemplates
+local mod = get_mod("MutatorsSelector")
 
 local mod_data = {
 	name = mod:localize("mod_name"),

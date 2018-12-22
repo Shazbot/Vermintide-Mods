@@ -30,6 +30,7 @@ globals = {
 	"DefaultDifficulties", "UIGetFontHeight", "HeroViewStateLoot",
 	"PlayerUnitFirstPerson", "PlayerUnitMovementSettings", "BuffTemplates",
 	"GenericAmmoUserExtension", "PlayerUnitHealthExtension",
+	"MutatorHandler", "MutatorTemplates", "AttachmentUtils",
 
 	"PriorityBuffUI",
 }

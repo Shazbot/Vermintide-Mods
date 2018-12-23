@@ -1036,6 +1036,36 @@ mod.add_option(
 	"Optionally offset the icons on the y axis.",
 	teammate_important_icons_subs
 )
+mod.add_option(
+	"TEAM_UI_ICONS_HAND_OF_SHALLYA",
+	{
+		["widget_type"] = "checkbox",
+	    ["default_value"] = true,
+	},
+	"Show Hand of Shallya Icon",
+	"Show an icon for Hand of Shallya.",
+	teammate_important_icons_subs
+)
+mod.add_option(
+	"TEAM_UI_ICONS_HEALSHARE",
+	{
+		["widget_type"] = "checkbox",
+	    ["default_value"] = true,
+	},
+	"Show Heal Share Talent Icon",
+	"Show an icon for the heal share talent.",
+	teammate_important_icons_subs
+)
+mod.add_option(
+	"TEAM_UI_ICONS_NATURAL_BOND",
+	{
+		["widget_type"] = "checkbox",
+	    ["default_value"] = false,
+	},
+	"Show Natural Bond Icon",
+	"Show an icon for Natural Bond.",
+	teammate_important_icons_subs
+)
 
 local priority_buff_bar_group_index = pl.tablex.find_if(mod_data.options_widgets,
 	function(option_widget)

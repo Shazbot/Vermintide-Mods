@@ -733,14 +733,22 @@ mod:hook(UnitFramesHandler, "update", function(func, self, ...)
 
 		local buff_extension = ScriptUnit.has_extension(player_unit, "buff_system")
 		if buff_extension then
-			unit_frame.widget.has_natural_bond = buff_extension:has_buff_type("trait_necklace_no_healing_health_regen")
-			unit_frame.widget.has_hand_of_shallya = buff_extension:has_buff_type("trait_necklace_heal_self_on_heal_other")
+			unit_frame.widget.has_natural_bond = false
+			if mod:get(mod.SETTING_NAMES.TEAM_UI_ICONS_NATURAL_BOND) then
+				unit_frame.widget.has_natural_bond = buff_extension:has_buff_type("trait_necklace_no_healing_health_regen")
+			end
+			unit_frame.widget.has_hand_of_shallya = false
+			if mod:get(mod.SETTING_NAMES.TEAM_UI_ICONS_HAND_OF_SHALLYA) then
+				unit_frame.widget.has_hand_of_shallya = buff_extension:has_buff_type("trait_necklace_heal_self_on_heal_other")
+			end
 
 			unit_frame.widget.has_healshare_talent = false
-			for _, hs_buff_name in ipairs( mod.healshare_buff_names ) do
-				if buff_extension:has_buff_type(hs_buff_name) then
-					unit_frame.widget.has_healshare_talent = true
-					break
+			if mod:get(mod.SETTING_NAMES.TEAM_UI_ICONS_HEALSHARE) then
+				for _, hs_buff_name in ipairs( mod.healshare_buff_names ) do
+					if buff_extension:has_buff_type(hs_buff_name) then
+						unit_frame.widget.has_healshare_talent = true
+						break
+					end
 				end
 			end
 		end

@@ -431,6 +431,33 @@ local player_ui_group =
 }
 mod_data.options_widgets:insert(8, player_ui_group)
 
+mod.add_option(
+	"PLAYER_UI_PLAYER_PORTRAIT_OFFSET_X",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1000, 1000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Player Portrait Offset X",
+	"Optionally offset the player portrait on the x axis.",
+	player_ui_group.sub_widgets,
+	2
+)
+mod.add_option(
+	"PLAYER_UI_PLAYER_PORTRAIT_OFFSET_Y",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1000, 1000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Player Portrait Offset Y",
+	"Optionally offset the player portrait on the y axis.",
+	player_ui_group.sub_widgets,
+	3
+)
+
 local player_item_slots_subs = mod.add_option(
 	"PLAYER_ITEM_SLOTS_GROUP",
 	{

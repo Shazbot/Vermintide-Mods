@@ -505,6 +505,11 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 				self:_set_widget_dirty(status_icon_widget)
 			end
 
+			local player_portrait_x = mod:get(mod.SETTING_NAMES.PLAYER_UI_PLAYER_PORTRAIT_OFFSET_X)
+			local player_portrait_y = mod:get(mod.SETTING_NAMES.PLAYER_UI_PLAYER_PORTRAIT_OFFSET_Y)
+			status_icon_widget.offset[1] = player_portrait_x
+			status_icon_widget.offset[2] = player_portrait_y
+
 			local def_static_widget = self:_widget_by_feature("default", "static")
 			local def_static_widget_content = def_static_widget.content
 			if (hide_player_portrait and def_static_widget_content.visible)
@@ -515,14 +520,21 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 				self:_set_widget_dirty(def_static_widget)
 			end
 
-			local portrait_widget_content = self._portrait_widgets.portrait_static.content
+			def_static_widget.offset[1] = player_portrait_x
+			def_static_widget.offset[2] = player_portrait_y
+
+			local portrait_widget = self._portrait_widgets.portrait_static
+			local portrait_widget_content = portrait_widget.content
 			if (hide_player_portrait and portrait_widget_content.visible)
 			or (hide_player_portrait and portrait_widget_content.visible == nil)
 			or (not hide_player_portrait and not portrait_widget_content.visible)
 			then
 				portrait_widget_content.visible = not hide_player_portrait
-				self:_set_widget_dirty(self._portrait_widgets.portrait_static)
+				self:_set_widget_dirty(portrait_widget)
 			end
+
+			portrait_widget.offset[1] = player_portrait_x
+			portrait_widget.offset[2] = player_portrait_y
 		end
 
 		-- changes to the non-player portraits UI

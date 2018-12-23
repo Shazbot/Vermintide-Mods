@@ -1173,4 +1173,37 @@ mod.add_option(
 	2
 )
 
+local other_elements_subs = mod.add_option(
+	"OTHER_ELEMENTS_GROUP",
+	{
+		["widget_type"] = "group",
+	},
+	"Other UI Elements",
+	"Tweaks related to any other UI elements."
+)
+mod.add_option(
+	"OTHER_ELEMENTS_SUBTITLES_OFFSET_X",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1000, 1000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Subtitles Offset X",
+	"Optionally offset the subtitles on the x axis.",
+	other_elements_subs
+)
+mod.add_option(
+	"OTHER_ELEMENTS_SUBTITLES_OFFSET_Y",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1000, 1000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Subtitles Offset Y",
+	"Optionally offset the subtitles on the y axis.",
+	other_elements_subs
+)
+
 return mod_data

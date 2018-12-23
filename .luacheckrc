@@ -31,6 +31,7 @@ globals = {
 	"PlayerUnitFirstPerson", "PlayerUnitMovementSettings", "BuffTemplates",
 	"GenericAmmoUserExtension", "PlayerUnitHealthExtension",
 	"MutatorHandler", "MutatorTemplates", "AttachmentUtils",
+	"SubtitleGui",
 
 	"PriorityBuffUI",
 }

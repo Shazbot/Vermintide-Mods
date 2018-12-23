@@ -975,6 +975,15 @@ mod:hook(PlayerHud, "set_current_location", function(func, self, ...)
 	return func(self, ...)
 end)
 
+--- Reposition the subtitles.
+mod:hook_safe(SubtitleGui, "update", function(self)
+	if not self.subtitle_widget.offset then
+		self.subtitle_widget.offset = { 0, 0, 0 }
+	end
+	self.subtitle_widget.offset[1] = mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_SUBTITLES_OFFSET_X)
+	self.subtitle_widget.offset[2] = mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_SUBTITLES_OFFSET_Y)
+end)
+
 mod:dofile("scripts/mods/HideBuffs/teammate_widget_definitions")
 mod:dofile("scripts/mods/HideBuffs/buff_ui")
 mod:dofile("scripts/mods/HideBuffs/ability_ui")

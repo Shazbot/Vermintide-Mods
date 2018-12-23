@@ -45,21 +45,51 @@ mod:hook(EquipmentUI, "update", function(func, self, ...)
 			self:_set_widget_visibility(self._slot_widgets[2], weapon_slots_visible)
 		end
 
+		for i = 1, #self._slot_widgets do
+			-- keep original offsets cached
+			if not self._slot_widgets[i]._hb_mod_offset_cache then
+				self._slot_widgets[i]._hb_mod_offset_cache = table.clone(self._slot_widgets[i].offset)
+			end
+
+			-- change size
+			local item_slot_size = mod:get(mod.SETTING_NAMES.PLAYER_ITEM_SLOTS_SIZE)
+			self._slot_widgets[i].style.texture_icon.texture_size[1] = item_slot_size
+			self._slot_widgets[i].style.texture_icon.texture_size[2] = item_slot_size
+
+			self._slot_widgets[i].style.texture_background.texture_size[1] = item_slot_size
+			self._slot_widgets[i].style.texture_background.texture_size[2] = item_slot_size
+
+			self._slot_widgets[i].style.texture_highlight.texture_size[1] = item_slot_size-4
+			self._slot_widgets[i].style.texture_highlight.texture_size[2] = item_slot_size+6
+
+			self._slot_widgets[i].style.texture_selected.texture_size[1] = item_slot_size-2
+			self._slot_widgets[i].style.texture_selected.texture_size[2] = item_slot_size-18
+
+			self._slot_widgets[i].style.texture_frame.size[1] = item_slot_size+6
+			self._slot_widgets[i].style.texture_frame.size[2] = item_slot_size+6
+
+			local resize_offset = -(item_slot_size - 40)/2
+			self._slot_widgets[i].style.texture_frame.offset[1] = resize_offset
+			self._slot_widgets[i].style.texture_frame.offset[2] = resize_offset
+		end
+
 		-- reposition the other item slots
 		if mod.reposition_weapon_slots then
 			mod.reposition_weapon_slots = false
+
 			local num_slots = mod:get(mod.SETTING_NAMES.REPOSITION_WEAPON_SLOTS)
 			if not mod:get(mod.SETTING_NAMES.HIDE_WEAPON_SLOTS) then
 				num_slots = 0
 			end
 			for i = 1, #self._slot_widgets do
-				if not self._slot_widgets[i]._hb_mod_offset_cache then
-					self._slot_widgets[i]._hb_mod_offset_cache = table.clone(self._slot_widgets[i].offset)
-				end
-				self._slot_widgets[i].offset = self._slot_widgets[i]._hb_mod_offset_cache
-			end
-			for i = 3, #self._slot_widgets do
-				self._slot_widgets[i].offset = self._slot_widgets[i+num_slots]._hb_mod_offset_cache
+				local slot_index = i > 2 and i+num_slots or i
+				self._slot_widgets[i].offset = table.clone(self._slot_widgets[slot_index]._hb_mod_offset_cache)
+
+				self._slot_widgets[i].offset[1] = self._slot_widgets[i].offset[1] + mod:get(mod.SETTING_NAMES.PLAYER_ITEM_SLOTS_OFFSET_X)
+				self._slot_widgets[i].offset[2] = self._slot_widgets[i].offset[2] + mod:get(mod.SETTING_NAMES.PLAYER_ITEM_SLOTS_OFFSET_Y)
+
+				self._slot_widgets[i].offset[1] = self._slot_widgets[i].offset[1] + i*mod:get(mod.SETTING_NAMES.PLAYER_ITEM_SLOTS_SPACING)
+
 				self:_set_widget_dirty(self._slot_widgets[i])
 			end
 		end

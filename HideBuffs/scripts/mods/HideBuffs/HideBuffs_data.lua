@@ -420,27 +420,87 @@ local player_ui_group =
 			["unit_text"] = "px",
 		    ["default_value"] = 0,
 		},
-		{
-			["setting_name"] = mod.SETTING_NAMES.HIDE_WEAPON_SLOTS,
-			["widget_type"] = "checkbox",
-			["text"] = mod:localize("HIDE_WEAPON_SLOTS"),
-			["tooltip"] = mod:localize("HIDE_WEAPON_SLOTS_T"),
-			["default_value"] = false,
-			["sub_widgets"] = {
-				{
-					["setting_name"] = mod.SETTING_NAMES.REPOSITION_WEAPON_SLOTS,
-					["widget_type"] = "numeric",
-					["text"] = mod:localize("REPOSITION_WEAPON_SLOTS"),
-					["tooltip"] = mod:localize("REPOSITION_WEAPON_SLOTS_T"),
-					["range"] = {-2, 0},
-					["unit_text"] = " slots",
-				    ["default_value"] = -2,
-				},
-			},
-		},
 	},
 }
 mod_data.options_widgets:insert(8, player_ui_group)
+
+local player_item_slots_subs = mod.add_option(
+	"PLAYER_ITEM_SLOTS_GROUP",
+	{
+		["widget_type"] = "group",
+	},
+	"Item Slots",
+	"Tweaks related to the player item slots.",
+	player_ui_group.sub_widgets
+)
+table.insert(player_item_slots_subs,
+	{
+		["setting_name"] = mod.SETTING_NAMES.HIDE_WEAPON_SLOTS,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("HIDE_WEAPON_SLOTS"),
+		["tooltip"] = mod:localize("HIDE_WEAPON_SLOTS_T"),
+		["default_value"] = false,
+		["sub_widgets"] = {
+			{
+				["setting_name"] = mod.SETTING_NAMES.REPOSITION_WEAPON_SLOTS,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("REPOSITION_WEAPON_SLOTS"),
+				["tooltip"] = mod:localize("REPOSITION_WEAPON_SLOTS_T"),
+				["range"] = {-2, 0},
+				["unit_text"] = " slots",
+			    ["default_value"] = -1,
+			},
+		},
+	}
+)
+mod.add_option(
+	"PLAYER_ITEM_SLOTS_OFFSET_X",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1000, 1000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Offset X",
+	"Optionally offset the player item slots on the x axis.",
+	player_item_slots_subs
+)
+mod.add_option(
+	"PLAYER_ITEM_SLOTS_OFFSET_Y",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1000, 1000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Offset Y",
+	"Optionally offset the player item slots on the y axis.",
+	player_item_slots_subs
+)
+mod.add_option(
+	"PLAYER_ITEM_SLOTS_SIZE",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 300},
+		["unit_text"] = "px",
+	    ["default_value"] = 40,
+	},
+	"Size",
+	"Size of the item slots.\nDefault is 40.",
+	player_item_slots_subs
+)
+mod.add_option(
+	"PLAYER_ITEM_SLOTS_SPACING",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-500, 500},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Adjust Spacing",
+	"Adjust the spacing between item slots.",
+	player_item_slots_subs
+)
 
 local custom_buffs_subs = mod.add_option(
 	"PLAYER_UI_CUSTOM_BUFFS_GROUP",

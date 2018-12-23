@@ -35,7 +35,14 @@ mod.on_setting_changed = function(setting_name)
 		mod.change_slot_visibility = true
 		mod.reposition_weapon_slots = true
 	end
-	if setting_name == mod.SETTING_NAMES.REPOSITION_WEAPON_SLOTS then
+
+	if pl.List({
+			mod.SETTING_NAMES.REPOSITION_WEAPON_SLOTS,
+			mod.SETTING_NAMES.PLAYER_ITEM_SLOTS_SPACING,
+			mod.SETTING_NAMES.PLAYER_ITEM_SLOTS_OFFSET_X,
+			mod.SETTING_NAMES.PLAYER_ITEM_SLOTS_OFFSET_Y,
+		}):contains(setting_name)
+	then
 		mod.reposition_weapon_slots = true
 	end
 
@@ -744,16 +751,17 @@ mod:hook(UnitFramesHandler, "update", function(func, self, ...)
 		-- wounded buff handling for local player
 		if player_unit then
 			local buff_ext = ScriptUnit.extension(player_unit, "buff_system")
-
-			if unit_frame.widget.unit_frame_index == 1
-			and is_wounded
-			and mod:get(mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_WOUNDED)
-			then
-				buff_ext:add_buff("custom_wounded")
-			else
-				local wounded_buff = buff_ext:get_non_stacking_buff("custom_wounded")
-				if wounded_buff then
-					buff_ext:remove_buff(wounded_buff.id)
+			if buff_ext then
+				if unit_frame.widget.unit_frame_index == 1
+				and is_wounded
+				and mod:get(mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_WOUNDED)
+				then
+					buff_ext:add_buff("custom_wounded")
+				else
+					local wounded_buff = buff_ext:get_non_stacking_buff("custom_wounded")
+					if wounded_buff then
+						buff_ext:remove_buff(wounded_buff.id)
+					end
 				end
 			end
 		end

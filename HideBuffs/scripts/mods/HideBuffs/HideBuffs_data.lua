@@ -1205,5 +1205,29 @@ mod.add_option(
 	"Optionally offset the subtitles on the y axis.",
 	other_elements_subs
 )
+mod.add_option(
+	"OTHER_ELEMENTS_HEAT_BAR_OFFSET_X",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1000, 1000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Heat Bar Offset X",
+	"Optionally offset the heat bar on the x axis.",
+	other_elements_subs
+)
+mod.add_option(
+	"OTHER_ELEMENTS_HEAT_BAR_OFFSET_Y",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1000, 1000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Heat Bar Offset Y",
+	"Optionally offset the heat bar on the y axis.",
+	other_elements_subs
+)
 
 return mod_data

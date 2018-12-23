@@ -984,6 +984,15 @@ mod:hook_safe(SubtitleGui, "update", function(self)
 	self.subtitle_widget.offset[2] = mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_SUBTITLES_OFFSET_Y)
 end)
 
+--- Reposition the heat bar.
+mod:hook_safe(OverchargeBarUI, "update", function(self)
+	if not self.charge_bar.offset then
+		self.charge_bar.offset = { 0, 0, 0 }
+	end
+	self.charge_bar.offset[1] = mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_HEAT_BAR_OFFSET_X)
+	self.charge_bar.offset[2] = mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_HEAT_BAR_OFFSET_Y)
+end)
+
 mod:dofile("scripts/mods/HideBuffs/teammate_widget_definitions")
 mod:dofile("scripts/mods/HideBuffs/buff_ui")
 mod:dofile("scripts/mods/HideBuffs/ability_ui")

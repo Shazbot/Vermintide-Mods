@@ -95,6 +95,13 @@ mod.priority_buff_setting_name_to_buff_name = {
 	BARDIN_SLAYER_ACTIVATED_ABILITY = { "bardin_slayer_activated_ability" },
 	HUNTSMAN_HS_CRIT_BUFF = { "markus_huntsman_passive_crit_buff" },
 	HUNTSMAN_HS_RELOAD_SPEED_BUFF = { "markus_huntsman_headshots_increase_reload_speed_buff" },
+	TWITCH_BUFFS = {
+		"twitch_no_overcharge_no_ammo_reloads",
+		"twitch_health_regen",
+		"twitch_health_degen",
+		"twitch_grimoire_health_debuff",
+		"twitch_power_boost_dismember",
+	},
 }
 
 local priority_buffs_group_subwidgets = {}

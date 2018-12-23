@@ -395,6 +395,9 @@ mod.localizations:update({
 	HUNTSMAN_HS_RELOAD_SPEED_BUFF = {
 		en = "Huntsman Thrill of the Hunt"
 	},
+	TWITCH_BUFFS = {
+		en = "Twitch Intervention Buffs"
+	},
 
 })
 

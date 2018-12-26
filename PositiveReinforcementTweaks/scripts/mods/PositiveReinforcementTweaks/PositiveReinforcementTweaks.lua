@@ -1,10 +1,6 @@
-local mod = get_mod("PositiveReinforcementTweaks") -- luacheck: ignore get_mod
-
--- luacheck: globals UISceneGraph UILayer Colors table PositiveReinforcementUI UISettings
--- luacheck: globals UIRenderer UIAnimation
+local mod = get_mod("PositiveReinforcementTweaks")
 
 local pl = require'pl.import_into'()
-local tablex = require'pl.tablex'
 
 -- overwrite scenegraph definition to be on the left border of screen
 mod.get_reinforcement_scenegraph_definition = function()
@@ -233,6 +229,14 @@ mod:hook(PositiveReinforcementUI, "update", function (func, self, dt, t)
 	end
 	func(self, dt, t)
 	mod:hook_disable(UIRenderer, "draw_widget")
+end)
+
+--- Disable kill message for breeds.
+mod:hook(PositiveReinforcementUI, "event_add_positive_enforcement_kill", function(func, self, hash, is_local_player, event_type, profile_index, career_index, breed_name)
+	if breed_name and mod:get(mod.SETTING_NAMES[breed_name]) then
+		return
+	end
+	return func(self, hash, is_local_player, event_type, profile_index, career_index, breed_name)
 end)
 
 mod.reposition_widgets = true

@@ -56,4 +56,12 @@ return {
 	reverse_flow_tooltip = {
 		en = "Notifications will flow from bottom to top instead."
 	},
+	BREEDS_GROUP = {
+		en = "Disable By Breed"
+	},
+	BREEDS_GROUP_T = {
+		en = "Disable kill messages per breed."
+			.."\nNurge Sorcerer is the vortex dude, Corruptor is the Leech."
+			.."\nMauler is the hooded guy, Savage is the berzerker."
+	}
 }

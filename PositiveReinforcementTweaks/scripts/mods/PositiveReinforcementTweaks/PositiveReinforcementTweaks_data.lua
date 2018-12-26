@@ -1,4 +1,4 @@
-local mod = get_mod("PositiveReinforcementTweaks") -- luacheck: ignore get_mod
+local mod = get_mod("PositiveReinforcementTweaks")
 
 local mod_data = {
 	name = mod:localize("mod_name"),
@@ -13,6 +13,7 @@ mod.SETTING_NAMES = {
 	OFFSET_X = "offset_x",
 	OFFSET_Y = "offset_y",
 	REVERSE_FLOW = "reverse_flow",
+	BREEDS_GROUP = "BREEDS_GROUP",
 }
 
 mod.ALIGNMENTS = {
@@ -30,6 +31,48 @@ mod.ALIGNMENTS_LOOKUP = {
 	"right",
 	"center",
 }
+
+mod.killfeed_breeds = {
+	"skaven_storm_vermin",
+	"skaven_storm_vermin_with_shield",
+	"chaos_raider",
+	"chaos_berzerker",
+	"skaven_plague_monk",
+	"chaos_warrior",
+	"skaven_poison_wind_globadier",
+	"skaven_ratling_gunner",
+	"skaven_warpfire_thrower",
+	"chaos_corruptor_sorcerer",
+	"chaos_vortex_sorcerer",
+	"skaven_loot_rat",
+	"skaven_pack_master",
+	"skaven_gutter_runner",
+}
+
+local breen_name_to_localized = {
+	skaven_storm_vermin_with_shield = "Stormvermin with shield",
+	chaos_corruptor_sorcerer = "Lifeleech Sorcerer",
+}
+mod:hook("Localize", function(func, id, ...)
+	if breen_name_to_localized[id] then
+		return breen_name_to_localized[id]
+	end
+	return func(id, ...)
+end)
+
+local killfeed_breed_widgets = {}
+for _, breed_name in ipairs( mod.killfeed_breeds ) do
+	mod.SETTING_NAMES[breed_name] = breed_name
+	table.insert(killfeed_breed_widgets, {
+		["setting_name"] = mod.SETTING_NAMES[breed_name],
+		["widget_type"] = "checkbox",
+		["text"] = Localize(breed_name),
+		["tooltip"] = "Hide message for "..Localize(breed_name)..".",
+		["default_value"] = false,
+	})
+end
+
+mod:hook_disable("Localize")
 
 mod_data.options_widgets = {
 	{
@@ -90,6 +133,13 @@ mod_data.options_widgets = {
 		["range"] = {-2000, 2000},
 		["unit_text"] = "px",
 	    ["default_value"] = 0,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.BREEDS_GROUP,
+		["widget_type"] = "group",
+		["text"] = mod:localize("BREEDS_GROUP"),
+		["tooltip"] = mod:localize("BREEDS_GROUP_T"),
+		["sub_widgets"] = killfeed_breed_widgets,
 	},
 }
 

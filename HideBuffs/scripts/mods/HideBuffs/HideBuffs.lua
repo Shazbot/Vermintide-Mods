@@ -639,10 +639,16 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 			if def_static_widget then
 				local team_ui_name_offset_x = mod:get(mod.SETTING_NAMES.TEAM_UI_NAME_OFFSET_X)
 				local team_ui_name_offset_y = mod:get(mod.SETTING_NAMES.TEAM_UI_NAME_OFFSET_Y)
-				def_static_widget.style.player_name.offset[1] = 0 + team_ui_name_offset_x
-				def_static_widget.style.player_name.offset[2] = 110 + team_ui_name_offset_y
-				def_static_widget.style.player_name_shadow.offset[1] = 2 + team_ui_name_offset_x
-				def_static_widget.style.player_name_shadow.offset[2] = 110 - 2 + team_ui_name_offset_y
+
+				local def_static_widget_style = def_static_widget.style
+				def_static_widget_style.player_name.offset[1] = 0 + team_ui_name_offset_x
+				def_static_widget_style.player_name.offset[2] = 110 + team_ui_name_offset_y
+				def_static_widget_style.player_name_shadow.offset[1] = 2 + team_ui_name_offset_x
+				def_static_widget_style.player_name_shadow.offset[2] = 110 - 2 + team_ui_name_offset_y
+
+				local team_ui_player_name_alignment = mod.ALIGNMENTS_LOOKUP[mod:get(mod.SETTING_NAMES.TEAM_UI_PLAYER_NAME_ALIGNMENT)]
+				def_static_widget_style.player_name.horizontal_alignment = team_ui_player_name_alignment
+				def_static_widget_style.player_name_shadow.horizontal_alignment = team_ui_player_name_alignment
 			end
 		end
 	end)

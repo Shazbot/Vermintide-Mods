@@ -324,6 +324,21 @@ mod.localizations:update({
 		en = "Make the floating mission marker smaller and always transparent."
 			.."\nUsed for revive warning."
 	},
+	top = {
+		en = "Top"
+	},
+	bottom = {
+		en = "Bottom"
+	},
+	left = {
+		en = "Left"
+	},
+	right = {
+		en = "Right"
+	},
+	center = {
+		en = "Center"
+	},
 
 	-- priority buffs
 	PACED_STRIKES = {

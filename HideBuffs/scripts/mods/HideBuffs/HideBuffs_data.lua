@@ -118,6 +118,21 @@ for setting_name, _ in pairs( mod.priority_buff_setting_name_to_buff_name ) do
 	)
 end
 
+mod.ALIGNMENTS = {
+	TOP = 1,
+	BOTTOM = 2,
+	LEFT = 3,
+	RIGHT = 4,
+	CENTER = 5,
+}
+mod.ALIGNMENTS_LOOKUP = {
+	"top",
+	"bottom",
+	"left",
+	"right",
+	"center",
+}
+
 local mod_data = {
 	name = "UI Tweaks",
 	description = mod:localize("mod_description"),
@@ -931,6 +946,22 @@ mod.add_option(
 	team_ui_ammo_bar_group
 )
 
+mod.add_option(
+	"TEAM_UI_PLAYER_NAME_ALIGNMENT",
+	{
+		["widget_type"] = "dropdown",
+		["default_value"] = mod.ALIGNMENTS.CENTER,
+		["options"] = {
+			{ text = mod:localize("center"), value = mod.ALIGNMENTS.CENTER }, --1
+			{ text = mod:localize("left"), value = mod.ALIGNMENTS.LEFT }, --2
+			{ text = mod:localize("right"), value = mod.ALIGNMENTS.RIGHT }, --3
+		},
+	},
+	"Player Name Alignment",
+	"Change the horizontal alignment of a player's name.",
+	team_ui_group.sub_widgets,
+	9
+)
 mod.add_option(
 	"TEAM_UI_HP_BAR_SCALE_WIDTH",
 	{

@@ -17,7 +17,7 @@ BuffTemplates.custom_scavenger = {
 			icon = "kerillian_waywatcher_gain_ammo_on_boss_death",
 			refresh_durations = true,
 			max_stacks = 2000,
-			duration = 8,
+			duration = mod:get(mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_AMMO_DURATION),
 		}
 	}
 }
@@ -28,7 +28,7 @@ BuffTemplates.custom_temp_hp = {
 			icon = "victor_zealot_regrowth",
 			refresh_durations = true,
 			max_stacks = 2000,
-			duration = 8,
+			duration = mod:get(mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_TEMP_HP_DURATION),
 		}
 	}
 }
@@ -39,7 +39,7 @@ BuffTemplates.custom_dmg_taken = {
 			icon = "markus_knight_max_health",
 			refresh_durations = true,
 			max_stacks = 10000,
-			duration = 8,
+			duration = mod:get(mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_DMG_TAKEN_DURATION),
 		}
 	}
 }

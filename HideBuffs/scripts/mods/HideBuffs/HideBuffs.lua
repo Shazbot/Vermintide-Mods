@@ -56,6 +56,22 @@ mod.on_setting_changed = function(setting_name)
 		mod.realign_team_member_frames = true
 	end
 
+	if pl.List({
+			mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_AMMO_DURATION,
+			mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_DMG_TAKEN_DURATION,
+			mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_TEMP_HP_DURATION,
+		}):contains(setting_name)
+	then
+		BuffTemplates.custom_dmg_taken.buffs[1].duration =
+			mod:get(mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_DMG_TAKEN_DURATION)
+
+		BuffTemplates.custom_temp_hp.buffs[1].duration =
+			mod:get(mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_TEMP_HP_DURATION)
+
+		BuffTemplates.custom_scavenger.buffs[1].duration =
+			mod:get(mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_AMMO_DURATION)
+	end
+
 	if setting_name == mod.SETTING_NAMES.MINI_HUD_PRESET then
 		mod.recreate_player_unit_frame = true
 	end

@@ -102,6 +102,7 @@ mod.priority_buff_setting_name_to_buff_name = {
 		"twitch_grimoire_health_debuff",
 		"twitch_power_boost_dismember",
 	},
+	BARKSKIN = { "trait_necklace_damage_taken_reduction_buff" },
 }
 
 local priority_buffs_group_subwidgets = {}
@@ -556,36 +557,58 @@ mod.add_option(
 	"Show a buff when about to die.",
 	custom_buffs_subs
 )
-mod.add_option(
-	"PLAYER_UI_CUSTOM_BUFFS_AMMO",
-	{
-		["widget_type"] = "checkbox",
-		["default_value"] = false,
-	},
-	"Buff For Gained Ammo",
-	"Show a buff that tracks ammo gained.",
-	custom_buffs_subs
-)
-mod.add_option(
-	"PLAYER_UI_CUSTOM_BUFFS_TEMP_HP",
-	{
-		["widget_type"] = "checkbox",
-		["default_value"] = false,
-	},
-	"Buff For Gained Temp HP",
-	"Show a buff that tracks temp HP gained.",
-	custom_buffs_subs
-)
-mod.add_option(
-	"PLAYER_UI_CUSTOM_BUFFS_DMG_TAKEN",
-	{
-		["widget_type"] = "checkbox",
-		["default_value"] = false,
-	},
-	"Buff For Recent Damage Taken",
-	"Show a buff that tracks temp recent damage taken.",
-	custom_buffs_subs
-)
+
+local custom_buffs_subwidgets = {}
+custom_buffs_subwidgets.PLAYER_UI_CUSTOM_BUFFS_AMMO =
+	mod.add_option(
+		"PLAYER_UI_CUSTOM_BUFFS_AMMO",
+		{
+			["widget_type"] = "checkbox",
+			["default_value"] = false,
+		},
+		"Buff For Gained Ammo",
+		"Show a buff that tracks ammo gained.",
+		custom_buffs_subs
+	)
+
+custom_buffs_subwidgets.PLAYER_UI_CUSTOM_BUFFS_TEMP_HP =
+	mod.add_option(
+		"PLAYER_UI_CUSTOM_BUFFS_TEMP_HP",
+		{
+			["widget_type"] = "checkbox",
+			["default_value"] = false,
+		},
+		"Buff For Gained Temp HP",
+		"Show a buff that tracks temp HP gained.",
+		custom_buffs_subs
+	)
+
+custom_buffs_subwidgets.PLAYER_UI_CUSTOM_BUFFS_DMG_TAKEN =
+	mod.add_option(
+		"PLAYER_UI_CUSTOM_BUFFS_DMG_TAKEN",
+		{
+			["widget_type"] = "checkbox",
+			["default_value"] = false,
+		},
+		"Buff For Recent Damage Taken",
+		"Show a buff that tracks temp recent damage taken.",
+		custom_buffs_subs
+	)
+
+for setting_name, subwidgets in pairs( custom_buffs_subwidgets ) do
+	mod.add_option(
+		setting_name.."_DURATION",
+		{
+			["widget_type"] = "numeric",
+			["range"] = {1, 50},
+			["unit_text"] = "sec",
+		    ["default_value"] = 8,
+		},
+		"Buff Duration",
+		"Duration before the buff disappears.",
+		subwidgets
+	)
+end
 
 local ammo_counter_group_index = pl.tablex.find_if(mod_data.options_widgets,
 	function(option_widget)

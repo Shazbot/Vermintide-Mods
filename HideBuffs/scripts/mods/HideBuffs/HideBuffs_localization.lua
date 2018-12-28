@@ -398,6 +398,9 @@ mod.localizations:update({
 	TWITCH_BUFFS = {
 		en = "Twitch Intervention Buffs"
 	},
+	BARKSKIN = {
+		en = "Barkskin"
+	},
 
 })
 

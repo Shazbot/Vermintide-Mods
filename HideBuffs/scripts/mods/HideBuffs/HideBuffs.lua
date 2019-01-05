@@ -471,6 +471,9 @@ mod:hook_safe(UnitFrameUI, "set_portrait_frame", function(self)
 	mod.adjust_portrait_size_and_position(self)
 end)
 
+-- names of frame elements: texture_1(static frame) and texture_2(dynamic frame)
+local frame_texture_names = { "texture_1", "texture_2" }
+
 mod:hook(UnitFrameUI, "update", function(func, self, ...)
 	mod:pcall(function()
 		if self.unit_frame_index then
@@ -485,10 +488,16 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 			self:_set_widget_dirty(portrait_static)
 			mod.reset_portrait_frame_alpha = false
 		end
-		if mod:get(mod.SETTING_NAMES.HIDE_FRAMES)
-		and portrait_static.style.texture_1.color[1] ~= 0 then
-			portrait_static.style.texture_1.color[1] = 0
-			self:_set_widget_dirty(portrait_static)
+		if mod:get(mod.SETTING_NAMES.HIDE_FRAMES) then
+			-- change both texture_1(static frame) and texture_2(dynamic frame)
+			for _, frame_texture_name in ipairs( frame_texture_names ) do
+				if portrait_static.style[frame_texture_name]
+				and portrait_static.style[frame_texture_name].color[1] ~= 0
+				then
+					portrait_static.style[frame_texture_name].color[1] = 0
+					self:_set_widget_dirty(portrait_static)
+				end
+			end
 		end
 
 		if mod:get(mod.SETTING_NAMES.FORCE_DEFAULT_FRAME)

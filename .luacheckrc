@@ -33,6 +33,7 @@ globals = {
 	"MutatorHandler", "MutatorTemplates", "AttachmentUtils",
 	"SubtitleGui", "OverchargeBarUI", "UILayer",
 	"PositiveReinforcementUI", "UIAnimation",
+	"Development", "PlayerUnitOverchargeExtension",
 
 	"PriorityBuffUI",
 }

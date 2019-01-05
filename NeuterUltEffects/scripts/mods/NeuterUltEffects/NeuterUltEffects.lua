@@ -24,6 +24,16 @@ mod:hook(World, "create_particles", function(func, world, particle_name, ...)
 	return func(world, particle_name, ...)
 end)
 
+--- Mute wizard overcharge noise.
+mod:hook(WwiseWorld, "trigger_event", function(func, wwise_world, sound_event, ...)
+	if sound_event == "Play_weapon_staff_overcharge"
+	and mod:get(mod.SETTING_NAMES.MUTE_OVERCHARGE_NOISE) then
+		return
+	end
+
+	return func(wwise_world, sound_event, ...)
+end)
+
 --- Skip huntsman fov malarkey.
 mod:hook(BuffFunctionTemplates.functions, "apply_huntsman_activated_ability", function(func, ...)
 	if mod:get(mod.SETTING_NAMES["HUNTSMAN_VISUAL"]) then
@@ -142,3 +152,4 @@ end)
 mod:dofile("scripts/mods/"..mod:get_name().."/no_potion_glow")
 mod:dofile("scripts/mods/"..mod:get_name().."/no_projectile_trails")
 mod:dofile("scripts/mods/"..mod:get_name().."/no_ult_vo")
+mod:dofile("scripts/mods/"..mod:get_name().."/overcharge")

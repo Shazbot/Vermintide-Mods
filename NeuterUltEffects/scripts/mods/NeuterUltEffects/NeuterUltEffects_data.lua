@@ -112,6 +112,55 @@ mod.add_option(
 	nil
 )
 
+local overcharge_group = mod.add_option(
+	"OVERCHARGE_GROUP",
+	{
+		["widget_type"] = "group",
+	},
+	"Overcharge",
+	"Options related to overcharge/heat weapons."
+)
+mod.add_option(
+	"HIDE_OVERCHARGE_FLAMES",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Disable HUD Flames",
+	"Disable the HUD flames on high heat.",
+	overcharge_group
+)
+mod.add_option(
+	"MUTE_OVERCHARGE_NOISE",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Mute Overcharge Noise",
+	"Mute the persistent noise at high heat.",
+	overcharge_group
+)
+mod.add_option(
+	"MUTE_OVERCHARGE_PINGS",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Mute Overcharge Pings",
+	"Mute the ping warnings when crossing heat tresholds.",
+	overcharge_group
+)
+mod.add_option(
+	"NO_OVERCHARGE_HAND_CHANGES",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Don't Change First Person Hands",
+	"Don't make changes to first person hands at high heat.",
+	overcharge_group
+)
+
 local ults_subs = mod.add_option(
 	"ULTS_GROUP",
 	{

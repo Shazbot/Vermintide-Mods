@@ -29,6 +29,14 @@ mod.teammate_ui_custom_def =
 				end,
 			},
 			{
+				pass_type = "rect",
+				style_id = "ammo_bar_bg",
+				content_id = "ammo_bar",
+				content_check_function = function (content)
+					return content.draw_ammo_bar
+				end,
+			},
+			{
 				pass_type = "texture",
 				style_id = "icon_natural_bond",
 				texture_id = "icon_natural_bond",
@@ -273,6 +281,23 @@ mod.teammate_ui_custom_def =
 				255,
 				255,
 				255
+			}
+		},
+		ammo_bar_bg = {
+			size = {
+				92,
+				5
+			},
+			offset = {
+				0,
+				0,
+				18
+			},
+			color = {
+				255,
+				0,
+				0,
+				0
 			}
 		},
 	},

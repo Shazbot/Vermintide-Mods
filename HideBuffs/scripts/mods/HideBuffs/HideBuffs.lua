@@ -329,11 +329,22 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 			self._teammate_custom_widget.style.hp_bar_fg.offset[2] = -37 + hp_bar_offset_y - delta_y + ability_bar_delta_y
 
 			mod.team_ammo_bar_length = 92 + delta_x
-			self._teammate_custom_widget.style.ammo_bar.size[1] = 92 + delta_x
-			self._teammate_custom_widget.style.ammo_bar.size[2] = 5*hp_bar_scale_y
 
-			self._teammate_custom_widget.style.ammo_bar.offset[1] = -59 + hp_bar_offset_x
-			self._teammate_custom_widget.style.ammo_bar.offset[2] = -35 + hp_bar_offset_y - delta_y + ability_bar_delta_y
+			local ammo_bar_w = 92 + delta_x
+			local ammo_bar_h = 5*hp_bar_scale_y
+			self._teammate_custom_widget.style.ammo_bar.size[1] = ammo_bar_w
+			self._teammate_custom_widget.style.ammo_bar.size[2] = ammo_bar_h
+
+			self._teammate_custom_widget.style.ammo_bar_bg.size[1] = ammo_bar_w
+			self._teammate_custom_widget.style.ammo_bar_bg.size[2] = ammo_bar_h
+
+			local ammo_bar_offset_x = -59 + hp_bar_offset_x
+			local ammo_bar_offset_y = -35 + hp_bar_offset_y - delta_y + ability_bar_delta_y
+			self._teammate_custom_widget.style.ammo_bar.offset[1] = ammo_bar_offset_x
+			self._teammate_custom_widget.style.ammo_bar.offset[2] = ammo_bar_offset_y
+
+			self._teammate_custom_widget.style.ammo_bar_bg.offset[1] = ammo_bar_offset_x
+			self._teammate_custom_widget.style.ammo_bar_bg.offset[2] = ammo_bar_offset_y
 
 			local important_icons_offset_x = mod:get(mod.SETTING_NAMES.TEAM_UI_ICONS_OFFSET_X)
 			local important_icons_offset_y = mod:get(mod.SETTING_NAMES.TEAM_UI_ICONS_OFFSET_Y)

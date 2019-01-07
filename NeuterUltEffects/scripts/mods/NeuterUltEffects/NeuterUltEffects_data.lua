@@ -201,6 +201,29 @@ for _, name in ipairs( { "SLAYER", "HUNTSMAN", "SHADE", "ZEALOT", "RANGER" } ) d
 	)
 end
 
+for _, name in ipairs( { "IRONBREAKER" } ) do
+	mod.SETTING_NAMES[name.."_GROUP"] = name.."_GROUP"
+	mod.SETTING_NAMES[name.."_GROUP_T"] = name.."_GROUP_T"
+	mod.SETTING_NAMES[name.."_VISUAL"] = name.."_VISUAL"
+	table.insert(ults_subs,
+		{
+			["setting_name"] = mod.SETTING_NAMES[name.."_GROUP"],
+			["widget_type"] = "group",
+			["text"] = mod:localize(name.."_GROUP"),
+			["tooltip"] = mod:localize(name.."_GROUP_T"),
+			["sub_widgets"] = {
+				{
+					["setting_name"] = mod.SETTING_NAMES[name.."_VISUAL"],
+					["widget_type"] = "checkbox",
+					["text"] = mod:localize(name.."_VISUAL"),
+					["tooltip"] = mod:localize(name.."_VISUAL_T"),
+					["default_value"] = false,
+				},
+			},
+		}
+	)
+end
+
 local potion_filters_subs = mod.add_option(
 	"POTION_FILTERS",
 	{

@@ -119,6 +119,7 @@ mod.ult_name_to_fx = {
 	HUNTSMAN = { "fx/screenspace_huntsman_skill_01", "fx/screenspace_huntsman_skill_02" },
 	SHADE = { "fx/screenspace_shade_skill_01", "fx/screenspace_shade_skill_02" },
 	RANGER = { "fx/screenspace_ranger_skill_01", "fx/screenspace_ranger_skill_02" },
+	IRONBREAKER = { "fx/screenspace_potion_03" },
 }
 mod.pot_name_to_fx = {
 	STR_POT = "fx/screenspace_potion_01",

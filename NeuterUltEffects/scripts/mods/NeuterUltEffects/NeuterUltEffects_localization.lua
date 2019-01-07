@@ -46,7 +46,7 @@ mod.localizations:update({
 
 local localization = mod.localizations
 
-for _, name in ipairs( { "SLAYER", "HUNTSMAN", "SHADE", "ZEALOT", "RANGER" } ) do
+for _, name in ipairs( { "SLAYER", "HUNTSMAN", "SHADE", "ZEALOT", "RANGER", "IRONBREAKER" } ) do
 	localization[name.."_GROUP"] = {
 		en = stringx.title(name)
 	}

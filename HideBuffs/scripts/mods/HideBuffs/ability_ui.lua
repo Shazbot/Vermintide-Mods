@@ -8,6 +8,22 @@ mod.player_ability_input_text_content_check_fun = function()
 	return not mod:get(mod.SETTING_NAMES.HIDE_HOTKEYS)
 end
 
+mod.player_ability_dynamic_content_change_fun = function (content, style)
+	if not content.uvs then
+		local ability_progress = content.bar_value
+		local size = style.texture_size
+		local offset = style.offset
+		offset[2] = -size[2] + size[2] * ability_progress
+		return
+	end
+	local ability_progress = content.bar_value
+	local size = style.size
+	local uvs = content.uvs
+	local bar_length = mod.hp_bar_width*0.88
+	uvs[2][2] = ability_progress
+	size[1] = bar_length * ability_progress
+end
+
 mod:hook(AbilityUI, "draw", function (func, self, dt)
 	if mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET) then
 		for _, pass in ipairs( self._widgets[1].element.passes ) do
@@ -47,9 +63,11 @@ mod:hook(AbilityUI, "draw", function (func, self, dt)
 			self._widgets[1].offset[1]= -1+3
 			self._widgets[1].offset[2]= 17
 			self._widgets[1].offset[3]= 60
-			self._widgets[1].style.ability_bar_highlight.texture_size[1] = 576-20
+			local ability_bar_highlight_w = mod.hp_bar_width-10
+			self._widgets[1].style.ability_bar_highlight.texture_size[1] = ability_bar_highlight_w
 			self._widgets[1].style.ability_bar_highlight.texture_size[2] = 54
-			self._widgets[1].style.ability_bar_highlight.offset[2] = 22 + 4
+			self._widgets[1].style.ability_bar_highlight.offset[2] = 26
+			self._widgets[1].style.ability_bar_highlight.offset[1] = 0---ability_bar_highlight_w/2
 		end)
 	end
 

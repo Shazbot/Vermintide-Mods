@@ -127,27 +127,33 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 			if not static_widget_1.style.texture_id.size then
 				static_widget_1.style.texture_id.size = {}
 			end
-			static_widget_1.style.texture_id.size[1] = 576+10
-			static_widget_1.style.texture_id.size[2] = 36
-			static_widget_1.offset[1] = 20 + player_ui_offset_x
-			static_widget_1.offset[2] = 20 + player_ui_offset_y
+			static_widget_1.style.texture_id.size[1] = mod.hp_bar_width
+			static_widget_1.style.texture_id.size[2] = mod.hp_bar_height
+			static_widget_1.offset[1] = -static_widget_1.style.texture_id.size[1]/2--20 + player_ui_offset_x
+			static_widget_1.offset[2] = -49 + player_ui_offset_y
 			static_widget_1.offset[3] = 0
+			static_widget_1.scenegraph_id = "pivot"
 
 			local static_widget_2 = self._static_widgets[2]
 			if not static_widget_2.style.texture_id.size then
 				static_widget_2.style.texture_id.size = {}
 			end
-			static_widget_2.style.texture_id.size[1] = 576-10
+			static_widget_2.style.texture_id.size[1] = mod.hp_bar_width
 			static_widget_2.style.texture_id.size[2] = 36
 			static_widget_2.offset[1] = -50 + player_ui_offset_x
 			static_widget_2.offset[2] = 20 + player_ui_offset_y
 
 			if not self._hb_mod_widget then
 				self._hb_mod_widget = UIWidget.init(mod.hp_bg_rect_def)
-				self._hb_mod_widget.style.hp_bar_rect.size = { 576-10, 21 }
 			end
-			self._hb_mod_widget.offset[1] = -50 + player_ui_offset_x
-			self._hb_mod_widget.offset[2] = 23 + player_ui_offset_y
+			local hp_bar_rect_w = mod.hp_bar_width - 20
+			self._hb_mod_widget.style.hp_bar_rect.size[1] = hp_bar_rect_w
+			self._hb_mod_widget.style.hp_bar_rect.size[2] = 21
+			self._hb_mod_widget.scenegraph_id = "pivot"
+			self._hb_mod_widget.offset[1] = player_ui_offset_x - hp_bar_rect_w/2
+			self._hb_mod_widget.offset[2] = player_ui_offset_y - 37
+			self._hb_mod_widget.offset[2] = player_ui_offset_y - 37
+			self._hb_mod_widget.offset[3] = -10
 
 			self.ui_scenegraph.slot.position[1] = 149 + player_ui_offset_x
 			self.ui_scenegraph.slot.position[2] = 44 + 15 + player_ui_offset_y
@@ -160,6 +166,8 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 				self._mod_ammo_border = UIWidget.init(UIWidgets._mod_create_border("background_panel_bg", false))
 				self._mod_ammo_border.style.border.color = { 255, 0, 0, 0 }
 			end
+
+			mod.ammo_bar_width = mod.default_ammo_bar_width
 
 			local mod_ammo_border = self._mod_ammo_border
 			local player_ammo_bar_height = mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR_HEIGHT)
@@ -323,7 +331,8 @@ mod.hp_bg_rect_def =
 	},
 }
 
-mod.ammo_bar_width = 531
+mod.default_ammo_bar_width = 531
+mod.ammo_bar_width = mod.default_ammo_bar_width
 
 mod.ammo_widget_def =
 {

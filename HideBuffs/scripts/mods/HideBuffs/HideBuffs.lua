@@ -168,6 +168,7 @@ mod.team_grimoire_bar_content_change_fun = function (content, style)
 	size[1] = bar_length * (1 - grim_progress)
 	offset[1] = 2 + mod.health_bar_offset[1] + bar_length * grim_progress + mod.hp_bar_offset_x
 	offset[2] = mod.health_bar_offset[2] + mod.hp_bar_offset_y
+		+ (mod.hp_bar_delta_y and mod.hp_bar_delta_y/2 or 0)
 end
 
 mod.team_ability_bar_content_change_fun = function (content, style)
@@ -329,6 +330,7 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 			local ability_bar_delta_y = 5*hp_bar_scale_y - 5
 			local delta_x = hp_bar_size[1] - 92
 			local delta_y = hp_bar_size[2] - 9
+			mod.hp_bar_delta_y = delta_y
 
 			static_w_style.hp_bar_bg.size[1] = 100 + delta_x
 			static_w_style.hp_bar_bg.size[2] = 17 + delta_y + ability_bar_delta_y

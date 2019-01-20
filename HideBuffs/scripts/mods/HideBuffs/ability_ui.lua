@@ -46,19 +46,26 @@ mod:hook(AbilityUI, "draw", function (func, self, dt)
 			self.ui_scenegraph.ability_root.position[2] = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
 
 			local skull_offsets = { 0, -15 }
-			self._widgets[1].style.ability_effect_left.offset[1] = -(576+10)/2 - 50
+			local hp_bar_width = mod.hp_bar_width
+			self._widgets[1].style.ability_effect_left.offset[1] = -hp_bar_width/2 - 50
 			self._widgets[1].style.ability_effect_left.horizontal_alignment = "center"
 			self._widgets[1].style.ability_effect_left.offset[2] = skull_offsets[2]
 			self._widgets[1].style.ability_effect_top_left.horizontal_alignment = "center"
-			self._widgets[1].style.ability_effect_top_left.offset[1] = -(576+10)/2 - 50
+			self._widgets[1].style.ability_effect_top_left.offset[1] = -hp_bar_width/2 - 50
 			self._widgets[1].style.ability_effect_top_left.offset[2] = skull_offsets[2]
 
-			self._widgets[1].style.ability_effect_right.offset[1] = (576+10)/2 + 30
+			local skull_right_offset_x =
+				hp_bar_width/2 + 40
+				+ mod:get(mod.SETTING_NAMES.PLAYER_UI_PLAYER_ULT_SKULL_OFFSET_X)
+			local skull_right_offset_y =
+				skull_offsets[2]
+				+ mod:get(mod.SETTING_NAMES.PLAYER_UI_PLAYER_ULT_SKULL_OFFSET_Y)
+			self._widgets[1].style.ability_effect_right.offset[1] = skull_right_offset_x
 			self._widgets[1].style.ability_effect_right.horizontal_alignment = "center"
-			self._widgets[1].style.ability_effect_right.offset[2] = skull_offsets[2]
+			self._widgets[1].style.ability_effect_right.offset[2] = skull_right_offset_y
 			self._widgets[1].style.ability_effect_top_right.horizontal_alignment = "center"
-			self._widgets[1].style.ability_effect_top_right.offset[1] = (576+10)/2 + 30
-			self._widgets[1].style.ability_effect_top_right.offset[2] = skull_offsets[2]
+			self._widgets[1].style.ability_effect_top_right.offset[1] = skull_right_offset_x
+			self._widgets[1].style.ability_effect_top_right.offset[2] = skull_right_offset_y
 
 			self._widgets[1].offset[1]= -1+3
 			self._widgets[1].offset[2]= 17
@@ -67,7 +74,7 @@ mod:hook(AbilityUI, "draw", function (func, self, dt)
 			self._widgets[1].style.ability_bar_highlight.texture_size[1] = ability_bar_highlight_w
 			self._widgets[1].style.ability_bar_highlight.texture_size[2] = 54
 			self._widgets[1].style.ability_bar_highlight.offset[2] = 26
-			self._widgets[1].style.ability_bar_highlight.offset[1] = 0---ability_bar_highlight_w/2
+			self._widgets[1].style.ability_bar_highlight.offset[1] = 0
 		end)
 	end
 

@@ -455,7 +455,7 @@ mod.add_option(
 		["unit_text"] = "%",
 	    ["default_value"] = 100,
 	},
-	"Play UI Width Scale",
+	"Player UI Width Scale",
 	"Scale the player UI.",
 	player_ui_group.sub_widgets,
 	3
@@ -485,6 +485,32 @@ mod.add_option(
 	"Optionally offset the player portrait on the y axis.",
 	player_ui_group.sub_widgets,
 	3
+)
+mod.add_option(
+	"PLAYER_UI_PLAYER_ULT_SKULL_OFFSET_X",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1000, 1000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Player Charged Ult Skull Offset X",
+	"Optionally offset the ult-is-ready skull on the x axis.",
+	player_ui_group.sub_widgets,
+	4
+)
+mod.add_option(
+	"PLAYER_UI_PLAYER_ULT_SKULL_OFFSET_Y",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1000, 1000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Player Charged Ult Skull Offset Y",
+	"Optionally offset the ult-is-ready skull on the y axis.",
+	player_ui_group.sub_widgets,
+	5
 )
 
 local player_item_slots_subs = mod.add_option(

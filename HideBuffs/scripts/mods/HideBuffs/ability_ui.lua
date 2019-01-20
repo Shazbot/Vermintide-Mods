@@ -63,7 +63,7 @@ mod:hook(AbilityUI, "draw", function (func, self, dt)
 			self._widgets[1].offset[1]= -1+3
 			self._widgets[1].offset[2]= 17
 			self._widgets[1].offset[3]= 60
-			local ability_bar_highlight_w = mod.hp_bar_width-10
+			local ability_bar_highlight_w = mod.hp_bar_width*0.95
 			self._widgets[1].style.ability_bar_highlight.texture_size[1] = ability_bar_highlight_w
 			self._widgets[1].style.ability_bar_highlight.texture_size[2] = 54
 			self._widgets[1].style.ability_bar_highlight.offset[2] = 26

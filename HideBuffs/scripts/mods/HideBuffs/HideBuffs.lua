@@ -70,6 +70,9 @@ mod.on_setting_changed = function(setting_name)
 
 		BuffTemplates.custom_scavenger.buffs[1].duration =
 			mod:get(mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_AMMO_DURATION)
+
+		BuffTemplates.custom_dps_timed.buffs[1].duration =
+			mod:get(mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_DPS_TIMED)
 	end
 
 	if setting_name == mod.SETTING_NAMES.MINI_HUD_PRESET then
@@ -127,7 +130,10 @@ mod.player_ability_dynamic_content_change_fun = function (content, style)
 	size[1] = bar_length * ability_progress
 end
 
-mod.hp_bar_width = 586-300
+mod.hp_bar_width = 553
+mod.default_hp_bar_width = 553
+mod.hp_bar_height = 36
+mod.hp_bar_w_scale = mod.hp_bar_width / mod.default_hp_bar_width
 
 mod.original_health_bar_size = {
 	92,
@@ -173,6 +179,32 @@ mod.team_ability_bar_content_change_fun = function (content, style)
 	size[1] = bar_length * ability_progress
 end
 
+mod.player_grimoire_debuff_divider_content_change_fun =  function (content, style)
+	local hp_bar_content = content.hp_bar
+	local internal_bar_value = hp_bar_content.internal_bar_value
+	local actual_active_percentage = content.actual_active_percentage or 1
+	local grim_progress = math.max(internal_bar_value, actual_active_percentage)
+	local offset = style.offset
+	offset[1] = (-276.5 - 7 + 553 * grim_progress) * mod.hp_bar_w_scale
+	offset[2] = 35-8
+end
+
+mod.player_grimoire_bar_content_change_fun = function (content, style)
+	local parent_content = content.parent
+	local hp_bar_content = parent_content.hp_bar
+	local internal_bar_value = hp_bar_content.internal_bar_value
+	local actual_active_percentage = parent_content.actual_active_percentage or 1
+	local grim_progress = math.max(internal_bar_value, actual_active_percentage)
+	local size = style.size
+	local uvs = content.uvs
+	local offset = style.offset
+	local bar_length = mod.hp_bar_width - 18 * mod.hp_bar_w_scale
+	uvs[1][1] = grim_progress
+	size[1] = bar_length * (1 - grim_progress)
+	offset[1] = (-276.5 -7 + 553 * grim_progress) * mod.hp_bar_w_scale
+	offset[2] = 35
+end
+
 mod.item_slot_widgets = {
 	"item_slot_bg_",
 	"item_slot_frame_",
@@ -198,6 +230,9 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 		end
 
 		if not self._mod_frame_index then -- PLAYER UI
+			mod.hp_bar_width = mod.default_hp_bar_width * mod:get(mod.SETTING_NAMES.PLAYER_UI_WIDTH_SCALE)/100
+			mod.hp_bar_w_scale = mod.hp_bar_width / mod.default_hp_bar_width
+
 			self.ui_scenegraph.pivot.position[1] = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
 			self.ui_scenegraph.pivot.position[2] = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
 
@@ -210,11 +245,52 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 
 				if ability_dynamic.style.ability_bar.size then
 					ability_dynamic.style.ability_bar.size[2] = ability_bar_height
-					ability_dynamic.offset[1] = -30-2
+					ability_dynamic.offset[1] = 0
 					ability_dynamic.offset[2] = 16 + 3 - ability_bar_height + ability_bar_height/2
 					ability_dynamic.offset[3] = 50
+					ability_dynamic.style.ability_bar.offset[1] = -(mod.hp_bar_width*0.88)/2
 				end
-				self._health_widgets.health_dynamic.style.grimoire_debuff_divider.offset[3] = 200
+
+				local hp_dynamic = self._health_widgets.health_dynamic
+				hp_dynamic.style.grimoire_debuff_divider.offset[3] = 200
+				if not mod.def_style then
+					mod.def_style = {}
+					for w_name, style in pairs( hp_dynamic.style ) do
+						mod.def_style[w_name] = style.size
+					end
+				end
+
+				local hp_bar_width = mod.hp_bar_width - 18 * mod.hp_bar_w_scale
+
+				hp_dynamic.style.total_health_bar.size[1] = hp_bar_width
+				hp_dynamic.style.total_health_bar.size[2] = mod.hp_bar_height - 18
+
+				hp_dynamic.style.hp_bar_highlight.size[1] = hp_bar_width
+				hp_dynamic.style.hp_bar_highlight.size[2] = mod.hp_bar_height - 8
+
+				hp_dynamic.style.hp_bar.size[1] = hp_bar_width
+				hp_dynamic.style.hp_bar.size[2] = mod.hp_bar_height - 18
+
+				for _, pass in ipairs( hp_dynamic.element.passes ) do
+					if pass.style_id == "grimoire_debuff_divider" then
+						pass.content_change_function = mod.player_grimoire_debuff_divider_content_change_fun
+					end
+					if pass.style_id == "grimoire_bar" then
+						pass.content_change_function = mod.player_grimoire_bar_content_change_fun
+					end
+				end
+				hp_dynamic.style.grimoire_bar.size[2] = 18
+				local grimoire_debuff_divider_size = hp_dynamic.style.grimoire_debuff_divider.size
+				grimoire_debuff_divider_size[1] = 21
+				grimoire_debuff_divider_size[2] = 36
+
+				hp_dynamic.style.total_health_bar.offset[1] = 5 * mod.hp_bar_w_scale-hp_dynamic.style.total_health_bar.size[1]/2
+				hp_dynamic.style.total_health_bar.offset[2] = 35
+				hp_dynamic.style.total_health_bar.offset[3] = -6
+
+				hp_dynamic.style.hp_bar.offset[1] = 5 * mod.hp_bar_w_scale-hp_dynamic.style.hp_bar.size[1]/2
+				hp_dynamic.style.hp_bar.offset[2] = 35
+				hp_dynamic.style.hp_bar.offset[3] = -5
 			end
 		else -- TEAMMATE UI
 			-- adjust loadout dynamic offset(item slots)

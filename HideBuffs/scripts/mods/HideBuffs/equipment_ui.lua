@@ -129,7 +129,7 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 			end
 			static_widget_1.style.texture_id.size[1] = mod.hp_bar_width
 			static_widget_1.style.texture_id.size[2] = mod.hp_bar_height
-			static_widget_1.offset[1] = -static_widget_1.style.texture_id.size[1]/2--20 + player_ui_offset_x
+			static_widget_1.offset[1] = -static_widget_1.style.texture_id.size[1]/2 + player_ui_offset_x
 			static_widget_1.offset[2] = -49 + player_ui_offset_y
 			static_widget_1.offset[3] = 0
 			static_widget_1.scenegraph_id = "pivot"
@@ -146,7 +146,7 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 			if not self._hb_mod_widget then
 				self._hb_mod_widget = UIWidget.init(mod.hp_bg_rect_def)
 			end
-			local hp_bar_rect_w = mod.hp_bar_width - 20
+			local hp_bar_rect_w = mod.hp_bar_width - 20 * mod.hp_bar_w_scale
 			self._hb_mod_widget.style.hp_bar_rect.size[1] = hp_bar_rect_w
 			self._hb_mod_widget.style.hp_bar_rect.size[2] = 21
 			self._hb_mod_widget.scenegraph_id = "pivot"
@@ -167,14 +167,15 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 				self._mod_ammo_border.style.border.color = { 255, 0, 0, 0 }
 			end
 
-			mod.ammo_bar_width = mod.default_ammo_bar_width
+			mod.ammo_bar_width = mod.default_ammo_bar_width * mod.hp_bar_w_scale
+			local ammo_bar_w_delta = mod.default_ammo_bar_width - mod.ammo_bar_width
 
 			local mod_ammo_border = self._mod_ammo_border
 			local player_ammo_bar_height = mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR_HEIGHT)
-			mod_ammo_border.offset[1] = -33 + player_ui_offset_x
+			mod_ammo_border.offset[1] = -19 + player_ui_offset_x + ammo_bar_w_delta/2
 			mod_ammo_border.offset[2] = 18 - player_ammo_bar_height + player_ui_offset_y
 			mod_ammo_border.offset[3] = -20
-			mod_ammo_border.style.border.size[1] = mod.ammo_bar_width + 2-10
+			mod_ammo_border.style.border.size[1] = mod.ammo_bar_width + 2
 			mod_ammo_border.style.border.size[2] = player_ammo_bar_height + 2
 			-- mod_ammo_border.style.border.color = { 255, 0,255,0 }
 
@@ -183,9 +184,12 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 			mod_ammo_widget.offset[2] = player_ui_offset_y + 43
 			mod_ammo_widget.style.ammo_bar.color[1] = mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR_ALPHA)
 			mod_ammo_widget.style.ammo_bar.size[2] = player_ammo_bar_height
-			mod_ammo_widget.style.ammo_bar.offset[1] = -7
+			mod_ammo_widget.style.ammo_bar.offset[1] = 7 + ammo_bar_w_delta/2
 			mod_ammo_widget.style.ammo_bar.offset[2] = -24 - player_ammo_bar_height
 			mod_ammo_widget.style.ammo_bar.offset[3] = 50
+
+			local ammo_progress = self._hb_mod_ammo_widget.content.ammo_bar.bar_value
+			mod_ammo_widget.style.ammo_bar.size[1] = mod.ammo_bar_width * ammo_progress
 		end)
 
 		local ui_renderer = self.ui_renderer
@@ -331,7 +335,7 @@ mod.hp_bg_rect_def =
 	},
 }
 
-mod.default_ammo_bar_width = 531
+mod.default_ammo_bar_width = 553*0.906
 mod.ammo_bar_width = mod.default_ammo_bar_width
 
 mod.ammo_widget_def =
@@ -345,11 +349,11 @@ mod.ammo_widget_def =
 				content_id = "ammo_bar",
 				content_change_function = function (content, style)
 					local ammo_progress = content.bar_value
-					local size = style.size
 					local uvs = content.uvs
-					local bar_length = mod.ammo_bar_width
 					uvs[2][2] = ammo_progress
-					size[1] = bar_length*ammo_progress
+					-- moved this to draw hook, refreshes better
+					-- local size = style.size
+					-- size[1] = mod.ammo_bar_width * ammo_progress
 				end
 			},
 		},

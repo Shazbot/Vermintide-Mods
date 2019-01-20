@@ -202,7 +202,7 @@ mod.player_grimoire_bar_content_change_fun = function (content, style)
 	local bar_length = mod.hp_bar_width - 18 * mod.hp_bar_w_scale
 	uvs[1][1] = grim_progress
 	size[1] = bar_length * (1 - grim_progress)
-	offset[1] = (-276.5 -7 + 553 * grim_progress) * mod.hp_bar_w_scale
+	offset[1] = (-276.5 + 2 + 553 * grim_progress) * mod.hp_bar_w_scale
 	offset[2] = 35
 end
 
@@ -285,11 +285,11 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 				grimoire_debuff_divider_size[1] = 21
 				grimoire_debuff_divider_size[2] = 36
 
-				hp_dynamic.style.total_health_bar.offset[1] = 5 * mod.hp_bar_w_scale-hp_dynamic.style.total_health_bar.size[1]/2
+				hp_dynamic.style.total_health_bar.offset[1] = -hp_dynamic.style.total_health_bar.size[1]/2
 				hp_dynamic.style.total_health_bar.offset[2] = 35
 				hp_dynamic.style.total_health_bar.offset[3] = -6
 
-				hp_dynamic.style.hp_bar.offset[1] = 5 * mod.hp_bar_w_scale-hp_dynamic.style.hp_bar.size[1]/2
+				hp_dynamic.style.hp_bar.offset[1] = -hp_dynamic.style.hp_bar.size[1]/2
 				hp_dynamic.style.hp_bar.offset[2] = 35
 				hp_dynamic.style.hp_bar.offset[3] = -5
 			end

@@ -329,8 +329,7 @@ mod:hook_safe(StateIngame, "update", function(self, dt, main_t)
 				end
 			end
 		elseif buff_ext:has_buff_type("custom_dps") then
-			local custom_dps_buff = buff_ext:get_non_stacking_buff("custom_dps")
-			buff_ext:remove_buff(custom_dps_buff.id)
+			mod.reset_dps_buff()
 		end
 
 		if mod:get(mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_DPS_TIMED) then
@@ -344,14 +343,19 @@ mod:hook_safe(StateIngame, "update", function(self, dt, main_t)
 					mod.buff_stacks["custom_dps_timed"] = dps_delta
 				end
 			end
+		elseif buff_ext:has_buff_type("custom_dps_timed") then
+			mod.reset_dps_timed_buff()
 		end
 	end
 end)
 
---- The hook runs after the
+--- This hook isn't initialized before the
 --- local_require("scripts/ui/hud_ui/buff_ui_definitions")
---- in buff_ui script
---- so too late to change MAX_NUMBER_OF_BUFFS since it gets assigned to a local
+--- in hud_ui/buff_ui
+--- so too late to change MAX_NUMBER_OF_BUFFS in buff_ui
+--- since it gets assigned to a local.
+--- But can be used for local_require below
+--- and any other local_require from now on.
 mod:hook("local_require", function(func, full_path, ...)
 	if full_path == "scripts/ui/hud_ui/buff_ui_definitions" then
 		local buff_ui_definitions = func(full_path, ...)

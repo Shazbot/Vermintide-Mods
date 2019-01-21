@@ -591,14 +591,34 @@ mod.add_option(
 	player_item_slots_subs
 )
 
+local buffs_group_index = pl.tablex.find_if(mod_data.options_widgets,
+	function(option_widget)
+		return option_widget.setting_name == mod.SETTING_NAMES.BUFFS_GROUP
+	end)
+local buffs_group_group = mod_data.options_widgets[buffs_group_index]
+
+mod.add_option(
+	"MAX_NUMBER_OF_BUFFS",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {1, 30},
+	    ["default_value"] = 5,
+	},
+	"Max Active Buffs",
+	"Max number of active buffs to show on the UI."
+		.."\nDefault is 5.",
+	buffs_group_group.sub_widgets
+)
+
 local custom_buffs_subs = mod.add_option(
 	"PLAYER_UI_CUSTOM_BUFFS_GROUP",
 	{
 		["widget_type"] = "group",
 	},
 	"Add New Buffs",
-	"Add some new custom buffs.",
-	player_ui_group.sub_widgets
+	"Add some new custom buffs."
+		.."\nI advise increasing the Max Active Buffs option to have enough available buff slots.",
+	buffs_group_group.sub_widgets
 )
 
 mod.add_option(

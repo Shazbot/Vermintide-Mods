@@ -359,7 +359,7 @@ end)
 mod:hook("local_require", function(func, full_path, ...)
 	if full_path == "scripts/ui/hud_ui/buff_ui_definitions" then
 		local buff_ui_definitions = func(full_path, ...)
-		local new_max_buffs = 10
+		local new_max_buffs = mod:get(mod.SETTING_NAMES.MAX_NUMBER_OF_BUFFS)
 		local orig_MAX_NUMBER_OF_BUFFS = buff_ui_definitions.MAX_NUMBER_OF_BUFFS
 		buff_ui_definitions.MAX_NUMBER_OF_BUFFS = new_max_buffs
 		for i = orig_MAX_NUMBER_OF_BUFFS+1, new_max_buffs do
@@ -377,7 +377,6 @@ local definitions = local_require("scripts/ui/hud_ui/buff_ui_definitions")
 --- Need a hook_origin to change MAX_NUMBER_OF_BUFFS.
 --- If upvalues(locals hooking) gets implemented into VMF this can be changed
 --- to not use hook_origin.
-local MAX_NUMBER_OF_BUFFS = definitions.MAX_NUMBER_OF_BUFFS
 local BUFF_SIZE = definitions.BUFF_SIZE
 local BUFF_SPACING = definitions.BUFF_SPACING
 mod:hook_origin(BuffUI, "_add_buff", function(self, buff, infinite, end_time)
@@ -429,6 +428,15 @@ mod:hook_origin(BuffUI, "_add_buff", function(self, buff, infinite, end_time)
 
 	local unused_buff_widgets = self._unused_buff_widgets
 	local num_buffs = #self._active_buffs
+
+	local MAX_NUMBER_OF_BUFFS = mod:get(mod.SETTING_NAMES.MAX_NUMBER_OF_BUFFS)
+
+	for i = 1, MAX_NUMBER_OF_BUFFS do
+		if not self._buff_widgets[i] then
+			self._buff_widgets[i] = UIWidget.init(table.clone(definitions.buff_widget_definitions[1]))
+			table.insert(unused_buff_widgets, #unused_buff_widgets + 1, self._buff_widgets[i])
+		end
+	end
 
 	if already_exists or MAX_NUMBER_OF_BUFFS <= num_buffs then
 		return false

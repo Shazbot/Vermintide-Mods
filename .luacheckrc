@@ -34,7 +34,7 @@ globals = {
 	"SubtitleGui", "OverchargeBarUI", "UILayer",
 	"PositiveReinforcementUI", "UIAnimation",
 	"Development", "PlayerUnitOverchargeExtension",
-	"DamageDataIndex",
+	"DamageDataIndex", "StateIngame", "FatigueUI",
 
 	"PriorityBuffUI",
 }

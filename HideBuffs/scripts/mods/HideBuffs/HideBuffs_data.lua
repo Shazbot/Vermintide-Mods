@@ -747,6 +747,65 @@ mod.add_option(
 	1
 )
 
+local shields_subs = mod.add_option(
+	"SHIELDS_GROUP",
+	{
+		["widget_type"] = "group",
+	},
+	"Stamina Shields Tweaks",
+	"Tweaks related to the stamina shields UI.",
+	nil,
+	ammo_counter_group_index+1
+)
+mod.add_option(
+	"SHIELDS_OFFSET_X",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-2000, 2000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Offset X",
+	"Optionally offset on the x axis.",
+	shields_subs
+)
+mod.add_option(
+	"SHIELDS_OFFSET_Y",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-2000, 2000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Offset Y",
+	"Optionally offset on the y axis.",
+	shields_subs
+)
+mod.add_option(
+	"SHIELDS_SIZE_ADJUST",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-50, 200},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Adjust Shields Size",
+	"Adjust the size of stamina shields.",
+	shields_subs
+)
+mod.add_option(
+	"SHIELDS_SPACING",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 500},
+		["unit_text"] = "px",
+	    ["default_value"] = 30,
+	},
+	"Spacing Between Shields",
+	"Adjust the spacing between stamina shields.",
+	shields_subs
+)
+
 local hide_ui_elements_group_index = pl.tablex.find_if(mod_data.options_widgets,
 	function(option_widget)
 		return option_widget.setting_name == mod.SETTING_NAMES.HIDE_UI_ELEMENTS_GROUP

@@ -283,8 +283,8 @@ mod:hook_safe(GenericHitReactionExtension, "_execute_effect", function(self, uni
 		if mod:get(mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_DPS_TIMED) then
 			if not mod.dps_start_t then
 				mod.dps_start_t = current_time
-				mod.increase_buff_stacks(local_player_unit, "custom_dps_timed", 0)
 			end
+			mod.increase_buff_stacks(local_player_unit, "custom_dps_timed", 0)
 			mod.dps_dmg_sum = mod.dps_dmg_sum + damage_total
 		end
 	end
@@ -315,6 +315,7 @@ mod:hook_safe(StateIngame, "update", function(self, dt, main_t)
 
 		if not buff_ext:has_buff_type("custom_dps_timed") then
 			mod.dps_start_t = nil
+			mod.dps_dmg_sum = 0
 		end
 
 		if mod:get(mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_DPS) then

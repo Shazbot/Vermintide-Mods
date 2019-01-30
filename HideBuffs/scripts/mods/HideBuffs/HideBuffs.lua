@@ -1131,6 +1131,7 @@ mod:dofile("scripts/mods/HideBuffs/persistent_ammo_counter")
 mod:dofile("scripts/mods/HideBuffs/locked_and_loaded_compat")
 mod:dofile("scripts/mods/HideBuffs/faster_chest_opening")
 mod:dofile("scripts/mods/HideBuffs/custom_buffs")
+mod:dofile("scripts/mods/HideBuffs/stamina_shields")
 
 fassert(not mod.update, "Overwriting existing function!")
 mod.update = function()

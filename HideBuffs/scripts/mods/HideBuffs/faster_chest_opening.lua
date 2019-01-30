@@ -12,8 +12,11 @@ mod:hook(HeroViewStateLoot, "_handle_input", function(func, self, dt, t)
 		and not self._mod_show_loot
 		then
 			self._mod_show_loot = true
+			local active_reward_options = self._active_reward_options
 			for index, _ in ipairs(self._option_widgets) do
-				self:open_reward_option(index)
+				if active_reward_options[index] then
+					self:open_reward_option(index)
+				end
 			end
 		end
 	end

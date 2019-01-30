@@ -91,7 +91,10 @@ mod.priority_buff_setting_name_to_buff_name = {
 		"bardin_ranger_activated_ability",
 		"bardin_ranger_activated_ability_duration",
 	},
-	BARDIN_IRONBREAKER_ACTIVATED_ABILITY = { "bardin_ironbreaker_activated_ability" },
+	BARDIN_IRONBREAKER_ACTIVATED_ABILITY = {
+		"bardin_ironbreaker_activated_ability",
+		"bardin_ironbreaker_activated_ability_duration",
+	},
 	BARDIN_SLAYER_ACTIVATED_ABILITY = { "bardin_slayer_activated_ability" },
 	HUNTSMAN_HS_CRIT_BUFF = { "markus_huntsman_passive_crit_buff" },
 	HUNTSMAN_HS_RELOAD_SPEED_BUFF = { "markus_huntsman_headshots_increase_reload_speed_buff" },

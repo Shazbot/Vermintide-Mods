@@ -464,7 +464,7 @@ mod.add_option(
 	"PLAYER_UI_PLAYER_PORTRAIT_OFFSET_X",
 	{
 		["widget_type"] = "numeric",
-		["range"] = {-1000, 1000},
+		["range"] = {-500, 2500},
 		["unit_text"] = "px",
 	    ["default_value"] = 0,
 	},
@@ -477,7 +477,7 @@ mod.add_option(
 	"PLAYER_UI_PLAYER_PORTRAIT_OFFSET_Y",
 	{
 		["widget_type"] = "numeric",
-		["range"] = {-1000, 1000},
+		["range"] = {-500, 2000},
 		["unit_text"] = "px",
 	    ["default_value"] = 0,
 	},

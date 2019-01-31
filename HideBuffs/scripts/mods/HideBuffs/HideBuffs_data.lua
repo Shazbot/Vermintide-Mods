@@ -62,7 +62,10 @@ mod.priority_buff_setting_name_to_buff_name = {
 	KNIGHT_ULT_BLOCK = { "markus_knight_activated_ability_infinite_block" },
 	KNIGHT_ULT_POWER = { "markus_knight_activated_ability_damage_buff" },
 	GROMRIL = { "bardin_ironbreaker_gromril_armour" },
-	WHC_ULT = { "victor_witchhunter_activated_ability_duration" },
+	WHC_ULT = {
+		"victor_witchhunter_activated_ability_duration",
+		"victor_witchhunter_activated_ability_crit_buff",
+	},
 	WHC_PING_AS = { "victor_witchhunter_ping_target_attack_speed" },
 	WHC_PING_CRIT = { "victor_witchhunter_ping_target_crit_chance" },
 	BH_CRIT_PASSIVE = {
@@ -85,8 +88,14 @@ mod.priority_buff_setting_name_to_buff_name = {
 	SPEED_POT = { "movement" },
 	CDR_POT = { "cooldown reduction buff" },
 	MARKUS_HUNTSMAN_ACTIVATED_ABILITY = { "markus_huntsman_activated_ability" },
-	KERILLIAN_SHADE_ACTIVATED_ABILITY = { "kerillian_shade_activated_ability" },
-	VICTOR_ZEALOT_ACTIVATED_ABILITY = { "victor_zealot_activated_ability" },
+	KERILLIAN_SHADE_ACTIVATED_ABILITY = {
+		"kerillian_shade_activated_ability",
+		"kerillian_shade_activated_ability_duration",
+	},
+	VICTOR_ZEALOT_ACTIVATED_ABILITY = {
+		"victor_zealot_activated_ability",
+		"victor_zealot_activated_ability_duration",
+	},
 	BARDIN_RANGER_ACTIVATED_ABILITY = {
 		"bardin_ranger_activated_ability",
 		"bardin_ranger_activated_ability_duration",

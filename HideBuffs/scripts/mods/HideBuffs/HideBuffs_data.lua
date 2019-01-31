@@ -996,7 +996,7 @@ mod.add_option(
 	    ["default_value"] = 255,
 	},
 	"Transparency",
-	"Make the ammo bar transparent, 0 being fully invisible.",
+	"Make the ammo bar transparent, 0 being completely invisible.",
 	player_ammo_bar_subs
 )
 
@@ -1291,6 +1291,17 @@ mod.add_option(
 	},
 	"Offset Y",
 	"Optionally offset the icons on the y axis.",
+	teammate_important_icons_subs
+)
+mod.add_option(
+	"TEAM_UI_ICONS_ALPHA",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 255},
+	    ["default_value"] = 200,
+	},
+	"Transparency",
+	"Adjust icon transparency, 0 being completely invisible.",
 	teammate_important_icons_subs
 )
 mod.add_option(

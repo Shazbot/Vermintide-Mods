@@ -603,6 +603,51 @@ mod.add_option(
 	player_item_slots_subs
 )
 
+local player_numeric_ui_group_subs = mod.add_option(
+	"PLAYER_NUMERIC_UI_GROUP",
+	{
+		["widget_type"] = "group",
+	},
+	"Numeric UI",
+	"Show hp and ammo values from the Numeric UI mod.",
+	player_ui_group.sub_widgets
+)
+mod.add_option(
+	"PLAYER_NUMERIC_UI_HP_OFFSET_X",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1000, 1000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"HP Offset X",
+	"Optionally offset the HP on the x axis.",
+	player_numeric_ui_group_subs
+)
+mod.add_option(
+	"PLAYER_NUMERIC_UI_HP_OFFSET_Y",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1000, 1000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"HP Offset Y",
+	"Optionally offset the HP on the y axis.",
+	player_numeric_ui_group_subs
+)
+mod.add_option(
+	"PLAYER_NUMERIC_UI_HP_FONT_SIZE",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {10, 40},
+	    ["default_value"] = 17,
+	},
+	"HP Font Size",
+	"Set HP font size.",
+	player_numeric_ui_group_subs
+)
+
 local buffs_group_index = pl.tablex.find_if(mod_data.options_widgets,
 	function(option_widget)
 		return option_widget.setting_name == mod.SETTING_NAMES.BUFFS_GROUP
@@ -1342,8 +1387,7 @@ local team_ui_numeric_ui_group_subs = mod.add_option(
 	    ["default_value"] = true,
 	},
 	"Numeric UI",
-	"Show hp and ammo values from the Numeric UI mod."
-		.."\nNumeric UI needs to be above UI Tweaks in the Launcher.",
+	"Show hp and ammo values from the Numeric UI mod.",
 	team_ui_group.sub_widgets,
 	2
 )

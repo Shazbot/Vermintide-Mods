@@ -190,6 +190,25 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 
 			local ammo_progress = self._hb_mod_ammo_widget.content.ammo_bar.bar_value
 			mod_ammo_widget.style.ammo_bar.size[1] = mod.ammo_bar_width * ammo_progress
+
+			-- NumericUI interop.
+			-- Display values gotten from Numeric UI on our own widget.
+			self._hb_mod_widget.content.health_string = mod.numeric_ui_data.health_string or ""
+
+			local hp_text_x = mod.hp_bar_width/2 + mod:get(mod.SETTING_NAMES.PLAYER_NUMERIC_UI_HP_OFFSET_X)
+			self._hb_mod_widget.style.hp_text.offset[1] = hp_text_x
+			self._hb_mod_widget.style.hp_text_shadow.offset[1] = hp_text_x + 2
+
+			local hp_text_y = mod.hp_bar_height/4 + mod:get(mod.SETTING_NAMES.PLAYER_NUMERIC_UI_HP_OFFSET_Y)
+			self._hb_mod_widget.style.hp_text.offset[2] = hp_text_y
+			self._hb_mod_widget.style.hp_text_shadow.offset[2] = hp_text_y - 2
+
+			self._hb_mod_widget.style.hp_text.offset[3] = 151
+			self._hb_mod_widget.style.hp_text_shadow.offset[3] = 150
+
+			local numeric_ui_font_size = mod:get(mod.SETTING_NAMES.PLAYER_NUMERIC_UI_HP_FONT_SIZE)
+			self._hb_mod_widget.style.hp_text.font_size = numeric_ui_font_size
+			self._hb_mod_widget.style.hp_text_shadow.font_size = numeric_ui_font_size
 		end)
 
 		local ui_renderer = self.ui_renderer
@@ -331,58 +350,6 @@ mod.hp_bg_rect_def =
 					return true
 				end
 			},
-			{
-				style_id = "ammo_text",
-				pass_type = "text",
-				text_id = "ammo_string",
-				retained_mode = false,
-				content_change_function = function (content, style)
-					style.font_size = (content.ammo_style == 2 and 18) or 22
-					style.font_type = (content.ammo_style == 2 and "hell_shark_header") or "hell_shark"
-
-					return
-				end,
-				content_check_function = function (content)
-					if content.ammo_string and content.ammo_string == "-1" then
-						return false
-					end
-
-					if content.ammo_string and content.ammo_string == "-1/-1" then
-						return false
-					end
-
-					local ammo_progress = content.ammo_percent
-					local check = ammo_progress and 0 <= ammo_progress
-
-					return not content.is_overcharge and check
-				end
-			},
-			{
-				style_id = "ammo_text_shadow",
-				pass_type = "text",
-				text_id = "ammo_string",
-				retained_mode = false,
-				content_change_function = function (content, style)
-					style.font_size = (content.ammo_style == 2 and 18) or 22
-					style.font_type = (content.ammo_style == 2 and "hell_shark_header") or "hell_shark"
-
-					return
-				end,
-				content_check_function = function (content)
-					if content.ammo_string and content.ammo_string == "-1" then
-						return false
-					end
-
-					if content.ammo_string and content.ammo_string == "-1/-1" then
-						return false
-					end
-
-					local ammo_progress = content.ammo_percent
-					local check = ammo_progress and 0 <= ammo_progress
-
-					return not content.is_overcharge and check
-				end
-			},
 		},
 	},
 	content = {
@@ -419,30 +386,6 @@ mod.hp_bg_rect_def =
 				0,
 				0,
 				-8 + 21
-			}
-		},
-		ammo_text = {
-			vertical_alignment = "center",
-			font_type = "hell_shark",
-			font_size = 22,
-			horizontal_alignment = "center",
-			text_color = Colors.get_table("white"),
-			offset = {
-				74,
-				45,
-				5
-			}
-		},
-		ammo_text_shadow = {
-			vertical_alignment = "center",
-			font_type = "hell_shark",
-			font_size = 22,
-			horizontal_alignment = "center",
-			text_color = Colors.get_table("black"),
-			offset = {
-				76,
-				43,
-				4
 			}
 		},
 	},

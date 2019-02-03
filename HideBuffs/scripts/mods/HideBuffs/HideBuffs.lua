@@ -15,6 +15,9 @@ end
 
 mod.persistent_storage = mod:persistent_table("persistent_storage")
 
+--- Keep track of player ammo and hp from Numeric UI for use in equipment_ui.
+mod.numeric_ui_data = {}
+
 mod.reset_hotkey_alpha = false
 mod.reset_portrait_frame_alpha = false
 mod.reset_level_alpha = false
@@ -618,9 +621,9 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 			self:_set_widget_dirty(portrait_static)
 		end
 
-		-- hide player portrait
-		local hide_player_portrait = mod:get(mod.SETTING_NAMES.HIDE_PLAYER_PORTRAIT)
-		if not self._mod_frame_index then
+		if not self._mod_frame_index then -- player UI
+			-- hide player portrait
+			local hide_player_portrait = mod:get(mod.SETTING_NAMES.HIDE_PLAYER_PORTRAIT)
 			local status_icon_widget = self:_widget_by_feature("status_icon", "dynamic")
 			local status_icon_widget_content = status_icon_widget.content
 			if (hide_player_portrait and status_icon_widget_content.visible)
@@ -661,12 +664,20 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 
 			portrait_widget.offset[1] = player_portrait_x
 			portrait_widget.offset[2] = player_portrait_y
-		end
 
-		-- changes to the non-player portraits UI
-		if self._mod_frame_index then
-			-- update important icons
-			if self._teammate_custom_widget then
+			-- NumericUI interop.
+			-- NumericUI stores hp and ammo in vanilla widgets content.
+			-- So just copy those values to our teammate widget.
+			local hp_dynamic = self:_widget_by_feature("health", "dynamic")
+			mod.numeric_ui_data.health_string = hp_dynamic.content.health_string or ""
+
+			-- ammo
+			local def_dynamic = self:_widget_by_feature("default", "dynamic")
+			mod.numeric_ui_data.ammo_string = def_dynamic.content.ammo_string or ""
+			mod.numeric_ui_data.ammo_percent = def_dynamic.content.ammo_percent
+			mod.numeric_ui_data.ammo_style = def_dynamic.content.ammo_style
+		else -- changes to the non-player portraits UI
+			if self._teammate_custom_widget then -- update important icons
 				local important_icons_enabled = mod:get(mod.SETTING_NAMES.TEAM_UI_ICONS_GROUP)
 				self.important_icons_enabled = important_icons_enabled
 				if self._teammate_custom_widget.content.important_icons_enabled ~= important_icons_enabled then
@@ -699,7 +710,7 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 				self._teammate_custom_widget.content.ammo_percent = def_dynamic.content.ammo_percent
 				self._teammate_custom_widget.content.ammo_style = def_dynamic.content.ammo_style
 
-				local ammo_text_x = 83 + mod:get(mod.SETTING_NAMES.TEAM_UI_NUMERIC_UI_AMMO_OFFSET_X)
+				local ammo_text_x = 80 + mod:get(mod.SETTING_NAMES.TEAM_UI_NUMERIC_UI_AMMO_OFFSET_X)
 				self._teammate_custom_widget.style.ammo_text.offset[1] = ammo_text_x
 				self._teammate_custom_widget.style.ammo_text_shadow.offset[1] = ammo_text_x + 2
 

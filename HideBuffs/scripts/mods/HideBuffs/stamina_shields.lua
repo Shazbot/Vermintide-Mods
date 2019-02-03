@@ -21,11 +21,13 @@ mod:hook(FatigueUI, "draw", function(func, self, dt)
 			shield.offset[1] = mod:get(mod.SETTING_NAMES.SHIELDS_OFFSET_X)
 			shield.offset[2] = mod:get(mod.SETTING_NAMES.SHIELDS_OFFSET_Y)
 
-			shield_style.size[1] = 90 + mod:get(mod.SETTING_NAMES.SHIELDS_SIZE_ADJUST)
-			shield_style.size[2] = 90 + mod:get(mod.SETTING_NAMES.SHIELDS_SIZE_ADJUST)
+			local shields_size_adjust = mod:get(mod.SETTING_NAMES.SHIELDS_SIZE_ADJUST)
 
-			shield_style.texture_glow_id.texture_size[1] = 64 + mod:get(mod.SETTING_NAMES.SHIELDS_SIZE_ADJUST)
-			shield_style.texture_glow_id.texture_size[2] = 64 + mod:get(mod.SETTING_NAMES.SHIELDS_SIZE_ADJUST)
+			shield_style.size[1] = 90 + shields_size_adjust
+			shield_style.size[2] = 90 + shields_size_adjust
+
+			shield_style.texture_glow_id.texture_size[1] = 64 + shields_size_adjust
+			shield_style.texture_glow_id.texture_size[2] = 64 + shields_size_adjust
 		end)
 	end
 

@@ -313,6 +313,76 @@ mod.hp_bg_rect_def =
 				pass_type = "rect",
 				style_id = "hp_bar_rect",
 			},
+			{
+				style_id = "hp_text",
+				pass_type = "text",
+				text_id = "health_string",
+				retained_mode = false,
+				content_check_function = function ()
+					return true
+				end
+			},
+			{
+				style_id = "hp_text_shadow",
+				pass_type = "text",
+				text_id = "health_string",
+				retained_mode = false,
+				content_check_function = function ()
+					return true
+				end
+			},
+			{
+				style_id = "ammo_text",
+				pass_type = "text",
+				text_id = "ammo_string",
+				retained_mode = false,
+				content_change_function = function (content, style)
+					style.font_size = (content.ammo_style == 2 and 18) or 22
+					style.font_type = (content.ammo_style == 2 and "hell_shark_header") or "hell_shark"
+
+					return
+				end,
+				content_check_function = function (content)
+					if content.ammo_string and content.ammo_string == "-1" then
+						return false
+					end
+
+					if content.ammo_string and content.ammo_string == "-1/-1" then
+						return false
+					end
+
+					local ammo_progress = content.ammo_percent
+					local check = ammo_progress and 0 <= ammo_progress
+
+					return not content.is_overcharge and check
+				end
+			},
+			{
+				style_id = "ammo_text_shadow",
+				pass_type = "text",
+				text_id = "ammo_string",
+				retained_mode = false,
+				content_change_function = function (content, style)
+					style.font_size = (content.ammo_style == 2 and 18) or 22
+					style.font_type = (content.ammo_style == 2 and "hell_shark_header") or "hell_shark"
+
+					return
+				end,
+				content_check_function = function (content)
+					if content.ammo_string and content.ammo_string == "-1" then
+						return false
+					end
+
+					if content.ammo_string and content.ammo_string == "-1/-1" then
+						return false
+					end
+
+					local ammo_progress = content.ammo_percent
+					local check = ammo_progress and 0 <= ammo_progress
+
+					return not content.is_overcharge and check
+				end
+			},
 		},
 	},
 	content = {
@@ -326,6 +396,54 @@ mod.hp_bg_rect_def =
 				10
 			},
 			color = {255, 0, 0, 0},
+		},
+		hp_text = {
+			vertical_alignment = "center",
+			font_type = "hell_shark_arial",
+			font_size = 17,
+			horizontal_alignment = "center",
+			text_color = Colors.get_table("white"),
+			offset = {
+				0,
+				0,
+				-8 + 22
+			}
+		},
+		hp_text_shadow = {
+			vertical_alignment = "center",
+			font_type = "hell_shark_arial",
+			font_size = 17,
+			horizontal_alignment = "center",
+			text_color = Colors.get_table("black"),
+			offset = {
+				0,
+				0,
+				-8 + 21
+			}
+		},
+		ammo_text = {
+			vertical_alignment = "center",
+			font_type = "hell_shark",
+			font_size = 22,
+			horizontal_alignment = "center",
+			text_color = Colors.get_table("white"),
+			offset = {
+				74,
+				45,
+				5
+			}
+		},
+		ammo_text_shadow = {
+			vertical_alignment = "center",
+			font_type = "hell_shark",
+			font_size = 22,
+			horizontal_alignment = "center",
+			text_color = Colors.get_table("black"),
+			offset = {
+				76,
+				43,
+				4
+			}
 		},
 	},
 	offset = {

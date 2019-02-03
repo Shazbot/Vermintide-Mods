@@ -4,15 +4,13 @@ local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
 
 mod.on_all_mods_loaded = function()
-	if get_mod("NumericUI") then
-		mod:echo(string.rep("=", 35))
-		mod:echo("WARNING: UI Tweaks is not compatible with Numeric UI!")
-		mod:echo(string.rep("=", 35))
+	-- NumericUI compatibility.
+	-- Disable NumericUI hook that modifies widget definitions.
+	-- We'll use hp and ammo values it calculates and stores into widgets content.
+	local numeric_ui = get_mod("NumericUI")
+	if numeric_ui then
+		numeric_ui:hook_disable(UnitFramesHandler, "_create_unit_frame_by_type")
 	end
-end
-
-if get_mod("NumericUI") then
-	return
 end
 
 mod.persistent_storage = mod:persistent_table("persistent_storage")
@@ -688,6 +686,41 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 					self:_set_widget_dirty(self._teammate_custom_widget)
 					self:set_dirty()
 				end
+
+				-- NumericUI interop.
+				-- NumericUI stores hp and ammo in vanilla widgets content.
+				-- So just copy those values to our teammate widget.
+				local hp_dynamic = self:_widget_by_feature("health", "dynamic")
+				self._teammate_custom_widget.content.health_string = hp_dynamic.content.health_string or ""
+
+				-- ammo
+				local def_dynamic = self:_widget_by_feature("default", "dynamic")
+				self._teammate_custom_widget.content.ammo_string = def_dynamic.content.ammo_string or ""
+				self._teammate_custom_widget.content.ammo_percent = def_dynamic.content.ammo_percent
+				self._teammate_custom_widget.content.ammo_style = def_dynamic.content.ammo_style
+
+				local ammo_text_x = 83 + mod:get(mod.SETTING_NAMES.TEAM_UI_NUMERIC_UI_AMMO_OFFSET_X)
+				self._teammate_custom_widget.style.ammo_text.offset[1] = ammo_text_x
+				self._teammate_custom_widget.style.ammo_text_shadow.offset[1] = ammo_text_x + 2
+
+				local ammo_text_y = 65 + mod:get(mod.SETTING_NAMES.TEAM_UI_NUMERIC_UI_AMMO_OFFSET_Y)
+				self._teammate_custom_widget.style.ammo_text.offset[2] = ammo_text_y
+				self._teammate_custom_widget.style.ammo_text_shadow.offset[2] = ammo_text_y - 2
+
+				local hp_text_x = 80 + mod:get(mod.SETTING_NAMES.TEAM_UI_NUMERIC_UI_HP_OFFSET_X)
+				self._teammate_custom_widget.style.hp_text.offset[1] = hp_text_x
+				self._teammate_custom_widget.style.hp_text_shadow.offset[1] = hp_text_x + 2
+
+				local hp_text_y = 100 + mod:get(mod.SETTING_NAMES.TEAM_UI_NUMERIC_UI_HP_OFFSET_Y)
+				self._teammate_custom_widget.style.hp_text.offset[2] = hp_text_y
+				self._teammate_custom_widget.style.hp_text_shadow.offset[2] = hp_text_y - 2
+
+				self._teammate_custom_widget.style.hp_text.offset[3] = -8 + 22
+				self._teammate_custom_widget.style.hp_text_shadow.offset[3] = -8 + 21
+
+				local numeric_ui_font_size = mod:get(mod.SETTING_NAMES.TEAM_UI_NUMERIC_UI_HP_FONT_SIZE)
+				self._teammate_custom_widget.style.hp_text.font_size = numeric_ui_font_size
+				self._teammate_custom_widget.style.hp_text_shadow.font_size = numeric_ui_font_size
 			end
 
 			if not self._hb_mod_cached_character_portrait_size then

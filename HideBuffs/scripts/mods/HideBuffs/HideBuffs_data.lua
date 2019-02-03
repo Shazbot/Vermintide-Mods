@@ -1335,6 +1335,78 @@ mod.add_option(
 	teammate_important_icons_subs
 )
 
+local team_ui_numeric_ui_group_subs = mod.add_option(
+	"TEAM_UI_NUMERIC_UI_GROUP",
+	{
+		["widget_type"] = "checkbox",
+	    ["default_value"] = true,
+	},
+	"Numeric UI",
+	"Show hp and ammo values from the Numeric UI mod."
+		.."\nNumeric UI needs to be above UI Tweaks in the Launcher.",
+	team_ui_group.sub_widgets,
+	2
+)
+mod.add_option(
+	"TEAM_UI_NUMERIC_UI_HP_OFFSET_X",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1000, 1000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"HP Offset X",
+	"Optionally offset the HP on the x axis.",
+	team_ui_numeric_ui_group_subs
+)
+mod.add_option(
+	"TEAM_UI_NUMERIC_UI_HP_OFFSET_Y",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1000, 1000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"HP Offset Y",
+	"Optionally offset the HP on the y axis.",
+	team_ui_numeric_ui_group_subs
+)
+mod.add_option(
+	"TEAM_UI_NUMERIC_UI_HP_FONT_SIZE",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {10, 40},
+	    ["default_value"] = 17,
+	},
+	"HP Font Size",
+	"Set HP font size.",
+	team_ui_numeric_ui_group_subs
+)
+mod.add_option(
+	"TEAM_UI_NUMERIC_UI_AMMO_OFFSET_X",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1000, 1000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Ammo Offset X",
+	"Optionally offset the ammo on the x axis.",
+	team_ui_numeric_ui_group_subs
+)
+mod.add_option(
+	"TEAM_UI_NUMERIC_UI_AMMO_OFFSET_Y",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1000, 1000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Ammo Offset Y",
+	"Optionally offset the ammo on the y axis.",
+	team_ui_numeric_ui_group_subs
+)
+
 local priority_buff_bar_group_index = pl.tablex.find_if(mod_data.options_widgets,
 	function(option_widget)
 		return option_widget.setting_name == mod.SETTING_NAMES.SECOND_BUFF_BAR

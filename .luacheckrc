@@ -35,6 +35,8 @@ globals = {
 	"PositiveReinforcementUI", "UIAnimation",
 	"Development", "PlayerUnitOverchargeExtension",
 	"DamageDataIndex", "StateIngame", "FatigueUI",
+	"StartGameWindowMission", "StartGameWindowMutator",
+	"StartGameWindowTwitchLogin", "StartGameWindowAdventure",
 
 	"PriorityBuffUI",
 }

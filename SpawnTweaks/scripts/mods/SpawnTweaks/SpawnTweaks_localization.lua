@@ -383,4 +383,10 @@ return {
 			.."\nBlob vector horde doesn't support changing composition and direction."
 			.."\nSo this option replaces bloc vector hordes with normal vector hordes.",
 	},
+	NO_BOTS = {
+		en = "Disable Bots",
+	},
+	NO_BOTS_T = {
+		en = "Start the map without bots.",
+	},
 }

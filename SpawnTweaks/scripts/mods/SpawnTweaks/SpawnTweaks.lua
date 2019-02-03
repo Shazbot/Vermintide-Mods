@@ -722,6 +722,11 @@ mod.reset_breed_dmg = function()
 	vmf.save_unsaved_settings_to_file()
 end
 
+mod.update = function()
+end
+
 mod:command("reset_breed_dmg", mod:localize("reset_breed_dmg_description"), mod.reset_breed_dmg)
 
 mod:dofile("scripts/mods/"..mod:get_name().."/presets")
+mod:dofile("scripts/mods/"..mod:get_name().."/mutators")
+mod:dofile("scripts/mods/"..mod:get_name().."/no_bots")

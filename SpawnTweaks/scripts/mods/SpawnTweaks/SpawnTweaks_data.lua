@@ -60,6 +60,7 @@ mod.SETTING_NAMES = {
 	HORDES_BOTH_DIRECTIONS = "HORDES_BOTH_DIRECTIONS",
 	AGGRO_PATROLS = "AGGRO_PATROLS",
 	DISABLE_BLOC_VECTOR_HORDE = "DISABLE_BLOC_VECTOR_HORDE",
+	NO_BOTS = "NO_BOTS",
 }
 
 mod.BOSSES = {
@@ -280,6 +281,13 @@ specials_weights_toggle_widget.sub_widgets = (function()
 end)()
 
 mod_data.options_widgets = {
+	{
+		["setting_name"] = mod.SETTING_NAMES.NO_BOTS,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("NO_BOTS"),
+		["tooltip"] = mod:localize("NO_BOTS_T"),
+		["default_value"] = false,
+	},
 	{
 		["setting_name"] = mod.SETTING_NAMES.THREAT_MULTIPLIER,
 		["widget_type"] = "numeric",
@@ -704,18 +712,24 @@ mod_data.options_widgets = {
 	},
 }
 
+mod.setting_parents = {}
+mod.setting_names_localized = {}
 mod.get_defaults = function()
 	local defaults = {}
-	local function subwidget_search(subwidgets)
+	local function subwidget_search(subwidgets, parents)
 		for _, setting_widget in ipairs( subwidgets ) do
 			defaults[setting_widget.setting_name] = setting_widget.default_value
+			mod.setting_parents[setting_widget.setting_name] = table.clone(parents)
+			mod.setting_names_localized[setting_widget.setting_name] = setting_widget.text
 			if setting_widget.sub_widgets then
-				subwidget_search(setting_widget.sub_widgets)
+				local new_parents = table.clone(parents)
+				table.insert(new_parents, setting_widget.setting_name)
+				subwidget_search(setting_widget.sub_widgets, new_parents)
 			end
 		end
 	end
 
-	subwidget_search(mod_data.options_widgets)
+	subwidget_search(mod_data.options_widgets, {})
 
 	return defaults
 end

@@ -98,6 +98,11 @@ mod.dump_settings = function()
 					cloned_settings[setting_name] = nil
 				end
 			end
+			for setting_name, _ in pairs( cloned_settings ) do
+				if mod.setting_defaults[setting_name] == nil then
+					cloned_settings[setting_name] = nil
+				end
+			end
 			pl.utils.writefile("spawn_tweaks_settings", serpent.dump(cloned_settings, {compact = false, nocode = true, indent = '  '}))
 		end
 	end

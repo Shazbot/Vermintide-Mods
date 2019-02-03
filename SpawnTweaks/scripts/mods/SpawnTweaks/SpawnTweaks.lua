@@ -730,3 +730,8 @@ mod:command("reset_breed_dmg", mod:localize("reset_breed_dmg_description"), mod.
 mod:dofile("scripts/mods/"..mod:get_name().."/presets")
 mod:dofile("scripts/mods/"..mod:get_name().."/mutators")
 mod:dofile("scripts/mods/"..mod:get_name().."/no_bots")
+
+mod.on_disabled = function(init_call) -- luacheck: ignore init_call
+	mod:hook_enable(mod, "update")
+	mod:hook_enable(SpawnManager, "all_players_disabled")
+end

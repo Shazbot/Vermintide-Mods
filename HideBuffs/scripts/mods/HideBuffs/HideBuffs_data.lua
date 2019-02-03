@@ -115,6 +115,21 @@ mod.priority_buff_setting_name_to_buff_name = {
 		"twitch_power_boost_dismember",
 	},
 	BARKSKIN = { "trait_necklace_damage_taken_reduction_buff" },
+	custom_dps_timed_buff = { "custom_dps_timed" },
+	custom_dps_buff = { "custom_dps" },
+	custom_dmg_taken_buff = { "custom_dmg_taken" },
+	custom_temp_hp_buff = { "custom_temp_hp" },
+	custom_scavenger_buff = { "custom_scavenger" },
+	custom_wounded_buff = { "custom_wounded" },
+}
+
+local priority_buffs_default_disabled = {
+	custom_dps_timed_buff = true,
+	custom_dps_buff = true,
+	custom_dmg_taken_buff = true,
+	custom_temp_hp_buff = true,
+	custom_scavenger_buff = true,
+	custom_wounded_buff = true,
 }
 
 local priority_buffs_group_subwidgets = {}
@@ -125,7 +140,7 @@ for setting_name, _ in pairs( mod.priority_buff_setting_name_to_buff_name ) do
 			["setting_name"] = setting_name,
 			["widget_type"] = "checkbox",
 			["text"] = mod:localize(setting_name),
-			["default_value"] = true,
+			["default_value"] = not priority_buffs_default_disabled[setting_name],
 		}
 	)
 end

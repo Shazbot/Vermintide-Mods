@@ -416,6 +416,24 @@ mod.localizations:update({
 	BARKSKIN = {
 		en = "Barkskin"
 	},
+	custom_dps_timed_buff = {
+		en = "Custom DPS Temp Buff",
+	},
+	custom_dps_buff = {
+		en = "Custom DPS Map Buff",
+	},
+	custom_dmg_taken_buff = {
+		en = "Custom Dmg Taken Buff",
+	},
+	custom_temp_hp_buff = {
+		en = "Custom White HP Buff",
+	},
+	custom_scavenger_buff = {
+		en = "Custom Ammo Gain Buff",
+	},
+	custom_wounded_buff = {
+		en = "Custom Death's Door Buff",
+	},
 
 })
 

@@ -383,6 +383,9 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 			hp_dynamic_style.grimoire_bar.size[1] = hp_bar_size[1]
 			hp_dynamic_style.grimoire_bar.size[2] = hp_bar_size[2]
 
+			hp_dynamic_style.hp_bar_highlight.offset[1] = -50 + hp_bar_offset_x
+			hp_dynamic_style.hp_bar_highlight.offset[2] = -32 + hp_bar_offset_y
+
 			hp_dynamic_style.grimoire_debuff_divider.size[1] = 3
 			hp_dynamic_style.grimoire_debuff_divider.size[2] = 28 + delta_y
 
@@ -567,6 +570,10 @@ mod.adjust_portrait_size_and_position = function(unit_frame_ui)
 
 		widgets.portrait_static.offset[1] = team_ui_portrait_offset_x
 		widgets.portrait_static.offset[2] = team_ui_portrait_offset_y
+
+		default_static_widget.style.host_icon.offset[1] = -50 + team_ui_portrait_offset_x
+		default_static_widget.style.host_icon.offset[2] = 10 + team_ui_portrait_offset_y
+
 		self:_set_widget_dirty(widgets.portrait_static)
 	end
 end

@@ -14,6 +14,7 @@ mod.mutators_list = {
 
 mod.mutators = {
 	true_solo = {
+		bosses = 3,
 		boss_dmg_multiplier = 200,
 		LORD_DMG_MULTIPLIER = 200,
 		disable_patrols = true,
@@ -226,7 +227,7 @@ mod.create_window = function()
 		.."\nClick Reset All if you don't want anything active."
 
 	for i = 1, 30 do
-		local summary = mod.main_window:create_label("summary_"..i, {5+30+10+10+155, window_size[2]-30-35-20-35-10-50-70-(30*i)}, {100, 40}, nil, "")
+		local summary = mod.main_window:create_label("summary_"..i, {5+30+10+10+155, window_size[2]-30-35-20-35-10-50-70+2-(28*i)}, {100, 40}, nil, "")
 		table.insert(mod.summary_labels, summary)
 	end
 

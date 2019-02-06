@@ -312,6 +312,13 @@ mod_data.options_widgets = {
 		["default_value"] = false,
 	},
 	{
+		["setting_name"] = mod.SETTING_NAMES.AMBIENTS_NO_THREAT,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("ambients_no_threat"),
+		["tooltip"] = mod:localize("ambients_no_threat_tooltip"),
+		["default_value"] = false,
+	},
+	{
 		["setting_name"] = mod.SETTING_NAMES.DISABLE_PATROLS,
 		["widget_type"] = "checkbox",
 		["text"] = mod:localize("disable_patrols"),
@@ -568,14 +575,6 @@ mod_data.options_widgets = {
 				["range"] = {10, 1500},
 				["unit_text"] = "%",
 				["default_value"] = 100,
-			},
-			{
-				["show_widget_condition"] = {3},
-				["setting_name"] = mod.SETTING_NAMES.AMBIENTS_NO_THREAT,
-				["widget_type"] = "checkbox",
-				["text"] = mod:localize("ambients_no_threat"),
-				["tooltip"] = mod:localize("ambients_no_threat_tooltip"),
-				["default_value"] = false,
 			},
 			custom_ambients_group_widget,
 		},

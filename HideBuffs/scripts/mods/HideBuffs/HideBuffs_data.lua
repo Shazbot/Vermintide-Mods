@@ -997,6 +997,16 @@ mod.add_option(
 	"Disable Lohner's level intro spiel.",
 	hide_ui_elements_group.sub_widgets
 )
+mod.add_option(
+	"DISABLE_OLESYA_UBERSREIK_AUDIO",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Disable Olesya Ubersreik Audio",
+	"Disable Olesya's lines in the Ubersreik maps.",
+	hide_ui_elements_group.sub_widgets
+)
 
 local mini_hud_preset_subs = mod.add_option(
 	"MINI_HUD_PRESET",
@@ -1398,8 +1408,7 @@ mod.add_option(
 local team_ui_numeric_ui_group_subs = mod.add_option(
 	"TEAM_UI_NUMERIC_UI_GROUP",
 	{
-		["widget_type"] = "checkbox",
-	    ["default_value"] = true,
+		["widget_type"] = "group",
 	},
 	"Numeric UI",
 	"Show hp and ammo values from the Numeric UI mod.",

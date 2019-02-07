@@ -1150,6 +1150,18 @@ mod:hook(StateLoading, "_trigger_sound_events", function(func, self, level_key)
 	return func(self, level_key)
 end)
 
+--- Mute Olesya in the Ubersreik levels.
+mod:hook(DialogueSystem, "trigger_sound_event_with_subtitles", function(func, self, sound_event, subtitle_event, speaker_name)
+	if speaker_name == "ferry_lady"
+	and mod:get(mod.SETTING_NAMES.DISABLE_OLESYA_UBERSREIK_AUDIO)
+	and string.find(sound_event, "nfl_holly_level_memory")
+	then
+		return
+	end
+
+	return func(self, sound_event, subtitle_event, speaker_name)
+end)
+
 --- Hide name of new location text.
 mod:hook(PlayerHud, "set_current_location", function(func, self, ...)
 	if mod:get(mod.SETTING_NAMES.HIDE_NEW_AREA_TEXT) then

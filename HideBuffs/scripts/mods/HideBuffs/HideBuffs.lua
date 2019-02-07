@@ -685,22 +685,23 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 			mod.numeric_ui_data.ammo_style = def_dynamic.content.ammo_style
 		else -- changes to the non-player portraits UI
 			if self._teammate_custom_widget then -- update important icons
+				local teammate_widget_content = self._teammate_custom_widget.content
 				local important_icons_enabled = mod:get(mod.SETTING_NAMES.TEAM_UI_ICONS_GROUP)
 				self.important_icons_enabled = important_icons_enabled
-				if self._teammate_custom_widget.content.important_icons_enabled ~= important_icons_enabled then
-					self._teammate_custom_widget.content.important_icons_enabled = important_icons_enabled
+				if teammate_widget_content.important_icons_enabled ~= important_icons_enabled then
+					teammate_widget_content.important_icons_enabled = important_icons_enabled
 					self:_set_widget_dirty(self._teammate_custom_widget)
 					self:set_dirty()
 				end
-				if self._teammate_custom_widget.content.has_natural_bond ~= self.has_natural_bond
-				or self._teammate_custom_widget.content.is_wounded ~= self.is_wounded
-				or self._teammate_custom_widget.content.has_healshare_talent ~= self.has_healshare_talent
-				or self._teammate_custom_widget.content.has_hand_of_shallya ~= self.has_hand_of_shallya
+				if teammate_widget_content.has_natural_bond ~= self.has_natural_bond
+				or teammate_widget_content.is_wounded ~= self.is_wounded
+				or teammate_widget_content.has_healshare_talent ~= self.has_healshare_talent
+				or teammate_widget_content.has_hand_of_shallya ~= self.has_hand_of_shallya
 				then
-					self._teammate_custom_widget.content.has_natural_bond = self.has_natural_bond
-					self._teammate_custom_widget.content.is_wounded = self.is_wounded
-					self._teammate_custom_widget.content.has_healshare_talent = self.has_healshare_talent
-					self._teammate_custom_widget.content.has_hand_of_shallya = self.has_hand_of_shallya
+					teammate_widget_content.has_natural_bond = self.has_natural_bond
+					teammate_widget_content.is_wounded = self.is_wounded
+					teammate_widget_content.has_healshare_talent = self.has_healshare_talent
+					teammate_widget_content.has_hand_of_shallya = self.has_hand_of_shallya
 					self:_set_widget_dirty(self._teammate_custom_widget)
 					self:set_dirty()
 				end
@@ -709,36 +710,34 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 				-- NumericUI stores hp and ammo in vanilla widgets content.
 				-- So just copy those values to our teammate widget.
 				local hp_dynamic = self:_widget_by_feature("health", "dynamic")
-				self._teammate_custom_widget.content.health_string = hp_dynamic.content.health_string or ""
+				teammate_widget_content.health_string = hp_dynamic.content.health_string or ""
 
 				-- ammo
 				local def_dynamic = self:_widget_by_feature("default", "dynamic")
-				self._teammate_custom_widget.content.ammo_string = def_dynamic.content.ammo_string or ""
-				self._teammate_custom_widget.content.ammo_percent = def_dynamic.content.ammo_percent
-				self._teammate_custom_widget.content.ammo_style = def_dynamic.content.ammo_style
+				teammate_widget_content.ammo_string = def_dynamic.content.ammo_string or ""
+				teammate_widget_content.ammo_percent = def_dynamic.content.ammo_percent
+				teammate_widget_content.ammo_style = def_dynamic.content.ammo_style
 
+				local teammate_widget_style = self._teammate_custom_widget.style
 				local ammo_text_x = 80 + mod:get(mod.SETTING_NAMES.TEAM_UI_NUMERIC_UI_AMMO_OFFSET_X)
-				self._teammate_custom_widget.style.ammo_text.offset[1] = ammo_text_x
-				self._teammate_custom_widget.style.ammo_text_shadow.offset[1] = ammo_text_x + 2
+				teammate_widget_style.ammo_text.offset[1] = ammo_text_x
+				teammate_widget_style.ammo_text_shadow.offset[1] = ammo_text_x + 2
 
 				local ammo_text_y = 65 + mod:get(mod.SETTING_NAMES.TEAM_UI_NUMERIC_UI_AMMO_OFFSET_Y)
-				self._teammate_custom_widget.style.ammo_text.offset[2] = ammo_text_y
-				self._teammate_custom_widget.style.ammo_text_shadow.offset[2] = ammo_text_y - 2
+				teammate_widget_style.ammo_text.offset[2] = ammo_text_y
+				teammate_widget_style.ammo_text_shadow.offset[2] = ammo_text_y - 2
 
 				local hp_text_x = 80 + mod:get(mod.SETTING_NAMES.TEAM_UI_NUMERIC_UI_HP_OFFSET_X)
-				self._teammate_custom_widget.style.hp_text.offset[1] = hp_text_x
-				self._teammate_custom_widget.style.hp_text_shadow.offset[1] = hp_text_x + 2
+				teammate_widget_style.hp_text.offset[1] = hp_text_x
+				teammate_widget_style.hp_text_shadow.offset[1] = hp_text_x + 2
 
 				local hp_text_y = 100 + mod:get(mod.SETTING_NAMES.TEAM_UI_NUMERIC_UI_HP_OFFSET_Y)
-				self._teammate_custom_widget.style.hp_text.offset[2] = hp_text_y
-				self._teammate_custom_widget.style.hp_text_shadow.offset[2] = hp_text_y - 2
-
-				self._teammate_custom_widget.style.hp_text.offset[3] = -8 + 22
-				self._teammate_custom_widget.style.hp_text_shadow.offset[3] = -8 + 21
+				teammate_widget_style.hp_text.offset[2] = hp_text_y
+				teammate_widget_style.hp_text_shadow.offset[2] = hp_text_y - 2
 
 				local numeric_ui_font_size = mod:get(mod.SETTING_NAMES.TEAM_UI_NUMERIC_UI_HP_FONT_SIZE)
-				self._teammate_custom_widget.style.hp_text.font_size = numeric_ui_font_size
-				self._teammate_custom_widget.style.hp_text_shadow.font_size = numeric_ui_font_size
+				teammate_widget_style.hp_text.font_size = numeric_ui_font_size
+				teammate_widget_style.hp_text_shadow.font_size = numeric_ui_font_size
 			end
 
 			if not self._hb_mod_cached_character_portrait_size then

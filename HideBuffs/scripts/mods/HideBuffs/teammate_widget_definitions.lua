@@ -212,7 +212,7 @@ mod.teammate_ui_custom_def =
 			offset = {
 				0,
 				0,
-				-8 + 22
+				52
 			}
 		},
 		hp_text_shadow = {
@@ -224,7 +224,7 @@ mod.teammate_ui_custom_def =
 			offset = {
 				0,
 				0,
-				-8 + 21
+				51
 			}
 		},
 		ammo_text = {
@@ -236,7 +236,7 @@ mod.teammate_ui_custom_def =
 			offset = {
 				74,
 				45,
-				5
+				52
 			}
 		},
 		ammo_text_shadow = {
@@ -248,7 +248,7 @@ mod.teammate_ui_custom_def =
 			offset = {
 				76,
 				43,
-				4
+				51
 			}
 		},
 		frame_is_wounded = {

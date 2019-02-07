@@ -110,7 +110,7 @@ mod.buff_stacks_styling = {
 	},
 }
 
-mod:hook(BuffUI, "_remove_buff", function(func, self, index)
+mod.buff_ui_remove_buff_hook = function(func, self, index)
 	if self._active_buffs[index].name == "custom_dps" then
 		mod.custom_dps_buff_id = nil
 	end
@@ -134,7 +134,10 @@ mod:hook(BuffUI, "_remove_buff", function(func, self, index)
 	self._active_buffs[index].widget.content._last_stack_count = nil
 
 	return func(self, index)
-end)
+end
+
+mod:hook(BuffUI, "_remove_buff", mod.buff_ui_remove_buff_hook)
+mod:hook(PriorityBuffUI, "_remove_buff", mod.buff_ui_remove_buff_hook)
 
 --- Modify stack_count before drawing, note that it gets reset every time before draw.
 --- Also change widget style.

@@ -438,6 +438,8 @@ PriorityBuffUI._on_resolution_modified = function (self)
 end
 
 PriorityBuffUI.draw = function (self, dt)
+	mod.custom_buffs_BuffUI_draw(self)
+
 	for _, data in ipairs(self._active_buffs) do
 		local widget = data.widget
 

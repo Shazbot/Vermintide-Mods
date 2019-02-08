@@ -280,7 +280,37 @@ specials_weights_toggle_widget.sub_widgets = (function()
 	return breed_options
 end)()
 
-mod_data.options_widgets = {
+mod_data.options_widgets = pl.List()
+mod.localizations = mod.localizations or pl.Map()
+
+mod.add_option = function(setting_name, option_widget, en_text, en_tooltip, group, index)
+	mod.SETTING_NAMES[setting_name] = setting_name
+	option_widget.setting_name = setting_name
+	if en_text then
+		mod.localizations[setting_name] = {
+			en = en_text
+		}
+	end
+	if en_tooltip then
+		mod.localizations[setting_name.."_T"] = {
+			en = en_tooltip
+		}
+	end
+	option_widget.text = mod:localize(setting_name)
+	option_widget.tooltip = mod:localize(setting_name.."_T")
+	option_widget.sub_widgets = {}
+	if not group then
+		index = index or #mod_data.options_widgets + 1
+		mod_data.options_widgets:insert(index, option_widget)
+	else
+		index = index or #group + 1
+		table.insert(group, index, option_widget)
+	end
+
+	return option_widget.sub_widgets
+end
+
+mod_data.options_widgets:extend({
 	{
 		["setting_name"] = mod.SETTING_NAMES.NO_BOTS,
 		["widget_type"] = "checkbox",
@@ -709,7 +739,66 @@ mod_data.options_widgets = {
 			},
 		},
 	},
+})
+
+local pickups_subs = mod.add_option(
+	"MAP_PICKUPS_GROUP",
+	{
+		["widget_type"] = "group",
+	},
+	"Map Pickups",
+	"Change rules for consumables spawning in the level."
+)
+
+mod.map_pickups = {
+	-- "tome",
+	-- "grimoire",
+	"cooldown_reduction_potion",
+	"all_ammo",
+	"first_aid_kit",
+	"healing_draught",
+	"speed_boost_potion",
+	"fire_grenade_t1",
+	"fire_grenade_t2",
+	"damage_boost_potion",
+	"frag_grenade_t1",
+	"frag_grenade_t2",
+	"all_ammo_small",
+	"lamp_oil",
+	"explosive_barrel",
 }
+local map_pickups_disable_group_subs = mod.add_option(
+	"MAP_PICKUPS_DISABLE_GROUP",
+	{
+		["widget_type"] = "group",
+	},
+	"Disable Map Pickups",
+	"Disable spawning of pickups.",
+	pickups_subs
+)
+mod.add_option(
+		"MAP_PICKUPS_REPLACE_DISABLED",
+		{
+			["widget_type"] = "checkbox",
+		    ["default_value"] = false,
+		},
+		"Replace Disabled Pickups",
+		"Disabled pickups will be replaced with randomly chosen non-disabled pickups.",
+		map_pickups_disable_group_subs
+	)
+for _, pickup_name in ipairs( mod.map_pickups ) do
+	local pickup = AllPickups[pickup_name]
+	mod.add_option(
+		"MAP_PICKUPS_DISABLE_"..pickup_name,
+		{
+			["widget_type"] = "checkbox",
+		    ["default_value"] = false,
+		},
+		pickup.hud_description and Localize(pickup.hud_description) or pickup_name,
+		"Internal name: "..pickup_name,
+		map_pickups_disable_group_subs
+	)
+end
 
 mod.setting_parents = {}
 mod.setting_names_localized = {}

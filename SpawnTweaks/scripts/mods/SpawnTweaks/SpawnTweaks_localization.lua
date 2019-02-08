@@ -1,4 +1,10 @@
-return {
+local mod = get_mod("SpawnTweaks")
+
+local pl = require'pl.import_into'()
+
+mod.localizations = mod.localizations or pl.Map()
+
+mod.localizations:update({
 	mod_name = {
 		en = "Spawn Tweaks"
 	},
@@ -389,4 +395,6 @@ return {
 	NO_BOTS_T = {
 		en = "Start the map without bots.",
 	},
-}
+})
+
+return mod.localizations

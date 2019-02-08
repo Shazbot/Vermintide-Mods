@@ -289,11 +289,4 @@ end
 
 mod:command("dlc", mod:localize("dlc_level_command_description"), function() mod.start_dlc_level() end)
 
-mod:hook(WwiseWorld, "trigger_event", function(func, wwise_world, sound_event, ...)
-	if string.find(sound_event, "nfl_holly_level_memory") then
-		return
-	end
-	return func(wwise_world, sound_event, ...)
-end)
-
 mod:dofile("scripts/mods/"..mod:get_name().."/assassin_hero_warning")

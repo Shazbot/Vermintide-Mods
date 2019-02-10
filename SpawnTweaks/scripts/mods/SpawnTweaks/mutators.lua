@@ -107,6 +107,24 @@ mod.get_diffs = function()
 	return diffs
 end
 
+--- Enable mutators that have all their settings enabled.
+mod.enabled_eligible_mutators = function()
+	for mutator_name, mutator_settings in pairs( mod.mutators ) do
+		local all_settings_enabled = true
+		for setting_name, value in pairs( mutator_settings ) do
+			local current_value = mod:get(setting_name)
+			if current_value ~= value then
+				all_settings_enabled = false
+				break
+			end
+		end
+		if all_settings_enabled then
+			mod.mutators_enabled[mutator_name] = true
+			mod.mutator_chks[mutator_name].value = true
+		end
+	end
+end
+
 --- Enable or disable a mutator.
 mod.set_mutator = function(mutator_name, enabled, dont_recurse)
 	for setting_name, value in pairs( mod.mutators[mutator_name] ) do
@@ -182,13 +200,13 @@ mod.create_window = function()
 
 			mod.refresh_summary()
 		end
-		table.insert(mod.mutator_chks, mutator_chk)
+		mod.mutator_chks[mutator_name] = mutator_chk
 		mutator_chk.value = mod.mutators_enabled[mutator_name]
 	end
 
 	local reset_button = mod.main_window:create_button("reset_button", {235+120, window_size[2]-35-10-50}, {80, 30}, nil, "Reset All")
 	reset_button.on_click = function()
-		for _, mutator_ckh in ipairs( mod.mutator_chks ) do
+		for _, mutator_ckh in pairs( mod.mutator_chks ) do
 			mutator_ckh.value = false
 			mutator_ckh:on_value_changed()
 		end
@@ -240,6 +258,8 @@ mod.create_window = function()
 	mod.main_window.transparent = true
 
 	mod.refresh_summary()
+
+	mod.enabled_eligible_mutators()
 end
 
 mod.reload_windows = function()

@@ -121,6 +121,53 @@ mod.priority_buff_setting_name_to_buff_name = {
 	custom_temp_hp_buff = { "custom_temp_hp" },
 	custom_scavenger_buff = { "custom_scavenger" },
 	custom_wounded_buff = { "custom_wounded" },
+	MERC_MORE_MERRIER = {
+		"markus_mercenary_damage_on_enemy_proximity"
+	},
+	MERC_BLADE_BARRIER = {
+		"markus_mercenary_passive_defence"
+	},
+	MERC_REIKLAND_REAPER = {
+		"markus_mercenary_passive_power_level"
+	},
+	KNIGHT_BUILD_MOMENTUM = {
+		"markus_knight_stamina_regen_buff"
+	},
+	SLAYER_TROPHY_HUNTER = {
+		"bardin_slayer_passive_stacking_damage_buff",
+		"bardin_slayer_passive_stacking_damage_buff_increased_duration",
+	},
+	SLAYER_MOVING_TARGET = {
+		"bardin_slayer_passive_stacking_defence_buff"
+	},
+	IB_MINERS_RHYTHM = {
+		"bardin_ironbreaker_regen_stamina_on_charged_attacks_buff"
+	},
+	ZEALOT_INVULNERABLE_ACTIVE = {
+		"victor_zealot_invulnerability_on_lethal_damage_taken"
+	},
+	ZEALOT_INVULNERABLE_ON_CD = {
+		"victor_zealot_invulnerability_cooldown"
+	},
+	ZEALOT_HOLY_CRUSADER = {
+		"victor_zealot_critical_hit_damage_from_passive"
+	},
+	ZEALOT_FIERY_FAITH = {
+		"victor_zealot_critical_hit_damage_from_passive"
+	},
+	ZEALOT_NO_SURRENDER = {
+		"victor_zealot_damage_on_enemy_proximity"
+	},
+	BW_WORLD_AFLAME = {
+		"sienna_adept_damage_on_enemy_proximity"
+	},
+	BW_BURNOUT = {
+		"sienna_adept_ability_trail_double"
+	},
+	UNCHAINED_FEURBACHS_FURY = {
+		"sienna_unchained_stamina_regen"
+	},
+
 }
 
 local priority_buffs_default_disabled = {
@@ -130,6 +177,20 @@ local priority_buffs_default_disabled = {
 	custom_temp_hp_buff = true,
 	custom_scavenger_buff = true,
 	custom_wounded_buff = true,
+	MERC_MORE_MERRIER = true,
+	MERC_REIKLAND_REAPER = true,
+	MERC_BLADE_BARRIER = true,
+	KNIGHT_BUILD_MOMENTUM = true,
+	SLAYER_TROPHY_HUNTER = true,
+	SLAYER_MOVING_TARGET = true,
+	IB_MINERS_RHYTHM = true,
+	ZEALOT_INVULNERABLE_ACTIVE = true,
+	ZEALOT_INVULNERABLE_ON_CD = true,
+	ZEALOT_HOLY_CRUSADER = true,
+	ZEALOT_FIERY_FAITH = true,
+	ZEALOT_NO_SURRENDER = true,
+	BW_WORLD_AFLAME = true,
+	UNCHAINED_FEURBACHS_FURY = true,
 }
 
 local priority_buffs_group_subwidgets = {}
@@ -1608,6 +1669,30 @@ mod.add_option(
 	},
 	"Heat Bar Offset Y",
 	"Optionally offset the heat bar on the y axis.",
+	other_elements_subs
+)
+mod.add_option(
+	"OTHER_ELEMENTS_TWITCH_VOTE_OFFSET_X",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1500, 1500},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Twitch Vote UI Offset X",
+	"Optionally offset the Twitch voting UI on the x axis.",
+	other_elements_subs
+)
+mod.add_option(
+	"OTHER_ELEMENTS_TWITCH_VOTE_OFFSET_Y",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1000, 2000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Twitch Vote UI Offset Y",
+	"Optionally offset the Twitch voting UI on the y axis.",
 	other_elements_subs
 )
 

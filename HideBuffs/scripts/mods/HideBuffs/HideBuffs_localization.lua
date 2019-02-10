@@ -434,6 +434,51 @@ mod.localizations:update({
 	custom_wounded_buff = {
 		en = "Custom Death's Door Buff",
 	},
+	MERC_MORE_MERRIER = {
+		en = "Merc: The More The Merrier!",
+	},
+	MERC_REIKLAND_REAPER = {
+		en = "Merc: Reikland Reaper",
+	},
+	MERC_BLADE_BARRIER = {
+		en = "Merc: Blade Barrier",
+	},
+	KNIGHT_BUILD_MOMENTUM = {
+		en = "Knight: Build Momentum",
+	},
+	SLAYER_MOVING_TARGET = {
+		en = "Slayer: Moving Target",
+	},
+	SLAYER_TROPHY_HUNTER = {
+		en = "Slayer: Trophy Hunter",
+	},
+	IB_MINERS_RHYTHM = {
+		en = "Ironbreaker: Miner's Rhythm",
+	},
+	ZEALOT_INVULNERABLE_ACTIVE = {
+		en = "Zealot: Heart Of Iron Active",
+	},
+	ZEALOT_INVULNERABLE_ON_CD = {
+		en = "Zealot: Heart Of Iron On CD",
+	},
+	ZEALOT_HOLY_CRUSADER = {
+		en = "Zealot: Holy Crusader"
+	},
+	ZEALOT_FIERY_FAITH = {
+		en = "Zealot: Fiery Faith"
+	},
+	ZEALOT_NO_SURRENDER = {
+		en = "Zealot: No Surrender!"
+	},
+	BW_WORLD_AFLAME = {
+		en = "BW: World Aflame(power per enemy)"
+	},
+	BW_BURNOUT = {
+		en = "BW: Burnout(double ult)"
+	},
+	UNCHAINED_FEURBACHS_FURY = {
+		en = "Unchained: Feurbach's Fury(charged hits stam regen)"
+	},
 
 })
 

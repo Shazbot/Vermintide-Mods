@@ -1151,10 +1151,18 @@ mod:hook(StateLoading, "_trigger_sound_events", function(func, self, level_key)
 end)
 
 --- Mute Olesya in the Ubersreik levels.
+mod.ubersreik_lvls = pl.List({
+	"magnus",
+	"cemetery",
+	"forest_ambush",
+})
 mod:hook(DialogueSystem, "trigger_sound_event_with_subtitles", function(func, self, sound_event, subtitle_event, speaker_name)
+	local level_key = Managers.state.game_mode and Managers.state.game_mode:level_key()
+
 	if speaker_name == "ferry_lady"
+	and level_key
+	and mod.ubersreik_lvls:contains(level_key)
 	and mod:get(mod.SETTING_NAMES.DISABLE_OLESYA_UBERSREIK_AUDIO)
-	and string.find(sound_event, "nfl_holly_level_memory")
 	then
 		return
 	end
@@ -1187,6 +1195,14 @@ mod:hook_safe(OverchargeBarUI, "update", function(self)
 	end
 	self.charge_bar.offset[1] = mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_HEAT_BAR_OFFSET_X)
 	self.charge_bar.offset[2] = mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_HEAT_BAR_OFFSET_Y)
+end)
+
+--- Reposition the Twitch voting UI.
+mod:hook(TwitchVoteUI, "_draw", function(func, self, dt, t)
+	self._ui_scenegraph.base_area.local_position[1] = 0 + mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_TWITCH_VOTE_OFFSET_X)
+	self._ui_scenegraph.base_area.local_position[2] = 120 + mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_TWITCH_VOTE_OFFSET_Y)
+
+	return func(self, dt, t)
 end)
 
 mod:dofile("scripts/mods/HideBuffs/teammate_widget_definitions")

@@ -37,7 +37,7 @@ globals = {
 	"DamageDataIndex", "StateIngame", "FatigueUI",
 	"StartGameWindowMission", "StartGameWindowMutator",
 	"StartGameWindowTwitchLogin", "StartGameWindowAdventure",
-	"PickupSystem",
+	"PickupSystem", "ChatGui",
 
 	"PriorityBuffUI",
 }

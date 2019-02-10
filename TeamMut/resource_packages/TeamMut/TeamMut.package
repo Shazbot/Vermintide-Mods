@@ -1,0 +1,11 @@
+mod = [
+	"TeamMut"
+]
+
+package = [
+	"resource_packages/TeamMut/TeamMut"
+]
+
+lua = [
+	"scripts/mods/TeamMut/*"
+]

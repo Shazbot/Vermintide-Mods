@@ -16,12 +16,12 @@ mod.fail_level = function()
 	end)
 end
 
-mod:hook(GameModeAdventure, "evaluate_end_conditions", function(func, self, round_started, dt, t)
+mod:hook(GameModeAdventure, "evaluate_end_conditions", function(func, self, round_started, dt, t, ...)
 	if self.lost_condition_timer and mod.do_insta_fail then
 		mod.do_insta_fail = false
 		self.lost_condition_timer = t - 1
 	end
-	local ended, reason = func(self, round_started, dt, t)
+	local ended, reason = func(self, round_started, dt, t, ...)
 
 	if ended and mod.do_restart then
 		mod.do_restart = false

@@ -358,3 +358,7 @@ mod:hook(HeroWindowLoadoutInventory, "on_exit", function(func, self)
 
 	mod:destroy_windows()
 end)
+
+UIResolutionScale = function()
+	return 1
+end

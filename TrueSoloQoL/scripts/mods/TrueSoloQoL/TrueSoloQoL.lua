@@ -38,6 +38,11 @@ mod:hook(UnitFrameUI, "update", function (func, self, ...)
 	func(self, ...)
 end)
 
+mod.unit_frames_handler = nil
+mod:hook_safe(UnitFramesHandler, "init", function(self)
+	mod.unit_frames_handler = self
+end)
+
 mod.update = function()
 	--- Hook the kill_bots function of Killbots and add UI hiding code after we run /killbots.
 	local killbots_mod = get_mod("Killbots")
@@ -46,14 +51,16 @@ mod.update = function()
 		killbots_mod.kill_bots = function(self)
 			killbots_mod:original_kill_bots()
 			mod:pcall(function()
-				local unit_frames_handler = rawget(_G, "unit_frames_handler")
-				for _, unit_frame in ipairs( unit_frames_handler._unit_frames ) do
-					local unit_frame_ui = unit_frame.widget
-					if unit_frame_ui._frame_index
-					  and unit_frame_ui._is_visible
-					  and unit_frame_ui.data.level_text == "BOT" then
-						unit_frame_ui:set_visible(false)
-						unit_frame_ui._mod_stay_hidden = true
+				local unit_frames_handler = mod.unit_frames_handler
+				if unit_frames_handler then
+					for _, unit_frame in ipairs( unit_frames_handler._unit_frames ) do
+						local unit_frame_ui = unit_frame.widget
+						if unit_frame_ui._frame_index
+						  and unit_frame_ui._is_visible
+						  and unit_frame_ui.data.level_text == "BOT" then
+							unit_frame_ui:set_visible(false)
+							unit_frame_ui._mod_stay_hidden = true
+						end
 					end
 				end
 			end)

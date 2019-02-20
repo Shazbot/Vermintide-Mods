@@ -207,7 +207,6 @@ mod.destroy_windows = function()
 	end
 end
 
---- Change damage dealt to bosses.
 --- Only used as an intermediate hook inside DamageUtils.add_damage_network_player.
 mod:hook(DamageUtils, "calculate_damage", function(func, damage_output, target_unit, attacker_unit, ...)
 	local dmg = func(damage_output, target_unit, attacker_unit, ...)

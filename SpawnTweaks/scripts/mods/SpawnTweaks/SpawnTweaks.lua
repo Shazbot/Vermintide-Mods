@@ -674,10 +674,10 @@ mod:hook(HordeSpawner, "find_good_vector_horde_pos", function(func, self, main_t
 end)
 
 --- Patrols start aggroed.
-mod:hook(AIGroupTemplates.spline_patrol, "update", function(func, world, nav_world, group, t, dt)
+mod:hook(AIGroupTemplates.spline_patrol, "update", function(func, world, nav_world, group, ...)
 	if not mod.are_bosses_customized()
 	or not mod:get(mod.SETTING_NAMES.AGGRO_PATROLS) then
-		return func(world, nav_world, group, t, dt)
+		return func(...)
 	end
 
 	local state = group.state
@@ -686,7 +686,7 @@ mod:hook(AIGroupTemplates.spline_patrol, "update", function(func, world, nav_wor
 		group.has_targets = true
 	end
 
-	return func(world, nav_world, group, t, dt)
+	return func(world, nav_world, group, ...)
 end)
 
 --- Disable blob vector hordes.
@@ -738,4 +738,8 @@ mod:dofile("scripts/mods/"..mod:get_name().."/pickups")
 mod.on_disabled = function(init_call) -- luacheck: ignore init_call
 	mod:hook_enable(mod, "update")
 	mod:hook_enable(SpawnManager, "all_players_disabled")
+end
+
+UIResolutionScale = function()
+	return 1
 end

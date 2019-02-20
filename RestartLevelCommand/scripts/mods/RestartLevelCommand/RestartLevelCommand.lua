@@ -16,7 +16,7 @@ mod.restart_level = function()
 	end)
 end
 
-mod:hook(GameModeAdventure, "evaluate_end_conditions", function(func, self, round_started, dt, t)
+mod:hook(GameModeAdventure, "evaluate_end_conditions", function(func, self, round_started, dt, t, ...)
 	local restart = false
 	if self.lost_condition_timer and mod.do_insta_fail then
 		mod.do_insta_fail = false
@@ -24,7 +24,7 @@ mod:hook(GameModeAdventure, "evaluate_end_conditions", function(func, self, roun
 		restart = true
 	end
 
-	local ended, reason = func(self, round_started, dt, t)
+	local ended, reason = func(self, round_started, dt, t, ...)
 
 	if ended and restart then
 		return ended, "reload"

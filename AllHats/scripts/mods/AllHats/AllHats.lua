@@ -85,3 +85,36 @@ mod:hook_origin(AttachmentUtils, "link", function(world, source, target, node_li
 		end
 	end
 end)
+
+--- Give all keep paintings.
+mod:hook_origin(HeroViewStateKeepDecorations, "_setup_paintings_list", function(self)
+	local backend_interface = self._keep_decoration_backend_interface
+	local unlocked_paintings = (backend_interface and backend_interface:get_unlocked_keep_decorations()) or {}
+	local entries = {}
+
+	for _, key in ipairs(PaintingOrder) do
+		if not table.contains(DefaultPaintings, key) then
+			local settings = Paintings[key]
+			local unlocked = true --table.contains(unlocked_paintings, key)
+			local display_name = Localize(settings.display_name)
+
+			if unlocked then
+				entries[#entries + 1] = {
+					key = key,
+					display_name = display_name
+				}
+			end
+		end
+	end
+
+	local new_painting_order = {}
+
+	for _, table in ipairs(entries) do
+		new_painting_order[#new_painting_order + 1] = table.key
+	end
+
+	self:_populate_list(entries)
+	self:_update_equipped_widget()
+
+	return new_painting_order
+end)

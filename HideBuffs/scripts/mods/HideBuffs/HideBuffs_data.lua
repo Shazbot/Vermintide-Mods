@@ -723,6 +723,30 @@ mod.add_option(
 	"Set HP font size.",
 	player_numeric_ui_group_subs
 )
+mod.add_option(
+	"PLAYER_NUMERIC_UI_ULT_CD_OFFSET_X",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1000, 1000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Ult CD Offset X",
+	"Optionally offset the ult timer on the x axis.",
+	player_numeric_ui_group_subs
+)
+mod.add_option(
+	"PLAYER_NUMERIC_UI_ULT_CD_OFFSET_Y",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1000, 1000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Ult CD Offset Y",
+	"Optionally offset the ult timer on the y axis.",
+	player_numeric_ui_group_subs
+)
 
 local buffs_group_index = pl.tablex.find_if(mod_data.options_widgets,
 	function(option_widget)
@@ -1066,6 +1090,16 @@ mod.add_option(
 	},
 	"Disable Olesya Ubersreik Audio",
 	"Disable Olesya's lines in the Ubersreik maps.",
+	hide_ui_elements_group.sub_widgets
+)
+mod.add_option(
+	"HIDE_WAITING_FOR_RESCUE",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Hide Waiting For Rescue Message",
+	"Hide the message when waiting to get rescued.",
 	hide_ui_elements_group.sub_widgets
 )
 
@@ -1533,6 +1567,30 @@ mod.add_option(
 	},
 	"Ammo Offset Y",
 	"Optionally offset the ammo on the y axis.",
+	team_ui_numeric_ui_group_subs
+)
+mod.add_option(
+	"TEAM_UI_NUMERIC_UI_ULT_CD_OFFSET_X",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1000, 1000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Ult CD Offset X",
+	"Optionally offset the ult timer on the x axis.",
+	team_ui_numeric_ui_group_subs
+)
+mod.add_option(
+	"TEAM_UI_NUMERIC_UI_ULT_CD_OFFSET_Y",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-1000, 1000},
+		["unit_text"] = "px",
+	    ["default_value"] = 0,
+	},
+	"Ult CD Offset Y",
+	"Optionally offset the ult timer on the y axis.",
 	team_ui_numeric_ui_group_subs
 )
 

@@ -169,9 +169,36 @@ mod.teammate_ui_custom_def =
 					return not content.is_overcharge and check
 				end
 			},
+			{
+					style_id = "cooldown_text",
+					pass_type = "text",
+					text_id = "cooldown_string",
+					retained_mode = RETAINED_MODE_ENABLED,
+					content_check_function = function (content)
+						if content.cooldown_string == "0:00" then
+							return
+						end
+
+						return true
+					end
+				},
+				{
+					style_id = "cooldown_text_shadow",
+					pass_type = "text",
+					text_id = "cooldown_string",
+					retained_mode = RETAINED_MODE_ENABLED,
+					content_check_function = function (content)
+						if content.cooldown_string == "0:00" then
+							return
+						end
+
+						return true
+					end
+				}
 		},
 	},
 	content = {
+		cooldown_string = "0:00",
 		ammo_string = nil,
 		ammo_style = 1,
 		health_string = "",
@@ -203,6 +230,38 @@ mod.teammate_ui_custom_def =
 		},
 	},
 	style = {
+		cooldown_text = {
+			vertical_alignment = "center",
+			horizontal_alignment = "center",
+			font_size = 16,
+			font_type = "hell_shark",
+			text_color = Colors.get_color_table_with_alpha("white", 255),
+			size = {
+				22,
+				22
+			},
+			offset = {
+				0,
+				0,
+				50
+			}
+		},
+		cooldown_text_shadow = {
+			vertical_alignment = "center",
+			horizontal_alignment = "center",
+			font_size = 16,
+			font_type = "hell_shark",
+			text_color = Colors.get_color_table_with_alpha("black", 255),
+			size = {
+				22,
+				22
+			},
+			offset = {
+				2,
+				-2,
+				50-1
+			}
+		},
 		hp_text = {
 			vertical_alignment = "center",
 			font_type = "hell_shark_arial",

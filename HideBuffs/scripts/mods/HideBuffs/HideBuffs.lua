@@ -677,6 +677,7 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 			-- So just copy those values to our teammate widget.
 			local hp_dynamic = self:_widget_by_feature("health", "dynamic")
 			mod.numeric_ui_data.health_string = hp_dynamic.content.health_string or ""
+			mod.numeric_ui_data.cooldown_string = hp_dynamic.content.cooldown_string or ""
 
 			-- ammo
 			local def_dynamic = self:_widget_by_feature("default", "dynamic")
@@ -714,6 +715,7 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 
 				-- ammo
 				local def_dynamic = self:_widget_by_feature("default", "dynamic")
+				teammate_widget_content.cooldown_string = def_dynamic.content.cooldown_string or ""
 				teammate_widget_content.ammo_string = def_dynamic.content.ammo_string or ""
 				teammate_widget_content.ammo_percent = def_dynamic.content.ammo_percent
 				teammate_widget_content.ammo_style = def_dynamic.content.ammo_style
@@ -734,6 +736,14 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 				local hp_text_y = 100 + mod:get(mod.SETTING_NAMES.TEAM_UI_NUMERIC_UI_HP_OFFSET_Y)
 				teammate_widget_style.hp_text.offset[2] = hp_text_y
 				teammate_widget_style.hp_text_shadow.offset[2] = hp_text_y - 2
+
+				local ult_cd_text_x = 70 + mod:get(mod.SETTING_NAMES.TEAM_UI_NUMERIC_UI_ULT_CD_OFFSET_X)
+				teammate_widget_style.cooldown_text.offset[1] = ult_cd_text_x
+				teammate_widget_style.cooldown_text_shadow.offset[1] = ult_cd_text_x + 2
+
+				local ult_cd_text_y = 40 + mod:get(mod.SETTING_NAMES.TEAM_UI_NUMERIC_UI_ULT_CD_OFFSET_Y)
+				teammate_widget_style.cooldown_text.offset[2] = ult_cd_text_y
+				teammate_widget_style.cooldown_text_shadow.offset[2] = ult_cd_text_y - 2
 
 				local numeric_ui_font_size = mod:get(mod.SETTING_NAMES.TEAM_UI_NUMERIC_UI_HP_FONT_SIZE)
 				teammate_widget_style.hp_text.font_size = numeric_ui_font_size
@@ -925,7 +935,7 @@ mod:hook(UnitFramesHandler, "update", function(func, self, ...)
 			end
 		end)
 
-		unit_frame.widget.unit_frame_index = self.unit_frame_index_by_ui_id[player_ui_id]
+		unit_frame.widget.unit_frame_index = self._unit_frame_index_by_ui_id[player_ui_id]
 
 		local buff_extension = ScriptUnit.has_extension(player_unit, "buff_system")
 		if buff_extension then
@@ -1057,7 +1067,7 @@ mod:hook(TutorialUI, "update_mission_tooltip", function(func, self, ...)
 	end
 end)
 
-mod:hook(TutorialUI, "pre_render_update", function(func, self, ...)
+mod:hook(TutorialUI, "update", function(func, self, ...)
 	if mod:get(mod.SETTING_NAMES.NO_TUTORIAL_UI) then
 		mod:pcall(function()
 			self.active_tooltip_widget = nil
@@ -1203,6 +1213,15 @@ mod:hook(TwitchVoteUI, "_draw", function(func, self, dt, t)
 	self._ui_scenegraph.base_area.local_position[2] = 120 + mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_TWITCH_VOTE_OFFSET_Y)
 
 	return func(self, dt, t)
+end)
+
+--- Hide the "Waiting for rescue" message.
+mod:hook(WaitForRescueUI, "update", function(func, ...)
+	if mod:get(mod.SETTING_NAMES.HIDE_WAITING_FOR_RESCUE) then
+		return
+	end
+
+	return func(...)
 end)
 
 mod:dofile("scripts/mods/HideBuffs/teammate_widget_definitions")

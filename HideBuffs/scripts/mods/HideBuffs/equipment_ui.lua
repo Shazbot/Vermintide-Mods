@@ -116,12 +116,18 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 		end
 	end
 
+	local player_ui_offset_x = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
+	local player_ui_offset_y = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
+
+	local ui_renderer = self.ui_renderer
+	local ui_scenegraph = self.ui_scenegraph
+	local input_service = self.input_manager:get_service("ingame_menu")
+	local render_settings = self.render_settings
+
 	if mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET)
 	and self._is_visible
 	then
 		mod:pcall(function()
-			local player_ui_offset_x = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
-			local player_ui_offset_y = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
 			local static_widget_1 = self._static_widgets[1]
 			static_widget_1.content.texture_id = "console_hp_bar_frame"
 			if not static_widget_1.style.texture_id.size then
@@ -151,7 +157,6 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 			self._hb_mod_widget.style.hp_bar_rect.size[2] = 21
 			self._hb_mod_widget.scenegraph_id = "pivot"
 			self._hb_mod_widget.offset[1] = player_ui_offset_x - hp_bar_rect_w/2
-			self._hb_mod_widget.offset[2] = player_ui_offset_y - 37
 			self._hb_mod_widget.offset[2] = player_ui_offset_y - 37
 			self._hb_mod_widget.offset[3] = -10
 
@@ -190,31 +195,8 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 
 			local ammo_progress = self._hb_mod_ammo_widget.content.ammo_bar.bar_value
 			mod_ammo_widget.style.ammo_bar.size[1] = mod.ammo_bar_width * ammo_progress
-
-			-- NumericUI interop.
-			-- Display values gotten from Numeric UI on our own widget.
-			self._hb_mod_widget.content.health_string = mod.numeric_ui_data.health_string or ""
-
-			local hp_text_x = mod.hp_bar_width/2 + mod:get(mod.SETTING_NAMES.PLAYER_NUMERIC_UI_HP_OFFSET_X)
-			self._hb_mod_widget.style.hp_text.offset[1] = hp_text_x
-			self._hb_mod_widget.style.hp_text_shadow.offset[1] = hp_text_x + 2
-
-			local hp_text_y = mod.hp_bar_height/4 + mod:get(mod.SETTING_NAMES.PLAYER_NUMERIC_UI_HP_OFFSET_Y)
-			self._hb_mod_widget.style.hp_text.offset[2] = hp_text_y
-			self._hb_mod_widget.style.hp_text_shadow.offset[2] = hp_text_y - 2
-
-			self._hb_mod_widget.style.hp_text.offset[3] = 151
-			self._hb_mod_widget.style.hp_text_shadow.offset[3] = 150
-
-			local numeric_ui_font_size = mod:get(mod.SETTING_NAMES.PLAYER_NUMERIC_UI_HP_FONT_SIZE)
-			self._hb_mod_widget.style.hp_text.font_size = numeric_ui_font_size
-			self._hb_mod_widget.style.hp_text_shadow.font_size = numeric_ui_font_size
 		end)
 
-		local ui_renderer = self.ui_renderer
-		local ui_scenegraph = self.ui_scenegraph
-		local input_service = self.input_manager:get_service("ingame_menu")
-		local render_settings = self.render_settings
 		UIRenderer.begin_pass(ui_renderer, ui_scenegraph, input_service, dt, nil, render_settings)
 		UIRenderer.draw_widget(ui_renderer, self._hb_mod_widget)
 		if mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR) then
@@ -229,6 +211,57 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 
 		self._static_widgets[2].content.visible = false
 	end
+
+	-- NumericUI interop.
+	-- Display values gotten from Numeric UI on our own widget.
+	if not self._hb_num_ui_player_widget then
+		self._hb_num_ui_player_widget = UIWidget.init(mod.numeric_ui_player_widget_def)
+		self._hb_num_ui_player_widget.scenegraph_id = "pivot"
+	end
+
+	local num_ui_widget = self._hb_num_ui_player_widget
+
+	num_ui_widget.content.health_string = mod.numeric_ui_data.health_string or ""
+	num_ui_widget.content.cooldown_string = mod.numeric_ui_data.cooldown_string or ""
+
+	local hp_text_x = mod.hp_bar_width/2 + mod:get(mod.SETTING_NAMES.PLAYER_NUMERIC_UI_HP_OFFSET_X)
+	num_ui_widget.style.hp_text.offset[1] = hp_text_x
+	num_ui_widget.style.hp_text_shadow.offset[1] = hp_text_x + 2
+
+	local hp_text_y = mod.hp_bar_height/4 + mod:get(mod.SETTING_NAMES.PLAYER_NUMERIC_UI_HP_OFFSET_Y)
+	num_ui_widget.style.hp_text.offset[2] = hp_text_y
+	num_ui_widget.style.hp_text_shadow.offset[2] = hp_text_y - 2
+
+	num_ui_widget.style.hp_text.offset[3] = 151
+	num_ui_widget.style.hp_text_shadow.offset[3] = 150
+
+	local ult_cd_text_x = mod.hp_bar_width/2 + mod:get(mod.SETTING_NAMES.PLAYER_NUMERIC_UI_ULT_CD_OFFSET_X)
+	ult_cd_text_x = ult_cd_text_x - 8
+	num_ui_widget.style.cooldown_text.offset[1] = ult_cd_text_x
+	num_ui_widget.style.cooldown_text_shadow.offset[1] = ult_cd_text_x + 2
+
+	local ult_cd_text_y = mod.hp_bar_height/4 + mod:get(mod.SETTING_NAMES.PLAYER_NUMERIC_UI_ULT_CD_OFFSET_Y)
+	ult_cd_text_y = ult_cd_text_y + (self._hb_mod_widget and 0 or 5)
+	num_ui_widget.style.cooldown_text.offset[2] = ult_cd_text_y
+	num_ui_widget.style.cooldown_text_shadow.offset[2] = ult_cd_text_y - 2
+
+	num_ui_widget.style.cooldown_text.offset[3] = 151-2
+	num_ui_widget.style.cooldown_text_shadow.offset[3] = 150-2
+
+	local numeric_ui_font_size = mod:get(mod.SETTING_NAMES.PLAYER_NUMERIC_UI_HP_FONT_SIZE)
+	num_ui_widget.style.hp_text.font_size = numeric_ui_font_size
+	num_ui_widget.style.hp_text_shadow.font_size = numeric_ui_font_size
+
+	num_ui_widget.offset[1] = player_ui_offset_x - mod.hp_bar_width/2
+	num_ui_widget.offset[2] = player_ui_offset_y - 59
+	if self._hb_mod_widget then
+		num_ui_widget.offset[1] = self._hb_mod_widget.offset[1]
+		num_ui_widget.offset[2] = self._hb_mod_widget.offset[2]
+	end
+	num_ui_widget.offset[3] = -10
+	UIRenderer.begin_pass(ui_renderer, ui_scenegraph, input_service, dt, nil, render_settings)
+	UIRenderer.draw_widget(ui_renderer, num_ui_widget)
+	UIRenderer.end_pass(ui_renderer)
 
 	return func(self, dt)
 end)
@@ -332,28 +365,9 @@ mod.hp_bg_rect_def =
 				pass_type = "rect",
 				style_id = "hp_bar_rect",
 			},
-			{
-				style_id = "hp_text",
-				pass_type = "text",
-				text_id = "health_string",
-				retained_mode = false,
-				content_check_function = function ()
-					return true
-				end
-			},
-			{
-				style_id = "hp_text_shadow",
-				pass_type = "text",
-				text_id = "health_string",
-				retained_mode = false,
-				content_check_function = function ()
-					return true
-				end
-			},
 		},
 	},
 	content = {
-
 	},
 	style = {
 		hp_bar_rect = {
@@ -363,30 +377,6 @@ mod.hp_bg_rect_def =
 				10
 			},
 			color = {255, 0, 0, 0},
-		},
-		hp_text = {
-			vertical_alignment = "center",
-			font_type = "hell_shark_arial",
-			font_size = 17,
-			horizontal_alignment = "center",
-			text_color = Colors.get_table("white"),
-			offset = {
-				0,
-				0,
-				-8 + 22
-			}
-		},
-		hp_text_shadow = {
-			vertical_alignment = "center",
-			font_type = "hell_shark_arial",
-			font_size = 17,
-			horizontal_alignment = "center",
-			text_color = Colors.get_table("black"),
-			offset = {
-				0,
-				0,
-				-8 + 21
-			}
 		},
 	},
 	offset = {
@@ -408,7 +398,7 @@ mod.ammo_widget_def =
 				style_id = "ammo_bar",
 				pass_type = "texture_uv",
 				content_id = "ammo_bar",
-				content_change_function = function (content, style)
+				content_change_function = function (content, style) --luacheck: ignore style
 					local ammo_progress = content.bar_value
 					local uvs = content.uvs
 					uvs[2][2] = ammo_progress
@@ -453,6 +443,121 @@ mod.ammo_widget_def =
 				255
 			},
 		},
+	},
+	offset = {
+		0,
+		0,
+		0
+	},
+}
+
+mod.numeric_ui_player_widget_def =
+{
+	scenegraph_id = "background_panel_bg",
+	element = {
+		passes = {
+			{
+				style_id = "hp_text",
+				pass_type = "text",
+				text_id = "health_string",
+				retained_mode = false,
+			},
+			{
+				style_id = "hp_text_shadow",
+				pass_type = "text",
+				text_id = "health_string",
+				retained_mode = false,
+			},
+			{
+				style_id = "cooldown_text",
+				pass_type = "text",
+				text_id = "cooldown_string",
+				retained_mode = false,
+				content_check_function = function (content)
+					if content.cooldown_string == "0:00" then
+						return
+					end
+
+					return true
+				end
+			},
+			{
+				style_id = "cooldown_text_shadow",
+				pass_type = "text",
+				text_id = "cooldown_string",
+				retained_mode = false,
+				content_check_function = function (content)
+					if content.cooldown_string == "0:00" then
+						return
+					end
+
+					return true
+				end
+			},
+		},
+	},
+	content = {
+		cooldown_string = "0:00",
+	},
+	style = {
+		hp_text = {
+			vertical_alignment = "center",
+			font_type = "hell_shark_arial",
+			font_size = 17,
+			horizontal_alignment = "center",
+			text_color = Colors.get_table("white"),
+			offset = {
+				0,
+				0,
+				-8 + 22
+			}
+		},
+		hp_text_shadow = {
+			vertical_alignment = "center",
+			font_type = "hell_shark_arial",
+			font_size = 17,
+			horizontal_alignment = "center",
+			text_color = Colors.get_table("black"),
+			offset = {
+				0,
+				0,
+				-8 + 21
+			}
+		},
+		cooldown_text = {
+			vertical_alignment = "center",
+			font_size = 16,
+			font_type = "hell_shark",
+			word_wrap = false,
+			horizontal_alignment = "center",
+			text_color = Colors.get_color_table_with_alpha("white", 255),
+			size = {
+				22,
+				22
+			},
+			offset = {
+				0,
+				0,
+				2
+			}
+		},
+		cooldown_text_shadow = {
+			vertical_alignment = "center",
+			font_size = 16,
+			font_type = "hell_shark",
+			word_wrap = false,
+			horizontal_alignment = "center",
+			text_color = Colors.get_color_table_with_alpha("black", 255),
+			size = {
+				22,
+				22
+			},
+			offset = {
+				0,
+				0,
+				1
+			}
+		}
 	},
 	offset = {
 		0,

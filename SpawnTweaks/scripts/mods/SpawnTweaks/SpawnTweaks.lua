@@ -197,7 +197,7 @@ local breeds_specials = {
 --- Disable timed specials.
 --- More ambient elites. Replaces trash ambients with elites.
 --- trash spawn without a spawn_type == ambient trash
-mod:hook(ConflictDirector, "spawn_queued_unit", function(func, self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, optional_data, group_data, unit_data)
+mod:hook(ConflictDirector, "spawn_queued_unit", function(func, self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, ...)
 	if mod:get(mod.SETTING_NAMES.SPECIALS) == mod.SPECIALS.DISABLE and tablex.find(breeds_specials, breed.name) then
 		if not stringx.lfind(debug.traceback(), "CreatureSpawner") then
 			return
@@ -208,7 +208,9 @@ mod:hook(ConflictDirector, "spawn_queued_unit", function(func, self, breed, boxe
 		return
 	end
 
-	if mod:get(mod.SETTING_NAMES.AMBIENTS) == mod.AMBIENTS.CUSTOMIZE then
+	if mod:get(mod.SETTING_NAMES.AMBIENTS) == mod.AMBIENTS.CUSTOMIZE
+	and spawn_category ~= "patrol"
+	then
 		if mod:get(mod.SETTING_NAMES.CUSTOM_AMBIENTS_TOGGLE_GROUP) then
 			local total = 0
 			for breed_name, _ in pairs( mod.all_breeds ) do
@@ -236,7 +238,7 @@ mod:hook(ConflictDirector, "spawn_queued_unit", function(func, self, breed, boxe
 		end
 	end
 
-	return func(self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, optional_data, group_data, unit_data)
+	return func(self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, ...)
 end)
 
 --- Specials cooldowns.
@@ -677,7 +679,7 @@ end)
 mod:hook(AIGroupTemplates.spline_patrol, "update", function(func, world, nav_world, group, ...)
 	if not mod.are_bosses_customized()
 	or not mod:get(mod.SETTING_NAMES.AGGRO_PATROLS) then
-		return func(...)
+		return func(world, nav_world, group, ...)
 	end
 
 	local state = group.state

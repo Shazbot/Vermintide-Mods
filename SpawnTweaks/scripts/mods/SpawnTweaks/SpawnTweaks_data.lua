@@ -766,6 +766,7 @@ mod.map_pickups = {
 	"all_ammo_small",
 	"lamp_oil",
 	"explosive_barrel",
+	"painting_scrap",
 }
 local map_pickups_disable_group_subs = mod.add_option(
 	"MAP_PICKUPS_DISABLE_GROUP",

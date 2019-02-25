@@ -236,6 +236,13 @@ mod:hook(PositiveReinforcementUI, "event_add_positive_enforcement_kill", functio
 	if breed_name and mod:get(mod.SETTING_NAMES[breed_name]) then
 		return
 	end
+
+	-- for SV also check skaven_storm_vermin_commander
+	if breed_name and breed_name == "skaven_storm_vermin_commander"
+	and mod:get(mod.SETTING_NAMES["skaven_storm_vermin"]) then
+		return
+	end
+
 	return func(self, hash, is_local_player, event_type, profile_index, career_index, breed_name)
 end)
 

@@ -137,6 +137,10 @@ mod.teammate_ui_custom_def =
 						return false
 					end
 
+					if content.ammo_string and content.ammo_string == "0/0" then
+						return false
+					end
+
 					local ammo_progress = content.ammo_percent
 					local check = ammo_progress and 0 <= ammo_progress
 
@@ -160,6 +164,10 @@ mod.teammate_ui_custom_def =
 					end
 
 					if content.ammo_string and content.ammo_string == "-1/-1" then
+						return false
+					end
+
+					if content.ammo_string and content.ammo_string == "0/0" then
 						return false
 					end
 

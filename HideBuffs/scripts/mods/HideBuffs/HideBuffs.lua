@@ -1030,12 +1030,13 @@ mod:hook_origin(UnitFramesHandler, "_align_team_member_frames", function(self)
 	end
 end)
 
---- Chat.
+--- Chat position and background transparency.
 mod:hook("ChatGui", "update", function(func, self, ...)
 	mod:pcall(function()
 		local position = self.ui_scenegraph.chat_window_root.local_position
 		position[1] = mod:get(mod.SETTING_NAMES.CHAT_OFFSET_X)
 		position[2] = 200 + mod:get(mod.SETTING_NAMES.CHAT_OFFSET_Y)
+		self.chat_window_widget.style.background.color[1] = mod:get(mod.SETTING_NAMES.CHAT_BG_ALPHA)
 	end)
 
 	return func(self, ...)
@@ -1222,6 +1223,15 @@ mod:hook(WaitForRescueUI, "update", function(func, ...)
 	end
 
 	return func(...)
+end)
+
+--- Hide the Twitch mode icons in lower right.
+mod:hook(TwitchIconView, "_draw", function(func, self, ...)
+	if mod:get(mod.SETTING_NAMES.HIDE_TWITCH_MODE_ON_ICON) then
+		return
+	end
+
+	return func(self, ...)
 end)
 
 mod:dofile("scripts/mods/HideBuffs/teammate_widget_definitions")

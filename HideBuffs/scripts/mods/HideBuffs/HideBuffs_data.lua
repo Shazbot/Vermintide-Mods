@@ -55,6 +55,7 @@ mod.SETTING_NAMES = {
 	HIDE_UI_ELEMENTS_GROUP = "HIDE_UI_ELEMENTS_GROUP",
 	UNOBTRUSIVE_FLOATING_OBJECTIVE = "UNOBTRUSIVE_FLOATING_OBJECTIVE",
 	UNOBTRUSIVE_MISSION_TOOLTIP = "UNOBTRUSIVE_MISSION_TOOLTIP",
+	CHAT_BG_ALPHA = "CHAT_BG_ALPHA",
 }
 
 mod.priority_buff_setting_name_to_buff_name = {
@@ -310,6 +311,14 @@ mod_data.options_widgets:extend({
 				["range"] = {-2500, 2500},
 				["unit_text"] = "px",
 			    ["default_value"] = 0,
+			},
+			{
+				["setting_name"] = mod.SETTING_NAMES.CHAT_BG_ALPHA,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("CHAT_BG_ALPHA"),
+				["tooltip"] = mod:localize("CHAT_BG_ALPHA_T"),
+				["range"] = {0, 255},
+			    ["default_value"] = 255,
 			},
 		},
 	},
@@ -1100,6 +1109,16 @@ mod.add_option(
 	},
 	"Hide Waiting For Rescue Message",
 	"Hide the message when waiting to get rescued.",
+	hide_ui_elements_group.sub_widgets
+)
+mod.add_option(
+	"HIDE_TWITCH_MODE_ON_ICON",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Hide Twitch Mode Icon",
+	"Hide the Twitch logo and connected icon in lower right when using Twitch mode.",
 	hide_ui_elements_group.sub_widgets
 )
 

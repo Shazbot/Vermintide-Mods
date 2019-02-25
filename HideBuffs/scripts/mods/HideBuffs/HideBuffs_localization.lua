@@ -206,6 +206,14 @@ mod.localizations:update({
 	CHAT_OFFSET_Y_T = {
 		en = "Optionally offset on the y axis."
 	},
+	CHAT_BG_ALPHA = {
+		en = "Chat Background Transparency"
+	},
+	CHAT_BG_ALPHA_T = {
+		en = "Change the transparency of the chat background."
+			.."\n0 is fully transparent."
+			.."\nDefault is 255."
+	},
 	HIDE_WEAPON_SLOTS = {
 		en = "Hide Melee and Ranged Item Slots"
 	},

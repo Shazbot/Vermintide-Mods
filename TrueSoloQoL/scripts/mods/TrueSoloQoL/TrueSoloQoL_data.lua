@@ -7,6 +7,7 @@ mod.SETTING_NAMES = {
 	ASSASSIN_HERO_WARNING = "ASSASSIN_HERO_WARNING",
 	DISABLE_LEVEL_INTRO_AUDIO = "DISABLE_LEVEL_INTRO_AUDIO",
 	DISABLE_ULT_VOICE_LINE = "DISABLE_ULT_VOICE_LINE",
+	DISABLE_MUTATOR_EXPLOSIONS = "DISABLE_MUTATOR_EXPLOSIONS",
 }
 
 local mod_data = {
@@ -56,6 +57,13 @@ mod_data.options_widgets = {
 		["widget_type"] = "checkbox",
 		["text"] = mod:localize("DISABLE_ULT_VOICE_LINE"),
 		["tooltip"] = mod:localize("DISABLE_ULT_VOICE_LINE_T"),
+		["default_value"] = false,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.DISABLE_MUTATOR_EXPLOSIONS,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("DISABLE_MUTATOR_EXPLOSIONS"),
+		["tooltip"] = mod:localize("DISABLE_MUTATOR_EXPLOSIONS_T"),
 		["default_value"] = false,
 	},
 }

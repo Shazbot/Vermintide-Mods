@@ -231,6 +231,21 @@ mod:hook(ConflictDirector, "spawn_queued_unit", function(func, self, breed, boxe
 	return func(self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, optional_data, group_data, unit_data)
 end)
 
+--- Disable the purple explosion effect.
+mod:hook(AiUtils, "generic_mutator_explosion", function(func, killed_unit, blackboard, explosion_template_name)
+	if mod:get(mod.SETTING_NAMES.DISABLE_MUTATOR_EXPLOSIONS)
+	and (
+		explosion_template_name == "generic_mutator_explosion"
+		or explosion_template_name == "generic_mutator_explosion_medium"
+		or explosion_template_name == "generic_mutator_explosion_large"
+	)
+	then
+		return
+	end
+
+	return func(killed_unit, blackboard, explosion_template_name)
+end)
+
 --- Disable level intro audio.
 mod:hook(StateLoading, "_trigger_sound_events", function(func, self, level_key)
 	if mod:get(mod.SETTING_NAMES.DISABLE_LEVEL_INTRO_AUDIO) then

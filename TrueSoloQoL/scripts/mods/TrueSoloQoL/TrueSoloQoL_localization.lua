@@ -41,6 +41,12 @@ return {
 	DISABLE_ULT_VOICE_LINE_T = {
 		en = "Disable voice line on ult."
 	},
+	DISABLE_MUTATOR_EXPLOSIONS = {
+		en = "Disable Mutator Explosion Effect"
+	},
+	DISABLE_MUTATOR_EXPLOSIONS_T = {
+		en = "Disable the purple explosion effect."
+	},
 	dlc_level_command_description = {
 		en = "Start plaza dlc level."
 	},

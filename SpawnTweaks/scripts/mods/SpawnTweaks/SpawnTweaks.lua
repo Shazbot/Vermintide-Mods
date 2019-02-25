@@ -209,7 +209,7 @@ mod:hook(ConflictDirector, "spawn_queued_unit", function(func, self, breed, boxe
 	end
 
 	if mod:get(mod.SETTING_NAMES.AMBIENTS) == mod.AMBIENTS.CUSTOMIZE
-	and spawn_category ~= "patrol"
+	and spawn_type == "roam"
 	then
 		if mod:get(mod.SETTING_NAMES.CUSTOM_AMBIENTS_TOGGLE_GROUP) then
 			local total = 0

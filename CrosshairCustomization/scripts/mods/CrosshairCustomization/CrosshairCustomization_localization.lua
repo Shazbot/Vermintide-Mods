@@ -152,6 +152,12 @@ return {
 	HIT_MARKERS_CRITICAL_COLOR_GROUP_T = {
 		en = "Set RGB color of the headshot hit markers."
 	},
+	HIT_MARKERS_CRITICAL_PROC_COLOR_GROUP = {
+		en = "Crit Hit Markers Color"
+	},
+	HIT_MARKERS_CRITICAL_PROC_COLOR_GROUP_T = {
+		en = "Set RGB color of the hit markers when you crit."
+	},
 	HIT_MARKERS_DURATION = {
 		en = "Hit Markers Duration"
 	},

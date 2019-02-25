@@ -110,6 +110,11 @@ mod:hook_safe(CrosshairUI, "configure_hit_marker_color_and_size", function (self
 		hit_marker.style.rotating_texture.color[3] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_GREEN)
 		hit_marker.style.rotating_texture.color[4] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_BLUE)
 	end
+	if hit_marker_data._mod_is_crit_proc then
+		hit_marker.style.rotating_texture.color[2] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_PROC_RED)
+		hit_marker.style.rotating_texture.color[3] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_PROC_GREEN)
+		hit_marker.style.rotating_texture.color[4] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_PROC_BLUE)
+	end
 
 	-- change hit marker size
 	local hit_marker_width = mod:get(mod.SETTING_NAMES.HIT_MARKERS_SIZE)
@@ -285,6 +290,23 @@ mod:hook(CrosshairUI, "set_hit_marker_animation", function(func, self, hit_marke
 	for _, hit_marker_anim in ipairs( hit_marker_animations ) do
 		hit_marker_anim.data_array[4] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_ALPHA)
 	end
+end)
+
+--- Hook to catch crits.
+mod:hook_safe(DamageUtils, "buff_on_attack", function(unit, hit_unit, attack_type, is_critical) -- luacheck: no unused
+	local hud_extension = ScriptUnit.has_extension(unit, "hud_system")
+	if is_critical and hud_extension and mod:get(mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_COLOR_GROUP) then
+		local hit_marker_data = hud_extension.hit_marker_data
+		hit_marker_data._mod_is_crit_proc = true
+	end
+end)
+
+--- Set hit_marker_data crit proc flag back to false.
+mod:hook_safe(CrosshairUI, "update_hit_markers", function(self)
+	local player_unit = self.local_player.player_unit
+	local hud_extension = ScriptUnit.extension(player_unit, "hud_system")
+	local hit_marker_data = hud_extension.hit_marker_data
+	hit_marker_data._mod_is_crit_proc = false
 end)
 
 --- Actions ---

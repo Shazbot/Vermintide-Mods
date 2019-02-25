@@ -48,6 +48,10 @@ mod.SETTING_NAMES = {
     HIT_MARKERS_CRITICAL_RED = "HIT_MARKERS_CRITICAL_RED",
     HIT_MARKERS_CRITICAL_GREEN = "HIT_MARKERS_CRITICAL_GREEN",
     HIT_MARKERS_CRITICAL_BLUE = "HIT_MARKERS_CRITICAL_BLUE",
+    HIT_MARKERS_CRITICAL_PROC_COLOR_GROUP = "HIT_MARKERS_CRITICAL_PROC_COLOR_GROUP",
+    HIT_MARKERS_CRITICAL_PROC_RED = "HIT_MARKERS_CRITICAL_PROC_RED",
+    HIT_MARKERS_CRITICAL_PROC_GREEN = "HIT_MARKERS_CRITICAL_PROC_GREEN",
+    HIT_MARKERS_CRITICAL_PROC_BLUE = "HIT_MARKERS_CRITICAL_PROC_BLUE",
 }
 ---! Enums ---
 
@@ -267,6 +271,39 @@ mod_data.options_widgets = {
 					},
 					{
 						["setting_name"] = mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_BLUE,
+						["widget_type"] = "numeric",
+						["text"] = mod:localize("blue"),
+						["tooltip"] = mod:localize("custom_blue_tooltip"),
+						["range"] = {0, 255},
+						["default_value"] = 255,
+					},
+				},
+			},
+			{
+				["setting_name"] = mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_PROC_COLOR_GROUP,
+				["widget_type"] = "checkbox",
+				["text"] = mod:localize("HIT_MARKERS_CRITICAL_PROC_COLOR_GROUP"),
+				["tooltip"] = mod:localize("HIT_MARKERS_CRITICAL_PROC_COLOR_GROUP_T"),
+				["default_value"] = false,
+				["sub_widgets"] = {
+				    {
+						["setting_name"] = mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_PROC_RED,
+						["widget_type"] = "numeric",
+						["text"] = mod:localize("red"),
+						["tooltip"] = mod:localize("custom_red_tooltip"),
+						["range"] = {0, 255},
+						["default_value"] = 255,
+					},
+					{
+						["setting_name"] = mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_PROC_GREEN,
+						["widget_type"] = "numeric",
+						["text"] = mod:localize("green"),
+						["tooltip"] = mod:localize("custom_green_tooltip"),
+						["range"] = {0, 255},
+						["default_value"] = 255,
+					},
+					{
+						["setting_name"] = mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_PROC_BLUE,
 						["widget_type"] = "numeric",
 						["text"] = mod:localize("blue"),
 						["tooltip"] = mod:localize("custom_blue_tooltip"),

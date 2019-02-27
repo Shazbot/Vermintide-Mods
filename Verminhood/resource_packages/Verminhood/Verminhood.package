@@ -1,0 +1,11 @@
+mod = [
+	"Verminhood"
+]
+
+package = [
+	"resource_packages/Verminhood/Verminhood"
+]
+
+lua = [
+	"scripts/mods/Verminhood/*"
+]

@@ -1,14 +1,24 @@
 local mod = get_mod("Verminhood")
 
-mod:hook(DamageUtils, "calculate_damage", function(func, damage_output, target_unit, attacker_unit, ...)
-	local dmg = func(damage_output, target_unit, attacker_unit, ...)
+mod:hook(GenericHealthExtension, "add_damage", function(func, self, attacker_unit, damage_amount, hit_zone_name, damage_type, hit_position, damage_direction, damage_source_name, hit_ragdoll_actor, damaging_unit, hit_react_type, is_critical_strike, added_dot)
+	local self_unit = self.unit
+	local breed = Unit.get_data(self_unit, "breed")
 
-	local position = Unit.world_position(target_unit, 0)
+	if not self.is_server or not breed then
+		return func(self, attacker_unit, damage_amount, hit_zone_name, damage_type, hit_position, damage_direction, damage_source_name, hit_ragdoll_actor, damaging_unit, hit_react_type, is_critical_strike, added_dot)
+	end
+
+	mod:hook_disable(GenericHealthExtension, "add_damage")
+
+	local dmg = damage_amount
+
+	local position = Unit.world_position(self_unit, 0)
 	local world = Managers.world:world("level_world")
 	local physics_world = World.physics_world(world)
 	local radius = mod:get(mod.SETTING_NAMES.RADIUS)
 	local collision_filter = "filter_enemy_unit"
-	local actors, num_actors = PhysicsWorld.immediate_overlap(physics_world, "shape", "sphere", "position", position, "size", radius, "collision_filter", collision_filter, "use_global_table")
+	local actors, num_actors = PhysicsWorld.immediate_overlap(physics_world, "shape", "sphere",
+		"position", position, "size", radius, "collision_filter", collision_filter, "use_global_table")
 
 	mod:pcall(function()
 		local units_to_damage = {}
@@ -41,14 +51,7 @@ mod:hook(DamageUtils, "calculate_damage", function(func, damage_output, target_u
 		end
 	end)
 
-	return 0
-end)
-mod:hook_disable(DamageUtils, "calculate_damage")
+	mod:hook_enable(GenericHealthExtension, "add_damage")
 
-mod:hook(DamageUtils, "add_damage_network_player", function(func, ...)
-	mod:hook_enable(DamageUtils, "calculate_damage")
-
-	func(...)
-
-	mod:hook_disable(DamageUtils, "calculate_damage")
+	return
 end)

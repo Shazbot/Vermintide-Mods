@@ -11,7 +11,7 @@ scenegraph_definition.pivot = {
 	horizontal_alignment = "center",
 	position = {
 		0,
-		-150,
+		-200,
 		1
 	},
 	size = {

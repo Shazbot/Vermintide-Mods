@@ -91,17 +91,6 @@ mod.add_option(
 )
 
 mod.add_option(
-	"DISABLE_PROJECTILE_TRAILS",
-	{
-		["widget_type"] = "checkbox",
-		["default_value"] = false,
-	},
-	"Disable Projectile Trails",
-	"Disable the white trail that gets left behind by ranged weapon projectiles.",
-	nil
-)
-
-mod.add_option(
 	"NO_POTION_GLOW",
 	{
 		["widget_type"] = "checkbox",

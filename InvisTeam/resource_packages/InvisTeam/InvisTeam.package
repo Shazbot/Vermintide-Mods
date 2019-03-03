@@ -1,0 +1,11 @@
+mod = [
+	"InvisTeam"
+]
+
+package = [
+	"resource_packages/InvisTeam/InvisTeam"
+]
+
+lua = [
+	"scripts/mods/InvisTeam/*"
+]

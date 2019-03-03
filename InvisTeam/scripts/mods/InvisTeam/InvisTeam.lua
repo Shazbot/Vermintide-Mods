@@ -1,7 +1,7 @@
 local mod = get_mod("InvisTeam")
 
 mod.update = function()
-	if Managers.player and Managers.player:local_player() then
+	if Managers.state.network and Managers.player and Managers.player:local_player() then
 		local local_player_unit = Managers.player:local_player().player_unit
 		for _, player in pairs( Managers.player:human_and_bot_players() ) do
 			local player_unit = player.player_unit
@@ -26,8 +26,9 @@ mod.update = function()
 					end
 				end
 
-				if scale and not Vector3.equal(Unit.local_scale(local_player_unit, 0), Vector3(scale,scale,scale)) then
-					Unit.set_local_scale(player_unit, 1, Vector3(scale,scale,scale))
+				local new_scale_vector = Vector3(scale,scale,scale)
+				if scale and not Vector3.equal(Unit.local_scale(player_unit, 0), new_scale_vector) then
+					Unit.set_local_scale(player_unit, 1, new_scale_vector)
 				end
 			end
 		end

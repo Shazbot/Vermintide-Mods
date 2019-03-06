@@ -672,6 +672,11 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 			portrait_widget.offset[1] = player_portrait_x
 			portrait_widget.offset[2] = player_portrait_y
 
+			-- reposition the "needs help" icon that goes over the portrait
+			local def_dynamic = self:_widget_by_feature("default", "dynamic")
+			def_dynamic.style.portrait_icon.offset[1] = player_portrait_x
+			def_dynamic.style.portrait_icon.offset[2] = player_portrait_y
+
 			-- NumericUI interop.
 			-- NumericUI stores hp and ammo in vanilla widgets content.
 			-- So just copy those values to our teammate widget.
@@ -680,7 +685,6 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 			mod.numeric_ui_data.cooldown_string = hp_dynamic.content.cooldown_string or ""
 
 			-- ammo
-			local def_dynamic = self:_widget_by_feature("default", "dynamic")
 			mod.numeric_ui_data.ammo_string = def_dynamic.content.ammo_string or ""
 			mod.numeric_ui_data.ammo_percent = def_dynamic.content.ammo_percent
 			mod.numeric_ui_data.ammo_style = def_dynamic.content.ammo_style

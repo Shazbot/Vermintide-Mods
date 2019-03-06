@@ -6,8 +6,8 @@ mod.update = function()
 		for _, player in pairs( Managers.player:human_and_bot_players() ) do
 			local player_unit = player.player_unit
 
-			local scale = nil
 			if player_unit and player_unit ~= local_player_unit then
+				local scale = nil
 				if not local_player_unit or not mod:is_enabled() then
 					scale = 1
 				else
@@ -18,10 +18,8 @@ mod.update = function()
 
 						if dist > mod:get(mod.SETTING_NAMES.DISTANCE) then
 							scale = 0
-							Unit.set_local_scale(player_unit, 1, Vector3(0,0,0))
 						else
 							scale = 1
-							Unit.set_local_scale(player_unit, 1, Vector3(1,1,1))
 						end
 					end
 				end

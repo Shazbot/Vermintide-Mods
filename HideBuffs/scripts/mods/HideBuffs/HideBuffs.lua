@@ -731,11 +731,11 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 
 				local hp_text_x = 80 + mod:get(mod.SETTING_NAMES.TEAM_UI_NUMERIC_UI_HP_OFFSET_X)
 				teammate_widget_style.hp_text.offset[1] = hp_text_x
-				teammate_widget_style.hp_text_shadow.offset[1] = hp_text_x + 2
+				teammate_widget_style.hp_text_shadow.offset[1] = hp_text_x + 1
 
 				local hp_text_y = 100 + mod:get(mod.SETTING_NAMES.TEAM_UI_NUMERIC_UI_HP_OFFSET_Y)
 				teammate_widget_style.hp_text.offset[2] = hp_text_y
-				teammate_widget_style.hp_text_shadow.offset[2] = hp_text_y - 2
+				teammate_widget_style.hp_text_shadow.offset[2] = hp_text_y - 1
 
 				local ult_cd_text_x = 70 + mod:get(mod.SETTING_NAMES.TEAM_UI_NUMERIC_UI_ULT_CD_OFFSET_X)
 				teammate_widget_style.cooldown_text.offset[1] = ult_cd_text_x

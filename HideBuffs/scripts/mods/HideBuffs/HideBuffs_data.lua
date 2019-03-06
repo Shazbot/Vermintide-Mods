@@ -58,6 +58,55 @@ mod.SETTING_NAMES = {
 	CHAT_BG_ALPHA = "CHAT_BG_ALPHA",
 }
 
+mod.sorted_priority_buffs = {
+	"DMG_POT",
+	"SPEED_POT",
+	"CDR_POT",
+	"SWIFT_SLAYING",
+	"HUNTER",
+	"BARRAGE",
+	"BARKSKIN",
+	"TWITCH_BUFFS",
+	"KERILLIAN_SHADE_ACTIVATED_ABILITY",
+	"MARKUS_HUNTSMAN_ACTIVATED_ABILITY",
+	"HUNTSMAN_HS_CRIT_BUFF",
+	"HUNTSMAN_HS_RELOAD_SPEED_BUFF",
+	"KNIGHT_ULT_BLOCK",
+	"KNIGHT_ULT_POWER",
+	"KNIGHT_BUILD_MOMENTUM",
+	"PACED_STRIKES",
+	"MERC_MORE_MERRIER",
+	"MERC_BLADE_BARRIER",
+	"MERC_REIKLAND_REAPER",
+	"BARDIN_RANGER_ACTIVATED_ABILITY",
+	"GROMRIL",
+	"BARDIN_IRONBREAKER_ACTIVATED_ABILITY",
+	"IB_MINERS_RHYTHM",
+	"BARDIN_SLAYER_ACTIVATED_ABILITY",
+	"SLAYER_TROPHY_HUNTER",
+	"SLAYER_MOVING_TARGET",
+	"WHC_ULT",
+	"WHC_PING_AS",
+	"WHC_PING_CRIT",
+	"BH_CRIT_PASSIVE",
+	"VICTOR_ZEALOT_ACTIVATED_ABILITY",
+	"ZEALOT_INVULNERABLE_ACTIVE",
+	"ZEALOT_INVULNERABLE_ON_CD",
+	"ZEALOT_HOLY_CRUSADER",
+	"ZEALOT_FIERY_FAITH",
+	"ZEALOT_NO_SURRENDER",
+	"BW_TRANQUILITY",
+	"BW_WORLD_AFLAME",
+	"BW_BURNOUT",
+	"UNCHAINED_FEURBACHS_FURY",
+	"custom_wounded_buff",
+	"custom_dps_timed_buff",
+	"custom_dps_buff",
+	"custom_dmg_taken_buff",
+	"custom_temp_hp_buff",
+	"custom_scavenger_buff",
+}
+
 mod.priority_buff_setting_name_to_buff_name = {
 	PACED_STRIKES = { "markus_mercenary_passive_proc" },
 	KNIGHT_ULT_BLOCK = { "markus_knight_activated_ability_infinite_block" },
@@ -154,7 +203,7 @@ mod.priority_buff_setting_name_to_buff_name = {
 		"victor_zealot_critical_hit_damage_from_passive"
 	},
 	ZEALOT_FIERY_FAITH = {
-		"victor_zealot_critical_hit_damage_from_passive"
+		"victor_zealot_passive_damage"
 	},
 	ZEALOT_NO_SURRENDER = {
 		"victor_zealot_damage_on_enemy_proximity"
@@ -195,7 +244,7 @@ local priority_buffs_default_disabled = {
 }
 
 local priority_buffs_group_subwidgets = {}
-for setting_name, _ in pairs( mod.priority_buff_setting_name_to_buff_name ) do
+for _, setting_name in ipairs( mod.sorted_priority_buffs ) do
 	mod.SETTING_NAMES[setting_name] = setting_name
 	table.insert(priority_buffs_group_subwidgets,
 		{

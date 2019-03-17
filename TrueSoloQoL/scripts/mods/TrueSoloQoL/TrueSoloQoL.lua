@@ -66,9 +66,20 @@ mod.update = function()
 			end)
 		end
 	end
-
-	script_data.cap_num_bots = mod:get(mod.SETTING_NAMES.AUTO_KILL_BOTS) and 0 or nil
 end
+
+--- Disable the bots.
+mod:hook(SpawnManager, "_update_bot_spawns", function(func, ...)
+	local original_cap_num_bots = script_data.cap_num_bots
+
+	if mod:get(mod.SETTING_NAMES.AUTO_KILL_BOTS) then
+		script_data.cap_num_bots = 0
+	end
+
+	func(...)
+
+	script_data.cap_num_bots = original_cap_num_bots
+end)
 
 --- Fix for bug with mission not ending when bots are disabled.
 mod:hook(SpawnManager, "all_players_disabled", function(func, self, ...)

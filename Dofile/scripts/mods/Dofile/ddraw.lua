@@ -10,17 +10,31 @@ local stringx = require'pl.stringx'
 -- please don't create global objects in normal mods, very bad practice
 Dbg = Dbg or {}
 Dbg.text = Dbg.text or ""
+Dbg.current_table = nil
 
 mod.clear_time = 30
 
 pl.pretty = mod:dofile("scripts/mods/"..mod:get_name().."/pretty")
 
 ddraw = function(table)
+	if Dbg.current_table and Dbg.current_table == table then
+		return
+	end
+	
+	Dbg.current_table = table
+
 	Dbg.text = pl.pretty.write(table, nil, nil, 4)
 end
 
 ddump = function(table, filename)
+	if not filename then
+		filename = tostring(table)
+	end
 	pl.pretty.dump(table, filename, 4)
+end
+
+dkeys = function(table)
+	return pl.Map(table):keys()
 end
 
 mod.lines = pl.List()

@@ -5,7 +5,7 @@ globals = {
 	"BuffUI", "EquipmentUI", "AbilityUI", "UnitFrameUI", "MissionObjectiveUI",
 	"TutorialUI", "math", "UnitFramesHandler", "table", "UIWidget",
 	"UIRenderer", "CrosshairUI", "ScriptUnit", "BossHealthUI", "Colors", "UIWidgets",
-	"fassert", "HeroView", "Managers", "UIResolutionScale", "UIResolution",
+	"fassert", "HeroView", "Managers", "UIResolution",
 	"WeaponProperties", "WeaponTraits", "WeaponSkins", "ItemMasterList",
 	"SPProfiles", "Localize", "ItemHelper", "UIUtils", "HeroWindowLoadoutInventory",
 	"BackendUtils", "OutlineSystem", "script_data", "IngameUI", "GameSession",
@@ -38,7 +38,7 @@ globals = {
 	"StartGameWindowMission", "StartGameWindowMutator",
 	"StartGameWindowTwitchLogin", "StartGameWindowAdventure",
 	"PickupSystem", "ChatGui", "WaitForRescueUI",
-	"TwitchVoteUI", "TwitchIconView",
+	"TwitchVoteUI", "TwitchIconView", "EAC",
 
 	"PriorityBuffUI",
 }

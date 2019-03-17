@@ -387,7 +387,7 @@ mod.localizations:update({
 	DISABLE_BLOC_VECTOR_HORDE_T = {
 		en = "There are ambush hordes and 2 types of vector hordes: normal and blob."
 			.."\nBlob vector horde doesn't support changing composition and direction."
-			.."\nSo this option replaces bloc vector hordes with normal vector hordes.",
+			.."\nSo this option replaces blob vector hordes with normal vector hordes.",
 	},
 	NO_BOTS = {
 		en = "Disable Bots",

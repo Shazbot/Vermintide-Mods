@@ -1,8 +1,16 @@
 local mod = get_mod("SpawnTweaks")
 
---- We're changing script_data.cap_num_bots in mod.update in main script.
-mod:hook_safe(mod, "update", function()
-	script_data.cap_num_bots = (mod:is_enabled() and mod:get(mod.SETTING_NAMES.NO_BOTS)) and 0 or nil
+--- Disable the bots.
+mod:hook(SpawnManager, "_update_bot_spawns", function(func, ...)
+	local original_cap_num_bots = script_data.cap_num_bots
+
+	if mod:get(mod.SETTING_NAMES.NO_BOTS) then
+		script_data.cap_num_bots = 0
+	end
+
+	func(...)
+
+	script_data.cap_num_bots = original_cap_num_bots
 end)
 
 --- Fix for bug with mission not ending when bots are disabled.

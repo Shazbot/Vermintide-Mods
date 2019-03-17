@@ -248,10 +248,16 @@ mod:hook(SpecialsPacing, "specials_by_slots", function(func, self, t, specials_s
 	end
 
 	local new_method_data = tablex.deepcopy(method_data)
-	new_method_data.spawn_cooldown = {
-		mod:get(mod.SETTING_NAMES.SPAWN_COOLDOWN_MIN),
-		mod:get(mod.SETTING_NAMES.SPAWN_COOLDOWN_MAX)
-	}
+	local spawn_cooldown_min = mod:get(mod.SETTING_NAMES.SPAWN_COOLDOWN_MIN)
+	local spawn_cooldown_max = mod:get(mod.SETTING_NAMES.SPAWN_COOLDOWN_MAX)
+	if spawn_cooldown_min ~= mod.setting_defaults[mod.SETTING_NAMES.SPAWN_COOLDOWN_MIN]
+	or spawn_cooldown_max ~= mod.setting_defaults[mod.SETTING_NAMES.SPAWN_COOLDOWN_MAX]
+	then
+		new_method_data.spawn_cooldown = {
+			spawn_cooldown_min,
+			spawn_cooldown_max
+		}
+	end
 
 	func(self, t, specials_settings, new_method_data, slots, spawn_queue)
 end)
@@ -331,7 +337,7 @@ mod:hook(SpecialsPacing.select_breed_functions, "get_random_breed", function(fun
 		new_method_data.max_of_same = mod:get(mod.SETTING_NAMES.MAX_SPECIALS)
 	end
 
-	local new_specials_settings = tablex.deepcopy(method_data)
+	local new_specials_settings = tablex.deepcopy(specials_settings)
 	new_specials_settings.breeds = only_enabled_breeds
 
 	return func(slots, new_specials_settings, new_method_data, ...)
@@ -417,7 +423,6 @@ mod:hook_safe(ConflictDirector, "calculate_threat_value", function(self)
 end)
 
 mod:hook_safe(Pacing, "update", function(self, t, dt, alive_player_units) -- luacheck: ignore t dt
-
 	local num_alive_player_units = #alive_player_units
 
 	if num_alive_player_units == 0 then
@@ -440,10 +445,16 @@ mod:hook(ConflictDirector, "update_horde_pacing", function(func, self, t, dt)
 	RecycleSettings.push_horde_if_num_alive_grunts_above = mod:get(mod.SETTING_NAMES.HORDE_GRUNT_LIMIT)
 
 	local original_horde_frequency = tablex.deepcopy(CurrentPacing.horde_frequency)
-	CurrentPacing.horde_frequency = {
-		mod:get(mod.SETTING_NAMES.HORDE_FREQUENCY_MIN),
-		mod:get(mod.SETTING_NAMES.HORDE_FREQUENCY_MAX)
-	}
+	local horde_frequency_min = mod:get(mod.SETTING_NAMES.HORDE_FREQUENCY_MIN)
+	local horde_frequency_max = mod:get(mod.SETTING_NAMES.HORDE_FREQUENCY_MAX)
+	if horde_frequency_min ~= mod.setting_defaults[mod.SETTING_NAMES.HORDE_FREQUENCY_MIN]
+	or horde_frequency_max ~= mod.setting_defaults[mod.SETTING_NAMES.HORDE_FREQUENCY_MAX]
+	then
+		CurrentPacing.horde_frequency = {
+			horde_frequency_min,
+			horde_frequency_max
+		}
+	end
 
 	func(self, t, dt)
 
@@ -460,10 +471,17 @@ mod:hook(ConflictDirector, "update", function(func, self, ...)
 	local original_horde_startup_time = tablex.deepcopy(CurrentPacing.horde_startup_time)
 
 	RecycleSettings.max_grunts = mod:get(mod.SETTING_NAMES.MAX_GRUNTS)
-	CurrentPacing.horde_startup_time = {
-		mod:get(mod.SETTING_NAMES.HORDE_STARTUP_MIN),
-		mod:get(mod.SETTING_NAMES.HORDE_STARTUP_MAX)
-	}
+
+	local horde_startup_min = mod:get(mod.SETTING_NAMES.HORDE_STARTUP_MIN)
+	local horde_startup_max = mod:get(mod.SETTING_NAMES.HORDE_STARTUP_MAX)
+	if horde_startup_min ~= mod.setting_defaults[mod.SETTING_NAMES.HORDE_STARTUP_MIN]
+	or horde_startup_max ~= mod.setting_defaults[mod.SETTING_NAMES.HORDE_STARTUP_MAX]
+	then
+		CurrentPacing.horde_startup_time = {
+			horde_startup_min,
+			horde_startup_max
+		}
+	end
 
 	func(self, ...)
 
@@ -477,10 +495,16 @@ mod:hook(ConflictDirector, "horde_killed", function(func, self, ...)
 	end
 
 	local original_horde_frequency = tablex.deepcopy(CurrentPacing.horde_frequency)
-	CurrentPacing.horde_frequency = {
-		mod:get(mod.SETTING_NAMES.HORDE_FREQUENCY_MIN),
-		mod:get(mod.SETTING_NAMES.HORDE_FREQUENCY_MAX)
-	}
+	local horde_frequency_min = mod:get(mod.SETTING_NAMES.HORDE_FREQUENCY_MIN)
+	local horde_frequency_max = mod:get(mod.SETTING_NAMES.HORDE_FREQUENCY_MAX)
+	if horde_frequency_min ~= mod.setting_defaults[mod.SETTING_NAMES.HORDE_FREQUENCY_MIN]
+	or horde_frequency_max ~= mod.setting_defaults[mod.SETTING_NAMES.HORDE_FREQUENCY_MAX]
+	then
+		CurrentPacing.horde_frequency = {
+			horde_frequency_min,
+			horde_frequency_max
+		}
+	end
 
 	func(self, ...)
 
@@ -738,10 +762,4 @@ mod:dofile("scripts/mods/"..mod:get_name().."/no_bots")
 mod:dofile("scripts/mods/"..mod:get_name().."/pickups")
 
 mod.on_disabled = function(init_call) -- luacheck: ignore init_call
-	mod:hook_enable(mod, "update")
-	mod:hook_enable(SpawnManager, "all_players_disabled")
-end
-
-UIResolutionScale = function()
-	return 1
 end

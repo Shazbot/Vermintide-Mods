@@ -1,8 +1,4 @@
-local mod = get_mod("GiveWeapon") -- luacheck: ignore get_mod
-
--- luacheck: globals get_mod fassert HeroView Managers UIResolutionScale UIResolution InventorySettings
--- luacheck: globals WeaponProperties WeaponTraits WeaponSkins table ItemMasterList SPProfiles Localize
--- luacheck: globals ItemHelper UIUtils HeroWindowLoadoutInventory
+local mod = get_mod("GiveWeapon")
 
 local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
@@ -184,9 +180,9 @@ mod.create_weapon = function(item_type, give_random_skin)
 	end
 end
 
-local hero_options = {}
+mod.hero_options = {}
 for i, profile in ipairs(pl.List(SPProfiles):slice(1, 5)) do
-	hero_options[Localize(profile.ingame_display_name)] = i
+	mod.hero_options[Localize(profile.ingame_display_name)] = i
 end
 
 mod.create_item_types_dropdown = function(profile_index, window_size)
@@ -232,14 +228,14 @@ mod.create_item_types_dropdown = function(profile_index, window_size)
 end
 
 mod.create_window = function(self, profile_index, loadout_inv_view)
-	local scale = UIResolutionScale()
+	local scale = UIResolutionScale_pow2()
 	local screen_width, screen_height = UIResolution() -- luacheck: ignore screen_width
 	local window_size = {905+190+15, 80}
 	local window_position = {850-160, screen_height - window_size[2] - 5}
 
 	self.main_window = mod.simple_ui:create_window("give_weapon", window_position, window_size)
 
-	self.main_window.position = {(850-160)*scale, screen_height - window_size[2]*scale - 5}
+	self.main_window.position = {screen_width - (905+190+15)*scale - 150, screen_height - window_size[2]*scale - 5}
 
 	local pos_x = 5
 
@@ -277,7 +273,7 @@ mod.create_window = function(self, profile_index, loadout_inv_view)
 			end
 		end
 
-	mod.heroes_dropdown = self.main_window:create_dropdown("heroes_dropdown", {pos_x, window_size[2]-35},  {180, 30}, nil, hero_options, nil, 1)
+	mod.heroes_dropdown = self.main_window:create_dropdown("heroes_dropdown", {pos_x, window_size[2]-35},  {180, 30}, nil, mod.hero_options, nil, 1)
 	mod.heroes_dropdown.on_index_changed = function(dropdown)
 		mod.create_item_types_dropdown(dropdown.index, window_size)
 	end
@@ -358,7 +354,3 @@ mod:hook(HeroWindowLoadoutInventory, "on_exit", function(func, self)
 
 	mod:destroy_windows()
 end)
-
-UIResolutionScale = function()
-	return 1
-end

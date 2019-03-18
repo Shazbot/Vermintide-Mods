@@ -72,6 +72,12 @@ mod:hook(StateInGameRunning, "update_mood", function (func, ...)
 		MOOD_BLACKBOARD["heal_medikit"] = false
 	end
 
+	-- effects when drunk
+	if mod:get(mod.SETTING_NAMES.DISABLE_DRUNK_EFFECTS) then
+		MOOD_BLACKBOARD["drunk_01"] = false
+		MOOD_BLACKBOARD["hangover_01"] = false
+	end
+
 	return func(...)
 end)
 
@@ -113,6 +119,14 @@ mod:hook(PlayerUnitFirstPerson, "play_hud_sound_event", function (func, self, ev
 	return func(self, event_name, ...)
 end)
 
+mod.drunken_effects = pl.List{
+	"fx/screenspace_drunken_lens_01",
+	"fx/screenspace_hungover_01",
+	"fx/screenspace_drunken_lens,_05",
+	"fx/screenspace_drink_01",
+	"fx/screenspace_hungover_lens_01",
+}
+
 --- Skip huntsman, ranger, shade ult swirly screen effect.
 --- Skip potions visuals.
 mod.ult_name_to_fx = {
@@ -147,7 +161,27 @@ mod:hook(BuffExtension, "_play_screen_effect", function (func, self, effect)
 		end
 	end
 
+	-- effects when drunk
+	if mod:get(mod.SETTING_NAMES.DISABLE_DRUNK_EFFECTS) and mod.drunken_effects:contains(effect) then
+		return
+	end
+
 	return func(self, effect)
+end)
+
+--- Disable the purple explosion effect.
+mod:hook(AiUtils, "generic_mutator_explosion", function(func, killed_unit, blackboard, explosion_template_name)
+	if mod:get(mod.SETTING_NAMES.DISABLE_MUTATOR_EXPLOSIONS)
+	and (
+		explosion_template_name == "generic_mutator_explosion"
+		or explosion_template_name == "generic_mutator_explosion_medium"
+		or explosion_template_name == "generic_mutator_explosion_large"
+	)
+	then
+		return
+	end
+
+	return func(killed_unit, blackboard, explosion_template_name)
 end)
 
 mod:dofile("scripts/mods/"..mod:get_name().."/no_potion_glow")

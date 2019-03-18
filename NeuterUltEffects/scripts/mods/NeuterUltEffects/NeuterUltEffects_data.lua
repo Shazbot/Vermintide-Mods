@@ -91,6 +91,28 @@ mod.add_option(
 )
 
 mod.add_option(
+	"DISABLE_DRUNK_EFFECTS",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Disable Drunkennesss",
+	"Disable the visual effects of being drunk in the anniversary event.",
+	nil
+)
+
+mod.add_option(
+	"DISABLE_MUTATOR_EXPLOSIONS",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Disable Twins Mutator Explosion Effect",
+	"Disable the purple explosion effect in the Tzeentchian Twins mutator.",
+	nil
+)
+
+mod.add_option(
 	"NO_POTION_GLOW",
 	{
 		["widget_type"] = "checkbox",

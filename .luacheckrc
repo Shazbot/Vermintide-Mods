@@ -39,6 +39,7 @@ globals = {
 	"StartGameWindowTwitchLogin", "StartGameWindowAdventure",
 	"PickupSystem", "ChatGui", "WaitForRescueUI",
 	"TwitchVoteUI", "TwitchIconView", "EAC",
+	"AiUtils", "IngameHud",
 
 	"PriorityBuffUI",
 }

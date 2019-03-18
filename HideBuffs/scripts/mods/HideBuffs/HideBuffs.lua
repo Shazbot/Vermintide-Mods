@@ -1122,28 +1122,51 @@ end)
 -- since OutlineSystem.always gets called a crazy amount of times per frame
 local disable_outlines = false
 
---- Hide HUD when inspecting.
-mod:hook(IngameUI, "update", function(func, self, dt, t, ...)
-	script_data.disable_ui = mod.keep_hud_hidden
+--- Hide HUD when inspecting or when "Hide HUD" toggled with hotkey.
+mod:hook(GameModeManager, "has_activated_mutator", function(func, self, name, ...)
+	if name == "realism" then
+		if mod:get(mod.SETTING_NAMES.HIDE_HUD_WHEN_INSPECTING) then
+			local just_return
+			pcall(function()
+				local player_unit = Managers.player:local_player().player_unit
+				local character_state_machine_ext = ScriptUnit.extension(player_unit, "character_state_machine_system")
+				just_return = character_state_machine_ext:current_state() == "inspecting"
+			end)
 
-	if mod:get(mod.SETTING_NAMES.HIDE_HUD_WHEN_INSPECTING) then
-		local just_return
-		pcall(function()
-			local player_unit = Managers.player:local_player().player_unit
-			local character_state_machine_ext = ScriptUnit.extension(player_unit, "character_state_machine_system")
-			just_return = character_state_machine_ext:current_state() == "inspecting"
-		end)
+			local is_inpecting = not not just_return
+			disable_outlines = is_inpecting
+			if is_inpecting then
+				return true
+			end
+		end
 
-		disable_outlines = not not just_return
-		script_data.disable_ui = not not just_return
 		if mod.keep_hud_hidden then
-			script_data.disable_ui = true
+			return true
 		end
 	end
 
-	return func(self, dt, t, ...)
+	return func(self, name, ...)
 end)
 
+--- Patch realism visibility_group to show LevelCountdownUI.
+mod:hook(IngameHud, "_update_component_visibility", function(func, self)
+	if self._definitions then
+		for _, visibility_group in ipairs( self._definitions.visibility_groups ) do
+			if visibility_group.name == "realism" then
+				visibility_group.visible_components["LevelCountdownUI"] = true
+			end
+		end
+	end
+
+	return func(self)
+end)
+
+--- Hide HUD hotkey callback.
+mod.hide_hud = function()
+	mod.keep_hud_hidden = not mod.keep_hud_hidden
+end
+
+--- Disable hero outlines.
 mod:hook(OutlineSystem, "always", function(func, self, ...)
 	if disable_outlines then
 		return false
@@ -1151,10 +1174,6 @@ mod:hook(OutlineSystem, "always", function(func, self, ...)
 
 	return func(self, ...)
 end)
-
-mod.hide_hud = function()
-	mod.keep_hud_hidden = not mod.keep_hud_hidden
-end
 
 --- Disable level intro audio.
 mod:hook(StateLoading, "_trigger_sound_events", function(func, self, level_key)

@@ -1037,17 +1037,17 @@ mod.add_option(
 	hide_ui_elements_group.sub_widgets,
 	1
 )
--- mod.add_option(
--- 	"HIDE_HUD_HOTKEY",
--- 	{
--- 		["widget_type"] = "keybind",
--- 		["default_value"] = {},
--- 		["action"] = "hide_hud"
--- 	},
--- 	"Hide HUD Hotkey",
--- 	"Toggle HUD visibility.",
--- 	hide_ui_elements_group.sub_widgets
--- )
+mod.add_option(
+	"HIDE_HUD_HOTKEY",
+	{
+		["widget_type"] = "keybind",
+		["default_value"] = {},
+		["action"] = "hide_hud"
+	},
+	"Hide HUD Hotkey",
+	"Toggle HUD visibility.",
+	hide_ui_elements_group.sub_widgets
+)
 mod.add_option(
 	mod.SETTING_NAMES.NO_TUTORIAL_UI,
 	{

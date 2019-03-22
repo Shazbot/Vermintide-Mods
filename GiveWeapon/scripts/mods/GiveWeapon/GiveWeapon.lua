@@ -13,9 +13,10 @@ mod.traits = {}
 fassert(mod.simple_ui, "GiveWeapon must be lower than SimpleUI in your launcher's load order.")
 fassert(mod.more_items_library, "GiveWeapon must be lower than MoreItemsLibrary in your launcher's load order.")
 
+mod.pos_y = -35
+
 mod.create_skins_dropdown = function(item_type, window_size)
 	mod:pcall(function()
-
 		local all_skins = pl.List(mod.get_skins(item_type))
 		mod.skin_names = tablex.pairmap(function(_, skin) return skin, Localize(WeaponSkins.skins[skin].display_name) end, all_skins)
 		mod.sorted_skin_names = all_skins:map(function(skin) return Localize(WeaponSkins.skins[skin].display_name) end)
@@ -59,10 +60,9 @@ mod.create_skins_dropdown = function(item_type, window_size)
 			mod.skins_dropdown.visible = false
 		end
 
-		mod.skins_dropdown = mod.main_window:create_dropdown("skins_dropdown", {5+180+180+5+5+260+5+260+5, window_size[2]-35},  {200, 30}, nil, skin_options, "skins_dropdown", 1)
+		mod.skins_dropdown = mod.main_window:create_dropdown("skins_dropdown", {5+180+180+5+5+260+5+260+5, mod.pos_y+window_size[2]-35},  {200, 30}, nil, skin_options, "skins_dropdown", 1)
 		mod.skins_dropdown:select_index(1)
 	end)
-
 end
 
 mod.get_skins = function(item_type)
@@ -219,7 +219,7 @@ mod.create_item_types_dropdown = function(profile_index, window_size)
 		mod.item_types_dropdown.visible = false
 	end
 
-	mod.item_types_dropdown = mod.main_window:create_dropdown("item_types_dropdown", {5+180+5, window_size[2]-35},  {180, 30}, nil, item_types_options, "item_types_dropdown", 1)
+	mod.item_types_dropdown = mod.main_window:create_dropdown("item_types_dropdown", {5+180+5, mod.pos_y+window_size[2]-35},  {180, 30}, nil, item_types_options, "item_types_dropdown", 1)
 	mod.item_types_dropdown.on_index_changed = function(dropdown)
 		local item_type = mod.career_item_types[dropdown.index]
 		mod.create_skins_dropdown(item_type, window_size)
@@ -230,16 +230,18 @@ end
 mod.create_window = function(self, profile_index, loadout_inv_view)
 	local scale = UIResolutionScale_pow2()
 	local screen_width, screen_height = UIResolution() -- luacheck: ignore screen_width
-	local window_size = {905+190+15, 80}
+	local window_size = {905+190+15, 80+32}
 	local window_position = {850-160, screen_height - window_size[2] - 5}
 
 	self.main_window = mod.simple_ui:create_window("give_weapon", window_position, window_size)
+	mod.main_window:create_title("give_weapon_title", "Give Weapon", 35)
 
 	self.main_window.position = {screen_width - (905+190+15)*scale - 150, screen_height - window_size[2]*scale - 5}
 
 	local pos_x = 5
+	local pos_y = mod.pos_y
 
-	mod.create_weapon_button = self.main_window:create_button("create_weapon_button", {pos_x+90, window_size[2]-35-35}, {200, 30}, nil, ">Create Weapon<", nil)
+	mod.create_weapon_button = self.main_window:create_button("create_weapon_button", {pos_x+90, pos_y+window_size[2]-35-35}, {200, 30}, nil, ">Create Weapon<", nil)
 	mod.create_weapon_button.on_click = function(button) -- luacheck: ignore button
 			local item_type = mod.career_item_types[mod.item_types_dropdown.index]
 			if item_type then
@@ -273,7 +275,7 @@ mod.create_window = function(self, profile_index, loadout_inv_view)
 			end
 		end
 
-	mod.heroes_dropdown = self.main_window:create_dropdown("heroes_dropdown", {pos_x, window_size[2]-35},  {180, 30}, nil, mod.hero_options, nil, 1)
+	mod.heroes_dropdown = self.main_window:create_dropdown("heroes_dropdown", {pos_x, pos_y+window_size[2]-35},  {180, 30}, nil, mod.hero_options, nil, 1)
 	mod.heroes_dropdown.on_index_changed = function(dropdown)
 		mod.create_item_types_dropdown(dropdown.index, window_size)
 	end
@@ -281,7 +283,7 @@ mod.create_window = function(self, profile_index, loadout_inv_view)
 		mod.heroes_dropdown:select_index(profile_index)
 	end
 
-	mod.add_property_button = self.main_window:create_button("add_property_button", {pos_x+180+180+5+5+260+5+40, window_size[2]-70}, {180, 30}, nil, "Add Property", nil)
+	mod.add_property_button = self.main_window:create_button("add_property_button", {pos_x+180+180+5+5+260+5+40, pos_y+window_size[2]-70}, {180, 30}, nil, "Add Property", nil)
 	mod.add_property_button.on_click = function(button) -- luacheck: ignore button
 			local property_name = mod.property_names[mod.sorted_property_names[mod.properties_dropdown.index]]
 			if property_name then
@@ -289,7 +291,7 @@ mod.create_window = function(self, profile_index, loadout_inv_view)
 			end
 		end
 
-	-- mod.add_trait_button = self.main_window:create_button("add_trait_button", {pos_x+180+180+50+5, window_size[2]-70}, {180, 30}, nil, "Add Trait", nil)
+	-- mod.add_trait_button = self.main_window:create_button("add_trait_button", {pos_x+180+180+50+5, pos_y+window_size[2]-70}, {180, 30}, nil, "Add Trait", nil)
 	-- mod.add_trait_button.on_click = function(button)
 	-- 		local trait_name = mod.trait_names[mod.traits_dropdown.index]
 	-- 		if trait_name then
@@ -312,7 +314,7 @@ mod.create_window = function(self, profile_index, loadout_inv_view)
 	table.sort(mod.sorted_property_names)
 	local properties_options = tablex.index_map(mod.sorted_property_names)
 
-	mod.properties_dropdown = self.main_window:create_dropdown("properties_dropdown", {pos_x+180+180+5+5+260+5, window_size[2]-35},  {260, 30}, nil, properties_options, nil, 1)
+	mod.properties_dropdown = self.main_window:create_dropdown("properties_dropdown", {pos_x+180+180+5+5+260+5, pos_y+window_size[2]-35},  {260, 30}, nil, properties_options, nil, 1)
 
 	mod.trait_names = tablex.pairmap(function(trait_key, trait) return trait_key, Localize(trait.display_name) end, WeaponTraits.traits)
 	mod.sorted_trait_names = tablex.pairmap(function(trait_key, trait) -- luacheck: ignore trait_key
@@ -321,7 +323,7 @@ mod.create_window = function(self, profile_index, loadout_inv_view)
 	table.sort(mod.sorted_trait_names)
 	local traits_options = tablex.index_map(mod.sorted_trait_names)
 
-	mod.traits_dropdown = self.main_window:create_dropdown("traits_dropdown", {pos_x+180+180+5+5, window_size[2]-35}, {260, 30}, nil, traits_options, nil, 1)
+	mod.traits_dropdown = self.main_window:create_dropdown("traits_dropdown", {pos_x+180+180+5+5, pos_y+window_size[2]-35}, {260, 30}, nil, traits_options, nil, 1)
 
 	self.main_window.on_hover_enter = function(window)
 		window:focus()

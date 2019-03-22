@@ -83,7 +83,7 @@ end)
 
 --- Fix for bug with mission not ending when bots are disabled.
 mod:hook(SpawnManager, "all_players_disabled", function(func, self, ...)
-	if script_data.cap_num_bots ~= 0 then
+	if not mod:get(mod.SETTING_NAMES.AUTO_KILL_BOTS) then
 		return func(self, ...)
 	end
 

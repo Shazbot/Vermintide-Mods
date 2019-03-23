@@ -20,7 +20,7 @@ ddraw = function(table)
 	if Dbg.current_table and Dbg.current_table == table then
 		return
 	end
-	
+
 	Dbg.current_table = table
 
 	Dbg.text = pl.pretty.write(table, nil, nil, 4)
@@ -43,7 +43,7 @@ local font_size = 20
 local font = "gw_arial_16"
 local font_mtrl = "materials/fonts/" .. font
 
-mod.draw_debug_text = function(self)
+mod.draw_debug_text = function(self, existing_gui)
 	if
 	not self.world
 	and not self._world
@@ -52,16 +52,14 @@ mod.draw_debug_text = function(self)
 		return
 	end
 
-	if Dbg.text ~= mod.dbg_text_lf then
-		mod.dbg_text_lf = Dbg.text
-		mod.lines = stringx.splitlines(Dbg.text):slice(0, 135)
-	end
-
 	local world = self.world or self._world or self.world_manager:world("level_world")
 
-	self._mod_gui = self.gui
-	if not self._mod_gui then
-		self._mod_gui = World.create_screen_gui(world, "material", "materials/fonts/gw_fonts", "immediate")
+	local gui = existing_gui
+	if not gui then
+		if not self._mod_gui then
+			self._mod_gui = World.create_screen_gui(world, "material", "materials/fonts/gw_fonts", "immediate")
+		end
+		gui = self._mod_gui
 	end
 	local header_color = Color(250, 0, 255, 0)
 	local start_x = RESOLUTION_LOOKUP.res_w - 550 - 550
@@ -78,7 +76,7 @@ mod.draw_debug_text = function(self)
 
 		lines:foreach(function(line)
 			local pos = Vector3(start_x, start_y-spacing_y*i, 101)
-			Gui.text(self._mod_gui, line, font_mtrl, font_size, font, pos, header_color)
+			Gui.text(gui, line, font_mtrl, font_size, font, pos, header_color)
 			i = i + 1
 			if i > 45 then
 				start_x = start_x + 375
@@ -96,6 +94,23 @@ mod:hook_safe(LevelEndView, "update", function(self, dt)
 	mod.draw_debug_text(self)
 end)
 
+mod.destroy_gui = function(func, self, ...)
+	if self._mod_gui then
+		local world = self.world or self._world or self.world_manager:world("level_world")
+		World.destroy_gui(world, self._mod_gui)
+		self._mod_gui = nil
+	end
+
+	return func(self, ...)
+end
+
+local objects_to_hook_destroy = { LevelEndView, IngameUI }
+
+for _, obj in ipairs( objects_to_hook_destroy ) do
+	mod:hook(obj, "destroy", mod.destroy_gui)
+end
+mod:hook(StateLoading, "on_exit", mod.destroy_gui)
+
 mod:hook_safe(IngameUI, "update", function(self, dt, t, ...)
 	if Dbg.text ~= mod.dbg_text_lf then
 		mod.dbg_text_lf = Dbg.text
@@ -107,5 +122,5 @@ mod:hook_safe(IngameUI, "update", function(self, dt, t, ...)
 		mod.clear_text_t = nil
 	end
 
-	mod.draw_debug_text(self)
+	mod.draw_debug_text(self, self.ui_renderer.gui)
 end)

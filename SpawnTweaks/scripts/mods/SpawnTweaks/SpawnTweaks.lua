@@ -558,12 +558,29 @@ mod:hook(SpecialsPacing, "update", function(func, self, t, alive_specials, speci
 	return func(self, t, alive_specials, specials_population, player_positions)
 end)
 
---- Change damage dealt to bosses.
+--- Change damage dealt.
 --- Only used as an intermediate hook inside DamageUtils.add_damage_network_player.
-mod:hook(DamageUtils, "calculate_damage", function(func, damage_output, target_unit, ...)
-	local dmg = func(damage_output, target_unit, ...)
+mod:hook(DamageUtils, "calculate_damage", function(func, damage_output, target_unit, attacker_unit, hit_zone_name,
+original_power_level, boost_curve, boost_damage_multiplier, is_critical_strike, damage_profile, target_index, backstab_multiplier, damage_source)
+	local dmg = func(damage_output, target_unit, attacker_unit, hit_zone_name, original_power_level,
+	boost_curve, boost_damage_multiplier, is_critical_strike, damage_profile, target_index, backstab_multiplier, damage_source)
 
 	if target_unit then
+		-- adjust global player dmg dealt
+		dmg = dmg * mod:get(mod.SETTING_NAMES.PLAYER_DMG_DEALT_MULTIPLIER) / 100
+
+		-- adjust per item slot dmg multipliers
+		local damaging_item = rawget(ItemMasterList, damage_source)
+		if damaging_item then
+			if damaging_item.slot_type == "melee" then
+				dmg = dmg * mod:get(mod.SETTING_NAMES.PLAYER_ITEM_SLOT_MELEE_DMG_MULTIPLIER) / 100
+			elseif damaging_item.slot_type == "ranged" then
+				dmg = dmg * mod:get(mod.SETTING_NAMES.PLAYER_ITEM_SLOT_RANGED_DMG_MULTIPLIER) / 100
+			elseif damaging_item.slot_type == "grenade" then
+				dmg = dmg * mod:get(mod.SETTING_NAMES.PLAYER_ITEM_SLOT_BOMB_DMG_MULTIPLIER) / 100
+			end
+		end
+
 		local breed = Unit.get_data(target_unit, "breed")
 		if breed then
 			if mod:get(mod.SETTING_NAMES.BREEDS_TOGGLE_GROUP)
@@ -584,6 +601,16 @@ mod:hook(DamageUtils, "calculate_damage", function(func, damage_output, target_u
 				return dmg
 			end
 		end
+
+		if Managers.player:owner(target_unit) then
+			dmg = dmg * mod:get(mod.SETTING_NAMES.PLAYER_DMG_TAKEN_MULTIPLIER) / 100
+
+			-- ff multiplier
+			local actual_attacker_unit = AiUtils.get_actual_attacker_unit(attacker_unit)
+			if Managers.player:owner(actual_attacker_unit) then
+				dmg = dmg * mod:get(mod.SETTING_NAMES.PLAYER_FF_DMG_MULTIPLIER) / 100
+			end
+		end
 	end
 
 	return dmg
@@ -591,10 +618,6 @@ end)
 mod:hook_disable(DamageUtils, "calculate_damage")
 
 mod:hook(DamageUtils, "add_damage_network_player", function(func, ...)
-	if mod:get(mod.SETTING_NAMES.BOSSES) ~= mod.BOSSES.CUSTOMIZE then
-		return func(...)
-	end
-
 	mod:hook_enable(DamageUtils, "calculate_damage")
 
 	func(...)
@@ -748,7 +771,11 @@ mod.reset_breed_dmg = function()
 	vmf.save_unsaved_settings_to_file()
 end
 
+mod.update_funcs = {}
 mod.update = function()
+	for _, update_func in ipairs( mod.update_funcs ) do
+		update_func()
+	end
 end
 
 mod.on_setting_changed = function(setting_name) -- luacheck: ignore setting_name
@@ -760,6 +787,20 @@ mod:dofile("scripts/mods/"..mod:get_name().."/presets")
 mod:dofile("scripts/mods/"..mod:get_name().."/mutators")
 mod:dofile("scripts/mods/"..mod:get_name().."/no_bots")
 mod:dofile("scripts/mods/"..mod:get_name().."/pickups")
+mod:dofile("scripts/mods/"..mod:get_name().."/give_slot_items")
 
 mod.on_disabled = function(init_call) -- luacheck: ignore init_call
 end
+
+mod.on_unload = function()
+	mod.persistent.ingame_entered = mod.ingame_entered
+end
+
+mod.on_game_state_changed = function(status, state)
+	if status == "enter" and state == "StateIngame" then
+		mod.ingame_entered = true
+	end
+end
+
+mod.persistent = mod:persistent_table("persistent")
+mod.ingame_entered = mod.persistent.ingame_entered

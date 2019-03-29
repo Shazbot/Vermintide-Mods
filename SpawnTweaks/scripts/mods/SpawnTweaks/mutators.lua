@@ -10,6 +10,34 @@ mod.mutators_list = {
 	"skeet_shot",
 	"disable_spawns",
 	"no_bots",
+	"bomberman",
+}
+
+mod.mutators_info = {
+	true_solo = {
+		name = "True Solo",
+		desc = "True Solo is the challenge of finishing the map solo without bot help."
+			.."\nI suggest using True Solo QoL Tweaks mod to quickly restart map on defeat."
+	},
+	skeet_shot = {
+		name = "Skeet Shot",
+		desc = "Disables everything but assassins and ups their numbers."
+			.."\nConsider using Infinite Ammo mod or Spawn Items mod to spawn Ammo Boxes."
+			.."\nValues need to be tweaked!"
+	},
+	disable_spawns = {
+		name = "Disable Spawns",
+		desc = "Disable all spawns, for Creature Spawner practice or exploring the map."
+	},
+	no_bots = {
+		name = "No Bots",
+		desc = "Remove bots from the game."
+	},
+	bomberman = {
+		name = "Bomberman",
+		desc = "Infinite supply of bombs to kill enemies and teammates!"
+			.."\nIdea by dieaready."
+	},
 }
 
 mod.mutators = {
@@ -55,6 +83,14 @@ mod.mutators = {
 	no_bots = {
 		NO_BOTS = true,
 	},
+	bomberman = {
+		PLAYER_ITEM_SLOT_MELEE_DMG_MULTIPLIER = 0,
+		PLAYER_FF_DMG_MULTIPLIER = 400,
+		PLAYER_ITEM_SLOT_BOMB_DMG_MULTIPLIER = 50,
+		KEEP_GIVING_BOMBS = true,
+		PLAYER_ITEM_SLOT_RANGED_DMG_MULTIPLIER = 0,
+		KEEP_GIVING_FIRE_BOMBS = true,
+	}
 }
 
 mod.mutators_enabled = {}
@@ -166,34 +202,12 @@ mod.create_window = function()
 
 	local pos_x = -10
 
-	local true_solo_label = mod.main_window:create_label("true_solo_label", {pos_x+30+45+25-3-20, window_size[2]-35-35-35-10+1}, {80, 40}, nil, "True Solo")
-	true_solo_label.tooltip =
-		"True Solo"
-		.."\nTrue Solo is the challenge of finishing the map solo without bot help."
-		.."\nI suggest using True Solo QoL Tweaks mod to quickly restart map on defeat."
-
-	local skeet_shot_label = mod.main_window:create_label("skeet_shot_label", {pos_x+30+45+25+1-20, window_size[2]-35-35-35-10-50+1}, {80, 40}, nil, "Skeet Shot")
-	skeet_shot_label.tooltip =
-		"Skeet Shot"
-		.."\nDisables everything but assassins and ups their numbers."
-		.."\nConsider using Infinite Ammo mod or Spawn Items mod to spawn Ammo Boxes."
-
-	local disable_spawns_label = mod.main_window:create_label("dsiable_spawns_label", {pos_x+30+45+25+3-20, window_size[2]-35-35-35-10-50-50+1}, {120, 40}, nil, "Disable Spawns")
-	disable_spawns_label.tooltip =
-		"Disable Spawns"
-		.."\nDisable all spawns, for Creature Spawner practice or exploring the map."
-
-	local no_bots_label = mod.main_window:create_label("no_bots_label", {pos_x+170+30+45+30-4-20, window_size[2]-35-35-35-10+1}, {80, 40}, nil, "No Bots")
-	no_bots_label.tooltip =
-		"No Bots"
-		.."\nRemove bots from the game."
-
 	for i, mutator_name in ipairs( mod.mutators_list ) do
 		if i == 4 then
 			pos_x = 170
 		end
 		local row = i/3 > 1 and i%4 + 1 or i
-		local mutator_chk = mod.main_window:create_checkbox(mutator_name.."_ckh", {pos_x+30, window_size[2]-35-20-10-(row*50)}, {40, 40}, nil, nil, false)
+		local mutator_chk = mod.main_window:create_checkbox(mutator_name.."_ckh", {pos_x+30, window_size[2]-35-20-10-(row*50)}, {40, 40})
 		mutator_chk.on_value_changed = function()
 			local mut_enabled = mutator_chk.value
 			mod.set_mutator(mutator_name, mut_enabled)
@@ -202,6 +216,10 @@ mod.create_window = function()
 		end
 		mod.mutator_chks[mutator_name] = mutator_chk
 		mutator_chk.value = mod.mutators_enabled[mutator_name]
+
+		local mutator_localized_name = mod.mutators_info[mutator_name].name
+		mutator_chk.text = mutator_localized_name
+		mutator_chk.tooltip = mutator_localized_name.."\n"..mod.mutators_info[mutator_name].desc
 	end
 
 	local reset_button = mod.main_window:create_button("reset_button", {235+120, window_size[2]-35-10-50}, {80, 30}, nil, "Reset All")

@@ -6,6 +6,7 @@ local mod_data = {
 	name = mod:localize("mod_name"),
 	description = mod:localize("mod_description"),
 	is_togglable = true,
+	allow_rehooking = true,
 }
 
 mod.SETTING_NAMES = {
@@ -741,6 +742,137 @@ mod_data.options_widgets:extend({
 	},
 })
 
+local mutator_options_subs = mod.add_option(
+	"MUTATOR_OPTIONS_GROUP",
+	{
+		["widget_type"] = "group",
+	},
+	"Mutator Options",
+	"Other options for mutators."
+)
+mod.add_option(
+	"PLAYER_DMG_DEALT_MULTIPLIER",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 1000},
+		["unit_text"] = "%",
+	    ["default_value"] = 100,
+	},
+	"Player Dmg Dealt Multiplier",
+	"Multiply the player damage.",
+	mutator_options_subs
+)
+mod.add_option(
+	"PLAYER_DMG_TAKEN_MULTIPLIER",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 1000},
+		["unit_text"] = "%",
+	    ["default_value"] = 100,
+	},
+	"Player Dmg Taken Multiplier",
+	"Multiply the damage the players take.",
+	mutator_options_subs
+)
+mod.add_option(
+	"PLAYER_FF_DMG_MULTIPLIER",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 1000},
+		["unit_text"] = "%",
+	    ["default_value"] = 100,
+	},
+	"Player FF Dmg Multiplier",
+	"Multiply the friendly fire damage the players take.",
+	mutator_options_subs
+)
+mod.add_option(
+	"PLAYER_ITEM_SLOT_MELEE_DMG_MULTIPLIER",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 1000},
+		["unit_text"] = "%",
+	    ["default_value"] = 100,
+	},
+	"Player Melee Slot Dmg Multiplier",
+	"Multiply the damage from melee slot weapons.",
+	mutator_options_subs
+)
+mod.add_option(
+	"PLAYER_ITEM_SLOT_RANGED_DMG_MULTIPLIER",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 1000},
+		["unit_text"] = "%",
+	    ["default_value"] = 100,
+	},
+	"Player Ranged Slot Dmg Multiplier",
+	"Multiply the damage from ranged slot weapons.",
+	mutator_options_subs
+)
+mod.add_option(
+	"PLAYER_ITEM_SLOT_BOMB_DMG_MULTIPLIER",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 1000},
+		["unit_text"] = "%",
+	    ["default_value"] = 100,
+	},
+	"Player Bomb Slot Dmg Multiplier",
+	"Multiply the damage from bomb slot weapons.",
+	mutator_options_subs
+)
+mod.add_option(
+	"KEEP_GIVING_BOMBS",
+	{
+		["widget_type"] = "checkbox",
+	    ["default_value"] = false,
+	},
+	"Infinite Bombs",
+	"Keep giving bombs to players.",
+	mutator_options_subs
+)
+mod.add_option(
+	"KEEP_GIVING_FIRE_BOMBS",
+	{
+		["widget_type"] = "checkbox",
+	    ["default_value"] = false,
+	},
+	"Infinite Fire Bombs",
+	"Keep giving bombs to players.",
+	mutator_options_subs
+)
+mod.add_option(
+	"KEEP_GIVING_STR_POTS",
+	{
+		["widget_type"] = "checkbox",
+	    ["default_value"] = false,
+	},
+	"Infinite Str Potions",
+	"Keep giving potions to players.",
+	mutator_options_subs
+)
+mod.add_option(
+	"KEEP_GIVING_SPEED_POTS",
+	{
+		["widget_type"] = "checkbox",
+	    ["default_value"] = false,
+	},
+	"Infinite Speed Potions",
+	"Keep giving potions to players.",
+	mutator_options_subs
+)
+mod.add_option(
+	"KEEP_GIVING_CDR_POTS",
+	{
+		["widget_type"] = "checkbox",
+	    ["default_value"] = false,
+	},
+	"Infinite CDR Potions",
+	"Keep giving potions to players.",
+	mutator_options_subs
+)
+
 local pickups_subs = mod.add_option(
 	"MAP_PICKUPS_GROUP",
 	{
@@ -778,15 +910,15 @@ local map_pickups_disable_group_subs = mod.add_option(
 	pickups_subs
 )
 mod.add_option(
-		"MAP_PICKUPS_REPLACE_DISABLED",
-		{
-			["widget_type"] = "checkbox",
-		    ["default_value"] = false,
-		},
-		"Replace Disabled Pickups",
-		"Disabled pickups will be replaced with randomly chosen non-disabled pickups.",
-		map_pickups_disable_group_subs
-	)
+	"MAP_PICKUPS_REPLACE_DISABLED",
+	{
+		["widget_type"] = "checkbox",
+	    ["default_value"] = false,
+	},
+	"Replace Disabled Pickups",
+	"Disabled pickups will be replaced with randomly chosen non-disabled pickups.",
+	map_pickups_disable_group_subs
+)
 for _, pickup_name in ipairs( mod.map_pickups ) do
 	local pickup = AllPickups[pickup_name]
 	mod.add_option(

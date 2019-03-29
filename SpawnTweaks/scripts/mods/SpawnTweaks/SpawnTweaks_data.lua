@@ -751,6 +751,16 @@ local mutator_options_subs = mod.add_option(
 	"Other options for mutators."
 )
 mod.add_option(
+	"INFINITE_AMMO_MUTATOR",
+	{
+		["widget_type"] = "checkbox",
+	    ["default_value"] = false,
+	},
+	"Infinite Ammo And 0 Heat",
+	"Give players infinite ammo and no heat generated.",
+	mutator_options_subs
+)
+mod.add_option(
 	"PLAYER_DMG_DEALT_MULTIPLIER",
 	{
 		["widget_type"] = "numeric",
@@ -870,6 +880,16 @@ mod.add_option(
 	},
 	"Infinite CDR Potions",
 	"Keep giving potions to players.",
+	mutator_options_subs
+)
+mod.add_option(
+	"KEEP_GIVING_HP_POTS",
+	{
+		["widget_type"] = "checkbox",
+	    ["default_value"] = false,
+	},
+	"Infinite HP Pots",
+	"Keep giving HP pots to players.",
 	mutator_options_subs
 )
 

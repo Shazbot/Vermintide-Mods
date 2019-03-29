@@ -781,6 +781,13 @@ end
 mod.on_setting_changed = function(setting_name) -- luacheck: ignore setting_name
 end
 
+mod.on_disabled_funcs = {}
+mod.on_disabled = function(init_call)
+	for _, on_disabled_func in ipairs( mod.on_disabled_funcs ) do
+		on_disabled_func(init_call)
+	end
+end
+
 mod:command("reset_breed_dmg", mod:localize("reset_breed_dmg_description"), mod.reset_breed_dmg)
 
 mod:dofile("scripts/mods/"..mod:get_name().."/presets")
@@ -788,9 +795,7 @@ mod:dofile("scripts/mods/"..mod:get_name().."/mutators")
 mod:dofile("scripts/mods/"..mod:get_name().."/no_bots")
 mod:dofile("scripts/mods/"..mod:get_name().."/pickups")
 mod:dofile("scripts/mods/"..mod:get_name().."/give_slot_items")
-
-mod.on_disabled = function(init_call) -- luacheck: ignore init_call
-end
+mod:dofile("scripts/mods/"..mod:get_name().."/infinite_ammo_mutator")
 
 mod.on_unload = function()
 	mod.persistent.ingame_entered = mod.ingame_entered

@@ -12,6 +12,9 @@ mod.slot_name_to_setting_names = {
 		mod.SETTING_NAMES.KEEP_GIVING_SPEED_POTS,
 		mod.SETTING_NAMES.KEEP_GIVING_CDR_POTS,
 	},
+	slot_healthkit = pl.List{
+		mod.SETTING_NAMES.KEEP_GIVING_HP_POTS
+	}
 }
 
 mod.setting_name_to_item_name = {
@@ -20,9 +23,10 @@ mod.setting_name_to_item_name = {
 	[mod.SETTING_NAMES.KEEP_GIVING_STR_POTS] = "damage_boost_potion",
 	[mod.SETTING_NAMES.KEEP_GIVING_SPEED_POTS] = "speed_boost_potion",
 	[mod.SETTING_NAMES.KEEP_GIVING_CDR_POTS] = "cooldown_reduction_potion",
+	[mod.SETTING_NAMES.KEEP_GIVING_HP_POTS] = "healing_draught",
 }
 
-mod.give_slot_items_slot_names = { "slot_potion", "slot_grenade" }
+mod.give_slot_items_slot_names = { "slot_healthkit", "slot_potion", "slot_grenade" }
 
 mod.filter_setting_name_filter = function(setting_name)
 	return mod:get(setting_name)

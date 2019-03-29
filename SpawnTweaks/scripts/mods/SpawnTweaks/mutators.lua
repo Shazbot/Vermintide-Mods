@@ -7,9 +7,9 @@ mod.simple_ui = get_mod("SimpleUI")
 --- List of mutators, a way to have them always sorted.
 mod.mutators_list = {
 	"true_solo",
-	"skeet_shot",
-	"disable_spawns",
 	"no_bots",
+	"disable_spawns",
+	"skeet_shot",
 	"bomberman",
 }
 
@@ -258,7 +258,6 @@ mod.create_window = function()
 	summary_title.tooltip =
 		"Summary"
 		.."\nList of all the changes Spawn Tweaks is currently doing. Default value is in brackets."
-		.."\nIt's possible to end up with unwanted active settings by enabling and disabling multiple mutators."
 		.."\nThis summary will always correctly show the currently enabled values."
 		.."\nClick Reset All if you don't want anything active."
 

@@ -1,7 +1,6 @@
 -- luacheck: globals get_mod IngameUI Keyboard Color World EndScreenUI
 -- luacheck: globals RESOLUTION_LOOKUP Gui Vector3 LevelEndView
--- luacheck: globals Dbg ddraw  ddump
-
+-- luacheck: globals Dbg ddraw ddump dkeys
 local mod = get_mod("Dofile")
 
 local pl = require'pl.import_into'()
@@ -90,7 +89,7 @@ mod.draw_debug_text = function(self, existing_gui)
 	end)
 end
 
-mod:hook_safe(LevelEndView, "update", function(self, dt)
+mod:hook_safe(LevelEndView, "update", function(self)
 	mod.draw_debug_text(self)
 end)
 
@@ -111,7 +110,7 @@ for _, obj in ipairs( objects_to_hook_destroy ) do
 end
 mod:hook(StateLoading, "on_exit", mod.destroy_gui)
 
-mod:hook_safe(IngameUI, "update", function(self, dt, t, ...)
+mod:hook_safe(IngameUI, "update", function(self, dt, t) -- luacheck: ignore dt
 	if Dbg.text ~= mod.dbg_text_lf then
 		mod.dbg_text_lf = Dbg.text
 		mod.clear_text_t = t + mod.clear_time
@@ -124,3 +123,9 @@ mod:hook_safe(IngameUI, "update", function(self, dt, t, ...)
 
 	mod.draw_debug_text(self, self.ui_renderer.gui)
 end)
+
+mod.clear_ddraw = function()
+	ddraw()
+end
+
+mod:command("dd", "Clear ddraw.", mod.clear_ddraw)

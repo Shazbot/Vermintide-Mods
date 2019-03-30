@@ -1,12 +1,9 @@
--- luacheck: ignore get_mod Keyboard GameStateMachine
-
+-- luacheck: ignore get_mod Keyboard GameStateMachine loadstring
 local mod = get_mod("Dofile")
 
 local pl = require'pl.import_into'()
 
--- luacheck: globals loadstring
-
-mod.do_exec = function() -- luacheck: ignore self
+mod.do_exec = function()
 	if not mod:is_enabled() then
 		return
 	end

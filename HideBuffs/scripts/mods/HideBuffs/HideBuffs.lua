@@ -859,6 +859,48 @@ mod:hook(UnitFrameUI, "_update_portrait_opacity", function(func, self, is_dead, 
 	return is_dirtied
 end)
 
+mod.def_dynamic_widget_names = pl.List{
+	"talk_indicator",
+	"talk_indicator_highlight",
+	"talk_indicator_highlight_glow",
+}
+
+mod.career_name_to_hat_icon = pl.Map{
+	bw_adept = "icon_adept_hat_0001",
+	bw_scholar = "icon_scholar_hat_0000",
+	bw_unchained = "icon_unchained_hat_0008",
+	dr_ironbreaker = "icon_ironbreaker_hat_0006",
+	dr_ranger = "icon_ranger_hat_0005",
+	dr_slayer = "icon_slayer_hat_0000",
+	empire_soldier_tutorial = "icon_knight_hat_0010",
+	es_huntsman = "icon_huntsman_hat_0000",
+	es_knight = "icon_knight_hat_0010",
+	es_mercenary = "icon_mercenary_hat_0007",
+	we_maidenguard = "icon_maidenguard_hat_0000",
+	we_shade = "icon_shade_hat_0009",
+	we_waywatcher = "icon_waywatcher_hat_0001",
+	wh_bountyhunter = "icon_bountyhunter_hat_0000",
+	wh_captain = "icon_witchhunter_hat_0003",
+	wh_zealot = "icon_zealot_hat_0009",
+}
+
+--- Catch Material.set_vector2 crash on changed portrait textures.
+mod:hook(UnitFrameUI, "set_portrait_status", function(func, ...)
+	mod:hook_enable(Material, "set_vector2")
+
+	func(...)
+
+	mod:hook_disable(Material, "set_vector2")
+end)
+
+mod:hook(Material, "set_vector2", function(func, gui_material, ...)
+	if not gui_material then
+		return
+	end
+
+	return func(gui_material, ...)
+end)
+
 mod:hook(UnitFramesHandler, "_create_unit_frame_by_type", function(func, self, frame_type, frame_index)
 	local unit_frame = func(self, frame_type, frame_index)
 	if frame_type == "player" and mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET) then

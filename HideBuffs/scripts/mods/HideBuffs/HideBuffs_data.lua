@@ -270,6 +270,11 @@ mod.ALIGNMENTS_LOOKUP = {
 	"right",
 	"center",
 }
+mod.PORTRAIT_ICONS = {
+	DEFAULT = 1,
+	HERO = 2,
+	HATS = 3,
+}
 
 local mod_data = {
 	name = "UI Tweaks",
@@ -1356,6 +1361,35 @@ mod.add_option(
 )
 
 mod.add_option(
+	"TEAM_UI_PORTRAIT_ICONS",
+	{
+		["setting_name"] = mod.SETTING_NAMES.HORDES,
+		["widget_type"] = "dropdown",
+		["default_value"] = mod.PORTRAIT_ICONS.DEFAULT,
+		["options"] = {
+			{ text = mod:localize("default"), value = mod.PORTRAIT_ICONS.DEFAULT }, --1
+			{ text = mod:localize("hero"), value = mod.PORTRAIT_ICONS.HERO }, --2
+			{ text = mod:localize("hats"), value = mod.PORTRAIT_ICONS.HATS }, --3
+		},
+	},
+	"Change Portraits",
+	"Change teammate portraits.\nHero uses hero icons, Hats uses hat icons.",
+	team_ui_group.sub_widgets,
+	9
+)
+mod.add_option(
+	"TEAM_UI_PORTRAIT_ALPHA",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 255},
+	    ["default_value"] = 255,
+	},
+	"Portrait Transparency",
+	"Set portrait transparency, 0 is fully transparent.",
+	team_ui_group.sub_widgets,
+	10
+)
+mod.add_option(
 	"TEAM_UI_PLAYER_NAME_ALIGNMENT",
 	{
 		["widget_type"] = "dropdown",
@@ -1369,7 +1403,7 @@ mod.add_option(
 	"Player Name Alignment",
 	"Change the horizontal alignment of a player's name.",
 	team_ui_group.sub_widgets,
-	9
+	11
 )
 mod.add_option(
 	"TEAM_UI_HP_BAR_SCALE_WIDTH",
@@ -1479,17 +1513,6 @@ mod.add_option(
 	"Spacing",
 	"Distance between slots.\nDefault is 35.",
 	team_ui_item_slots_subs
-)
-mod.add_option(
-	"TEAM_UI_PORTRAIT_ALPHA",
-	{
-		["widget_type"] = "numeric",
-		["range"] = {0, 255},
-	    ["default_value"] = 255,
-	},
-	"Portrait Transparency",
-	"Set portrait transparency, 0 is fully transparent.",
-	team_ui_group.sub_widgets
 )
 
 local teammate_important_icons_subs = mod.add_option(

@@ -347,6 +347,15 @@ mod.localizations:update({
 	center = {
 		en = "Center"
 	},
+	default = {
+		en = "Default"
+	},
+	hero = {
+		en = "Hero"
+	},
+	hats = {
+		en = "Hats"
+	},
 
 	-- priority buffs
 	PACED_STRIKES = {

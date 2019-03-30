@@ -19,7 +19,6 @@ mod.persistent_storage = mod:persistent_table("persistent_storage")
 mod.numeric_ui_data = {}
 
 mod.reset_hotkey_alpha = false
-mod.reset_portrait_frame_alpha = false
 mod.reset_level_alpha = false
 
 mod.change_slot_visibility = mod:get(mod.SETTING_NAMES.HIDE_WEAPON_SLOTS)
@@ -29,7 +28,6 @@ mod.reposition_weapon_slots =
 
 mod.on_setting_changed = function(setting_name)
 	mod.reset_hotkey_alpha = not mod:get(mod.SETTING_NAMES.HIDE_HOTKEYS)
-	mod.reset_portrait_frame_alpha = not mod:get(mod.SETTING_NAMES.HIDE_FRAMES)
 	mod.reset_level_alpha = not mod:get(mod.SETTING_NAMES.HIDE_LEVELS)
 
 	if setting_name == mod.SETTING_NAMES.HIDE_WEAPON_SLOTS then
@@ -579,7 +577,9 @@ mod.adjust_portrait_size_and_position = function(unit_frame_ui)
 		default_static_style.host_icon.offset[1] = -50 + team_ui_portrait_offset_x
 		default_static_style.host_icon.offset[2] = 10 + team_ui_portrait_offset_y
 
+		self:_set_widget_dirty(default_static_widget)
 		self:_set_widget_dirty(portrait_static_w)
+		self:set_dirty()
 	end
 end
 
@@ -598,21 +598,14 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 
 		local portrait_static = self._widgets.portrait_static
 
-		-- portrait frame
-		if mod.reset_portrait_frame_alpha then
-			portrait_static.style.texture_1.color[1] = 255
-			self:_set_widget_dirty(portrait_static)
-			mod.reset_portrait_frame_alpha = false
-		end
-		if mod:get(mod.SETTING_NAMES.HIDE_FRAMES) then
-			-- change both texture_1(static frame) and texture_2(dynamic frame)
-			for _, frame_texture_name in ipairs( frame_texture_names ) do
-				if portrait_static.style[frame_texture_name]
-				and portrait_static.style[frame_texture_name].color[1] ~= 0
-				then
-					portrait_static.style[frame_texture_name].color[1] = 0
-					self:_set_widget_dirty(portrait_static)
-				end
+		-- frame hiding: texture_1 is static frame, texture_2 is dynamic frame
+		local frame_texture_alpha = mod:get(mod.SETTING_NAMES.HIDE_FRAMES) and 0 or 255
+		for _, frame_texture_name in ipairs( frame_texture_names ) do
+			if portrait_static.style[frame_texture_name]
+			and portrait_static.style[frame_texture_name].color[1] ~= frame_texture_alpha
+			then
+				portrait_static.style[frame_texture_name].color[1] = frame_texture_alpha
+				self:_set_widget_dirty(portrait_static)
 			end
 		end
 
@@ -854,8 +847,7 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 				if team_ui_portrait_icons == mod.PORTRAIT_ICONS.HERO then
 					local hero_icon = UISettings.hero_icons.medium[profile_data.display_name]
 					if character_portrait ~= hero_icon then
-						self:set_portrait(hero_icon)
-						self._hb_mod_adjusted_portraits = false
+						mod.set_portrait(self, hero_icon)
 					end
 				elseif team_ui_portrait_icons == mod.PORTRAIT_ICONS.HATS then
 					local careers = profile_data.careers
@@ -864,13 +856,11 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 						local career_name = careers[career_index].display_name
 						local hat_icon = mod.career_name_to_hat_icon[career_name]
 						if hat_icon and character_portrait ~= hat_icon then
-							self:set_portrait(hat_icon)
-							self._hb_mod_adjusted_portraits = false
+							mod.set_portrait(self, hat_icon)
 						end
 					end
 				elseif character_portrait ~= default_portrait then
-					self:set_portrait(default_portrait)
-					self._hb_mod_adjusted_portraits = false
+					mod.set_portrait(self, default_portrait)
 				end
 
 				-- for testing
@@ -939,6 +929,23 @@ mod.career_name_to_hat_icon = pl.Map{
 	wh_captain = "icon_witchhunter_hat_0003",
 	wh_zealot = "icon_zealot_hat_0009",
 }
+
+mod.set_portrait = function(unit_frame_ui, portrait_texture)
+	local self = unit_frame_ui
+	local widget = self:_widget_by_feature("default", "static")
+	local widget_content = widget.content
+	widget_content.character_portrait = portrait_texture
+
+	self:_set_widget_dirty(widget)
+	self._hb_mod_adjusted_portraits = false
+end
+
+--- Catch unit_frame_ui:set_portrait calls to cache the real portrait.
+mod:hook_safe(UnitFrameUI, "set_portrait", function(self)
+	local widget = self:_widget_by_feature("default", "static")
+	local widget_content = widget.content
+	widget_content.portrait_backup = widget_content.character_portrait
+end)
 
 --- Catch Material.set_vector2 crash on changed portrait textures.
 mod:hook(UnitFrameUI, "set_portrait_status", function(func, ...)

@@ -561,20 +561,25 @@ mod.adjust_portrait_size_and_position = function(unit_frame_ui)
 		local team_ui_portrait_offset_y = mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_OFFSET_Y)
 
 		local default_static_widget = self._default_widgets.default_static
-		local portrait_size = self._default_widgets.default_static.style.character_portrait.size
-		default_static_widget.style.character_portrait.offset[1] = -portrait_size[1]/2 + team_ui_portrait_offset_x
+		local default_static_style = default_static_widget.style
+		local portrait_size = default_static_style.character_portrait.size
+		default_static_style.character_portrait.offset[1] = -portrait_size[1]/2 + team_ui_portrait_offset_x
 
 		local delta_y = self._hb_mod_cached_character_portrait_size[2] -
-			self._default_widgets.default_static.style.character_portrait.size[2]
-		default_static_widget.style.character_portrait.offset[2] = 1 + delta_y/2 + team_ui_portrait_offset_y
+			default_static_style.character_portrait.size[2]
+		if mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_ICONS) ~= mod.PORTRAIT_ICONS.DEFAULT then
+			delta_y = 86 - default_static_style.character_portrait.size[2] + 10+15
+		end
+		default_static_style.character_portrait.offset[2] = 1 + delta_y/2 + team_ui_portrait_offset_y
 
-		widgets.portrait_static.offset[1] = team_ui_portrait_offset_x
-		widgets.portrait_static.offset[2] = team_ui_portrait_offset_y
+		local portrait_static_w = widgets.portrait_static
+		portrait_static_w.offset[1] = team_ui_portrait_offset_x
+		portrait_static_w.offset[2] = team_ui_portrait_offset_y
 
-		default_static_widget.style.host_icon.offset[1] = -50 + team_ui_portrait_offset_x
-		default_static_widget.style.host_icon.offset[2] = 10 + team_ui_portrait_offset_y
+		default_static_style.host_icon.offset[1] = -50 + team_ui_portrait_offset_x
+		default_static_style.host_icon.offset[2] = 10 + team_ui_portrait_offset_y
 
-		self:_set_widget_dirty(widgets.portrait_static)
+		self:_set_widget_dirty(portrait_static_w)
 	end
 end
 
@@ -755,10 +760,16 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 			end
 
 			if not self._hb_mod_cached_character_portrait_size then
+				-- keep the default portrait size cached
 				self._hb_mod_cached_character_portrait_size = table.clone(self._default_widgets.default_static.style.character_portrait.size)
 			end
 			local portrait_scale = mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_SCALE)/100
-			self._default_widgets.default_static.style.character_portrait.size = tablex.map("*", self._hb_mod_cached_character_portrait_size, portrait_scale)
+			local scaled_character_portrait_size = tablex.map("*", self._hb_mod_cached_character_portrait_size, portrait_scale)
+			if mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_ICONS) ~= mod.PORTRAIT_ICONS.DEFAULT then
+				self._default_widgets.default_static.style.character_portrait.size = tablex.map("*", {80,80}, portrait_scale)
+			else
+				self._default_widgets.default_static.style.character_portrait.size = scaled_character_portrait_size
+			end
 
 			local widget = self:_widget_by_feature("status_icon", "dynamic")
 			widget.style.portrait_icon.size = tablex.map("*", self._hb_mod_cached_character_portrait_size, portrait_scale)
@@ -770,22 +781,23 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 			widget.style.portrait_icon.offset[1] = -portrait_size[1]/2 + team_ui_portrait_offset_x
 			local delta_y = self._hb_mod_cached_character_portrait_size[2] -
 				self._default_widgets.default_static.style.character_portrait.size[2]
+			if mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_ICONS) ~= mod.PORTRAIT_ICONS.DEFAULT then
+				delta_y = self._hb_mod_cached_character_portrait_size[2] -
+					scaled_character_portrait_size[2]
+			end
 			widget.style.portrait_icon.offset[2] = delta_y/2 + team_ui_portrait_offset_y
 
 			local def_dynamic_w = self:_widget_by_feature("default", "dynamic")
+			local def_dynamic_style = def_dynamic_w.style
 
-			local adjust_offsets_of = {
-				def_dynamic_w.style.talk_indicator,
-				def_dynamic_w.style.talk_indicator_highlight,
-				def_dynamic_w.style.talk_indicator_highlight_glow,
-			}
-			for _, talk_widget in ipairs( adjust_offsets_of ) do
-				talk_widget.offset[1] = 60 + team_ui_portrait_offset_x
-				talk_widget.offset[2] = 30 + team_ui_portrait_offset_y
+			for _, talk_widget_name in ipairs( mod.def_dynamic_widget_names ) do
+				def_dynamic_style[talk_widget_name].offset[1] = 60 + team_ui_portrait_offset_x
+				def_dynamic_style[talk_widget_name].offset[2] = 30 + team_ui_portrait_offset_y
 			end
 
-			def_dynamic_w.style.connecting_icon.offset[1] = -25 + team_ui_portrait_offset_x
-			def_dynamic_w.style.connecting_icon.offset[2] = 34 + team_ui_portrait_offset_y
+			local connecting_icon_style = def_dynamic_style.connecting_icon
+			connecting_icon_style.offset[1] = -25 + team_ui_portrait_offset_x
+			connecting_icon_style.offset[2] = 34 + team_ui_portrait_offset_y
 
 			if not self._hb_mod_adjusted_portraits then
 				self._hb_mod_adjusted_portraits = true
@@ -825,6 +837,50 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 				local team_ui_player_name_alignment = mod.ALIGNMENTS_LOOKUP[mod:get(mod.SETTING_NAMES.TEAM_UI_PLAYER_NAME_ALIGNMENT)]
 				def_static_widget_style.player_name.horizontal_alignment = team_ui_player_name_alignment
 				def_static_widget_style.player_name_shadow.horizontal_alignment = team_ui_player_name_alignment
+			end
+
+			-- different hero portraits
+			local team_ui_portrait_icons = mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_ICONS)
+			local profile_index = self.profile_index
+			if profile_index then
+				local profile_data = SPProfiles[profile_index]
+				local def_static_content = self:_widget_by_feature("default", "static").content
+				local character_portrait = def_static_content.character_portrait
+				if not def_static_content.portrait_backup then
+					def_static_content.portrait_backup = character_portrait
+				end
+				local default_portrait = def_static_content.portrait_backup
+
+				if team_ui_portrait_icons == mod.PORTRAIT_ICONS.HERO then
+					local hero_icon = UISettings.hero_icons.medium[profile_data.display_name]
+					if character_portrait ~= hero_icon then
+						self:set_portrait(hero_icon)
+						self._hb_mod_adjusted_portraits = false
+					end
+				elseif team_ui_portrait_icons == mod.PORTRAIT_ICONS.HATS then
+					local careers = profile_data.careers
+					local career_index = self.career_index
+					if career_index then
+						local career_name = careers[career_index].display_name
+						local hat_icon = mod.career_name_to_hat_icon[career_name]
+						if hat_icon and character_portrait ~= hat_icon then
+							self:set_portrait(hat_icon)
+							self._hb_mod_adjusted_portraits = false
+						end
+					end
+				elseif character_portrait ~= default_portrait then
+					self:set_portrait(default_portrait)
+					self._hb_mod_adjusted_portraits = false
+				end
+
+				-- for testing
+				-- self:set_portrait("hero_icon_medium_dwarf_ranger_yellow")
+				-- self:set_portrait("icon_wpn_dw_axe_01_t1_dual")
+				-- self:set_portrait("icon_ironbreaker_hat_0000")
+				-- local widget = self:_widget_by_feature("default", "static")
+				-- widget.style.character_portrait.size = {80,80}
+				-- widget.style.character_portrait.offset[2] = -15+(108-86)+7
+				-- mod.adjust_portrait_size_and_position(self)
 			end
 		end
 	end)
@@ -929,7 +985,7 @@ mod.healshare_buff_names = {
 	"victor_zealot_conqueror",
 }
 
---- Teammate UI update hook to catch when we need to realign teammate portraits.
+--- Realign teammate portraits and pass additional data to unit frames.
 mod:hook(UnitFramesHandler, "update", function(func, self, ...)
 	if not self._hb_mod_first_frame_done then
 		self._hb_mod_first_frame_done = true
@@ -961,44 +1017,44 @@ mod:hook(UnitFramesHandler, "update", function(func, self, ...)
 	for _, unit_frame in ipairs(self._unit_frames) do
 		local has_ammo
 		local has_overcharge
-		local player_unit = unit_frame.player_data.player_unit
-		local player_ui_id = unit_frame.player_data.player_ui_id
+		local player_data = unit_frame.player_data
+		local player_unit = player_data.player_unit
+		local player_ui_id = player_data.player_ui_id
 
-		mod:pcall(function()
-			local inventory_extension = ScriptUnit.has_extension(player_unit, "inventory_system")
-			if inventory_extension then
-				local equipment = inventory_extension:equipment()
-				if equipment then
-					local slot_data = equipment.slots["slot_ranged"]
-					local item_data = slot_data and slot_data.item_data
+		local inventory_extension = ScriptUnit.has_extension(player_unit, "inventory_system")
+		if inventory_extension then
+			local equipment = inventory_extension:equipment()
+			if equipment then
+				local slot_data = equipment.slots["slot_ranged"]
+				local item_data = slot_data and slot_data.item_data
 
-					if item_data then
-						local item_template = BackendUtils.get_item_template(item_data)
-						has_overcharge = not not item_template.overcharge_data
-						has_ammo = not not item_template.ammo_data
-					end
+				if item_data then
+					local item_template = BackendUtils.get_item_template(item_data)
+					has_overcharge = not not item_template.overcharge_data
+					has_ammo = not not item_template.ammo_data
 				end
 			end
-		end)
+		end
 
-		unit_frame.widget.unit_frame_index = self._unit_frame_index_by_ui_id[player_ui_id]
+		local unit_frame_w = unit_frame.widget
+		unit_frame_w.unit_frame_index = self._unit_frame_index_by_ui_id[player_ui_id]
 
 		local buff_extension = ScriptUnit.has_extension(player_unit, "buff_system")
 		if buff_extension then
-			unit_frame.widget.has_natural_bond = false
+			unit_frame_w.has_natural_bond = false
 			if mod:get(mod.SETTING_NAMES.TEAM_UI_ICONS_NATURAL_BOND) then
-				unit_frame.widget.has_natural_bond = buff_extension:has_buff_type("trait_necklace_no_healing_health_regen")
+				unit_frame_w.has_natural_bond = buff_extension:has_buff_type("trait_necklace_no_healing_health_regen")
 			end
-			unit_frame.widget.has_hand_of_shallya = false
+			unit_frame_w.has_hand_of_shallya = false
 			if mod:get(mod.SETTING_NAMES.TEAM_UI_ICONS_HAND_OF_SHALLYA) then
-				unit_frame.widget.has_hand_of_shallya = buff_extension:has_buff_type("trait_necklace_heal_self_on_heal_other")
+				unit_frame_w.has_hand_of_shallya = buff_extension:has_buff_type("trait_necklace_heal_self_on_heal_other")
 			end
 
-			unit_frame.widget.has_healshare_talent = false
+			unit_frame_w.has_healshare_talent = false
 			if mod:get(mod.SETTING_NAMES.TEAM_UI_ICONS_HEALSHARE) then
 				for _, hs_buff_name in ipairs( mod.healshare_buff_names ) do
 					if buff_extension:has_buff_type(hs_buff_name) then
-						unit_frame.widget.has_healshare_talent = true
+						unit_frame_w.has_healshare_talent = true
 						break
 					end
 				end
@@ -1006,13 +1062,13 @@ mod:hook(UnitFramesHandler, "update", function(func, self, ...)
 		end
 
 		local is_wounded = unit_frame.data.is_wounded
-		unit_frame.widget.is_wounded = is_wounded
+		unit_frame_w.is_wounded = is_wounded
 
 		-- wounded buff handling for local player
 		if player_unit then
 			local buff_ext = ScriptUnit.extension(player_unit, "buff_system")
 			if buff_ext then
-				if unit_frame.widget.unit_frame_index == 1
+				if unit_frame_w.unit_frame_index == 1
 				and is_wounded
 				and mod:get(mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_WOUNDED)
 				then
@@ -1027,14 +1083,20 @@ mod:hook(UnitFramesHandler, "update", function(func, self, ...)
 		end
 
 		-- for debugging
-		-- unit_frame.widget.is_wounded = true
-		-- unit_frame.widget.has_natural_bond = true
-		-- unit_frame.widget.has_hand_of_shallya = true
-		-- unit_frame.widget.has_healshare_talent = true
+		-- unit_frame_w.is_wounded = true
+		-- unit_frame_w.has_natural_bond = true
+		-- unit_frame_w.has_hand_of_shallya = true
+		-- unit_frame_w.has_healshare_talent = true
 
-		unit_frame.widget.has_ammo = has_ammo
-		unit_frame.widget.has_overcharge = has_overcharge
-		unit_frame.widget.player_unit = unit_frame.player_data.player_unit
+		unit_frame_w.has_ammo = has_ammo
+		unit_frame_w.has_overcharge = has_overcharge
+		unit_frame_w.player_unit = player_unit
+		unit_frame_w.profile_index = self.profile_synchronizer:profile_by_peer(player_data.peer_id, player_data.local_player_id)
+
+		local extensions = player_data.extensions
+		if extensions and extensions.career then
+			unit_frame_w.career_index = extensions.career:career_index()
+		end
 	end
 
 	return func(self, ...)

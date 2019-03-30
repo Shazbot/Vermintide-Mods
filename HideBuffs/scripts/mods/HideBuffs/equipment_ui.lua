@@ -1,5 +1,8 @@
 local mod = get_mod("HideBuffs")
 
+mod.default_ammo_bar_width = 553*0.906
+mod.ammo_bar_width = mod.default_ammo_bar_width
+
 mod:hook(EquipmentUI, "update", function(func, self, ...)
 	mod:pcall(function()
 		local inventory_extension = ScriptUnit.extension(Managers.player:local_player().player_unit, "inventory_system")
@@ -10,21 +13,13 @@ mod:hook(EquipmentUI, "update", function(func, self, ...)
 			self:_mod_update_ammo(slot_data.left_unit_1p, slot_data.right_unit_1p, BackendUtils.get_item_template(item_data))
 		end
 
-		if mod.reset_hotkey_alpha then
-			for _, widget in ipairs(self._slot_widgets) do
-				widget.style.input_text.text_color[1] = 255
-				widget.style.input_text_shadow.text_color[1] = 255
+		local hotkey_alpha = mod:get(mod.SETTING_NAMES.HIDE_HOTKEYS) and 0 or 255
+		for _, widget in ipairs(self._slot_widgets) do
+			local style = widget.style
+			if style.input_text.text_color[1] ~= hotkey_alpha then
+				style.input_text.text_color[1] = hotkey_alpha
+				style.input_text_shadow.text_color[1] = hotkey_alpha
 				self:_set_widget_dirty(widget)
-			end
-			mod.reset_hotkey_alpha = false
-		end
-		if mod:get(mod.SETTING_NAMES.HIDE_HOTKEYS) then
-			for _, widget in ipairs(self._slot_widgets) do
-				if widget.style.input_text.text_color[1] ~= 0 then
-					widget.style.input_text.text_color[1] = 0
-					widget.style.input_text_shadow.text_color[1] = 0
-					self:_set_widget_dirty(widget)
-				end
 			end
 		end
 
@@ -47,30 +42,32 @@ mod:hook(EquipmentUI, "update", function(func, self, ...)
 
 		for i = 1, #self._slot_widgets do
 			-- keep original offsets cached
-			if not self._slot_widgets[i]._hb_mod_offset_cache then
-				self._slot_widgets[i]._hb_mod_offset_cache = table.clone(self._slot_widgets[i].offset)
+			local slot_widget = self._slot_widgets[i]
+			if not slot_widget._hb_mod_offset_cache then
+				slot_widget._hb_mod_offset_cache = table.clone(slot_widget.offset)
 			end
 
 			-- change size
 			local item_slot_size = mod:get(mod.SETTING_NAMES.PLAYER_ITEM_SLOTS_SIZE)
-			self._slot_widgets[i].style.texture_icon.texture_size[1] = item_slot_size
-			self._slot_widgets[i].style.texture_icon.texture_size[2] = item_slot_size
+			local slot_widget_style = slot_widget.style
+			slot_widget_style.texture_icon.texture_size[1] = item_slot_size
+			slot_widget_style.texture_icon.texture_size[2] = item_slot_size
 
-			self._slot_widgets[i].style.texture_background.texture_size[1] = item_slot_size
-			self._slot_widgets[i].style.texture_background.texture_size[2] = item_slot_size
+			slot_widget_style.texture_background.texture_size[1] = item_slot_size
+			slot_widget_style.texture_background.texture_size[2] = item_slot_size
 
-			self._slot_widgets[i].style.texture_highlight.texture_size[1] = item_slot_size-4
-			self._slot_widgets[i].style.texture_highlight.texture_size[2] = item_slot_size+6
+			slot_widget_style.texture_highlight.texture_size[1] = item_slot_size-4
+			slot_widget_style.texture_highlight.texture_size[2] = item_slot_size+6
 
-			self._slot_widgets[i].style.texture_selected.texture_size[1] = item_slot_size-2
-			self._slot_widgets[i].style.texture_selected.texture_size[2] = item_slot_size-18
+			slot_widget_style.texture_selected.texture_size[1] = item_slot_size-2
+			slot_widget_style.texture_selected.texture_size[2] = item_slot_size-18
 
-			self._slot_widgets[i].style.texture_frame.size[1] = item_slot_size+6
-			self._slot_widgets[i].style.texture_frame.size[2] = item_slot_size+6
+			slot_widget_style.texture_frame.size[1] = item_slot_size+6
+			slot_widget_style.texture_frame.size[2] = item_slot_size+6
 
 			local resize_offset = -(item_slot_size - 40)/2
-			self._slot_widgets[i].style.texture_frame.offset[1] = resize_offset
-			self._slot_widgets[i].style.texture_frame.offset[2] = resize_offset
+			slot_widget_style.texture_frame.offset[1] = resize_offset
+			slot_widget_style.texture_frame.offset[2] = resize_offset
 		end
 
 		-- reposition the other item slots
@@ -83,14 +80,15 @@ mod:hook(EquipmentUI, "update", function(func, self, ...)
 			end
 			for i = 1, #self._slot_widgets do
 				local slot_index = i > 2 and i+num_slots or i
-				self._slot_widgets[i].offset = table.clone(self._slot_widgets[slot_index]._hb_mod_offset_cache)
+				local slot_widget = self._slot_widgets[i]
+				slot_widget.offset = table.clone(self._slot_widgets[slot_index]._hb_mod_offset_cache)
 
-				self._slot_widgets[i].offset[1] = self._slot_widgets[i].offset[1] + mod:get(mod.SETTING_NAMES.PLAYER_ITEM_SLOTS_OFFSET_X)
-				self._slot_widgets[i].offset[2] = self._slot_widgets[i].offset[2] + mod:get(mod.SETTING_NAMES.PLAYER_ITEM_SLOTS_OFFSET_Y)
+				slot_widget.offset[1] = slot_widget.offset[1] + mod:get(mod.SETTING_NAMES.PLAYER_ITEM_SLOTS_OFFSET_X)
+				slot_widget.offset[2] = slot_widget.offset[2] + mod:get(mod.SETTING_NAMES.PLAYER_ITEM_SLOTS_OFFSET_Y)
 
-				self._slot_widgets[i].offset[1] = self._slot_widgets[i].offset[1] + i*mod:get(mod.SETTING_NAMES.PLAYER_ITEM_SLOTS_SPACING)
+				slot_widget.offset[1] = slot_widget.offset[1] + i*mod:get(mod.SETTING_NAMES.PLAYER_ITEM_SLOTS_SPACING)
 
-				self:_set_widget_dirty(self._slot_widgets[i])
+				self:_set_widget_dirty(slot_widget)
 			end
 		end
 	end)
@@ -220,37 +218,38 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 	end
 
 	local num_ui_widget = self._hb_num_ui_player_widget
+	local num_ui_widget_style = num_ui_widget.style
 
 	num_ui_widget.content.health_string = mod.numeric_ui_data.health_string or ""
 	num_ui_widget.content.cooldown_string = mod.numeric_ui_data.cooldown_string or ""
 
 	local hp_text_x = mod.hp_bar_width/2 + mod:get(mod.SETTING_NAMES.PLAYER_NUMERIC_UI_HP_OFFSET_X)
-	num_ui_widget.style.hp_text.offset[1] = hp_text_x
-	num_ui_widget.style.hp_text_shadow.offset[1] = hp_text_x + 2
+	num_ui_widget_style.hp_text.offset[1] = hp_text_x
+	num_ui_widget_style.hp_text_shadow.offset[1] = hp_text_x + 2
 
 	local hp_text_y = mod.hp_bar_height/4 + mod:get(mod.SETTING_NAMES.PLAYER_NUMERIC_UI_HP_OFFSET_Y)
-	num_ui_widget.style.hp_text.offset[2] = hp_text_y
-	num_ui_widget.style.hp_text_shadow.offset[2] = hp_text_y - 2
+	num_ui_widget_style.hp_text.offset[2] = hp_text_y
+	num_ui_widget_style.hp_text_shadow.offset[2] = hp_text_y - 2
 
-	num_ui_widget.style.hp_text.offset[3] = 151
-	num_ui_widget.style.hp_text_shadow.offset[3] = 150
+	num_ui_widget_style.hp_text.offset[3] = 151
+	num_ui_widget_style.hp_text_shadow.offset[3] = 150
 
 	local ult_cd_text_x = mod.hp_bar_width/2 + mod:get(mod.SETTING_NAMES.PLAYER_NUMERIC_UI_ULT_CD_OFFSET_X)
 	ult_cd_text_x = ult_cd_text_x - 8
-	num_ui_widget.style.cooldown_text.offset[1] = ult_cd_text_x
-	num_ui_widget.style.cooldown_text_shadow.offset[1] = ult_cd_text_x + 2
+	num_ui_widget_style.cooldown_text.offset[1] = ult_cd_text_x
+	num_ui_widget_style.cooldown_text_shadow.offset[1] = ult_cd_text_x + 2
 
 	local ult_cd_text_y = mod.hp_bar_height/4 + mod:get(mod.SETTING_NAMES.PLAYER_NUMERIC_UI_ULT_CD_OFFSET_Y)
 	ult_cd_text_y = ult_cd_text_y + (self._hb_mod_widget and 0 or 5)
-	num_ui_widget.style.cooldown_text.offset[2] = ult_cd_text_y
-	num_ui_widget.style.cooldown_text_shadow.offset[2] = ult_cd_text_y - 2
+	num_ui_widget_style.cooldown_text.offset[2] = ult_cd_text_y
+	num_ui_widget_style.cooldown_text_shadow.offset[2] = ult_cd_text_y - 2
 
-	num_ui_widget.style.cooldown_text.offset[3] = 151-2
-	num_ui_widget.style.cooldown_text_shadow.offset[3] = 150-2
+	num_ui_widget_style.cooldown_text.offset[3] = 151-2
+	num_ui_widget_style.cooldown_text_shadow.offset[3] = 150-2
 
 	local numeric_ui_font_size = mod:get(mod.SETTING_NAMES.PLAYER_NUMERIC_UI_HP_FONT_SIZE)
-	num_ui_widget.style.hp_text.font_size = numeric_ui_font_size
-	num_ui_widget.style.hp_text_shadow.font_size = numeric_ui_font_size
+	num_ui_widget_style.hp_text.font_size = numeric_ui_font_size
+	num_ui_widget_style.hp_text_shadow.font_size = numeric_ui_font_size
 
 	num_ui_widget.offset[1] = player_ui_offset_x - mod.hp_bar_width/2
 	num_ui_widget.offset[2] = player_ui_offset_y - 59
@@ -385,9 +384,6 @@ mod.hp_bg_rect_def =
 		0
 	},
 }
-
-mod.default_ammo_bar_width = 553*0.906
-mod.ammo_bar_width = mod.default_ammo_bar_width
 
 mod.ammo_widget_def =
 {

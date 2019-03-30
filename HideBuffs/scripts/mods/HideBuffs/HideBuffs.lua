@@ -3,213 +3,26 @@ local mod = get_mod("HideBuffs")
 local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
 
-mod.on_all_mods_loaded = function()
-	-- NumericUI compatibility.
-	-- Disable NumericUI hook that modifies widget definitions.
-	-- We'll use hp and ammo values it calculates and stores into widgets content.
-	local numeric_ui = get_mod("NumericUI")
-	if numeric_ui then
-		numeric_ui:hook_disable(UnitFramesHandler, "_create_unit_frame_by_type")
-	end
-end
-
 mod.persistent_storage = mod:persistent_table("persistent_storage")
 
 --- Keep track of player ammo and hp from Numeric UI for use in equipment_ui.
 mod.numeric_ui_data = {}
-
-mod.reset_hotkey_alpha = false
-mod.reset_level_alpha = false
 
 mod.change_slot_visibility = mod:get(mod.SETTING_NAMES.HIDE_WEAPON_SLOTS)
 mod.reposition_weapon_slots =
 	mod.change_slot_visibility
 	or mod:get(mod.SETTING_NAMES.REPOSITION_WEAPON_SLOTS) ~= 0
 
-mod.on_setting_changed = function(setting_name)
-	mod.reset_hotkey_alpha = not mod:get(mod.SETTING_NAMES.HIDE_HOTKEYS)
-	mod.reset_level_alpha = not mod:get(mod.SETTING_NAMES.HIDE_LEVELS)
-
-	if setting_name == mod.SETTING_NAMES.HIDE_WEAPON_SLOTS then
-		mod.change_slot_visibility = true
-		mod.reposition_weapon_slots = true
-	end
-
-	if pl.List({
-			mod.SETTING_NAMES.REPOSITION_WEAPON_SLOTS,
-			mod.SETTING_NAMES.PLAYER_ITEM_SLOTS_SPACING,
-			mod.SETTING_NAMES.PLAYER_ITEM_SLOTS_OFFSET_X,
-			mod.SETTING_NAMES.PLAYER_ITEM_SLOTS_OFFSET_Y,
-		}):contains(setting_name)
-	then
-		mod.reposition_weapon_slots = true
-	end
-
-	if pl.List({
-			mod.SETTING_NAMES.TEAM_UI_OFFSET_X,
-			mod.SETTING_NAMES.TEAM_UI_OFFSET_Y,
-			mod.SETTING_NAMES.TEAM_UI_FLOWS_HORIZONTALLY,
-			mod.SETTING_NAMES.TEAM_UI_SPACING,
-		}):contains(setting_name)
-	then
-		mod.realign_team_member_frames = true
-	end
-
-	if pl.List({
-			mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_AMMO_DURATION,
-			mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_DMG_TAKEN_DURATION,
-			mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_TEMP_HP_DURATION,
-		}):contains(setting_name)
-	then
-		BuffTemplates.custom_dmg_taken.buffs[1].duration =
-			mod:get(mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_DMG_TAKEN_DURATION)
-
-		BuffTemplates.custom_temp_hp.buffs[1].duration =
-			mod:get(mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_TEMP_HP_DURATION)
-
-		BuffTemplates.custom_scavenger.buffs[1].duration =
-			mod:get(mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_AMMO_DURATION)
-
-		BuffTemplates.custom_dps_timed.buffs[1].duration =
-			mod:get(mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_DPS_TIMED)
-	end
-
-	if setting_name == mod.SETTING_NAMES.MINI_HUD_PRESET then
-		mod.recreate_player_unit_frame = true
-	end
-
-	if setting_name == mod.SETTING_NAMES.BUFFS_FLOW_VERTICALLY
-	or setting_name == mod.SETTING_NAMES.REVERSE_BUFF_DIRECTION then
-		mod.realign_buff_widgets = true
-		mod.reset_buff_widgets = true
-	end
-
-	if setting_name == mod.SETTING_NAMES.BUFFS_OFFSET_X
-	or setting_name == mod.SETTING_NAMES.BUFFS_OFFSET_Y then
-		mod.reset_buff_widgets = true
-	end
-
-	if setting_name == mod.SETTING_NAMES.SECOND_BUFF_BAR then
-		if mod.buff_ui then
-			mod.buff_ui:set_visible(mod:get(mod.SETTING_NAMES.SECOND_BUFF_BAR))
-		end
-	end
-
-	if setting_name == mod.SETTING_NAMES.SECOND_BUFF_BAR_SIZE_ADJUST_X
-	or setting_name == mod.SETTING_NAMES.SECOND_BUFF_BAR_SIZE_ADJUST_Y
-	then
-		mod.need_to_refresh_priority_bar = true
-	end
-
-	if setting_name == mod.SETTING_NAMES.HIDE_PICKUP_OUTLINES
-	or setting_name == mod.SETTING_NAMES.HIDE_OTHER_OUTLINES
-	then
-		mod.reapply_pickup_ranges()
-	end
-end
+mod.hp_bar_width = 553
+mod.default_hp_bar_width = 553
+mod.hp_bar_height = 36
+mod.hp_bar_w_scale = mod.hp_bar_width / mod.default_hp_bar_width
+mod.team_ammo_bar_length = 92
 
 --- Store frame_index in a new variable.
 mod:hook_safe(UnitFrameUI, "_create_ui_elements", function(self, frame_index)
 	self._mod_frame_index = frame_index -- nil for player, 2 3 4 for other players
 end)
-
-mod.player_ability_dynamic_content_change_fun = function (content, style)
-	if not content.uvs then
-		local ability_progress = content.bar_value
-		local size = style.texture_size
-		local offset = style.offset
-		offset[2] = -size[2] + size[2] * ability_progress
-		return
-	end
-	local ability_progress = content.bar_value
-	local size = style.size
-	local uvs = content.uvs
-	local bar_length = mod.hp_bar_width*0.88
-	uvs[2][2] = ability_progress
-	size[1] = bar_length * ability_progress
-end
-
-mod.hp_bar_width = 553
-mod.default_hp_bar_width = 553
-mod.hp_bar_height = 36
-mod.hp_bar_w_scale = mod.hp_bar_width / mod.default_hp_bar_width
-
-mod.original_health_bar_size = {
-	92,
-	9
-}
-mod.health_bar_offset = {
-	-(mod.original_health_bar_size[1] / 2),
-	-25,
-	0
-}
-mod.team_grimoire_debuff_divider_content_change_fun =  function (content, style)
-	local hp_bar_content = content.hp_bar
-	local internal_bar_value = hp_bar_content.internal_bar_value
-	local actual_active_percentage = content.actual_active_percentage or 1
-	local grim_progress = math.max(internal_bar_value, actual_active_percentage)
-	local offset = style.offset
-	offset[1] = mod.health_bar_offset[1] + mod.hp_bar_size[1] * grim_progress + mod.hp_bar_offset_x
-	offset[2] = mod.health_bar_offset[2] + mod.hp_bar_offset_y
-end
-
-mod.team_grimoire_bar_content_change_fun = function (content, style)
-	local parent_content = content.parent
-	local hp_bar_content = parent_content.hp_bar
-	local internal_bar_value = hp_bar_content.internal_bar_value
-	local actual_active_percentage = parent_content.actual_active_percentage or 1
-	local grim_progress = math.max(internal_bar_value, actual_active_percentage)
-	local size = style.size
-	local uvs = content.uvs
-	local offset = style.offset
-	local bar_length = mod.hp_bar_size[1]
-	uvs[1][1] = grim_progress
-	size[1] = bar_length * (1 - grim_progress)
-	offset[1] = 2 + mod.health_bar_offset[1] + bar_length * grim_progress + mod.hp_bar_offset_x
-	offset[2] = mod.health_bar_offset[2] + mod.hp_bar_offset_y
-		+ (mod.hp_bar_delta_y and mod.hp_bar_delta_y/2 or 0)
-end
-
-mod.team_ability_bar_content_change_fun = function (content, style)
-	local ability_progress = content.bar_value
-	local size = style.size
-	local uvs = content.uvs
-	local bar_length = mod.hp_bar_size[1]
-	uvs[2][2] = ability_progress
-	size[1] = bar_length * ability_progress
-end
-
-mod.player_grimoire_debuff_divider_content_change_fun =  function (content, style)
-	local hp_bar_content = content.hp_bar
-	local internal_bar_value = hp_bar_content.internal_bar_value
-	local actual_active_percentage = content.actual_active_percentage or 1
-	local grim_progress = math.max(internal_bar_value, actual_active_percentage)
-	local offset = style.offset
-	offset[1] = (-276.5 - 7 + 553 * grim_progress) * mod.hp_bar_w_scale
-	offset[2] = 35-8
-end
-
-mod.player_grimoire_bar_content_change_fun = function (content, style)
-	local parent_content = content.parent
-	local hp_bar_content = parent_content.hp_bar
-	local internal_bar_value = hp_bar_content.internal_bar_value
-	local actual_active_percentage = parent_content.actual_active_percentage or 1
-	local grim_progress = math.max(internal_bar_value, actual_active_percentage)
-	local size = style.size
-	local uvs = content.uvs
-	local offset = style.offset
-	local bar_length = mod.hp_bar_width - 18 * mod.hp_bar_w_scale
-	uvs[1][1] = grim_progress
-	size[1] = bar_length * (1 - grim_progress)
-	offset[1] = (-276.5 + 2 + 553 * grim_progress) * mod.hp_bar_w_scale
-	offset[2] = 35
-end
-
-mod.item_slot_widgets = {
-	"item_slot_bg_",
-	"item_slot_frame_",
-	"item_slot_highlight_",
-}
 
 mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 	local team_ui_ammo_bar_enabled = mod:get(mod.SETTING_NAMES.TEAM_UI_AMMO_BAR)
@@ -537,7 +350,6 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 	end
 end)
 
-mod.team_ammo_bar_length = 92
 mod:hook(UnitFrameUI, "set_ammo_percentage", function (func, self, ammo_percent)
 	if self._mod_frame_index then
 		mod:pcall(function()
@@ -551,44 +363,9 @@ mod:hook(UnitFrameUI, "set_ammo_percentage", function (func, self, ammo_percent)
 	return func(self, ammo_percent)
 end)
 
-mod.adjust_portrait_size_and_position = function(unit_frame_ui)
-	local self = unit_frame_ui
-	if self._mod_frame_index then
-		local widgets = self._widgets
-		local team_ui_portrait_offset_x = mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_OFFSET_X)
-		local team_ui_portrait_offset_y = mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_OFFSET_Y)
-
-		local default_static_widget = self._default_widgets.default_static
-		local default_static_style = default_static_widget.style
-		local portrait_size = default_static_style.character_portrait.size
-		default_static_style.character_portrait.offset[1] = -portrait_size[1]/2 + team_ui_portrait_offset_x
-
-		local delta_y = self._hb_mod_cached_character_portrait_size[2] -
-			default_static_style.character_portrait.size[2]
-		if mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_ICONS) ~= mod.PORTRAIT_ICONS.DEFAULT then
-			delta_y = 86 - default_static_style.character_portrait.size[2] + 10+15
-		end
-		default_static_style.character_portrait.offset[2] = 1 + delta_y/2 + team_ui_portrait_offset_y
-
-		local portrait_static_w = widgets.portrait_static
-		portrait_static_w.offset[1] = team_ui_portrait_offset_x
-		portrait_static_w.offset[2] = team_ui_portrait_offset_y
-
-		default_static_style.host_icon.offset[1] = -50 + team_ui_portrait_offset_x
-		default_static_style.host_icon.offset[2] = 10 + team_ui_portrait_offset_y
-
-		self:_set_widget_dirty(default_static_widget)
-		self:_set_widget_dirty(portrait_static_w)
-		self:set_dirty()
-	end
-end
-
 mod:hook_safe(UnitFrameUI, "set_portrait_frame", function(self)
 	mod.adjust_portrait_size_and_position(self)
 end)
-
--- names of frame elements: texture_1(static frame) and texture_2(dynamic frame)
-local frame_texture_names = { "texture_1", "texture_2" }
 
 mod:hook(UnitFrameUI, "update", function(func, self, ...)
 	mod:pcall(function()
@@ -600,7 +377,7 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 
 		-- frame hiding: texture_1 is static frame, texture_2 is dynamic frame
 		local frame_texture_alpha = mod:get(mod.SETTING_NAMES.HIDE_FRAMES) and 0 or 255
-		for _, frame_texture_name in ipairs( frame_texture_names ) do
+		for _, frame_texture_name in ipairs( mod.frame_texture_names ) do
 			if portrait_static.style[frame_texture_name]
 			and portrait_static.style[frame_texture_name].color[1] ~= frame_texture_alpha
 			then
@@ -609,20 +386,16 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 			end
 		end
 
+		-- hide frames
 		if mod:get(mod.SETTING_NAMES.FORCE_DEFAULT_FRAME)
 		and portrait_static.content.texture_1 ~= "portrait_frame_0000" then
 			self:set_portrait_frame("default", portrait_static.content.level_text)
 		end
 
-		-- level
-		if mod.reset_level_alpha then
-			portrait_static.style.level.text_color[1] = 255
-			self:_set_widget_dirty(portrait_static)
-			mod.reset_level_alpha = false
-		end
-		if mod:get(mod.SETTING_NAMES.HIDE_LEVELS)
-		and portrait_static.style.level.text_color[1] ~= 0 then
-			portrait_static.style.level.text_color[1] = 0
+		-- hide levels
+		local level_alpha = mod:get(mod.SETTING_NAMES.HIDE_LEVELS) and 0 or 255
+		if portrait_static.style.level.text_color[1] ~= level_alpha then
+			portrait_static.style.level.text_color[1] = level_alpha
 			self:_set_widget_dirty(portrait_static)
 		end
 
@@ -905,41 +678,6 @@ mod:hook(UnitFrameUI, "_update_portrait_opacity", function(func, self, is_dead, 
 	return is_dirtied
 end)
 
-mod.def_dynamic_widget_names = pl.List{
-	"talk_indicator",
-	"talk_indicator_highlight",
-	"talk_indicator_highlight_glow",
-}
-
-mod.career_name_to_hat_icon = pl.Map{
-	bw_adept = "icon_adept_hat_0001",
-	bw_scholar = "icon_scholar_hat_0000",
-	bw_unchained = "icon_unchained_hat_0008",
-	dr_ironbreaker = "icon_ironbreaker_hat_0006",
-	dr_ranger = "icon_ranger_hat_0005",
-	dr_slayer = "icon_slayer_hat_0000",
-	empire_soldier_tutorial = "icon_knight_hat_0010",
-	es_huntsman = "icon_huntsman_hat_0000",
-	es_knight = "icon_knight_hat_0010",
-	es_mercenary = "icon_mercenary_hat_0007",
-	we_maidenguard = "icon_maidenguard_hat_0000",
-	we_shade = "icon_shade_hat_0009",
-	we_waywatcher = "icon_waywatcher_hat_0001",
-	wh_bountyhunter = "icon_bountyhunter_hat_0000",
-	wh_captain = "icon_witchhunter_hat_0003",
-	wh_zealot = "icon_zealot_hat_0009",
-}
-
-mod.set_portrait = function(unit_frame_ui, portrait_texture)
-	local self = unit_frame_ui
-	local widget = self:_widget_by_feature("default", "static")
-	local widget_content = widget.content
-	widget_content.character_portrait = portrait_texture
-
-	self:_set_widget_dirty(widget)
-	self._hb_mod_adjusted_portraits = false
-end
-
 --- Catch unit_frame_ui:set_portrait calls to cache the real portrait.
 mod:hook_safe(UnitFrameUI, "set_portrait", function(self)
 	local widget = self:_widget_by_feature("default", "static")
@@ -973,24 +711,6 @@ mod:hook(UnitFramesHandler, "_create_unit_frame_by_type", function(func, self, f
 	end
 	return unit_frame
 end)
-
-mod.healshare_buff_names = {
-	"bardin_ranger_conqueror",
-	"bardin_ironbreaker_conqueror",
-	"bardin_slayer_conqueror",
-	"kerillian_waywatcher_conqueror",
-	"kerillian_maidenguard_conqueror",
-	"kerillian_shade_conqueror",
-	"markus_mercenary_conqueror",
-	"markus_huntsman_conqueror",
-	"markus_knight_conqueror",
-	"sienna_adept_conqueror",
-	"sienna_scholar_conqueror",
-	"sienna_unchained_conqueror",
-	"victor_witchhunter_conqueror",
-	"victor_bountyhunter_conqueror",
-	"victor_zealot_conqueror",
-}
 
 --- Realign teammate portraits and pass additional data to unit frames.
 mod:hook(UnitFramesHandler, "update", function(func, self, ...)
@@ -1217,6 +937,7 @@ mod:hook(MissionObjectiveUI, "draw", function(func, self, dt)
 	if mod:get(mod.SETTING_NAMES.NO_MISSION_OBJECTIVE) then
 		return
 	end
+
 	return func(self, dt)
 end)
 
@@ -1272,11 +993,6 @@ mod:hook(IngameHud, "_update_component_visibility", function(func, self)
 	return func(self)
 end)
 
---- Hide HUD hotkey callback.
-mod.hide_hud = function()
-	mod.keep_hud_hidden = not mod.keep_hud_hidden
-end
-
 --- Disable hero outlines.
 mod:hook(OutlineSystem, "always", function(func, self, ...)
 	if disable_outlines then
@@ -1296,11 +1012,6 @@ mod:hook(StateLoading, "_trigger_sound_events", function(func, self, level_key)
 end)
 
 --- Mute Olesya in the Ubersreik levels.
-mod.ubersreik_lvls = pl.List({
-	"magnus",
-	"cemetery",
-	"forest_ambush",
-})
 mod:hook(DialogueSystem, "trigger_sound_event_with_subtitles", function(func, self, sound_event, subtitle_event, speaker_name)
 	local level_key = Managers.state.game_mode and Managers.state.game_mode:level_key()
 
@@ -1326,26 +1037,29 @@ end)
 
 --- Reposition the subtitles.
 mod:hook_safe(SubtitleGui, "update", function(self)
-	if not self.subtitle_widget.offset then
-		self.subtitle_widget.offset = { 0, 0, 0 }
+	local subtitle_widget = self.subtitle_widget
+	if not subtitle_widget.offset then
+		subtitle_widget.offset = { 0, 0, 0 }
 	end
-	self.subtitle_widget.offset[1] = mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_SUBTITLES_OFFSET_X)
-	self.subtitle_widget.offset[2] = mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_SUBTITLES_OFFSET_Y)
+	subtitle_widget.offset[1] = mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_SUBTITLES_OFFSET_X)
+	subtitle_widget.offset[2] = mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_SUBTITLES_OFFSET_Y)
 end)
 
 --- Reposition the heat bar.
 mod:hook_safe(OverchargeBarUI, "update", function(self)
-	if not self.charge_bar.offset then
-		self.charge_bar.offset = { 0, 0, 0 }
+	local charge_bar = self.charge_bar
+	if not charge_bar.offset then
+		charge_bar.offset = { 0, 0, 0 }
 	end
-	self.charge_bar.offset[1] = mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_HEAT_BAR_OFFSET_X)
-	self.charge_bar.offset[2] = mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_HEAT_BAR_OFFSET_Y)
+	charge_bar.offset[1] = mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_HEAT_BAR_OFFSET_X)
+	charge_bar.offset[2] = mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_HEAT_BAR_OFFSET_Y)
 end)
 
 --- Reposition the Twitch voting UI.
 mod:hook(TwitchVoteUI, "_draw", function(func, self, dt, t)
-	self._ui_scenegraph.base_area.local_position[1] = 0 + mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_TWITCH_VOTE_OFFSET_X)
-	self._ui_scenegraph.base_area.local_position[2] = 120 + mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_TWITCH_VOTE_OFFSET_Y)
+	local local_position = self._ui_scenegraph.base_area.local_position
+	local_position[1] = 0 + mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_TWITCH_VOTE_OFFSET_X)
+	local_position[2] = 120 + mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_TWITCH_VOTE_OFFSET_Y)
 
 	return func(self, dt, t)
 end)
@@ -1368,6 +1082,9 @@ mod:hook(TwitchIconView, "_draw", function(func, self, ...)
 	return func(self, ...)
 end)
 
+mod:dofile("scripts/mods/HideBuffs/mod_data")
+mod:dofile("scripts/mods/HideBuffs/mod_events")
+mod:dofile("scripts/mods/HideBuffs/content_change_functions")
 mod:dofile("scripts/mods/HideBuffs/teammate_widget_definitions")
 mod:dofile("scripts/mods/HideBuffs/buff_ui")
 mod:dofile("scripts/mods/HideBuffs/ability_ui")
@@ -1379,15 +1096,7 @@ mod:dofile("scripts/mods/HideBuffs/faster_chest_opening")
 mod:dofile("scripts/mods/HideBuffs/custom_buffs")
 mod:dofile("scripts/mods/HideBuffs/stamina_shields")
 
-fassert(not mod.update, "Overwriting existing function!")
-mod.update = function()
-	mod.locked_and_loaded_update()
-end
-
-if not mod.persistent_storage.outline_ranges_backup then
-	mod.persistent_storage.outline_ranges_backup = table.clone(OutlineSettings.ranges)
-end
-
+--- MOD FUNCTIONS ---
 mod.reapply_pickup_ranges = function()
 	OutlineSettings.ranges = table.clone(mod.persistent_storage.outline_ranges_backup)
 	if mod:get(mod.SETTING_NAMES.HIDE_PICKUP_OUTLINES) then
@@ -1402,6 +1111,60 @@ mod.reapply_pickup_ranges = function()
 		OutlineSettings.ranges.player_husk = 0
 		OutlineSettings.ranges.elevators = 0
 	end
+end
+
+mod.adjust_portrait_size_and_position = function(unit_frame_ui)
+	local self = unit_frame_ui
+	if self._mod_frame_index then
+		local widgets = self._widgets
+		local team_ui_portrait_offset_x = mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_OFFSET_X)
+		local team_ui_portrait_offset_y = mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_OFFSET_Y)
+
+		local default_static_widget = self._default_widgets.default_static
+		local default_static_style = default_static_widget.style
+		local portrait_size = default_static_style.character_portrait.size
+		default_static_style.character_portrait.offset[1] = -portrait_size[1]/2 + team_ui_portrait_offset_x
+
+		local delta_y = self._hb_mod_cached_character_portrait_size[2] -
+			default_static_style.character_portrait.size[2]
+		if mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_ICONS) ~= mod.PORTRAIT_ICONS.DEFAULT then
+			delta_y = 86 - default_static_style.character_portrait.size[2] + 10+15
+		end
+		default_static_style.character_portrait.offset[2] = 1 + delta_y/2 + team_ui_portrait_offset_y
+
+		local portrait_static_w = widgets.portrait_static
+		portrait_static_w.offset[1] = team_ui_portrait_offset_x
+		portrait_static_w.offset[2] = team_ui_portrait_offset_y
+
+		default_static_style.host_icon.offset[1] = -50 + team_ui_portrait_offset_x
+		default_static_style.host_icon.offset[2] = 10 + team_ui_portrait_offset_y
+
+		self:_set_widget_dirty(default_static_widget)
+		self:_set_widget_dirty(portrait_static_w)
+		self:set_dirty()
+	end
+end
+
+--- Same as UnitFrameUI.set_portrait, but we avoid using that so we can instead hook
+--- UnitFrameUI set_portrait calls and cache results.
+mod.set_portrait = function(unit_frame_ui, portrait_texture)
+	local self = unit_frame_ui
+	local widget = self:_widget_by_feature("default", "static")
+	local widget_content = widget.content
+	widget_content.character_portrait = portrait_texture
+
+	self:_set_widget_dirty(widget)
+	self._hb_mod_adjusted_portraits = false
+end
+
+--- Hide HUD hotkey callback.
+mod.hide_hud = function()
+	mod.keep_hud_hidden = not mod.keep_hud_hidden
+end
+
+--- EXECUTE ---
+if not mod.persistent_storage.outline_ranges_backup then
+	mod.persistent_storage.outline_ranges_backup = table.clone(OutlineSettings.ranges)
 end
 
 mod.reapply_pickup_ranges()

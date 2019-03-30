@@ -1,5 +1,6 @@
 local mod = get_mod("HideBuffs")
 
+--- Overwrite LockedAndLoaded.check_if_range_is_reloaded to change UI offsets.
 mod.locked_and_loaded_update = function()
 	local lnl_mod = get_mod("LockedAndLoaded")
 	local hide_buffs = mod

@@ -410,6 +410,11 @@ end)
 
 --- Threat and intensity tweaking.
 mod:hook_safe(ConflictDirector, "calculate_threat_value", function(self)
+	-- don't do anything if at default
+	if mod:get(mod.SETTING_NAMES.THREAT_MULTIPLIER) == mod.setting_defaults[mod.SETTING_NAMES.THREAT_MULTIPLIER] then
+		return
+	end
+	
 	self.threat_value = self.threat_value * mod:get(mod.SETTING_NAMES.THREAT_MULTIPLIER)
 	local threat_value = self.threat_value
 
@@ -423,6 +428,11 @@ mod:hook_safe(ConflictDirector, "calculate_threat_value", function(self)
 end)
 
 mod:hook_safe(Pacing, "update", function(self, t, dt, alive_player_units) -- luacheck: ignore t dt
+	-- don't do anything if at default
+	if mod:get(mod.SETTING_NAMES.THREAT_MULTIPLIER) == mod.setting_defaults[mod.SETTING_NAMES.THREAT_MULTIPLIER] then
+		return
+	end
+	
 	local num_alive_player_units = #alive_player_units
 
 	if num_alive_player_units == 0 then

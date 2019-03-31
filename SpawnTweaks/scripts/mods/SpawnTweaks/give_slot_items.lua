@@ -26,7 +26,7 @@ mod.setting_name_to_item_name = {
 	[mod.SETTING_NAMES.KEEP_GIVING_HP_POTS] = "healing_draught",
 }
 
-mod.give_slot_items_slot_names = { "slot_healthkit", "slot_potion", "slot_grenade" }
+mod.slot_names_for_giving = { "slot_healthkit", "slot_potion", "slot_grenade" }
 
 mod.filter_setting_name_filter = function(setting_name)
 	return mod:get(setting_name)
@@ -38,7 +38,7 @@ mod.give_slot_items_update_func = function()
 			local player_unit = player.player_unit
 			local inventory_extension = ScriptUnit.has_extension(player_unit, "inventory_system")
 			if inventory_extension then
-				for _, slot_name in ipairs( mod.give_slot_items_slot_names ) do
+				for _, slot_name in ipairs( mod.slot_names_for_giving ) do
 					local slot_data = inventory_extension:get_slot_data(slot_name)
 					if not slot_data then
 						mod:pcall(function()

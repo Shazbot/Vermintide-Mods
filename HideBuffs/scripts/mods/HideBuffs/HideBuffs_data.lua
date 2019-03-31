@@ -1183,6 +1183,16 @@ mod.add_option(
 	"Hide the Twitch logo and connected icon in lower right when using Twitch mode.",
 	hide_ui_elements_group.sub_widgets
 )
+mod.add_option(
+	"STOP_WHITE_HP_FLASHING",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Stop White HP Flashing",
+	"Stop flashing the temporary HP.",
+	hide_ui_elements_group.sub_widgets
+)
 
 local mini_hud_preset_subs = mod.add_option(
 	"MINI_HUD_PRESET",
@@ -1196,6 +1206,16 @@ local mini_hud_preset_subs = mod.add_option(
 		.."\nDISABLING AND RETURNING TO NORMAL HUD STATE REQUIRES GAME RESTART",
 	nil,
 	1
+)
+mod.add_option(
+	"PLAYER_RECT_LAYOUT",
+	{
+		["widget_type"] = "checkbox",
+	    ["default_value"] = false,
+	},
+	"Rectangular Layout",
+	"Ditch the texture and use a rectangular layout.",
+	mini_hud_preset_subs
 )
 mod.add_option(
 	"PLAYER_ULT_BAR_HEIGHT",

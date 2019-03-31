@@ -8,22 +8,6 @@ mod.player_ability_input_text_content_check_fun = function()
 	return not mod:get(mod.SETTING_NAMES.HIDE_HOTKEYS)
 end
 
-mod.player_ability_dynamic_content_change_fun = function (content, style)
-	if not content.uvs then
-		local ability_progress = content.bar_value
-		local size = style.texture_size
-		local offset = style.offset
-		offset[2] = -size[2] + size[2] * ability_progress
-		return
-	end
-	local ability_progress = content.bar_value
-	local size = style.size
-	local uvs = content.uvs
-	local bar_length = mod.hp_bar_width*0.88
-	uvs[2][2] = ability_progress
-	size[1] = bar_length * ability_progress
-end
-
 mod:hook(AbilityUI, "draw", function (func, self, dt)
 	if mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET) then
 		for _, pass in ipairs( self._widgets[1].element.passes ) do
@@ -47,12 +31,13 @@ mod:hook(AbilityUI, "draw", function (func, self, dt)
 
 			local skull_offsets = { 0, -15 }
 			local hp_bar_width = mod.hp_bar_width
-			self._widgets[1].style.ability_effect_left.offset[1] = -hp_bar_width/2 - 50
-			self._widgets[1].style.ability_effect_left.horizontal_alignment = "center"
-			self._widgets[1].style.ability_effect_left.offset[2] = skull_offsets[2]
-			self._widgets[1].style.ability_effect_top_left.horizontal_alignment = "center"
-			self._widgets[1].style.ability_effect_top_left.offset[1] = -hp_bar_width/2 - 50
-			self._widgets[1].style.ability_effect_top_left.offset[2] = skull_offsets[2]
+			local ability_widget_style = self._widgets[1].style
+			ability_widget_style.ability_effect_left.offset[1] = -hp_bar_width/2 - 50
+			ability_widget_style.ability_effect_left.horizontal_alignment = "center"
+			ability_widget_style.ability_effect_left.offset[2] = skull_offsets[2]
+			ability_widget_style.ability_effect_top_left.horizontal_alignment = "center"
+			ability_widget_style.ability_effect_top_left.offset[1] = -hp_bar_width/2 - 50
+			ability_widget_style.ability_effect_top_left.offset[2] = skull_offsets[2]
 
 			local skull_right_offset_x =
 				hp_bar_width/2 + 40
@@ -60,21 +45,28 @@ mod:hook(AbilityUI, "draw", function (func, self, dt)
 			local skull_right_offset_y =
 				skull_offsets[2]
 				+ mod:get(mod.SETTING_NAMES.PLAYER_UI_PLAYER_ULT_SKULL_OFFSET_Y)
-			self._widgets[1].style.ability_effect_right.offset[1] = skull_right_offset_x
-			self._widgets[1].style.ability_effect_right.horizontal_alignment = "center"
-			self._widgets[1].style.ability_effect_right.offset[2] = skull_right_offset_y
-			self._widgets[1].style.ability_effect_top_right.horizontal_alignment = "center"
-			self._widgets[1].style.ability_effect_top_right.offset[1] = skull_right_offset_x
-			self._widgets[1].style.ability_effect_top_right.offset[2] = skull_right_offset_y
+			ability_widget_style.ability_effect_right.offset[1] = skull_right_offset_x
+			ability_widget_style.ability_effect_right.horizontal_alignment = "center"
+			ability_widget_style.ability_effect_right.offset[2] = skull_right_offset_y
+			ability_widget_style.ability_effect_top_right.horizontal_alignment = "center"
+			ability_widget_style.ability_effect_top_right.offset[1] = skull_right_offset_x
+			ability_widget_style.ability_effect_top_right.offset[2] = skull_right_offset_y
 
-			self._widgets[1].offset[1]= -1+3
-			self._widgets[1].offset[2]= 17
-			self._widgets[1].offset[3]= 60
-			local ability_bar_highlight_w = mod.hp_bar_width*0.95
-			self._widgets[1].style.ability_bar_highlight.texture_size[1] = ability_bar_highlight_w
-			self._widgets[1].style.ability_bar_highlight.texture_size[2] = 54
-			self._widgets[1].style.ability_bar_highlight.offset[2] = 26
-			self._widgets[1].style.ability_bar_highlight.offset[1] = 0
+			local widget_offset = self._widgets[1].offset
+			widget_offset[1] = -1+3
+			widget_offset[2] = 17
+			if mod.using_rect_player_layout() then
+				local ability_bar_height = mod:get(mod.SETTING_NAMES.PLAYER_ULT_BAR_HEIGHT)
+				widget_offset[1] = widget_offset[1] + 1
+				widget_offset[2] = widget_offset[2] + ability_bar_height/2 + 3
+			end
+			widget_offset[3] = 60
+			local using_rect_layout = mod.using_rect_player_layout()
+			local ability_bar_highlight_w = mod.hp_bar_width*(using_rect_layout and 1.04 or 0.95)
+			ability_widget_style.ability_bar_highlight.texture_size[1] = ability_bar_highlight_w
+			ability_widget_style.ability_bar_highlight.texture_size[2] = 54
+			ability_widget_style.ability_bar_highlight.offset[2] = 26 +  mod.ult_bar_offset_y-1
+			ability_widget_style.ability_bar_highlight.offset[1] = using_rect_layout and -2 or 0
 		end)
 	end
 

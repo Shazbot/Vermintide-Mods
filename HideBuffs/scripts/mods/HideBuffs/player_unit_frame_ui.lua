@@ -64,10 +64,19 @@ mod.player_unit_frame_update = function(unit_frame_ui)
 	mod.numeric_ui_data.ammo_style = def_dynamic.content.ammo_style
 end
 
+mod.using_rect_player_layout = function()
+	return mod:get(mod.SETTING_NAMES.PLAYER_RECT_LAYOUT)
+end
+
+mod.get_ult_bar_width_scale = function()
+	return mod.using_rect_player_layout() and 0.97 or 0.88
+end
+
 mod.player_unit_frame_draw = function(unit_frame_ui)
 	local self = unit_frame_ui
 
 	mod.hp_bar_width = mod.default_hp_bar_width * mod:get(mod.SETTING_NAMES.PLAYER_UI_WIDTH_SCALE)/100
+	mod.ult_bar_width = mod.hp_bar_width * mod.get_ult_bar_width_scale()
 	mod.hp_bar_w_scale = mod.hp_bar_width / mod.default_hp_bar_width
 
 	self.ui_scenegraph.pivot.position[1] = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
@@ -85,7 +94,14 @@ mod.player_unit_frame_draw = function(unit_frame_ui)
 			ability_dynamic.offset[1] = 0
 			ability_dynamic.offset[2] = 16 + 3 - ability_bar_height + ability_bar_height/2
 			ability_dynamic.offset[3] = 50
-			ability_dynamic.style.ability_bar.offset[1] = -(mod.hp_bar_width*0.88)/2
+			ability_dynamic.style.ability_bar.offset[1] = -mod.ult_bar_width/2
+
+			if mod.using_rect_player_layout() then
+				ability_dynamic.offset[1] = ability_dynamic.offset[1] + 1
+				ability_dynamic.offset[2] = ability_dynamic.offset[2] + ability_bar_height/2 + 3 + mod.ult_bar_offset_y
+			end
+
+			mod.player_ult_offset_y = ability_dynamic.offset[2]
 		end
 
 		local hp_dynamic = self._health_widgets.health_dynamic

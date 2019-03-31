@@ -85,6 +85,9 @@ mod:hook(EquipmentUI, "update", function(func, self, ...)
 
 				slot_widget.offset[1] = slot_widget.offset[1] + mod:get(mod.SETTING_NAMES.PLAYER_ITEM_SLOTS_OFFSET_X)
 				slot_widget.offset[2] = slot_widget.offset[2] + mod:get(mod.SETTING_NAMES.PLAYER_ITEM_SLOTS_OFFSET_Y)
+				if mod.using_rect_player_layout() then
+					slot_widget.offset[2] = slot_widget.offset[2] + 10
+				end
 
 				slot_widget.offset[1] = slot_widget.offset[1] + i*mod:get(mod.SETTING_NAMES.PLAYER_ITEM_SLOTS_SPACING)
 
@@ -117,6 +120,7 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 	if mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET)
 	and self._is_visible
 	then
+		local using_rect_layout = mod.using_rect_player_layout()
 		mod:pcall(function()
 			local player_ui_offset_x = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
 			local player_ui_offset_y = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
@@ -126,8 +130,8 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 			if not static_widget_1.style.texture_id.size then
 				static_widget_1.style.texture_id.size = {}
 			end
-			static_widget_1.style.texture_id.size[1] = mod.hp_bar_width
-			static_widget_1.style.texture_id.size[2] = mod.hp_bar_height
+			static_widget_1.style.texture_id.size[1] = using_rect_layout and 0 or mod.hp_bar_width
+			static_widget_1.style.texture_id.size[2] = using_rect_layout and 0 or mod.hp_bar_height
 			static_widget_1.offset[1] = -static_widget_1.style.texture_id.size[1]/2 + player_ui_offset_x
 			static_widget_1.offset[2] = -49 + player_ui_offset_y
 			static_widget_1.offset[3] = 0
@@ -142,7 +146,7 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 			static_widget_2.offset[1] = -50 + player_ui_offset_x
 			static_widget_2.offset[2] = 20 + player_ui_offset_y
 
-			if not self._hb_mod_widget then
+			if not self._hb_mod_widget or mod.was_reloaded then
 				self._hb_mod_widget = UIWidget.init(mod.hp_bg_rect_def)
 			end
 			local hp_bar_rect_w = mod.hp_bar_width - 20 * mod.hp_bar_w_scale
@@ -158,6 +162,7 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 
 			mod.handle_player_ammo_bar(self)
 			mod.handle_player_numeric_ui(self)
+			mod.handle_player_rect_layout_widget(self)
 		end)
 
 		local ui_renderer = self.ui_renderer
@@ -166,7 +171,9 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 		local render_settings = self.render_settings
 		UIRenderer.begin_pass(ui_renderer, ui_scenegraph, input_service, dt, nil, render_settings)
 		-- draw the custom player widget
-		UIRenderer.draw_widget(ui_renderer, self._hb_mod_widget)
+		if not using_rect_layout then
+			UIRenderer.draw_widget(ui_renderer, self._hb_mod_widget)
+		end
 		-- draw the ammo bar widgets
 		if mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR) then
 			if self._hb_mod_ammo_widget then
@@ -177,6 +184,9 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 			end
 		end
 		-- draw the numeric ui widget
+		if using_rect_layout then
+			UIRenderer.draw_widget(ui_renderer, self._rect_layout_w)
+		end
 		UIRenderer.draw_widget(ui_renderer, self._hb_num_ui_player_widget)
 		UIRenderer.end_pass(ui_renderer)
 
@@ -185,6 +195,8 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 
 	return func(self, dt)
 end)
+
+mod.color_black = { 255, 0, 0, 0 }
 
 mod.handle_player_ammo_bar = function(unit_frame_ui)
 	local self = unit_frame_ui
@@ -201,21 +213,41 @@ mod.handle_player_ammo_bar = function(unit_frame_ui)
 		self._mod_ammo_border.style.border.color = { 255, 0, 0, 0 }
 	end
 
+	local using_rect_layout = mod.using_rect_player_layout()
+	mod.default_ammo_bar_width = using_rect_layout and 553 or 553*0.906
 	mod.ammo_bar_width = mod.default_ammo_bar_width * mod.hp_bar_w_scale
 	local ammo_bar_w_delta = mod.default_ammo_bar_width - mod.ammo_bar_width
-
+	
 	local mod_ammo_border = self._mod_ammo_border
 	local player_ammo_bar_height = mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR_HEIGHT)
 	mod_ammo_border.offset[1] = -19 + player_ui_offset_x + ammo_bar_w_delta/2
 	mod_ammo_border.offset[2] = 18 - player_ammo_bar_height + player_ui_offset_y
 	mod_ammo_border.offset[3] = -20
 	mod_ammo_border.style.border.size[1] = mod.ammo_bar_width + 2
+	if using_rect_layout then
+		local width = mod.hp_bar_width - 20 * mod.hp_bar_w_scale + 4
+		mod_ammo_border.style.border.size[1] = width + 4
+	end
 	mod_ammo_border.style.border.size[2] = player_ammo_bar_height + 2
-	-- mod_ammo_border.style.border.color = { 255, 0,255,0 }
+	if using_rect_layout then
+		mod_ammo_border.offset[1] = mod_ammo_border.offset[1] - 19
+		mod_ammo_border.offset[2] = mod_ammo_border.offset[2] + 3
+	end
 
+	if using_rect_layout then
+		mod.ammo_bar_width = mod.hp_bar_width * 0.972
+		mod_ammo_border.style.border.color = mod.rect_layout_border_color
+	else
+		mod_ammo_border.style.border.color = mod.color_black
+	end
+	
 	local mod_ammo_widget = self._hb_mod_ammo_widget
 	mod_ammo_widget.offset[1] = player_ui_offset_x - 25
 	mod_ammo_widget.offset[2] = player_ui_offset_y + 43
+	if using_rect_layout then
+		mod_ammo_widget.offset[1] = mod_ammo_widget.offset[1] - 18
+		mod_ammo_widget.offset[2] = mod_ammo_widget.offset[2] + 3
+	end
 	mod_ammo_widget.style.ammo_bar.color[1] = mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR_ALPHA)
 	mod_ammo_widget.style.ammo_bar.size[2] = player_ammo_bar_height
 	mod_ammo_widget.style.ammo_bar.offset[1] = 7 + ammo_bar_w_delta/2
@@ -577,4 +609,107 @@ mod.numeric_ui_player_widget_def =
 		0,
 		0
 	},
+}
+
+mod.handle_player_rect_layout_widget = function(unit_frame_ui)
+	local self = unit_frame_ui
+
+	local player_ui_offset_x = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
+	local player_ui_offset_y = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
+
+	if not self._rect_layout_w or mod.was_reloaded then
+		self._rect_layout_w = UIWidget.init(mod.rect_player_ui_layout_def)
+	end
+
+	local widget = self._rect_layout_w
+
+	local width = mod.hp_bar_width - 20 * mod.hp_bar_w_scale + 4
+	local height = mod.hp_bar_height -17
+	local hp_bar_bg = widget.style.hp_bar_bg
+	hp_bar_bg.size[1] = width
+	hp_bar_bg.size[2] = height
+
+	local hp_bar_border = widget.style.hp_bar_border
+	hp_bar_border.size[1] = width + 4
+	hp_bar_border.size[2] = height + 4
+	hp_bar_border.offset[1] = -2
+	hp_bar_border.offset[2] = -2
+
+	 hp_bar_border.color = mod.rect_layout_border_color
+
+	-- hp_bar_bg.size = { 0,0 }
+	-- hp_bar_border.size = { 0,0 }
+
+	local ability_bar_height = mod:get(mod.SETTING_NAMES.PLAYER_ULT_BAR_HEIGHT)
+	local ult_bar_bg = widget.style.ult_bar_bg
+	ult_bar_bg.size[1] = width
+	ult_bar_bg.size[2] = ability_bar_height + 2
+
+	local ult_bar_border = widget.style.ult_bar_border
+	 ult_bar_border.color = mod.rect_layout_border_color
+	ult_bar_border.size[1] = width + 4
+	ult_bar_border.size[2] = ability_bar_height + 6
+	ult_bar_border.offset[1] = -2
+	ult_bar_border.offset[2] = -2
+
+	ult_bar_bg.offset[1] = 0
+	ult_bar_bg.offset[2] = 50
+	if mod.player_ult_offset_y then
+		ult_bar_bg.offset[2] = mod.player_ult_offset_y - 2
+		ult_bar_border.offset[2] = mod.player_ult_offset_y - 4
+	end
+
+	widget.offset[1] = player_ui_offset_x - 37+1
+	widget.offset[2] = player_ui_offset_y + 24
+end
+
+mod.rect_player_ui_layout_def =
+{
+	scenegraph_id = "background_panel_bg",
+	element = {
+		passes = {
+			{
+				pass_type = "rect",
+				style_id = "hp_bar_bg",
+			},
+			{
+				pass_type = "border",
+				style_id = "hp_bar_border",
+			},
+			{
+				pass_type = "rect",
+				style_id = "ult_bar_bg",
+			},
+			{
+				pass_type = "border",
+				style_id = "ult_bar_border",
+			},
+		},
+	},
+	content = {},
+	style = {
+		hp_bar_bg = {
+			offset = { 0, 0, 0 },
+			size = { 500,10 },
+			color = { 255, 0, 0, 0 },
+		},
+		hp_bar_border = {
+			thickness = 2,
+			color = { 255,255,255,255 },
+			offset = { 0,0,0 },
+			size = { 500,50 },
+		},
+		ult_bar_bg = {
+			offset = { 0, 0, 0 },
+			size = { 500,10 },
+			color = { 255, 0, 0, 0 },
+		},
+		ult_bar_border = {
+			thickness = 2,
+			color = { 255,255,255,255 },
+			offset = { 0,0,0 },
+			size = { 500,50 },
+		},
+	},
+	offset = { 0,0,0 },
 }

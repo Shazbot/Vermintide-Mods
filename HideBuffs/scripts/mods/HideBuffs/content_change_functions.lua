@@ -11,7 +11,7 @@ mod.player_ability_dynamic_content_change_fun = function (content, style)
 	local ability_progress = content.bar_value
 	local size = style.size
 	local uvs = content.uvs
-	local bar_length = mod.hp_bar_width*0.88
+	local bar_length = mod.ult_bar_width
 	uvs[2][2] = ability_progress
 	size[1] = bar_length * ability_progress
 end

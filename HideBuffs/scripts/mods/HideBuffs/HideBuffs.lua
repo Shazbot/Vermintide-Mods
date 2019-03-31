@@ -15,11 +15,12 @@ mod.reposition_weapon_slots =
 
 mod.hp_bar_width = 553
 mod.ult_bar_width = mod.hp_bar_width*0.88
-mod.ult_bar_offset_y = 0
+mod.ult_bar_offset_y = 1
 mod.default_hp_bar_width = 553
 mod.hp_bar_height = 36
 mod.hp_bar_w_scale = mod.hp_bar_width / mod.default_hp_bar_width
 mod.team_ammo_bar_length = 92
+mod.rect_layout_border_color = { 255, 105, 105, 105 }
 
 --- Store frame_index in a new variable.
 mod:hook_safe(UnitFrameUI, "_create_ui_elements", function(self, frame_index)
@@ -592,6 +593,16 @@ mod:hook(TwitchIconView, "_draw", function(func, self, ...)
 	end
 
 	return func(self, ...)
+end)
+
+
+--- Disable White HP flashing.
+mod:hook(UnitFrameUI, "_update_bar_flash", function(func, self, widget, style, time, dt)
+	if mod:get(mod.SETTING_NAMES.STOP_WHITE_HP_FLASHING) then
+		return
+	end
+
+	return func(self, widget, style, time, dt)
 end)
 
 -- execute this in an external file

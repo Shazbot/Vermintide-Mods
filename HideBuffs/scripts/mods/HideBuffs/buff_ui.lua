@@ -17,6 +17,8 @@ mod.buff_name_to_setting_name_lookup = {
 		mod.SETTING_NAMES.HIDE_WHC_GRIMOIRE_POWER_BUFF,
 	["kerillian_shade_damage_on_grimoire_picked_up"] =
 		mod.SETTING_NAMES.HIDE_SHADE_GRIMOIRE_POWER_BUFF,
+	["victor_zealot_critical_hit_damage_from_passive"] =
+		mod.SETTING_NAMES.HIDE_ZEALOT_HOLY_CRUSADER_BUFF,
 }
 
 --- Moved this hook to custom_buffs.lua

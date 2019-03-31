@@ -1,3 +1,4 @@
+
 local mod = get_mod("HideBuffs")
 
 local pl = require'pl.import_into'()
@@ -55,6 +56,12 @@ mod.localizations:update({
 	},
 	HIDE_SHADE_GRIMOIRE_POWER_BUFF_T = {
 		en = "Shade grimoire power buff."
+	},
+	HIDE_ZEALOT_HOLY_CRUSADER_BUFF = {
+		en = "Zealot Holy Crusader Buff"
+	},
+	HIDE_ZEALOT_HOLY_CRUSADER_BUFF_T = {
+		en = "Zealot Holy Crusader buff."
 	},
 	buffs_group = {
 		en = "Buffs Tweaks"

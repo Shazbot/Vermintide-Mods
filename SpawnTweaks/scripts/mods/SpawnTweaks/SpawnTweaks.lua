@@ -788,7 +788,7 @@ mod.on_disabled = function(init_call)
 	end
 end
 
-mod:command("reset_breed_dmg", mod:localize("reset_breed_dmg_description"), mod.reset_breed_dmg)
+mod:command("ST_reset_breed_dmg", mod:localize("reset_breed_dmg_description"), mod.reset_breed_dmg)
 
 mod:dofile("scripts/mods/"..mod:get_name().."/presets")
 mod:dofile("scripts/mods/"..mod:get_name().."/mutators")

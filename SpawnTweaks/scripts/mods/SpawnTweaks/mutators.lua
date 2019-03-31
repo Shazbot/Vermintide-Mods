@@ -22,7 +22,7 @@ mod.mutators_info = {
 	skeet_shot = {
 		name = "Skeet Shot",
 		desc = "Disables everything but assassins and ups their numbers."
-			.."\nConsider using Infinite Ammo mod or Spawn Items mod to spawn Ammo Boxes."
+			.."\nConsider enabling the Infinite Ammo option in the mod options."
 			.."\nValues need to be tweaked!"
 	},
 	disable_spawns = {

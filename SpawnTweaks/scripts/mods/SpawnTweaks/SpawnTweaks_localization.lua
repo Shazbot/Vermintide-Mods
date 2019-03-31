@@ -11,6 +11,12 @@ mod.localizations:update({
 	mod_description = {
 		en = "Change stuff."
 	},
+	THREAT_GROUP = {
+		en = "Threat and Intensity"
+	},
+	DISABLE_SPAWNS_GROUP = {
+		en = "Disable Spawns"
+	},
 	horde_size = {
 		en = "Horde Size"
 	},

@@ -293,7 +293,7 @@ mod:hook_safe(GenericHitReactionExtension, "_execute_effect", function(self, uni
 	end
 end)
 
-mod.on_game_state_changed = function(status, state)
+mod.reset_custom_buff_counters = function()
 	mod.dps_start_t = nil
 	mod.map_dps_start_t = nil
 	mod.dps_dmg_sum = 0

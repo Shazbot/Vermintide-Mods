@@ -3,7 +3,7 @@ local mod = get_mod("HideBuffs")
 mod:dofile("scripts/mods/HideBuffs/PriorityBuffUI")
 
 -- using this the second buff bar keeps working when reloading mods, not needed normally
-mod.persistent_storage = mod:persistent_table("persistent_storage")
+mod.persistent = mod:persistent_table("persistent")
 
 mod:hook_safe(BuffUI, "init", function(self, parent, ingame_ui_context) -- luacheck: ignore self
 	if mod.buff_ui then
@@ -11,13 +11,13 @@ mod:hook_safe(BuffUI, "init", function(self, parent, ingame_ui_context) -- luach
 	end
 
 	mod.buff_ui = PriorityBuffUI:new(ingame_ui_context)
-	mod.persistent_storage.buff_ui = mod.buff_ui
+	mod.persistent.buff_ui = mod.buff_ui
 end)
 
 mod:hook_safe(BuffUI, "update", function(self, dt, t) -- luacheck: ignore self
 	if not mod.buff_ui
-	and mod.persistent_storage.buff_ui then
-		mod.buff_ui = mod.persistent_storage.buff_ui
+	and mod.persistent.buff_ui then
+		mod.buff_ui = mod.persistent.buff_ui
 	end
 
 	if mod.buff_ui
@@ -31,7 +31,7 @@ mod:hook_safe(BuffUI, "destroy", function()
 	if mod.buff_ui then
 		mod.buff_ui:destroy()
 		mod.buff_ui = nil
-		mod.persistent_storage.buff_ui = nil
+		mod.persistent.buff_ui = nil
 	end
 end)
 

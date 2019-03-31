@@ -114,18 +114,13 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 		end
 	end
 
-	local player_ui_offset_x = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
-	local player_ui_offset_y = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
-
-	local ui_renderer = self.ui_renderer
-	local ui_scenegraph = self.ui_scenegraph
-	local input_service = self.input_manager:get_service("ingame_menu")
-	local render_settings = self.render_settings
-
 	if mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET)
 	and self._is_visible
 	then
 		mod:pcall(function()
+			local player_ui_offset_x = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
+			local player_ui_offset_y = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
+
 			local static_widget_1 = self._static_widgets[1]
 			static_widget_1.content.texture_id = "console_hp_bar_frame"
 			if not static_widget_1.style.texture_id.size then
@@ -161,42 +156,18 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 			self.ui_scenegraph.slot.position[1] = 149 + player_ui_offset_x
 			self.ui_scenegraph.slot.position[2] = 44 + 15 + player_ui_offset_y
 
-			if not self._hb_mod_ammo_widget then
-				self._hb_mod_ammo_widget = UIWidget.init(mod.ammo_widget_def)
-			end
-
-			if not self._mod_ammo_border then
-				self._mod_ammo_border = UIWidget.init(UIWidgets._mod_create_border("background_panel_bg", false))
-				self._mod_ammo_border.style.border.color = { 255, 0, 0, 0 }
-			end
-
-			mod.ammo_bar_width = mod.default_ammo_bar_width * mod.hp_bar_w_scale
-			local ammo_bar_w_delta = mod.default_ammo_bar_width - mod.ammo_bar_width
-
-			local mod_ammo_border = self._mod_ammo_border
-			local player_ammo_bar_height = mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR_HEIGHT)
-			mod_ammo_border.offset[1] = -19 + player_ui_offset_x + ammo_bar_w_delta/2
-			mod_ammo_border.offset[2] = 18 - player_ammo_bar_height + player_ui_offset_y
-			mod_ammo_border.offset[3] = -20
-			mod_ammo_border.style.border.size[1] = mod.ammo_bar_width + 2
-			mod_ammo_border.style.border.size[2] = player_ammo_bar_height + 2
-			-- mod_ammo_border.style.border.color = { 255, 0,255,0 }
-
-			local mod_ammo_widget = self._hb_mod_ammo_widget
-			mod_ammo_widget.offset[1] = player_ui_offset_x - 25
-			mod_ammo_widget.offset[2] = player_ui_offset_y + 43
-			mod_ammo_widget.style.ammo_bar.color[1] = mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR_ALPHA)
-			mod_ammo_widget.style.ammo_bar.size[2] = player_ammo_bar_height
-			mod_ammo_widget.style.ammo_bar.offset[1] = 7 + ammo_bar_w_delta/2
-			mod_ammo_widget.style.ammo_bar.offset[2] = -24 - player_ammo_bar_height
-			mod_ammo_widget.style.ammo_bar.offset[3] = 50
-
-			local ammo_progress = self._hb_mod_ammo_widget.content.ammo_bar.bar_value
-			mod_ammo_widget.style.ammo_bar.size[1] = mod.ammo_bar_width * ammo_progress
+			mod.handle_player_ammo_bar(self)
+			mod.handle_player_numeric_ui(self)
 		end)
 
+		local ui_renderer = self.ui_renderer
+		local ui_scenegraph = self.ui_scenegraph
+		local input_service = self.input_manager:get_service("ingame_menu")
+		local render_settings = self.render_settings
 		UIRenderer.begin_pass(ui_renderer, ui_scenegraph, input_service, dt, nil, render_settings)
+		-- draw the custom player widget
 		UIRenderer.draw_widget(ui_renderer, self._hb_mod_widget)
+		-- draw the ammo bar widgets
 		if mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR) then
 			if self._hb_mod_ammo_widget then
 				UIRenderer.draw_widget(ui_renderer, self._hb_mod_ammo_widget)
@@ -205,10 +176,61 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 				UIRenderer.draw_widget(ui_renderer, self._mod_ammo_border)
 			end
 		end
+		-- draw the numeric ui widget
+		UIRenderer.draw_widget(ui_renderer, self._hb_num_ui_player_widget)
 		UIRenderer.end_pass(ui_renderer)
 
 		self._static_widgets[2].content.visible = false
 	end
+
+	return func(self, dt)
+end)
+
+mod.handle_player_ammo_bar = function(unit_frame_ui)
+	local self = unit_frame_ui
+
+	local player_ui_offset_x = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
+	local player_ui_offset_y = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
+
+	if not self._hb_mod_ammo_widget then
+		self._hb_mod_ammo_widget = UIWidget.init(mod.ammo_widget_def)
+	end
+
+	if not self._mod_ammo_border then
+		self._mod_ammo_border = UIWidget.init(UIWidgets._mod_create_border("background_panel_bg", false))
+		self._mod_ammo_border.style.border.color = { 255, 0, 0, 0 }
+	end
+
+	mod.ammo_bar_width = mod.default_ammo_bar_width * mod.hp_bar_w_scale
+	local ammo_bar_w_delta = mod.default_ammo_bar_width - mod.ammo_bar_width
+
+	local mod_ammo_border = self._mod_ammo_border
+	local player_ammo_bar_height = mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR_HEIGHT)
+	mod_ammo_border.offset[1] = -19 + player_ui_offset_x + ammo_bar_w_delta/2
+	mod_ammo_border.offset[2] = 18 - player_ammo_bar_height + player_ui_offset_y
+	mod_ammo_border.offset[3] = -20
+	mod_ammo_border.style.border.size[1] = mod.ammo_bar_width + 2
+	mod_ammo_border.style.border.size[2] = player_ammo_bar_height + 2
+	-- mod_ammo_border.style.border.color = { 255, 0,255,0 }
+
+	local mod_ammo_widget = self._hb_mod_ammo_widget
+	mod_ammo_widget.offset[1] = player_ui_offset_x - 25
+	mod_ammo_widget.offset[2] = player_ui_offset_y + 43
+	mod_ammo_widget.style.ammo_bar.color[1] = mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR_ALPHA)
+	mod_ammo_widget.style.ammo_bar.size[2] = player_ammo_bar_height
+	mod_ammo_widget.style.ammo_bar.offset[1] = 7 + ammo_bar_w_delta/2
+	mod_ammo_widget.style.ammo_bar.offset[2] = -24 - player_ammo_bar_height
+	mod_ammo_widget.style.ammo_bar.offset[3] = 50
+
+	local ammo_progress = self._hb_mod_ammo_widget.content.ammo_bar.bar_value
+	mod_ammo_widget.style.ammo_bar.size[1] = mod.ammo_bar_width * ammo_progress
+end
+
+mod.handle_player_numeric_ui = function(unit_frame_ui)
+	local self = unit_frame_ui
+
+	local player_ui_offset_x = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
+	local player_ui_offset_y = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
 
 	-- NumericUI interop.
 	-- Display values gotten from Numeric UI on our own widget.
@@ -258,12 +280,7 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 		num_ui_widget.offset[2] = self._hb_mod_widget.offset[2]
 	end
 	num_ui_widget.offset[3] = -10
-	UIRenderer.begin_pass(ui_renderer, ui_scenegraph, input_service, dt, nil, render_settings)
-	UIRenderer.draw_widget(ui_renderer, num_ui_widget)
-	UIRenderer.end_pass(ui_renderer)
-
-	return func(self, dt)
-end)
+end
 
 EquipmentUI._mod_update_ammo = function (self, left_hand_wielded_unit, right_hand_wielded_unit, item_template)
 	local ammo_extension

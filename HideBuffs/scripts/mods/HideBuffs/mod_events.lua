@@ -2,6 +2,20 @@ local mod = get_mod("HideBuffs")
 
 local pl = require'pl.import_into'()
 
+mod.on_unload = function()
+	mod.persistent.was_ingame_entered = mod.was_ingame_entered
+end
+
+mod.on_game_state_changed = function(status, state)
+	if status == "enter" and state == "StateIngame" then
+		mod.was_ingame_entered = true
+	end
+
+	if mod.reset_custom_buff_counters then
+		mod.reset_custom_buff_counters()
+	end
+end
+
 mod.on_all_mods_loaded = function()
 	-- NumericUI compatibility.
 	-- Disable NumericUI hook that modifies widget definitions.

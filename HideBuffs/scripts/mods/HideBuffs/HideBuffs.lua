@@ -3,7 +3,7 @@ local mod = get_mod("HideBuffs")
 local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
 
-mod.persistent_storage = mod:persistent_table("persistent_storage")
+mod.persistent = mod:persistent_table("persistent")
 
 --- Keep track of player ammo and hp from Numeric UI for use in equipment_ui.
 mod.numeric_ui_data = {}
@@ -14,6 +14,8 @@ mod.reposition_weapon_slots =
 	or mod:get(mod.SETTING_NAMES.REPOSITION_WEAPON_SLOTS) ~= 0
 
 mod.hp_bar_width = 553
+mod.ult_bar_width = mod.hp_bar_width*0.88
+mod.ult_bar_offset_y = 0
 mod.default_hp_bar_width = 553
 mod.hp_bar_height = 36
 mod.hp_bar_w_scale = mod.hp_bar_width / mod.default_hp_bar_width
@@ -336,7 +338,7 @@ mod:hook(UnitFramesHandler, "update", function(func, self, ...)
 		end
 	end
 
-	return func(self, ...)
+	func(self, ...)
 end)
 
 --- Teammate UI.
@@ -592,6 +594,11 @@ mod:hook(TwitchIconView, "_draw", function(func, self, ...)
 	return func(self, ...)
 end)
 
+-- execute this in an external file
+-- mod:hook_safe(StateInGameRunning, "post_update", function(self, dt, t)
+-- 	mod.was_reloaded = false
+-- end)
+
 mod:dofile("scripts/mods/HideBuffs/mod_data")
 mod:dofile("scripts/mods/HideBuffs/mod_events")
 mod:dofile("scripts/mods/HideBuffs/content_change_functions")
@@ -610,7 +617,7 @@ mod:dofile("scripts/mods/HideBuffs/stamina_shields")
 
 --- MOD FUNCTIONS ---
 mod.reapply_pickup_ranges = function()
-	OutlineSettings.ranges = table.clone(mod.persistent_storage.outline_ranges_backup)
+	OutlineSettings.ranges = table.clone(mod.persistent.outline_ranges_backup)
 	if mod:get(mod.SETTING_NAMES.HIDE_PICKUP_OUTLINES) then
 		OutlineSettings.ranges.pickup = 0
 	end
@@ -675,8 +682,13 @@ mod.hide_hud = function()
 end
 
 --- EXECUTE ---
-if not mod.persistent_storage.outline_ranges_backup then
-	mod.persistent_storage.outline_ranges_backup = table.clone(OutlineSettings.ranges)
+mod.was_ingame_entered = mod.persistent.was_ingame_entered
+if mod.was_ingame_entered then
+	mod.was_reloaded = true -- was_ingame_entered will only be true after a reload
+end
+
+if not mod.persistent.outline_ranges_backup then
+	mod.persistent.outline_ranges_backup = table.clone(OutlineSettings.ranges)
 end
 
 mod.reapply_pickup_ranges()

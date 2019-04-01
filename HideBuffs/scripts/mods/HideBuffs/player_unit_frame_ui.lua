@@ -75,7 +75,9 @@ end
 mod.player_unit_frame_draw = function(unit_frame_ui)
 	local self = unit_frame_ui
 
-	mod.hp_bar_width = mod.default_hp_bar_width * mod:get(mod.SETTING_NAMES.PLAYER_UI_WIDTH_SCALE)/100
+	-- disable width scaling with rect layout
+	local hp_bar_width_scale = mod.using_rect_player_layout() and 1 or mod:get(mod.SETTING_NAMES.PLAYER_UI_WIDTH_SCALE)/100
+	mod.hp_bar_width = mod.default_hp_bar_width * hp_bar_width_scale
 	mod.ult_bar_width = mod.hp_bar_width * mod.get_ult_bar_width_scale()
 	mod.hp_bar_w_scale = mod.hp_bar_width / mod.default_hp_bar_width
 

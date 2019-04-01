@@ -176,6 +176,22 @@ mod:hook(UnitFrameUI, "_update_portrait_opacity", function(func, self, is_dead, 
 	if normal_state then
 		color[1] = 255 -- skip an if check that dirties the widget
 	end
+	
+	-- if using hero or hat portrait icons colorize them red
+	if self.is_teammate
+	and mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_ICONS) ~= mod.PORTRAIT_ICONS.DEFAULT
+	then
+		if is_knocked_down or needs_help then
+			-- firebrick color
+			color[2] = 178
+			color[3] = 34
+			color[4] = 34
+		else
+			color[2] = 255
+			color[3] = 255
+			color[4] = 255
+		end
+	end
 
 	local is_dirtied = func(self, is_dead, is_knocked_down, needs_help, assisted_respawn)
 
@@ -614,6 +630,7 @@ mod:dofile("scripts/mods/HideBuffs/mod_data")
 mod:dofile("scripts/mods/HideBuffs/mod_events")
 mod:dofile("scripts/mods/HideBuffs/content_change_functions")
 mod:dofile("scripts/mods/HideBuffs/teammate_widget_definitions")
+mod:dofile("scripts/mods/HideBuffs/player_widget_definitions")
 mod:dofile("scripts/mods/HideBuffs/player_unit_frame_ui")
 mod:dofile("scripts/mods/HideBuffs/teammate_unit_frame_ui")
 mod:dofile("scripts/mods/HideBuffs/buff_ui")

@@ -1214,7 +1214,9 @@ mod.add_option(
 	    ["default_value"] = false,
 	},
 	"Rectangular Layout",
-	"Ditch the texture and use a rectangular layout.",
+	"Ditch the texture and use a rectangular layout."
+	.."\nDoesn't support width scaling currently."
+	.."\nGoing to add a way to rearrange order of HP/ammo/ult bars, and border behind ammo bar.",
 	mini_hud_preset_subs
 )
 mod.add_option(

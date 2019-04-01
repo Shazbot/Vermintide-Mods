@@ -130,7 +130,7 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 
 		local portrait_static = self._widgets.portrait_static
 
-		-- frame hiding: texture_1 is static frame, texture_2 is dynamic frame
+		-- hide frames: texture_1 is static frame, texture_2 is dynamic frame
 		local frame_texture_alpha = mod:get(mod.SETTING_NAMES.HIDE_FRAMES) and 0 or 255
 		for _, frame_texture_name in ipairs( mod.frame_texture_names ) do
 			if portrait_static.style[frame_texture_name]
@@ -141,7 +141,7 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 			end
 		end
 
-		-- hide frames
+		-- force default frame
 		if mod:get(mod.SETTING_NAMES.FORCE_DEFAULT_FRAME)
 		and portrait_static.content.texture_1 ~= "portrait_frame_0000" then
 			self:set_portrait_frame("default", portrait_static.content.level_text)
@@ -254,6 +254,12 @@ mod:hook(UnitFramesHandler, "update", function(func, self, ...)
 		mod.realign_team_member_frames = false
 
 		self:_align_team_member_frames()
+		
+		-- dirtify the portrait widget
+		for index, unit_frame in ipairs(self._unit_frames) do
+			local unit_frame_widget = unit_frame.widget
+			unit_frame_widget:_set_widget_dirty(unit_frame_widget._widgets.portrait_static)
+		end
 	end
 
 	if mod.recreate_player_unit_frame then

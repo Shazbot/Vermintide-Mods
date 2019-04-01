@@ -54,6 +54,7 @@ mod.on_setting_changed = function(setting_name)
 			mod.SETTING_NAMES.TEAM_UI_OFFSET_Y,
 			mod.SETTING_NAMES.TEAM_UI_FLOWS_HORIZONTALLY,
 			mod.SETTING_NAMES.TEAM_UI_SPACING,
+			mod.SETTING_NAMES.TEAM_UI_PORTRAIT_SCALE,
 		}):contains(setting_name)
 	then
 		mod.realign_team_member_frames = true

@@ -10,6 +10,8 @@ end
 
 mod:hook(AbilityUI, "draw", function (func, self, dt)
 	if mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET) then
+		self._mod_was_in_mini_hud = true
+		
 		for _, pass in ipairs( self._widgets[1].element.passes ) do
 			if pass.style_id == "ability_effect_left"
 				or pass.style_id == "ability_effect_top_left" then
@@ -68,6 +70,31 @@ mod:hook(AbilityUI, "draw", function (func, self, dt)
 			ability_widget_style.ability_bar_highlight.offset[2] = 26 +  mod.ult_bar_offset_y-1
 			ability_widget_style.ability_bar_highlight.offset[1] = using_rect_layout and -2 or 0
 		end)
+	elseif self._mod_was_in_mini_hud then -- restore UI when disabling mini_hud
+		self._mod_was_in_mini_hud = false
+		
+		self:_create_ui_elements()
+		self:set_dirty()
+		
+		for _, pass in ipairs( self._widgets[1].element.passes ) do
+			if pass.style_id == "ability_effect_left"
+				or pass.style_id == "ability_effect_top_left" then
+					pass.content_check_function = function (content)
+						return not content.parent.on_cooldown
+					end
+			end
+		end
+
+		for _, pass in ipairs( self._widgets[1].element.passes ) do
+			if pass.style_id == "input_text"
+			or pass.style_id == "input_text_shadow"
+			then
+				pass.content_check_function = function (content, style)
+					return not Managers.input:is_device_active("gamepad")
+						and not mod:get(mod.SETTING_NAMES.HIDE_HOTKEYS)
+				end
+			end
+		end
 	end
 
 	return func(self, dt)

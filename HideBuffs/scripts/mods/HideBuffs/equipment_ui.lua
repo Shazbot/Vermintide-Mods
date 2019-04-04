@@ -117,30 +117,71 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 		end
 	end
 	
+	-- restore original values when mini_hud gets disabled
 	if not mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET)
-	and self._mod_static_widget_1_content_backup
+	and self._mod_static_widget_1_backup
+	and self._mod_was_using_mini_hud
 	then
 		local static_widget_1 = self._static_widgets[1]
-		static_widget_1.content = table.clone(self._mod_static_widget_1_content_backup)
-		static_widget_1.style = table.clone(self._mod_static_widget_1_style_backup)
+		local static_widget_2 = self._static_widgets[2]
+		self._mod_was_using_mini_hud = false
 		
-			self._mod_static_widget_1_content_backup.content = nil
-			self._mod_static_widget_1_style_backup = nil
+		local static_widget_1_backup = self._mod_static_widget_1_backup
+		static_widget_1.content = table.clone(static_widget_1_backup.content)
+		static_widget_1.offset = table.clone(static_widget_1_backup.offset)
+		static_widget_1.scenegraph_id = static_widget_1_backup.scenegraph_id
+		
+		local parent_temp = static_widget_1.style.texture_id.parent
+		static_widget_1.style.texture_id = table.clone(static_widget_1_backup.texture_id)
+		static_widget_1.style.texture_id.parent = parent_temp
+		
+		local static_widget_2_backup = self._mod_static_widget_2_backup
+		static_widget_2.offset = table.clone(static_widget_2_backup.offset)
+		
+		parent_temp = static_widget_2.style.texture_id.parent
+		static_widget_2.style.texture_id = table.clone(static_widget_2_backup.texture_id)
+		static_widget_2.style.texture_id.parent = parent_temp
+		
+		self.ui_scenegraph.slot.position = table.clone(self._mod_slot_position_backup)
+		
+		self._static_widgets[2].content.visible = true
 	end
-
+	
 	if mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET)
 	and self._is_visible
 	then
+		self._mod_was_using_mini_hud = true
 		local using_rect_layout = mod.using_rect_player_layout()
 		mod:pcall(function()
 			local player_ui_offset_x = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
 			local player_ui_offset_y = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
 
 			local static_widget_1 = self._static_widgets[1]
-			if not self._mod_static_widget_1_content_backup then
-				self._mod_static_widget_1_content_backup = table.clone(static_widget_1.content)
-				self._mod_static_widget_1_style_backup = table.clone(static_widget_1.style)
+			local static_widget_2 = self._static_widgets[2]
+			
+			-- cache original values during first draw with mini_hud active
+			if not self._mod_static_widget_1_backup then
+				self._mod_static_widget_1_backup = {
+					content = table.clone(static_widget_1.content),
+					offset = table.clone(static_widget_1.offset),
+					scenegraph_id = static_widget_1.scenegraph_id,
+				}
+				local parent_temp = static_widget_1.style.texture_id.parent
+				static_widget_1.style.texture_id.parent = nil
+				self._mod_static_widget_1_backup.texture_id = table.clone(static_widget_1.style.texture_id)
+				static_widget_1.style.texture_id.parent = parent_temp
+				
+				self._mod_static_widget_2_backup = {
+					offset = table.clone(static_widget_2.offset),
+				}
+				local parent_temp = static_widget_2.style.texture_id.parent
+				static_widget_2.style.texture_id.parent = nil
+				self._mod_static_widget_2_backup.texture_id = table.clone(static_widget_2.style.texture_id)
+				static_widget_2.style.texture_id.parent = parent_temp
+				
+				self._mod_slot_position_backup = table.clone(self.ui_scenegraph.slot.position)
 			end
+			
 			static_widget_1.content.texture_id = "console_hp_bar_frame"
 			if not static_widget_1.style.texture_id.size then
 				static_widget_1.style.texture_id.size = {}
@@ -152,7 +193,6 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 			static_widget_1.offset[3] = 0
 			static_widget_1.scenegraph_id = "pivot"
 
-			local static_widget_2 = self._static_widgets[2]
 			if not static_widget_2.style.texture_id.size then
 				static_widget_2.style.texture_id.size = {}
 			end
@@ -202,7 +242,9 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 		if using_rect_layout and self._rect_layout_w then
 			UIRenderer.draw_widget(ui_renderer, self._rect_layout_w)
 		end
-		UIRenderer.draw_widget(ui_renderer, self._hb_num_ui_player_widget)
+		if self._hb_num_ui_player_widget then
+			UIRenderer.draw_widget(ui_renderer, self._hb_num_ui_player_widget)
+		end
 		UIRenderer.end_pass(ui_renderer)
 
 		self._static_widgets[2].content.visible = false

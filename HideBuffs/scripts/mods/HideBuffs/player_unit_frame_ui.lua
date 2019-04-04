@@ -154,5 +154,20 @@ mod.player_unit_frame_draw = function(unit_frame_ui)
 		hp_bar_highlight_style.offset[1] = -hp_dynamic_style.hp_bar.size[1]/2
 		hp_bar_highlight_style.offset[2] = 35 - 4
 		hp_bar_highlight_style.offset[3] = -5 + 3
+	else
+		local hp_dynamic = self._health_widgets.health_dynamic
+		local hp_dynamic_style = hp_dynamic.style
+		
+		local total_health_bar_style = hp_dynamic_style.total_health_bar
+		total_health_bar_style.offset[2] = 10
+
+		local hp_bar_style = hp_dynamic_style.hp_bar
+		hp_bar_style.offset[2] = 10
+
+		local hp_bar_highlight_style = hp_dynamic_style.hp_bar_highlight
+		hp_bar_highlight_style.offset[2] = 10 - 4
+		
+		local ability_dynamic = self._ability_widgets.ability_dynamic
+		ability_dynamic.offset[2] = 0
 	end
 end

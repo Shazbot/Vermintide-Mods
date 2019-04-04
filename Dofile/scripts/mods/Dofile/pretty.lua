@@ -298,10 +298,9 @@ function pretty.dump (t, filename, max_depth)
         max_depth = 8
     end
     if not filename then
-        -- EchoConsole(pretty.write(t, nil, nil, max_depth))
         return true
     else
-        return utils.writefile(filename, pretty.write(t, nil, nil, max_depth))
+        return utils.writefile(filename, pretty.write(t, nil, true, max_depth))
     end
 end
 

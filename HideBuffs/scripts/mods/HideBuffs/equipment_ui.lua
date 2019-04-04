@@ -116,6 +116,17 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 			self:_set_widget_dirty(ammo_clip_widget)
 		end
 	end
+	
+	if not mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET)
+	and self._mod_static_widget_1_content_backup
+	then
+		local static_widget_1 = self._static_widgets[1]
+		static_widget_1.content = table.clone(self._mod_static_widget_1_content_backup)
+		static_widget_1.style = table.clone(self._mod_static_widget_1_style_backup)
+		
+			self._mod_static_widget_1_content_backup.content = nil
+			self._mod_static_widget_1_style_backup = nil
+	end
 
 	if mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET)
 	and self._is_visible
@@ -126,6 +137,10 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 			local player_ui_offset_y = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
 
 			local static_widget_1 = self._static_widgets[1]
+			if not self._mod_static_widget_1_content_backup then
+				self._mod_static_widget_1_content_backup = table.clone(static_widget_1.content)
+				self._mod_static_widget_1_style_backup = table.clone(static_widget_1.style)
+			end
 			static_widget_1.content.texture_id = "console_hp_bar_frame"
 			if not static_widget_1.style.texture_id.size then
 				static_widget_1.style.texture_id.size = {}

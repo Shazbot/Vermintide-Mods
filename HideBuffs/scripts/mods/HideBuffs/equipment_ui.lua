@@ -171,7 +171,7 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 		local render_settings = self.render_settings
 		UIRenderer.begin_pass(ui_renderer, ui_scenegraph, input_service, dt, nil, render_settings)
 		-- draw the custom player widget
-		if not using_rect_layout then
+		if not using_rect_layout and self._hb_mod_widget then
 			UIRenderer.draw_widget(ui_renderer, self._hb_mod_widget)
 		end
 		-- draw the ammo bar widgets
@@ -184,7 +184,7 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 			end
 		end
 		-- draw the numeric ui widget
-		if using_rect_layout then
+		if using_rect_layout and self._rect_layout_w then
 			UIRenderer.draw_widget(ui_renderer, self._rect_layout_w)
 		end
 		UIRenderer.draw_widget(ui_renderer, self._hb_num_ui_player_widget)

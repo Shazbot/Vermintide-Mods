@@ -40,6 +40,7 @@ globals = {
 	"PickupSystem", "ChatGui", "WaitForRescueUI",
 	"TwitchVoteUI", "TwitchIconView", "EAC",
 	"AiUtils", "IngameHud", "Material",
+	"callback", "cjson",
 
 	"PriorityBuffUI",
 }

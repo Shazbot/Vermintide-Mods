@@ -648,6 +648,7 @@ mod:dofile("scripts/mods/HideBuffs/locked_and_loaded_compat")
 mod:dofile("scripts/mods/HideBuffs/faster_chest_opening")
 mod:dofile("scripts/mods/HideBuffs/custom_buffs")
 mod:dofile("scripts/mods/HideBuffs/stamina_shields")
+mod:dofile("scripts/mods/HideBuffs/upload_settings")
 
 --- MOD FUNCTIONS ---
 mod.reapply_pickup_ranges = function()

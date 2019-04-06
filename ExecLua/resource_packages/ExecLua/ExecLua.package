@@ -1,0 +1,11 @@
+mod = [
+	"ExecLua"
+]
+
+package = [
+	"resource_packages/ExecLua/ExecLua"
+]
+
+lua = [
+	"scripts/mods/ExecLua/*"
+]

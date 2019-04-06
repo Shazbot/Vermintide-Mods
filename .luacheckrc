@@ -42,7 +42,8 @@ globals = {
 	"AiUtils", "IngameHud", "Material",
 	"callback", "cjson", "UPDATE_RESOLUTION_LOOKUP",
 	"WeaponSystem", "BLACKBOARDS", "Clipboard",
-	"RconUI",
+	"RconUI", "Keyboard", "Utf8",
+	"setfenv", "loadstring",
 
 	"PriorityBuffUI",
 }

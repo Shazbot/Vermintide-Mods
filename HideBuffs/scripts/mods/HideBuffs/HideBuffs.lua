@@ -176,7 +176,7 @@ mod:hook(UnitFrameUI, "_update_portrait_opacity", function(func, self, is_dead, 
 	if normal_state then
 		color[1] = 255 -- skip an if check that dirties the widget
 	end
-	
+
 	-- if using hero or hat portrait icons colorize them red
 	if self.is_teammate
 	and mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_ICONS) ~= mod.PORTRAIT_ICONS.DEFAULT
@@ -254,7 +254,7 @@ mod:hook(UnitFramesHandler, "update", function(func, self, ...)
 		mod.realign_team_member_frames = false
 
 		self:_align_team_member_frames()
-		
+
 		-- dirtify the portrait widget
 		for index, unit_frame in ipairs(self._unit_frames) do
 			local unit_frame_widget = unit_frame.widget
@@ -407,6 +407,8 @@ mod:hook("ChatGui", "update", function(func, self, ...)
 		position[1] = mod:get(mod.SETTING_NAMES.CHAT_OFFSET_X)
 		position[2] = 200 + mod:get(mod.SETTING_NAMES.CHAT_OFFSET_Y)
 		self.chat_window_widget.style.background.color[1] = mod:get(mod.SETTING_NAMES.CHAT_BG_ALPHA)
+
+		mod.on_chat_gui_update(self)
 	end)
 
 	return func(self, ...)
@@ -649,6 +651,8 @@ mod:dofile("scripts/mods/HideBuffs/faster_chest_opening")
 mod:dofile("scripts/mods/HideBuffs/custom_buffs")
 mod:dofile("scripts/mods/HideBuffs/stamina_shields")
 mod:dofile("scripts/mods/HideBuffs/upload_settings")
+mod:dofile("scripts/mods/HideBuffs/presets_data")
+mod:dofile("scripts/mods/HideBuffs/presets")
 
 --- MOD FUNCTIONS ---
 mod.reapply_pickup_ranges = function()

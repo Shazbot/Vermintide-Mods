@@ -11,7 +11,7 @@ end
 mod:hook(AbilityUI, "draw", function (func, self, dt)
 	if mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET) then
 		self._mod_was_in_mini_hud = true
-		
+
 		for _, pass in ipairs( self._widgets[1].element.passes ) do
 			if pass.style_id == "ability_effect_left"
 				or pass.style_id == "ability_effect_top_left" then
@@ -72,10 +72,12 @@ mod:hook(AbilityUI, "draw", function (func, self, dt)
 		end)
 	elseif self._mod_was_in_mini_hud then -- restore UI when disabling mini_hud
 		self._mod_was_in_mini_hud = false
-		
+
+		self:_set_elements_visible(false)
+
 		self:_create_ui_elements()
 		self:set_dirty()
-		
+
 		for _, pass in ipairs( self._widgets[1].element.passes ) do
 			if pass.style_id == "ability_effect_left"
 				or pass.style_id == "ability_effect_top_left" then

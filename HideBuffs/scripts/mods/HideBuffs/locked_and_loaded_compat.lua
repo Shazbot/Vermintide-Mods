@@ -56,3 +56,4 @@ mod.locked_and_loaded_update = function()
 		end
 	end
 end
+table.insert(mod.update_funcs, function() mod.locked_and_loaded_update() end)

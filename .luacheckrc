@@ -40,7 +40,10 @@ globals = {
 	"PickupSystem", "ChatGui", "WaitForRescueUI",
 	"TwitchVoteUI", "TwitchIconView", "EAC",
 	"AiUtils", "IngameHud", "Material",
-	"callback", "cjson",
+	"callback", "cjson", "UPDATE_RESOLUTION_LOOKUP",
+	"WeaponSystem", "BLACKBOARDS", "Clipboard",
+	"RconUI",
 
 	"PriorityBuffUI",
 }
+ignore = {"611"}

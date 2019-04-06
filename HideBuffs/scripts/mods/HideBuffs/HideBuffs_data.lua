@@ -1875,4 +1875,39 @@ mod.add_option(
 	other_elements_subs
 )
 
+mod.add_option(
+	"SHOW_PRESETS_UI",
+	{
+		["widget_type"] = "checkbox",
+	  ["default_value"] = true,
+	},
+	"Show Presets UI",
+	"Whether to show the presets UI in the keep.",
+	nil,
+	1
+)
+
+mod.setting_parents = {}
+mod.setting_names_localized = {}
+mod.get_defaults = function()
+	local defaults = {}
+	local function subwidget_search(subwidgets, parents)
+		for _, setting_widget in ipairs( subwidgets ) do
+			defaults[setting_widget.setting_name] = setting_widget.default_value
+			mod.setting_parents[setting_widget.setting_name] = table.clone(parents)
+			mod.setting_names_localized[setting_widget.setting_name] = setting_widget.text
+			if setting_widget.sub_widgets then
+				local new_parents = table.clone(parents)
+				table.insert(new_parents, setting_widget.setting_name)
+				subwidget_search(setting_widget.sub_widgets, new_parents)
+			end
+		end
+	end
+
+	subwidget_search(mod_data.options_widgets, {})
+
+	return defaults
+end
+mod.setting_defaults = mod.get_defaults()
+
 return mod_data

@@ -116,7 +116,10 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 			self:_set_widget_dirty(ammo_clip_widget)
 		end
 	end
-	
+
+	local player_ui_offset_x = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
+	local player_ui_offset_y = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
+
 	-- restore original values when mini_hud gets disabled
 	if not mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET)
 	and self._mod_static_widget_1_backup
@@ -125,40 +128,38 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 		local static_widget_1 = self._static_widgets[1]
 		local static_widget_2 = self._static_widgets[2]
 		self._mod_was_using_mini_hud = false
-		
+
 		local static_widget_1_backup = self._mod_static_widget_1_backup
 		static_widget_1.content = table.clone(static_widget_1_backup.content)
 		static_widget_1.offset = table.clone(static_widget_1_backup.offset)
 		static_widget_1.scenegraph_id = static_widget_1_backup.scenegraph_id
-		
+
 		local parent_temp = static_widget_1.style.texture_id.parent
 		static_widget_1.style.texture_id = table.clone(static_widget_1_backup.texture_id)
 		static_widget_1.style.texture_id.parent = parent_temp
-		
+
 		local static_widget_2_backup = self._mod_static_widget_2_backup
 		static_widget_2.offset = table.clone(static_widget_2_backup.offset)
-		
+
 		parent_temp = static_widget_2.style.texture_id.parent
 		static_widget_2.style.texture_id = table.clone(static_widget_2_backup.texture_id)
 		static_widget_2.style.texture_id.parent = parent_temp
-		
-		self.ui_scenegraph.slot.position = table.clone(self._mod_slot_position_backup)
-		
+
+		self.ui_scenegraph.slot.position[1] = 149 + player_ui_offset_x
+		self.ui_scenegraph.slot.position[2] = 44 + player_ui_offset_y
+
 		self._static_widgets[2].content.visible = true
 	end
-	
+
 	if mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET)
 	and self._is_visible
 	then
 		self._mod_was_using_mini_hud = true
 		local using_rect_layout = mod.using_rect_player_layout()
 		mod:pcall(function()
-			local player_ui_offset_x = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
-			local player_ui_offset_y = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
-
 			local static_widget_1 = self._static_widgets[1]
 			local static_widget_2 = self._static_widgets[2]
-			
+
 			-- cache original values during first draw with mini_hud active
 			if not self._mod_static_widget_1_backup then
 				self._mod_static_widget_1_backup = {
@@ -170,7 +171,7 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 				static_widget_1.style.texture_id.parent = nil
 				self._mod_static_widget_1_backup.texture_id = table.clone(static_widget_1.style.texture_id)
 				static_widget_1.style.texture_id.parent = parent_temp
-				
+
 				self._mod_static_widget_2_backup = {
 					offset = table.clone(static_widget_2.offset),
 				}
@@ -178,10 +179,8 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 				static_widget_2.style.texture_id.parent = nil
 				self._mod_static_widget_2_backup.texture_id = table.clone(static_widget_2.style.texture_id)
 				static_widget_2.style.texture_id.parent = parent_temp
-				
-				self._mod_slot_position_backup = table.clone(self.ui_scenegraph.slot.position)
 			end
-			
+
 			static_widget_1.content.texture_id = "console_hp_bar_frame"
 			if not static_widget_1.style.texture_id.size then
 				static_widget_1.style.texture_id.size = {}
@@ -219,6 +218,21 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 			mod.handle_player_numeric_ui(self)
 			mod.handle_player_rect_layout_widget(self)
 		end)
+
+		if self._dirty then
+			if self._hb_mod_ammo_widget then
+				self:_set_widget_dirty(self._hb_mod_ammo_widget)
+			end
+			if self._mod_ammo_border then
+				self:_set_widget_dirty(self._mod_ammo_border)
+			end
+			if self._rect_layout_w then
+				self:_set_widget_dirty(self._rect_layout_w)
+			end
+			if self._hb_num_ui_player_widget then
+				self:_set_widget_dirty(self._hb_num_ui_player_widget)
+			end
+		end
 
 		local ui_renderer = self.ui_renderer
 		local ui_scenegraph = self.ui_scenegraph
@@ -274,7 +288,7 @@ mod.handle_player_ammo_bar = function(unit_frame_ui)
 	mod.default_ammo_bar_width = using_rect_layout and 553 or 553*0.906
 	mod.ammo_bar_width = mod.default_ammo_bar_width * mod.hp_bar_w_scale
 	local ammo_bar_w_delta = mod.default_ammo_bar_width - mod.ammo_bar_width
-	
+
 	local mod_ammo_border = self._mod_ammo_border
 	local player_ammo_bar_height = mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR_HEIGHT)
 	mod_ammo_border.offset[1] = -19 + player_ui_offset_x + ammo_bar_w_delta/2
@@ -297,7 +311,7 @@ mod.handle_player_ammo_bar = function(unit_frame_ui)
 	else
 		mod_ammo_border.style.border.color = mod.color_black
 	end
-	
+
 	local mod_ammo_widget = self._hb_mod_ammo_widget
 	mod_ammo_widget.offset[1] = player_ui_offset_x - 25
 	mod_ammo_widget.offset[2] = player_ui_offset_y + 43

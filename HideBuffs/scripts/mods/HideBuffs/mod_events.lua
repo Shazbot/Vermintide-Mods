@@ -27,9 +27,10 @@ mod.on_all_mods_loaded = function()
 end
 
 fassert(not mod.update, "Overwriting existing function!")
+mod.update_funcs = {}
 mod.update = function()
-	if mod.locked_and_loaded_update then
-		mod.locked_and_loaded_update()
+	for _, update_func in ipairs( mod.update_funcs ) do
+		update_func()
 	end
 end
 
@@ -64,6 +65,7 @@ mod.on_setting_changed = function(setting_name)
 			mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_AMMO_DURATION,
 			mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_DMG_TAKEN_DURATION,
 			mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_TEMP_HP_DURATION,
+			mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_DPS_TIMED,
 		}):contains(setting_name)
 	then
 		BuffTemplates.custom_dmg_taken.buffs[1].duration =

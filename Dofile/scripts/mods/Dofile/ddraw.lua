@@ -1,6 +1,4 @@
--- luacheck: globals get_mod IngameUI Keyboard Color World EndScreenUI
--- luacheck: globals RESOLUTION_LOOKUP Gui Vector3 LevelEndView
--- luacheck: globals Dbg ddraw ddump dkeys
+-- luacheck: globals Dbg ddraw ddump dkeys ddkeys
 local mod = get_mod("Dofile")
 
 local pl = require'pl.import_into'()
@@ -33,7 +31,11 @@ ddump = function(table, filename)
 end
 
 dkeys = function(table)
-	return pl.Map(table):keys()
+	return pl.Map(table):keys():sort()
+end
+
+ddkeys = function(table)
+	ddraw(dkeys(table))
 end
 
 mod.lines = pl.List()
@@ -112,20 +114,28 @@ mod:hook(StateLoading, "on_exit", mod.destroy_gui)
 
 mod:hook_safe(IngameUI, "update", function(self, dt, t) -- luacheck: ignore dt
 	if Dbg.text ~= mod.dbg_text_lf then
-		mod.dbg_text_lf = Dbg.text
 		mod.clear_text_t = t + mod.clear_time
 		mod.lines = stringx.splitlines(Dbg.text):slice(0, 135)
 	end
 	if mod.clear_text_t and mod.clear_text_t < t then
-		Dbg.text = ""
-		mod.clear_text_t = nil
+		mod.reset_ddraw()
 	end
+
+	mod.dbg_text_lf = Dbg.text
 
 	mod.draw_debug_text(self, self.ui_renderer.gui)
 end)
 
+mod.reset_ddraw = function()
+	Dbg.text = ""
+	mod.dbg_text_lf = ""
+	mod.clear_text_t = nil
+	Dbg.current_table = nil
+	mod.lines = pl.List()
+end
+
 mod.clear_ddraw = function()
-	ddraw()
+	mod.reset_ddraw()
 end
 
 mod:command("dd", "Clear ddraw.", mod.clear_ddraw)

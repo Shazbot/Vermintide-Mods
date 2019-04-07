@@ -1393,7 +1393,6 @@ mod.add_option(
 mod.add_option(
 	"TEAM_UI_PORTRAIT_ICONS",
 	{
-		["setting_name"] = mod.SETTING_NAMES.HORDES,
 		["widget_type"] = "dropdown",
 		["default_value"] = mod.PORTRAIT_ICONS.DEFAULT,
 		["options"] = {

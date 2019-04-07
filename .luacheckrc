@@ -43,8 +43,10 @@ globals = {
 	"callback", "cjson", "UPDATE_RESOLUTION_LOOKUP",
 	"WeaponSystem", "BLACKBOARDS", "Clipboard",
 	"RconUI", "Keyboard", "Utf8",
-	"setfenv", "loadstring",
+	"setfenv", "loadstring", 
+	"GenericHealthExtension", "RatOgreHealthExtension",
+	"PhysicsWorld", "Actor",
 
 	"PriorityBuffUI",
 }
-ignore = {"611"}
+ignore = {"611", "631"}

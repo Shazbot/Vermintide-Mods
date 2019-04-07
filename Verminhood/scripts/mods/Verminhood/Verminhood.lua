@@ -1,6 +1,7 @@
 local mod = get_mod("Verminhood")
 
-mod:hook(GenericHealthExtension, "add_damage", function(func, self, attacker_unit, damage_amount, hit_zone_name, damage_type, hit_position, damage_direction, damage_source_name, hit_ragdoll_actor, damaging_unit, hit_react_type, is_critical_strike, added_dot)
+for _, health_ext in ipairs( { GenericHealthExtension, RatOgreHealthExtension } ) do
+mod:hook(health_ext, "add_damage", function(func, self, attacker_unit, damage_amount, hit_zone_name, damage_type, hit_position, damage_direction, damage_source_name, hit_ragdoll_actor, damaging_unit, hit_react_type, is_critical_strike, added_dot)
 	local self_unit = self.unit
 	local breed = Unit.get_data(self_unit, "breed")
 
@@ -8,17 +9,17 @@ mod:hook(GenericHealthExtension, "add_damage", function(func, self, attacker_uni
 		return func(self, attacker_unit, damage_amount, hit_zone_name, damage_type, hit_position, damage_direction, damage_source_name, hit_ragdoll_actor, damaging_unit, hit_react_type, is_critical_strike, added_dot)
 	end
 
-	mod:hook_disable(GenericHealthExtension, "add_damage")
+	mod:hook_disable(health_ext, "add_damage")
 
 	local dmg = damage_amount
 
 	local position = Unit.world_position(self_unit, 0)
 	local world = Managers.world:world("level_world")
 	local physics_world = World.physics_world(world)
-	local radius = mod:get(mod.SETTING_NAMES.RADIUS)
+	local radius = mod:get(mod.SETTING_NAMES.RADIUS) or 10
 	local collision_filter = "filter_enemy_unit"
 	local actors, num_actors = PhysicsWorld.immediate_overlap(physics_world, "shape", "sphere",
-		"position", position, "size", radius, "collision_filter", collision_filter, "use_global_table")
+		"position", position, "size", radius, "collision_filter", collision_filter)
 
 	mod:pcall(function()
 		local units_to_damage = {}
@@ -51,7 +52,8 @@ mod:hook(GenericHealthExtension, "add_damage", function(func, self, attacker_uni
 		end
 	end)
 
-	mod:hook_enable(GenericHealthExtension, "add_damage")
+	mod:hook_enable(health_ext, "add_damage")
 
 	return
 end)
+end

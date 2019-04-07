@@ -6,7 +6,7 @@ mod.presets_json =
 [[
 [
 {
-	"player_name": "prop joe",
+	"player_name": "Example",
 	"hud_clamp_ui_scaling": true,
 	"hud_scale": 100,
 	"screen_resolution": [1920, 1080],

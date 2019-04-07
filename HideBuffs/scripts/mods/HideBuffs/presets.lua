@@ -190,7 +190,11 @@ mod.on_chat_gui_update = function(chat_gui)
 	if not chat_gui.chat_focused then
 		mod.destroy_presets_window()
 		mod.presets_window_closed = false
-	elseif not mod.presets_window and not mod.presets_window_closed then
+	elseif
+	mod.was_ingame_entered
+	and not mod.presets_window
+	and not mod.presets_window_closed
+	then
 		mod.user_preset = mod.get_preset_data()
 		mod.reload_presets_window()
 	end

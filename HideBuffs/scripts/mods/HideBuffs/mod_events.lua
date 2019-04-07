@@ -24,6 +24,13 @@ mod.on_all_mods_loaded = function()
 	if numeric_ui then
 		numeric_ui:hook_disable(UnitFramesHandler, "_create_unit_frame_by_type")
 	end
+
+	if mod:get(mod.SETTING_NAMES.SHOW_PRESETS_ADDED_WELCOME_MSG) then
+		mod:echo("-------------------------- UI Tweaks --------------------------")
+		mod:echo("Presets have been added to UI Tweaks. Open the chat to choose between them.")
+		mod:echo("If you have an UI Tweaks configuration you'd like to share with others you can do so with /ut_upload_settings")
+		mod:echo("You can stop this message from showing in the mod options.")
+	end
 end
 
 fassert(not mod.update, "Overwriting existing function!")

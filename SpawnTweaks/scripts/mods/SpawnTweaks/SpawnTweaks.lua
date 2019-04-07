@@ -414,7 +414,7 @@ mod:hook_safe(ConflictDirector, "calculate_threat_value", function(self)
 	if mod:get(mod.SETTING_NAMES.THREAT_MULTIPLIER) == mod.setting_defaults[mod.SETTING_NAMES.THREAT_MULTIPLIER] then
 		return
 	end
-	
+
 	self.threat_value = self.threat_value * mod:get(mod.SETTING_NAMES.THREAT_MULTIPLIER)
 	local threat_value = self.threat_value
 
@@ -432,7 +432,7 @@ mod:hook_safe(Pacing, "update", function(self, t, dt, alive_player_units) -- lua
 	if mod:get(mod.SETTING_NAMES.THREAT_MULTIPLIER) == mod.setting_defaults[mod.SETTING_NAMES.THREAT_MULTIPLIER] then
 		return
 	end
-	
+
 	local num_alive_player_units = #alive_player_units
 
 	if num_alive_player_units == 0 then
@@ -806,6 +806,8 @@ mod:dofile("scripts/mods/"..mod:get_name().."/no_bots")
 mod:dofile("scripts/mods/"..mod:get_name().."/pickups")
 mod:dofile("scripts/mods/"..mod:get_name().."/give_slot_items")
 mod:dofile("scripts/mods/"..mod:get_name().."/infinite_ammo_mutator")
+mod:dofile("scripts/mods/"..mod:get_name().."/scary_elites_mutator")
+mod:dofile("scripts/mods/"..mod:get_name().."/verminhood_mutator")
 
 mod.on_unload = function()
 	mod.persistent.ingame_entered = mod.ingame_entered

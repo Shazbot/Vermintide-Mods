@@ -64,6 +64,7 @@ mod.SETTING_NAMES = {
 	NO_BOTS = "NO_BOTS",
 	THREAT_GROUP = "THREAT_GROUP",
 	DISABLE_SPAWNS_GROUP = "DISABLE_SPAWNS_GROUP",
+	VERMINHOOD_RADIUS = "VERMINHOOD_RADIUS",
 }
 
 mod.BOSSES = {
@@ -101,6 +102,12 @@ mod.BOSS_EVENTS = {
 	ONLY_BOSSES = 1,
 	ONLY_PATROLS = 2,
 	BOTH = 3,
+}
+
+mod.VERMINHOOD_MODES = {
+	DISABLED = 1,
+	SPLIT = 2,
+	POOL = 3,
 }
 
 local unused_specials = pl.List{
@@ -301,7 +308,7 @@ mod.add_option = function(setting_name, option_widget, en_text, en_tooltip, grou
 	end
 	option_widget.text = mod:localize(setting_name)
 	option_widget.tooltip = mod:localize(setting_name.."_T")
-	option_widget.sub_widgets = {}
+	option_widget.sub_widgets = option_widget.sub_widgets or {}
 	if not group then
 		index = index or #mod_data.options_widgets + 1
 		mod_data.options_widgets:insert(index, option_widget)
@@ -767,10 +774,51 @@ local mutator_options_subs = mod.add_option(
 	"Other options for mutators."
 )
 mod.add_option(
+	"SCARY_ELITES_MUTATOR",
+	{
+		["widget_type"] = "checkbox",
+	  ["default_value"] = false,
+	},
+	"Scary Elites",
+	"Elite enemies are immune to stagger. SV shields are breakable."
+		.."\nIncludes: chaos_warrior, skaven_storm_vermin_commander, chaos_raider, skaven_storm_vermin, chaos_berzerker, skaven_storm_vermin_with_shield, skaven_plague_monk.",
+	mutator_options_subs
+)
+mod.add_option(
+	"VERMINHOOD_MUTATOR",
+	{
+		["widget_type"] = "dropdown",
+		["default_value"] = mod.VERMINHOOD_MODES.DISABLED,
+		["options"] = {
+			{ text = mod:localize("disable"), value = mod.VERMINHOOD_MODES.DISABLED }, --1
+			{ text = mod:localize("split"), value = mod.VERMINHOOD_MODES.SPLIT }, --2
+			{ text = mod:localize("pool"), value = mod.VERMINHOOD_MODES.POOL }, --3
+		},
+		["sub_widgets"] = {
+			{
+				["show_widget_condition"] = {2,3},
+				["setting_name"] = mod.SETTING_NAMES.VERMINHOOD_RADIUS,
+				["widget_type"] = "numeric",
+				["range"] = {1, 100},
+				["text"] = mod:localize("radius"),
+				["tooltip"] = mod:localize("VERMINHOOD_RADIUS_T"),
+				["default_value"] = 5,
+			},
+		},
+	},
+	"Verminhood",
+	"Star of the sisterhood inspired mutator."
+		.."\nSplit splits the damage between enemies evenly."
+		.."\nPool gives enemies in the radius a shared hp pool."
+		.."\nSo in Split mode an ogre would take even amount of dmg, in Pool mode ogre HP takes majority of the damage."
+		.."\nNeeds testing with other players.",
+	mutator_options_subs
+)
+mod.add_option(
 	"INFINITE_AMMO_MUTATOR",
 	{
 		["widget_type"] = "checkbox",
-	    ["default_value"] = false,
+    ["default_value"] = false,
 	},
 	"Infinite Ammo And 0 Heat",
 	"Give players infinite ammo and no heat generated.",

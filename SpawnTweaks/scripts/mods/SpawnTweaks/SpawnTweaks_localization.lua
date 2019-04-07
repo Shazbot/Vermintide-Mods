@@ -83,6 +83,18 @@ mod.localizations:update({
 	disable = {
 		en = "Disable"
 	},
+	radius = {
+		en = "Radius"
+	},
+	VERMINHOOD_RADIUS_T = {
+		en = "Radius around the enemy to select the enemies from."
+	},
+	split = {
+		en = "Split"
+	},
+	pool = {
+		en = "Pool HP"
+	},
 	customize = {
 		en = "Customize"
 	},

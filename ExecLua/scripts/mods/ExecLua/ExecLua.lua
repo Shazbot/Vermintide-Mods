@@ -15,6 +15,22 @@ mod.textboxes = pl.List{}
 
 mod.exec_window_was_destroyed = false
 
+mod.do_exec = function()
+	mod:pcall(function()
+			local context = {}
+			context.mod = mod
+			context.pl = pl
+			setmetatable(context, { __index = _G })
+
+			local exec_text = mod.textboxes:map(function(textbox) return textbox.text end):join('\n')
+			local exec = loadstring(exec_text)
+			if exec then
+				setfenv(exec, context)
+				exec()
+			end
+		end)
+end
+
 mod.create_exec_window = function()
 	local screen_width, screen_height = UIResolution()
 
@@ -39,24 +55,13 @@ mod.create_exec_window = function()
 		mod.textboxes:append(textbox)
 	end
 
-	local context = {}
-	context.mod = mod
-	context.pl = pl
-	setmetatable(context, { __index = _G })
 	local execute_button = mod.exec_window:create_button("execute_button",
 		{0, 50},
 		{150, 40},
 		"middle_top",
 		"Execute")
 	execute_button.on_click = function()
-		mod:pcall(function()
-			local exec_text = mod.textboxes:map(function(textbox) return textbox.text end):join('\n')
-			local exec = loadstring(exec_text)
-			if exec then
-				setfenv(exec, context)
-				exec()
-			end
-		end)
+		mod.do_exec()
 	end
 
 	mod.exec_window.before_destroy = function(window)

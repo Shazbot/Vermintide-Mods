@@ -147,47 +147,6 @@ mod.teammate_unit_frame_update = function(unit_frame_ui)
 		def_static_widget_style.player_name.horizontal_alignment = team_ui_player_name_alignment
 		def_static_widget_style.player_name_shadow.horizontal_alignment = team_ui_player_name_alignment
 	end
-
-	-- different hero portraits
-	local team_ui_portrait_icons = mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_ICONS)
-	local profile_index = self.profile_index
-	if profile_index then
-		local profile_data = SPProfiles[profile_index]
-		local def_static_content = self:_widget_by_feature("default", "static").content
-		local character_portrait = def_static_content.character_portrait
-		if not def_static_content.portrait_backup then
-			def_static_content.portrait_backup = character_portrait
-		end
-		local default_portrait = def_static_content.portrait_backup
-
-		if team_ui_portrait_icons == mod.PORTRAIT_ICONS.HERO then
-			local hero_icon = UISettings.hero_icons.medium[profile_data.display_name]
-			if character_portrait ~= hero_icon then
-				mod.set_portrait(self, hero_icon)
-			end
-		elseif team_ui_portrait_icons == mod.PORTRAIT_ICONS.HATS then
-			local careers = profile_data.careers
-			local career_index = self.career_index
-			if career_index then
-				local career_name = careers[career_index].display_name
-				local hat_icon = mod.career_name_to_hat_icon[career_name]
-				if hat_icon and character_portrait ~= hat_icon then
-					mod.set_portrait(self, hat_icon)
-				end
-			end
-		elseif character_portrait ~= default_portrait then
-			mod.set_portrait(self, default_portrait)
-		end
-
-		-- for testing
-		-- self:set_portrait("hero_icon_medium_dwarf_ranger_yellow")
-		-- self:set_portrait("icon_wpn_dw_axe_01_t1_dual")
-		-- self:set_portrait("icon_ironbreaker_hat_0000")
-		-- local widget = self:_widget_by_feature("default", "static")
-		-- widget.style.character_portrait.size = {80,80}
-		-- widget.style.character_portrait.offset[2] = -15+(108-86)+7
-		-- mod.adjust_portrait_size_and_position(self)
-	end
 end
 
 mod.teammate_unit_frame_draw = function(unit_frame_ui)

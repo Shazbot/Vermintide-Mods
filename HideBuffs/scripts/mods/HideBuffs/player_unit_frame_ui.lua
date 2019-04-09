@@ -3,6 +3,21 @@ local mod = get_mod("HideBuffs")
 mod.player_unit_frame_update = function(unit_frame_ui)
 	local self = unit_frame_ui
 
+	-- change portrait texture_size for PORTRAIT_ICONS
+	if not self._hb_mod_cached_character_portrait_texture_size then -- keep the default portrait texture_size cached
+		self._hb_mod_cached_character_portrait_texture_size = table.clone(self._default_widgets.default_static.style.character_portrait.texture_size)
+	end
+	if mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_ICONS) ~= mod.PORTRAIT_ICONS.DEFAULT then
+		self._default_widgets.default_static.style.character_portrait.texture_size[1] = 80
+		self._default_widgets.default_static.style.character_portrait.texture_size[2] = 80
+	else
+		self._default_widgets.default_static.style.character_portrait.texture_size[1] = self._hb_mod_cached_character_portrait_texture_size[1]
+		self._default_widgets.default_static.style.character_portrait.texture_size[2] = self._hb_mod_cached_character_portrait_texture_size[2]
+	end
+	local status_icon_widget = self:_widget_by_feature("status_icon", "dynamic")
+	ddkeys(self._default_widgets.default_static.style.character_portrait)
+	ddraw(self._default_widgets.default_static.style.character_portrait.texture_size)
+
 	-- hide player portrait
 	local hide_player_portrait = mod:get(mod.SETTING_NAMES.HIDE_PLAYER_PORTRAIT)
 	local status_icon_widget = self:_widget_by_feature("status_icon", "dynamic")
@@ -157,7 +172,7 @@ mod.player_unit_frame_draw = function(unit_frame_ui)
 	else
 		local hp_dynamic = self._health_widgets.health_dynamic
 		local hp_dynamic_style = hp_dynamic.style
-		
+
 		local total_health_bar_style = hp_dynamic_style.total_health_bar
 		total_health_bar_style.offset[2] = 10
 
@@ -166,7 +181,7 @@ mod.player_unit_frame_draw = function(unit_frame_ui)
 
 		local hp_bar_highlight_style = hp_dynamic_style.hp_bar_highlight
 		hp_bar_highlight_style.offset[2] = 10 - 4
-		
+
 		local ability_dynamic = self._ability_widgets.ability_dynamic
 		ability_dynamic.offset[2] = 0
 	end

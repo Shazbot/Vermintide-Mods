@@ -30,6 +30,9 @@ mod.on_all_mods_loaded = function()
 		mod:echo("Presets have been added to UI Tweaks. Open the chat to choose between them.")
 		mod:echo("If you have an UI Tweaks configuration you'd like to share with others you can do so with /ut_upload_settings")
 		mod:echo("You can stop this message from showing in the mod options.")
+		if not get_mod("SimpleUI") then
+			mod:echo("IMPORTANT: UI TWEAKS REQUIRES THE SIMPLE UI MOD AS A DEPENDENCY TO MANAGE PRESETS")
+		end
 	end
 end
 

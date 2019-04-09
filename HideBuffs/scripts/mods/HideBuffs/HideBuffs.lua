@@ -1,7 +1,6 @@
 local mod = get_mod("HideBuffs")
 
 local pl = require'pl.import_into'()
-local tablex = require'pl.tablex'
 
 mod.persistent = mod:persistent_table("persistent")
 
@@ -51,6 +50,38 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 			mod.teammate_unit_frame_draw(self)
 		else
 			mod.player_unit_frame_draw(self)
+		end
+
+		-- different hero portraits
+		local team_ui_portrait_icons = mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_ICONS)
+		local profile_index = self.profile_index
+		if profile_index then
+			local profile_data = SPProfiles[profile_index]
+			local def_static_content = self:_widget_by_feature("default", "static").content
+			local character_portrait = def_static_content.character_portrait
+			if not def_static_content.portrait_backup then
+				def_static_content.portrait_backup = character_portrait
+			end
+			local default_portrait = def_static_content.portrait_backup
+
+			if team_ui_portrait_icons == mod.PORTRAIT_ICONS.HERO then
+				local hero_icon = UISettings.hero_icons.medium[profile_data.display_name]
+				if character_portrait ~= hero_icon then
+					mod.set_portrait(self, hero_icon)
+				end
+			elseif team_ui_portrait_icons == mod.PORTRAIT_ICONS.HATS then
+				local careers = profile_data.careers
+				local career_index = self.career_index
+				if career_index then
+					local career_name = careers[career_index].display_name
+					local hat_icon = mod.career_name_to_hat_icon[career_name]
+					if hat_icon and character_portrait ~= hat_icon then
+						mod.set_portrait(self, hat_icon)
+					end
+				end
+			elseif character_portrait ~= default_portrait then
+				mod.set_portrait(self, default_portrait)
+			end
 		end
 	end)
 
@@ -256,7 +287,7 @@ mod:hook(UnitFramesHandler, "update", function(func, self, ...)
 		self:_align_team_member_frames()
 
 		-- dirtify the portrait widget
-		for index, unit_frame in ipairs(self._unit_frames) do
+		for _, unit_frame in ipairs(self._unit_frames) do
 			local unit_frame_widget = unit_frame.widget
 			unit_frame_widget:_set_widget_dirty(unit_frame_widget._widgets.portrait_static)
 		end

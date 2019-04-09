@@ -6,8 +6,7 @@ mod.simple_ui = get_mod("SimpleUI")
 
 --- Get current game resolution.
 mod.get_current_resolution = function()
-	local res_w, res_h = UIResolution()
-	return string.format("%sx%s", tostring(res_w), tostring(res_h))
+	return mod.get_string_resolution({ UIResolution() })
 end
 
 --- Get resolution in format 0000x0000 from a table {res_x, res_y}.
@@ -183,6 +182,7 @@ mod.on_chat_gui_update = function(chat_gui)
 	if Managers.state.game_mode
 	and Managers.state.game_mode:level_key() ~= "inn_level"
 	or not mod:get(mod.SETTING_NAMES.SHOW_PRESETS_UI)
+	or not mod.simple_ui
 	then
 		return
 	end
@@ -215,8 +215,6 @@ mod.presets_update_func = function()
 				return string.format("%sx%s", tostring(res[1]), tostring(res[2]))
 			end)
 			:append(mod.get_current_resolution())
-			:append("2550x1440")
-			:append("1024x768")
 		)):keys()
 
 		local split_resolutions = resolutions:map(function(res) return pl.stringx.split(res, 'x') end)
@@ -224,20 +222,20 @@ mod.presets_update_func = function()
 			return res1[1]*res1[2] >= res2[1]*res2[2]
 		end)
 		mod.resolutions = split_resolutions:map(function(res)
-				return string.format("%sx%s", tostring(res[1]), tostring(res[2]))
+				return mod.get_string_resolution(res)
 			end)
 	end
 
 	--- Current resolution in the resolution dropdown.
 	mod.preset_resolution = mod.preset_resolution or mod.get_current_resolution()
 
-	--- Preset at the start of the game.
+	--- Preset with settings as they were at the start of the game.
 	if not mod.local_preset then
 		mod.local_preset = mod.get_preset_data()
 		mod.local_preset.player_name = "At game start"
 	end
 
-	--- Empty preset to serve as a default dropdown option.
+	--- Preset with UI Tweaks defaults.
 	if not mod.defaults_preset then
 		mod.defaults_preset = table.clone(mod.local_preset)
 		mod.defaults_preset.settings = table.clone(mod.setting_defaults)

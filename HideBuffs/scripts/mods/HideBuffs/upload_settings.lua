@@ -34,9 +34,6 @@ mod.get_preset_data = function()
 	local use_custom_hud_scale = Application.user_setting("use_custom_hud_scale")
 	local hud_clamp_ui_scaling = Application.user_setting("hud_clamp_ui_scaling")
 
-	local local_player = Managers.player:local_player()
-	local player_name = local_player._cached_name or local_player:name()
-
 	local cloned_settings = mod.get_mod_settings()
 	if cloned_settings then
 		return {
@@ -45,7 +42,7 @@ mod.get_preset_data = function()
 			hud_scale = hud_scale,
 			use_custom_hud_scale = use_custom_hud_scale,
 			hud_clamp_ui_scaling = hud_clamp_ui_scaling,
-			player_name = player_name,
+			player_name = "Anonymous",
 			comment = "",
 		}
 	end
@@ -76,4 +73,10 @@ mod.upload_settings = function(...)
 	end, ...)
 end
 
-mod:command("ut_upload_settings", "Upload settings", function(...) mod.upload_settings(...) end)
+mod.upload_setting_info =
+	"Upload UI Tweaks"
+	.."\nUploads your UI Tweaks settings so I can create a preset other can use."
+	.."\nWrite your name so I know whom to credit or feel free to stay anonymous."
+	.."\nTo add your comment type:"
+	.."\n/ut_upload_settings Author is prop joe. This is comment text. Blah blah."
+mod:command("ut_upload_settings", mod.upload_setting_info, function(...) mod.upload_settings(...) end)

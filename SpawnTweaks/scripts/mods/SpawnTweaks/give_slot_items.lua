@@ -59,10 +59,17 @@ mod.give_slot_items_update_func = function()
 								local item_data = ItemMasterList[item_name]
 								local unit_template = nil
 								local extra_extension_init_data = {}
-								inventory_extension:add_equipment(slot_name, item_data, unit_template, extra_extension_init_data)
 
 								local go_id = Managers.state.unit_storage:go_id(player_unit)
-								Managers.state.network.network_transmit:send_rpc_clients("rpc_add_equipment", go_id, slot_id, item_id, weapon_skin_id)
+
+								local owner = Managers.player:owner(player_unit)
+								if not owner.remote then
+									inventory_extension:add_equipment(slot_name, item_data, unit_template, extra_extension_init_data)
+									Managers.state.network.network_transmit:send_rpc_clients("rpc_add_equipment", go_id, slot_id, item_id, weapon_skin_id)
+								else
+									local position = Unit.world_position(player_unit, 0) + Vector3(0, 0, 1.5)
+									Managers.state.network.network_transmit:send_rpc("rpc_give_equipment", owner:network_id(), go_id, go_id, slot_id, item_id, position)
+								end
 							end
 						end)
 					end

@@ -14,9 +14,6 @@ mod.player_unit_frame_update = function(unit_frame_ui)
 		self._default_widgets.default_static.style.character_portrait.texture_size[1] = self._hb_mod_cached_character_portrait_texture_size[1]
 		self._default_widgets.default_static.style.character_portrait.texture_size[2] = self._hb_mod_cached_character_portrait_texture_size[2]
 	end
-	local status_icon_widget = self:_widget_by_feature("status_icon", "dynamic")
-	ddkeys(self._default_widgets.default_static.style.character_portrait)
-	ddraw(self._default_widgets.default_static.style.character_portrait.texture_size)
 
 	-- hide player portrait
 	local hide_player_portrait = mod:get(mod.SETTING_NAMES.HIDE_PLAYER_PORTRAIT)

@@ -1,12 +1,14 @@
 local mod = get_mod("StreamingInfo")
 
 local pl = require'pl.import_into'()
-local tablex = require'pl.tablex'
-local stringx = require'pl.stringx'
-local stringio = require'pl.stringio'
+
+fassert(pl, "Info Dump For Streaming requires Penlight Lua Libraries!")
 
 mod.streaming_data = {}
 
+mod.out_lines_setting_key = "out_lines"
+mod.perm_lines_setting_key = "perm_lines"
+mod.perm_lines = pl.List()
 mod.out_lines = pl.List()
 
 mod.append_traits = function(out, slot)
@@ -20,14 +22,14 @@ mod.append_traits = function(out, slot)
 	end
 	local properties = slot.properties
 	if properties then
-		local properties_size = tablex.size(properties)
+		local properties_size = pl.tablex.size(properties)
 		local property_index = 0
 		for prop_name, prop_value in pairs( properties ) do
 			property_index = property_index + 1
 			local prop_description_original = UIUtils.get_property_description(prop_name, prop_value)
-			local _, _, prop_description = stringx.partition(prop_description_original, " ")
-			prop_description = stringx.replace(prop_description, "Power vs ", "Pv")
-			out:write(stringx.strip(prop_description))
+			local _, _, prop_description = pl.stringx.partition(prop_description_original, " ")
+			prop_description = pl.stringx.replace(prop_description, "Power vs ", "Pv")
+			out:write(pl.stringx.strip(prop_description))
 			if property_index ~= properties_size then
 				out:write(", ")
 			end
@@ -60,7 +62,7 @@ mod.get_talents = function()
 end
 
 mod.get_streaming_info = function()
-	local out = stringio.create()
+	local out = pl.stringio.create()
 	mod:pcall(function()
 		if mod.streaming_data.slot_melee then
 			mod.append_traits(out, mod.streaming_data.slot_melee)
@@ -119,15 +121,15 @@ mod.font = "gw_arial_16"
 mod.font_mtrl = "materials/fonts/" .. mod.font
 
 mod:hook_safe(StateLoading, "update", function(self)
-	mod.draw_info(self)
+	mod.draw_temp_info(self)
 end)
 
 mod:hook_safe(LevelEndView, "update", function(self)
-	mod.draw_info(self)
+	mod.draw_temp_info(self)
 end)
 
 mod:hook_safe(EndScreenUI, "draw", function(self)
-	mod.draw_info(self)
+	mod.draw_temp_info(self)
 end)
 
 mod:hook_safe(GameModeManager, "server_update", function(self)
@@ -136,7 +138,7 @@ mod:hook_safe(GameModeManager, "server_update", function(self)
 	end
 
 	if self._game_mode.lost_condition_timer or self._game_mode.level_complete_timer then
-		mod.draw_info(self)
+		mod.draw_temp_info(self)
 	end
 end)
 
@@ -151,13 +153,15 @@ mod:hook_safe(IngameUI, "update", function(self, dt, t, disable_ingame_ui, end_o
 	local game_mode_manager = Managers.state.game_mode
 	local round_started = game_mode_manager:is_round_started()
 
+	mod.draw_perm_info(self)
+
 	if not (is_in_inn or in_score_screen or end_screen_active) then
 		if round_started then
 			return
 		end
 	end
 
-	mod.draw_info(self)
+	mod.draw_temp_info(self)
 end)
 
 mod.text_size = function (gui, text, font_material, font_size, ...)
@@ -178,7 +182,61 @@ mod.get_text_size = function (gui, font_size, line)
 	return width, full_font_height
 end
 
-mod.draw_info = function(owner)
+mod.draw_perm_info = function(owner)
+	local self = owner
+
+	if not (self.world or self._world or (self.world_manager and self.world_manager:world("level_world"))) then
+		return
+	end
+
+	local world = self.world or self._world or self.world_manager:world("level_world")
+
+	local gui = self.gui or self._mod_gui
+	if not gui then
+		self._mod_gui = World.create_screen_gui(world, "material", "materials/fonts/gw_fonts", "immediate")
+		gui = self._mod_gui
+	end
+
+	local header_color = Color(
+		255,
+		mod:get(mod.SETTING_NAMES.PERM_RED),
+		mod:get(mod.SETTING_NAMES.PERM_GREEN),
+		mod:get(mod.SETTING_NAMES.PERM_BLUE)
+	)
+	local bg_alpha = mod:get(mod.SETTING_NAMES.PERM_BG_OPACITY)
+
+	local font_size = mod:get(mod.SETTING_NAMES.PERM_FONT_SIZE)
+	local vertical_spacing = mod:get(mod.SETTING_NAMES.PERM_LINE_SPACING)
+
+	local start_x = mod:get(mod.SETTING_NAMES.PERM_OFFSET_X)
+	local start_y = RESOLUTION_LOOKUP.res_h + mod:get(mod.SETTING_NAMES.PERM_OFFSET_Y)
+	local i = 0
+
+	mod:pcall(function()
+			local bg_w = 0
+			local bg_h = 0
+			mod.perm_lines
+				:foreach(function(line)
+					local line_width, line_height = mod.get_text_size(gui, font_size, line)
+					if line_width > bg_w then
+						bg_w = line_width
+					end
+					bg_h = bg_h + line_height
+					local pos = Vector3(start_x, start_y-bg_h, 1012)
+					bg_h = bg_h + vertical_spacing
+					Gui.text(gui, line, mod.font_mtrl, font_size, mod.font, pos, header_color)
+					i = i + 1
+				end)
+			bg_h = bg_h - vertical_spacing
+			Gui.rect(gui,
+				Vector3(start_x - 10, start_y - bg_h - 10, 1011),
+				Vector2(bg_w + 20, bg_h),
+				Color(bg_alpha, 0, 0, 0)
+			)
+	end)
+end
+
+mod.draw_temp_info = function(owner)
 	local self = owner
 
 	if not (self.world or self._world or (self.world_manager and self.world_manager:world("level_world"))) then
@@ -199,6 +257,7 @@ mod.draw_info = function(owner)
 		mod:get(mod.SETTING_NAMES.GREEN),
 		mod:get(mod.SETTING_NAMES.BLUE)
 	)
+	local bg_alpha = mod:get(mod.SETTING_NAMES.BG_OPACITY)
 
 	local font_size = mod:get(mod.SETTING_NAMES.FONT_SIZE)
 	local vertical_spacing = mod:get(mod.SETTING_NAMES.LINE_SPACING)
@@ -214,7 +273,7 @@ mod.draw_info = function(owner)
 
 			local bg_w = 0
 			local bg_h = 0
-			pl.List(stringx.splitlines(mod.get_streaming_info())):extend(mod.out_lines)
+			pl.List(pl.stringx.splitlines(mod.get_streaming_info())):extend(mod.out_lines)
 				:foreach(function(line)
 					local line_width, line_height = mod.get_text_size(gui, font_size, line)
 					if line_width > bg_w then
@@ -230,32 +289,53 @@ mod.draw_info = function(owner)
 			Gui.rect(gui,
 				Vector3(start_x - 10, start_y - bg_h - 10, 1001),
 				Vector2(bg_w + 20, bg_h),
-				Color(100, 0, 0, 0)
+				Color(bg_alpha, 0, 0, 0)
 			)
 		end
 	end)
 end
 
-mod.out_lines_setting_key = "out_lines"
-
-mod.set_lines = function(...)
+mod.set_lines = function(lines_table_key, lines_settings_key,...)
 	local arg={...}
 	if #arg == 0 then
-		mod.out_lines = pl.List()
+		mod[lines_table_key] = pl.List()
 	end
 	mod:pcall(function()
 		local input = pl.stringx.join(' ', pl.List(arg):map(pl.stringx.strip))
-		mod.out_lines = pl.stringx.split(input, ';')
+		mod[lines_table_key] = pl.stringx.split(input, ';')
 	end)
 
-	mod:set(mod.out_lines_setting_key, mod.out_lines)
+	mod:set(mod[lines_settings_key], mod[lines_table_key])
 end
 
-mod:command("set_lines", mod:localize("set_lines_command_description"), function(...) mod.set_lines(...) end)
+mod.set_temp_lines = function(...)
+	mod.set_lines("out_lines", "out_lines_setting_key", ...)
+end
+
+mod.set_info_lines = function(...)
+	mod.set_lines("perm_lines", "perm_lines_setting_key", ...)
+end
+
+mod:command("set_lines",
+	mod:localize("set_lines_command_description"),
+	function(...)
+		mod.set_temp_lines(...)
+	end)
+
+mod:command("info",
+	mod:localize("info_command_description"),
+	function(...)
+		mod.set_info_lines(...)
+	end)
 
 local out_lines = mod:get(mod.out_lines_setting_key)
 if out_lines then
 	mod.out_lines = pl.List(out_lines)
+end
+
+local perm_lines = mod:get(mod.perm_lines_setting_key)
+if perm_lines then
+	mod.perm_lines = pl.List(perm_lines)
 end
 
 --- self._mod_gui cleanup

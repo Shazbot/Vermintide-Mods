@@ -151,73 +151,77 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 		self._static_widgets[2].content.visible = true
 	end
 
-	if mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET)
-	and self._is_visible
-	then
-		self._mod_was_using_mini_hud = true
-		local using_rect_layout = mod.using_rect_player_layout()
-		mod:pcall(function()
-			local static_widget_1 = self._static_widgets[1]
-			local static_widget_2 = self._static_widgets[2]
+	if self._is_visible then
+		if mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET) then
+			self._mod_was_using_mini_hud = true
+			local using_rect_layout = mod.using_rect_player_layout()
+			mod:pcall(function()
+				local static_widget_1 = self._static_widgets[1]
+				local static_widget_2 = self._static_widgets[2]
 
-			-- cache original values during first draw with mini_hud active
-			if not self._mod_static_widget_1_backup then
-				self._mod_static_widget_1_backup = {
-					content = table.clone(static_widget_1.content),
-					offset = table.clone(static_widget_1.offset),
-					scenegraph_id = static_widget_1.scenegraph_id,
-				}
-				local parent_temp = static_widget_1.style.texture_id.parent
-				static_widget_1.style.texture_id.parent = nil
-				self._mod_static_widget_1_backup.texture_id = table.clone(static_widget_1.style.texture_id)
-				static_widget_1.style.texture_id.parent = parent_temp
+				-- cache original values during first draw with mini_hud active
+				if not self._mod_static_widget_1_backup then
+					self._mod_static_widget_1_backup = {
+						content = table.clone(static_widget_1.content),
+						offset = table.clone(static_widget_1.offset),
+						scenegraph_id = static_widget_1.scenegraph_id,
+					}
+					local parent_temp = static_widget_1.style.texture_id.parent
+					static_widget_1.style.texture_id.parent = nil
+					self._mod_static_widget_1_backup.texture_id = table.clone(static_widget_1.style.texture_id)
+					static_widget_1.style.texture_id.parent = parent_temp
 
-				self._mod_static_widget_2_backup = {
-					offset = table.clone(static_widget_2.offset),
-				}
-				local parent_temp = static_widget_2.style.texture_id.parent
-				static_widget_2.style.texture_id.parent = nil
-				self._mod_static_widget_2_backup.texture_id = table.clone(static_widget_2.style.texture_id)
-				static_widget_2.style.texture_id.parent = parent_temp
-			end
+					self._mod_static_widget_2_backup = {
+						offset = table.clone(static_widget_2.offset),
+					}
 
-			static_widget_1.content.texture_id = "console_hp_bar_frame"
-			if not static_widget_1.style.texture_id.size then
-				static_widget_1.style.texture_id.size = {}
-			end
-			static_widget_1.style.texture_id.size[1] = using_rect_layout and 0 or mod.hp_bar_width
-			static_widget_1.style.texture_id.size[2] = using_rect_layout and 0 or mod.hp_bar_height
-			static_widget_1.offset[1] = -static_widget_1.style.texture_id.size[1]/2 + player_ui_offset_x
-			static_widget_1.offset[2] = -49 + player_ui_offset_y
-			static_widget_1.offset[3] = 0
-			static_widget_1.scenegraph_id = "pivot"
+					parent_temp = static_widget_2.style.texture_id.parent
+					static_widget_2.style.texture_id.parent = nil
+					self._mod_static_widget_2_backup.texture_id = table.clone(static_widget_2.style.texture_id)
+					static_widget_2.style.texture_id.parent = parent_temp
+				end
 
-			if not static_widget_2.style.texture_id.size then
-				static_widget_2.style.texture_id.size = {}
-			end
-			static_widget_2.style.texture_id.size[1] = mod.hp_bar_width
-			static_widget_2.style.texture_id.size[2] = 36
-			static_widget_2.offset[1] = -50 + player_ui_offset_x
-			static_widget_2.offset[2] = 20 + player_ui_offset_y
+				static_widget_1.content.texture_id = "console_hp_bar_frame"
+				if not static_widget_1.style.texture_id.size then
+					static_widget_1.style.texture_id.size = {}
+				end
+				static_widget_1.style.texture_id.size[1] = using_rect_layout and 0 or mod.hp_bar_width
+				static_widget_1.style.texture_id.size[2] = using_rect_layout and 0 or mod.hp_bar_height
+				static_widget_1.offset[1] = -static_widget_1.style.texture_id.size[1]/2 + player_ui_offset_x
+				static_widget_1.offset[2] = -49 + player_ui_offset_y
+				static_widget_1.offset[3] = 0
+				static_widget_1.scenegraph_id = "pivot"
 
-			if not self._hb_mod_widget or mod.was_reloaded then
-				self._hb_mod_widget = UIWidget.init(mod.hp_bg_rect_def)
-			end
-			local hp_bar_rect_w = mod.hp_bar_width - 20 * mod.hp_bar_w_scale
-			self._hb_mod_widget.style.hp_bar_rect.size[1] = hp_bar_rect_w
-			self._hb_mod_widget.style.hp_bar_rect.size[2] = 21
-			self._hb_mod_widget.scenegraph_id = "pivot"
-			self._hb_mod_widget.offset[1] = player_ui_offset_x - hp_bar_rect_w/2
-			self._hb_mod_widget.offset[2] = player_ui_offset_y - 37
-			self._hb_mod_widget.offset[3] = -10
+				if not static_widget_2.style.texture_id.size then
+					static_widget_2.style.texture_id.size = {}
+				end
+				static_widget_2.style.texture_id.size[1] = mod.hp_bar_width
+				static_widget_2.style.texture_id.size[2] = 36
+				static_widget_2.offset[1] = -50 + player_ui_offset_x
+				static_widget_2.offset[2] = 20 + player_ui_offset_y
 
-			self.ui_scenegraph.slot.position[1] = 149 + player_ui_offset_x
-			self.ui_scenegraph.slot.position[2] = 44 + 15 + player_ui_offset_y
+				if not self._hb_mod_widget or mod.was_reloaded then
+					self._hb_mod_widget = UIWidget.init(mod.hp_bg_rect_def)
+				end
+				local hp_bar_rect_w = mod.hp_bar_width - 20 * mod.hp_bar_w_scale
+				self._hb_mod_widget.style.hp_bar_rect.size[1] = hp_bar_rect_w
+				self._hb_mod_widget.style.hp_bar_rect.size[2] = 21
+				self._hb_mod_widget.scenegraph_id = "pivot"
+				self._hb_mod_widget.offset[1] = player_ui_offset_x - hp_bar_rect_w/2
+				self._hb_mod_widget.offset[2] = player_ui_offset_y - 37
+				self._hb_mod_widget.offset[3] = -10
 
-			mod.handle_player_ammo_bar(self)
-			mod.handle_player_numeric_ui(self)
-			mod.handle_player_rect_layout_widget(self)
-		end)
+				self.ui_scenegraph.slot.position[1] = 149 + player_ui_offset_x
+				self.ui_scenegraph.slot.position[2] = 44 + 15 + player_ui_offset_y
+
+				self._static_widgets[2].content.visible = false
+
+				mod.handle_player_ammo_bar(self)
+				mod.handle_player_rect_layout_widget(self)
+			end)
+		end
+
+		mod.handle_player_numeric_ui(self)
 
 		if self._dirty then
 			if self._hb_mod_ammo_widget then
@@ -239,29 +243,30 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 		local input_service = self.input_manager:get_service("ingame_menu")
 		local render_settings = self.render_settings
 		UIRenderer.begin_pass(ui_renderer, ui_scenegraph, input_service, dt, nil, render_settings)
-		-- draw the custom player widget
-		if not using_rect_layout and self._hb_mod_widget then
-			UIRenderer.draw_widget(ui_renderer, self._hb_mod_widget)
-		end
-		-- draw the ammo bar widgets
-		if mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR) then
-			if self._hb_mod_ammo_widget then
-				UIRenderer.draw_widget(ui_renderer, self._hb_mod_ammo_widget)
+		if mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET) then
+			local using_rect_layout = mod.using_rect_player_layout()
+			-- draw the custom player widget
+			if not using_rect_layout and self._hb_mod_widget then
+				UIRenderer.draw_widget(ui_renderer, self._hb_mod_widget)
 			end
-			if self._mod_ammo_border then
-				UIRenderer.draw_widget(ui_renderer, self._mod_ammo_border)
+			-- draw the ammo bar widgets
+			if mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR) then
+				if self._hb_mod_ammo_widget then
+					UIRenderer.draw_widget(ui_renderer, self._hb_mod_ammo_widget)
+				end
+				if self._mod_ammo_border then
+					UIRenderer.draw_widget(ui_renderer, self._mod_ammo_border)
+				end
 			end
-		end
-		-- draw the numeric ui widget
-		if using_rect_layout and self._rect_layout_w then
-			UIRenderer.draw_widget(ui_renderer, self._rect_layout_w)
+			-- draw the numeric ui widget
+			if using_rect_layout and self._rect_layout_w then
+				UIRenderer.draw_widget(ui_renderer, self._rect_layout_w)
+			end
 		end
 		if self._hb_num_ui_player_widget then
 			UIRenderer.draw_widget(ui_renderer, self._hb_num_ui_player_widget)
 		end
 		UIRenderer.end_pass(ui_renderer)
-
-		self._static_widgets[2].content.visible = false
 	end
 
 	return func(self, dt)
@@ -378,7 +383,7 @@ mod.handle_player_numeric_ui = function(unit_frame_ui)
 
 	num_ui_widget.offset[1] = player_ui_offset_x - mod.hp_bar_width/2
 	num_ui_widget.offset[2] = player_ui_offset_y - 59
-	if self._hb_mod_widget then
+	if mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET) and self._hb_mod_widget then
 		num_ui_widget.offset[1] = self._hb_mod_widget.offset[1]
 		num_ui_widget.offset[2] = self._hb_mod_widget.offset[2]
 	end

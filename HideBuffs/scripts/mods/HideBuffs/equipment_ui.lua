@@ -5,6 +5,7 @@ mod.ammo_bar_width = mod.default_ammo_bar_width
 
 mod:hook(EquipmentUI, "update", function(func, self, ...)
 	mod:pcall(function()
+		self.no_ammo_bar = false
 		local inventory_extension = ScriptUnit.extension(Managers.player:local_player().player_unit, "inventory_system")
 		local equipment = inventory_extension:equipment()
 		local slot_data = equipment.slots["slot_ranged"]
@@ -250,7 +251,9 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 				UIRenderer.draw_widget(ui_renderer, self._hb_mod_widget)
 			end
 			-- draw the ammo bar widgets
-			if mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR) then
+			if mod:get(mod.SETTING_NAMES.PLAYER_AMMO_BAR)
+			and not self.no_ammo_bar
+			then
 				if self._hb_mod_ammo_widget then
 					UIRenderer.draw_widget(ui_renderer, self._hb_mod_ammo_widget)
 				end
@@ -394,6 +397,7 @@ EquipmentUI._mod_update_ammo = function (self, left_hand_wielded_unit, right_han
 	local ammo_extension
 
 	if not item_template.ammo_data then
+		self.no_ammo_bar = true
 		return
 	end
 

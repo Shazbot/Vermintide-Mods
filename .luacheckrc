@@ -49,6 +49,7 @@ globals = {
 	"Quaternion", "LocomotionUtils", "GwNavQueries",
 	"Vector3Box", "QuaternionBox",
 	"BTCorruptorGrabAction", "BTPackMasterAttackAction",
+	"GameModeAdventure", "BTConditions",
 
 	"PriorityBuffUI",
 }

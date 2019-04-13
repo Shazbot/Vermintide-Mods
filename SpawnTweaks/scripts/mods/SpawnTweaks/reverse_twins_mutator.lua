@@ -1,7 +1,5 @@
 local mod = get_mod("SpawnTweaks")
 
-local pl = require'pl.import_into'()
-
 local data = {}
 data.breed_tier_list = {
 	chaos_fanatic = { "chaos_marauder", "chaos_marauder_with_shield", },
@@ -32,9 +30,11 @@ data.breed_tier_list = {
 		"skaven_stormfiend_boss",
 	},
 	chaos_warrior = {
-		nil, nil, nil, nil,
+		nil, nil, nil,
 		"chaos_troll",
 		"chaos_spawn",
+		"chaos_exalted_champion_norsca",
+		"chaos_exalted_champion_warcamp",
 	},
 	skaven_slave = {
 		"skaven_clan_rat",
@@ -51,11 +51,13 @@ data.breed_tier_list = {
 		nil, nil, nil, nil,
 		"skaven_rat_ogre",
 		"skaven_stormfiend",
+		"skaven_storm_vermin_warlord",
 	},
 	skaven_storm_vermin_with_shield = {
 		nil, nil, nil, nil,
 		"skaven_rat_ogre",
 		"skaven_stormfiend",
+		"skaven_storm_vermin_warlord",
 	}
 }
 
@@ -90,7 +92,7 @@ end
 data.spawn_queue = {}
 data.spawn_delay = 0.25
 
-mod:hook_safe(MutatorHandler, "update", function(self, dt, t)
+mod:hook_safe(MutatorHandler, "update", function(self, dt, t) -- luacheck: no unused
 	if not mod:get(mod.SETTING_NAMES.REVERSE_TWINS_MUTATOR) then
 		return
 	end
@@ -123,7 +125,7 @@ mod:hook_safe(MutatorHandler, "update", function(self, dt, t)
 	end
 end)
 
-mod:hook_safe(MutatorHandler, "ai_killed", function(self, killed_unit, killer_unit, death_data)
+mod:hook_safe(MutatorHandler, "ai_killed", function(self, killed_unit, killer_unit, death_data) -- luacheck: no unused
 	if not mod:get(mod.SETTING_NAMES.REVERSE_TWINS_MUTATOR) then
 		return
 	end
@@ -197,4 +199,13 @@ mod:hook_safe(MutatorHandler, "ai_killed", function(self, killed_unit, killer_un
 
 		blackboard.about_to_be_destroyed = true
 	end
+end)
+
+
+mod:hook(BTConditions, "should_be_defensive", function(func, blackboard)
+	if not mod:get(mod.SETTING_NAMES.REVERSE_TWINS_MUTATOR) then
+		return func(blackboard)
+	end
+
+	return false
 end)

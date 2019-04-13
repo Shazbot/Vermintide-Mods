@@ -155,7 +155,7 @@ end)
 mod:hook(DoorSystem, "update", function(func, self, context, t)
 	if mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.DISABLE
 	or (
-		mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.CUSTOMIZE and
+		mod.are_bosses_customized() and
 		mod:get(mod.SETTING_NAMES.NO_BOSS_DOOR) and self.is_server
 	) then
 		for map_section, _ in pairs(table.clone(self._active_groups)) do
@@ -307,7 +307,7 @@ mod:hook(SpecialsPacing.select_breed_functions, "get_random_breed", function(fun
 		mod:get(mod.SETTING_NAMES.SPECIAL_TO_BOSS_CHANCE_ALLOW_BOSS_STACKING)
 		or mod.get_num_alive_bosses() == 0
 
-	if mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.CUSTOMIZE
+	if mod.are_bosses_customized()
 	and allow_replacing_specials_with_bosses
 	and math.random(100) <= mod:get(mod.SETTING_NAMES.SPECIAL_TO_BOSS_CHANCE) then
 		return mod.bosses[math.random(#mod.bosses)]
@@ -384,7 +384,7 @@ mod:hook(TerrorEventMixer.run_functions, "spawn", function (func, event, element
 		return true
 	end
 
-	if mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.CUSTOMIZE then
+	if mod.are_bosses_customized() then
 		if stringx.count(event.name, "boss_event") > 0 and stringx.count(event.name, "patrol") == 0 then
 			local pruned_bosses = mod.get_filtered_boss_list()
 			if mod:get(mod.SETTING_NAMES.NO_TROLL) and element.breed_name == "chaos_troll"
@@ -613,25 +613,15 @@ original_power_level, boost_curve, boost_damage_multiplier, is_critical_strike, 
 			end
 
 			if mod.bosses:contains(breed.name)
-			and mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.CUSTOMIZE then
+			and mod.are_bosses_customized() then
 				dmg = dmg * mod:get(mod.SETTING_NAMES.BOSS_DMG_MULTIPLIER) / 100
 				return dmg
 			end
 
 			if mod.lord_breeds:keys():contains(breed.name)
-			and mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.CUSTOMIZE then
+			and mod.are_bosses_customized() then
 				dmg = dmg * mod:get(mod.SETTING_NAMES.LORD_DMG_MULTIPLIER) / 100
 				return dmg
-			end
-		end
-
-		if Managers.player:owner(target_unit) then
-			dmg = dmg * mod:get(mod.SETTING_NAMES.PLAYER_DMG_TAKEN_MULTIPLIER) / 100
-
-			-- ff multiplier
-			local actual_attacker_unit = AiUtils.get_actual_attacker_unit(attacker_unit)
-			if Managers.player:owner(actual_attacker_unit) then
-				dmg = dmg * mod:get(mod.SETTING_NAMES.PLAYER_FF_DMG_MULTIPLIER) / 100
 			end
 		end
 	end
@@ -646,6 +636,22 @@ mod:hook(DamageUtils, "add_damage_network_player", function(func, ...)
 	func(...)
 
 	mod:hook_disable(DamageUtils, "calculate_damage")
+end)
+
+mod:hook(DamageUtils, "add_damage_network", function(func, attacked_unit, attacker_unit, original_damage_amount, ...)
+	local dmg = original_damage_amount
+
+	if Managers.player:owner(attacked_unit) then
+		dmg = dmg * mod:get(mod.SETTING_NAMES.PLAYER_DMG_TAKEN_MULTIPLIER) / 100
+
+		-- ff multiplier
+		local actual_attacker_unit = AiUtils.get_actual_attacker_unit(attacker_unit)
+		if Managers.player:owner(actual_attacker_unit) then
+			dmg = dmg * mod:get(mod.SETTING_NAMES.PLAYER_FF_DMG_MULTIPLIER) / 100
+		end
+	end
+
+	return func(attacked_unit, attacker_unit, dmg, ...)
 end)
 
 mod.no_empty_events_bosses = {

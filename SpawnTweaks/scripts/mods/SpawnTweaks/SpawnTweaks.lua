@@ -247,18 +247,22 @@ mod:hook(SpecialsPacing, "specials_by_slots", function(func, self, t, specials_s
 		return func(self, t, specials_settings, method_data, slots, spawn_queue)
 	end
 
-	local new_method_data = tablex.deepcopy(method_data)
+	local new_method_data
 	local spawn_cooldown_min = mod:get(mod.SETTING_NAMES.SPAWN_COOLDOWN_MIN)
 	local spawn_cooldown_max = mod:get(mod.SETTING_NAMES.SPAWN_COOLDOWN_MAX)
 	if spawn_cooldown_min ~= mod.setting_defaults[mod.SETTING_NAMES.SPAWN_COOLDOWN_MIN]
 	or spawn_cooldown_max ~= mod.setting_defaults[mod.SETTING_NAMES.SPAWN_COOLDOWN_MAX]
 	then
+		new_method_data = tablex.deepcopy(method_data)
 		new_method_data.spawn_cooldown = {
 			spawn_cooldown_min,
 			spawn_cooldown_max
 		}
 	end
 
+	if not new_method_data then
+		new_method_data = method_data
+	end
 	func(self, t, specials_settings, new_method_data, slots, spawn_queue)
 end)
 
@@ -454,12 +458,13 @@ mod:hook(ConflictDirector, "update_horde_pacing", function(func, self, t, dt)
 	local original_push_horde_if_num_alive_grunts_above = RecycleSettings.push_horde_if_num_alive_grunts_above
 	RecycleSettings.push_horde_if_num_alive_grunts_above = mod:get(mod.SETTING_NAMES.HORDE_GRUNT_LIMIT)
 
-	local original_horde_frequency = tablex.deepcopy(CurrentPacing.horde_frequency)
+	local original_horde_frequency
 	local horde_frequency_min = mod:get(mod.SETTING_NAMES.HORDE_FREQUENCY_MIN)
 	local horde_frequency_max = mod:get(mod.SETTING_NAMES.HORDE_FREQUENCY_MAX)
 	if horde_frequency_min ~= mod.setting_defaults[mod.SETTING_NAMES.HORDE_FREQUENCY_MIN]
 	or horde_frequency_max ~= mod.setting_defaults[mod.SETTING_NAMES.HORDE_FREQUENCY_MAX]
 	then
+		original_horde_frequency = tablex.deepcopy(CurrentPacing.horde_frequency)
 		CurrentPacing.horde_frequency = {
 			horde_frequency_min,
 			horde_frequency_max
@@ -468,7 +473,9 @@ mod:hook(ConflictDirector, "update_horde_pacing", function(func, self, t, dt)
 
 	func(self, t, dt)
 
-	CurrentPacing.horde_frequency = original_horde_frequency
+	if original_horde_frequency then
+		CurrentPacing.horde_frequency = original_horde_frequency
+	end
 	RecycleSettings.push_horde_if_num_alive_grunts_above = original_push_horde_if_num_alive_grunts_above
 end)
 
@@ -478,7 +485,7 @@ mod:hook(ConflictDirector, "update", function(func, self, ...)
 	end
 
 	local original_max_grunts = RecycleSettings.max_grunts
-	local original_horde_startup_time = tablex.deepcopy(CurrentPacing.horde_startup_time)
+	local original_horde_startup_time
 
 	RecycleSettings.max_grunts = mod:get(mod.SETTING_NAMES.MAX_GRUNTS)
 
@@ -487,6 +494,7 @@ mod:hook(ConflictDirector, "update", function(func, self, ...)
 	if horde_startup_min ~= mod.setting_defaults[mod.SETTING_NAMES.HORDE_STARTUP_MIN]
 	or horde_startup_max ~= mod.setting_defaults[mod.SETTING_NAMES.HORDE_STARTUP_MAX]
 	then
+		original_horde_startup_time = tablex.deepcopy(CurrentPacing.horde_startup_time)
 		CurrentPacing.horde_startup_time = {
 			horde_startup_min,
 			horde_startup_max
@@ -496,7 +504,9 @@ mod:hook(ConflictDirector, "update", function(func, self, ...)
 	func(self, ...)
 
 	RecycleSettings.max_grunts = original_max_grunts
-	CurrentPacing.horde_startup_time = original_horde_startup_time
+	if original_horde_startup_time then
+		CurrentPacing.horde_startup_time = original_horde_startup_time
+	end
 end)
 
 mod:hook(ConflictDirector, "horde_killed", function(func, self, ...)
@@ -504,12 +514,13 @@ mod:hook(ConflictDirector, "horde_killed", function(func, self, ...)
 		return func(self, ...)
 	end
 
-	local original_horde_frequency = tablex.deepcopy(CurrentPacing.horde_frequency)
+	local original_horde_frequency
 	local horde_frequency_min = mod:get(mod.SETTING_NAMES.HORDE_FREQUENCY_MIN)
 	local horde_frequency_max = mod:get(mod.SETTING_NAMES.HORDE_FREQUENCY_MAX)
 	if horde_frequency_min ~= mod.setting_defaults[mod.SETTING_NAMES.HORDE_FREQUENCY_MIN]
 	or horde_frequency_max ~= mod.setting_defaults[mod.SETTING_NAMES.HORDE_FREQUENCY_MAX]
 	then
+		original_horde_frequency = tablex.deepcopy(CurrentPacing.horde_frequency)
 		CurrentPacing.horde_frequency = {
 			horde_frequency_min,
 			horde_frequency_max
@@ -518,7 +529,9 @@ mod:hook(ConflictDirector, "horde_killed", function(func, self, ...)
 
 	func(self, ...)
 
-	CurrentPacing.horde_frequency = original_horde_frequency
+	if original_horde_frequency then
+		CurrentPacing.horde_frequency = original_horde_frequency
+	end
 end)
 
 --- Change ambient density.

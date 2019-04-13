@@ -802,7 +802,7 @@ mod.add_option(
 		["widget_type"] = "checkbox",
 	  ["default_value"] = false,
 	},
-	"Scary Elites",
+	"Scary Elites Mutator",
 	"Elite enemies are immune to stagger. SV shields are breakable."
 		.."\nIncludes: chaos_warrior, skaven_storm_vermin_commander, chaos_raider, skaven_storm_vermin, chaos_berzerker, skaven_storm_vermin_with_shield, skaven_plague_monk.",
 	mutator_options_subs
@@ -829,11 +829,12 @@ mod.add_option(
 			},
 		},
 	},
-	"Verminhood",
+	"Verminhood Mutator",
 	"Star of the sisterhood inspired mutator."
 		.."\nSplit splits the damage between enemies evenly."
 		.."\nPool gives enemies in the radius a shared hp pool."
 		.."\nSo in Split mode an ogre would take even amount of dmg, in Pool mode ogre HP takes majority of the damage."
+		.."\nThis by itself makes the game easier all things considered."
 		.."\nNeeds testing with other players.",
 	mutator_options_subs
 )
@@ -853,7 +854,7 @@ mod.add_option(
 		["widget_type"] = "numeric",
 		["range"] = {0, 1000},
 		["unit_text"] = "%",
-	    ["default_value"] = 100,
+		["default_value"] = 100,
 	},
 	"Player Dmg Dealt Multiplier",
 	"Multiply the player damage.",
@@ -865,7 +866,7 @@ mod.add_option(
 		["widget_type"] = "numeric",
 		["range"] = {0, 1000},
 		["unit_text"] = "%",
-	    ["default_value"] = 100,
+		["default_value"] = 100,
 	},
 	"Player Dmg Taken Multiplier",
 	"Multiply the damage the players take.",
@@ -877,7 +878,7 @@ mod.add_option(
 		["widget_type"] = "numeric",
 		["range"] = {0, 1000},
 		["unit_text"] = "%",
-	    ["default_value"] = 100,
+		["default_value"] = 100,
 	},
 	"Player FF Dmg Multiplier",
 	"Multiply the friendly fire damage the players take.",
@@ -889,7 +890,7 @@ mod.add_option(
 		["widget_type"] = "numeric",
 		["range"] = {0, 1000},
 		["unit_text"] = "%",
-	    ["default_value"] = 100,
+		["default_value"] = 100,
 	},
 	"Player Melee Slot Dmg Multiplier",
 	"Multiply the damage from melee slot weapons.",
@@ -901,7 +902,7 @@ mod.add_option(
 		["widget_type"] = "numeric",
 		["range"] = {0, 1000},
 		["unit_text"] = "%",
-	    ["default_value"] = 100,
+		["default_value"] = 100,
 	},
 	"Player Ranged Slot Dmg Multiplier",
 	"Multiply the damage from ranged slot weapons.",
@@ -913,7 +914,7 @@ mod.add_option(
 		["widget_type"] = "numeric",
 		["range"] = {0, 1000},
 		["unit_text"] = "%",
-	    ["default_value"] = 100,
+		["default_value"] = 100,
 	},
 	"Player Bomb Slot Dmg Multiplier",
 	"Multiply the damage from bomb slot weapons.",
@@ -923,7 +924,7 @@ mod.add_option(
 	"KEEP_GIVING_BOMBS",
 	{
 		["widget_type"] = "checkbox",
-	    ["default_value"] = false,
+		["default_value"] = false,
 	},
 	"Infinite Bombs",
 	"Keep giving bombs to players.",
@@ -933,7 +934,7 @@ mod.add_option(
 	"KEEP_GIVING_FIRE_BOMBS",
 	{
 		["widget_type"] = "checkbox",
-	    ["default_value"] = false,
+		["default_value"] = false,
 	},
 	"Infinite Fire Bombs",
 	"Keep giving bombs to players.",
@@ -943,7 +944,7 @@ mod.add_option(
 	"KEEP_GIVING_STR_POTS",
 	{
 		["widget_type"] = "checkbox",
-	    ["default_value"] = false,
+		["default_value"] = false,
 	},
 	"Infinite Str Potions",
 	"Keep giving potions to players.",
@@ -953,7 +954,7 @@ mod.add_option(
 	"KEEP_GIVING_SPEED_POTS",
 	{
 		["widget_type"] = "checkbox",
-	    ["default_value"] = false,
+		["default_value"] = false,
 	},
 	"Infinite Speed Potions",
 	"Keep giving potions to players.",
@@ -963,7 +964,7 @@ mod.add_option(
 	"KEEP_GIVING_CDR_POTS",
 	{
 		["widget_type"] = "checkbox",
-	    ["default_value"] = false,
+		["default_value"] = false,
 	},
 	"Infinite CDR Potions",
 	"Keep giving potions to players.",
@@ -973,10 +974,20 @@ mod.add_option(
 	"KEEP_GIVING_HP_POTS",
 	{
 		["widget_type"] = "checkbox",
-	    ["default_value"] = false,
+		["default_value"] = false,
 	},
 	"Infinite HP Pots",
 	"Keep giving HP pots to players.",
+	mutator_options_subs
+)
+mod.add_option(
+	"LORDS_ARENT_DEFENSIVE",
+	{
+		["widget_type"] = "checkbox",
+	  ["default_value"] = false,
+	},
+	"Lords Don't Spawn Adds",
+	"Lords don't enter spawn enemies states, useful if using them in weighted spawning.",
 	mutator_options_subs
 )
 
@@ -1020,7 +1031,7 @@ mod.add_option(
 	"MAP_PICKUPS_REPLACE_DISABLED",
 	{
 		["widget_type"] = "checkbox",
-	    ["default_value"] = false,
+		["default_value"] = false,
 	},
 	"Replace Disabled Pickups",
 	"Disabled pickups will be replaced with randomly chosen non-disabled pickups.",
@@ -1032,7 +1043,7 @@ for _, pickup_name in ipairs( mod.map_pickups ) do
 		"MAP_PICKUPS_DISABLE_"..pickup_name,
 		{
 			["widget_type"] = "checkbox",
-		    ["default_value"] = false,
+			["default_value"] = false,
 		},
 		pickup.hud_description and Localize(pickup.hud_description) or pickup_name,
 		"Internal name: "..pickup_name,

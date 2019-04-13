@@ -203,6 +203,10 @@ end)
 
 
 mod:hook(BTConditions, "should_be_defensive", function(func, blackboard)
+	if mod:get(mod.SETTING_NAMES.LORDS_ARENT_DEFENSIVE) then
+		return false
+	end
+
 	if not mod:get(mod.SETTING_NAMES.REVERSE_TWINS_MUTATOR) then
 		return func(blackboard)
 	end

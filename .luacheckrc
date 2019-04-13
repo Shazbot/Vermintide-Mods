@@ -45,7 +45,10 @@ globals = {
 	"RconUI", "Keyboard", "Utf8",
 	"setfenv", "loadstring", 
 	"GenericHealthExtension", "RatOgreHealthExtension",
-	"PhysicsWorld", "Actor",
+	"PhysicsWorld", "Actor", "POSITION_LOOKUP",
+	"Quaternion", "LocomotionUtils", "GwNavQueries",
+	"Vector3Box", "QuaternionBox",
+	"BTCorruptorGrabAction", "BTPackMasterAttackAction",
 
 	"PriorityBuffUI",
 }

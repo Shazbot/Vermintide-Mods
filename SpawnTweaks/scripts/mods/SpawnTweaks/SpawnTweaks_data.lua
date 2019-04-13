@@ -773,6 +773,29 @@ local mutator_options_subs = mod.add_option(
 	"Mutator Options",
 	"Other options for mutators."
 )
+local reverse_twins_subs = mod.add_option(
+	"REVERSE_TWINS_MUTATOR",
+	{
+		["widget_type"] = "checkbox",
+	  ["default_value"] = false,
+	},
+	"Reverse Twins Mutator",
+	"Like the twins mutator, but chance to spawn a single higher tier enemy in place.",
+	mutator_options_subs
+)
+mod.add_option(
+	"REVERSE_TWINS_MUTATOR_CHANCE",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 100},
+		["unit_text"] = "%",
+	  ["default_value"] = 75,
+	},
+	"Spawn Chance",
+	"Chance for new enemy to spawn on enemy death.",
+	reverse_twins_subs
+)
+
 mod.add_option(
 	"SCARY_ELITES_MUTATOR",
 	{
@@ -1016,6 +1039,46 @@ for _, pickup_name in ipairs( mod.map_pickups ) do
 		map_pickups_disable_group_subs
 	)
 end
+
+local specials_group_subs = mod_data.options_widgets[
+	pl.tablex.find_if(mod_data.options_widgets,
+		function(option_widget)
+			return option_widget.setting_name == mod.SETTING_NAMES.SPECIALS
+		end)
+	].sub_widgets
+mod.add_option(
+	"ASSASSINS_ALWAYS_FAIL",
+	{
+		["show_widget_condition"] = {3},
+		["widget_type"] = "checkbox",
+	  ["default_value"] = false,
+	},
+	"Assassins Give Up",
+	"Assassins will give up after pouncing on a player, for True Solo practice.",
+	specials_group_subs
+)
+mod.add_option(
+	"CORRUPTORS_ALWAYS_FAIL",
+	{
+		["show_widget_condition"] = {3},
+		["widget_type"] = "checkbox",
+	  ["default_value"] = false,
+	},
+	"Leeches Always Fail",
+	"Leeches will always fail to grab player, for True Solo practice.",
+	specials_group_subs
+)
+mod.add_option(
+	"PACKMASTERS_ALWAYS_FAIL",
+	{
+		["show_widget_condition"] = {3},
+		["widget_type"] = "checkbox",
+	  ["default_value"] = false,
+	},
+	"Packmasters Always Fail",
+	"Packmasters will always fail to grab player, for True Solo practice.",
+	specials_group_subs
+)
 
 mod.setting_parents = {}
 mod.setting_names_localized = {}

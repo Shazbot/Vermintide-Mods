@@ -243,7 +243,7 @@ end)
 
 --- Specials cooldowns.
 mod:hook(SpecialsPacing, "specials_by_slots", function(func, self, t, specials_settings, method_data, slots, spawn_queue)
-	if mod:get(mod.SETTING_NAMES.SPECIALS) ~= mod.SPECIALS.CUSTOMIZE then
+	if not mod.are_specials_customized() then
 		return func(self, t, specials_settings, method_data, slots, spawn_queue)
 	end
 
@@ -271,7 +271,7 @@ end
 
 --- Specials spawn delay from start of the level.
 mod:hook(SpecialsPacing.setup_functions, "specials_by_slots", function(func, t, slots, method_data, ...)
-	if mod:get(mod.SETTING_NAMES.SPECIALS) ~= mod.SPECIALS.CUSTOMIZE then
+	if not mod.are_specials_customized() then
 		return func(t, slots, method_data, ...)
 	end
 
@@ -309,7 +309,7 @@ mod:hook(SpecialsPacing.select_breed_functions, "get_random_breed", function(fun
 		return mod.bosses[math.random(#mod.bosses)]
 	end
 
-	if mod:get(mod.SETTING_NAMES.SPECIALS) ~= mod.SPECIALS.CUSTOMIZE then
+	if not mod.are_specials_customized() then
 		return func(slots, specials_settings, method_data, ...)
 	end
 
@@ -559,7 +559,7 @@ mod:hook(SpecialsPacing, "update", function(func, self, t, alive_specials, speci
 		specials_population = 1
 	end
 
-	if mod:get(mod.SETTING_NAMES.SPECIALS) == mod.SPECIALS.CUSTOMIZE then
+	if mod.are_specials_customized() then
 		if mod.are_all_specials_disabled() then
 			return
 		end
@@ -772,6 +772,10 @@ mod.are_bosses_customized = function()
 	return mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.CUSTOMIZE
 end
 
+mod.are_specials_customized = function()
+	return mod:get(mod.SETTING_NAMES.SPECIALS) == mod.SPECIALS.CUSTOMIZE
+end
+
 mod.reset_breed_dmg = function()
 	for breed_name, _ in pairs(mod.all_breeds) do
 		mod:set(breed_name.."_dmg_toggle", 100)
@@ -808,6 +812,8 @@ mod:dofile("scripts/mods/"..mod:get_name().."/give_slot_items")
 mod:dofile("scripts/mods/"..mod:get_name().."/infinite_ammo_mutator")
 mod:dofile("scripts/mods/"..mod:get_name().."/scary_elites_mutator")
 mod:dofile("scripts/mods/"..mod:get_name().."/verminhood_mutator")
+mod:dofile("scripts/mods/"..mod:get_name().."/reverse_twins_mutator")
+mod:dofile("scripts/mods/"..mod:get_name().."/specials_always_fail")
 
 mod.on_unload = function()
 	mod.persistent.ingame_entered = mod.ingame_entered

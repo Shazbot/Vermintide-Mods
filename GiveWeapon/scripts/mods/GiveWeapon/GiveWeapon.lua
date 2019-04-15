@@ -179,10 +179,10 @@ mod.create_weapon = function(item_type, give_random_skin, rarity, no_skin)
 					new_item.rarity = rarity
 					new_item.data.rarity = rarity
 					new_item.CustomData.rarity = rarity
+				end
 
-					if no_skin then
-						new_item.skin = nil
-					end
+				if no_skin then
+					new_item.skin = nil
 				end
 
 				mod.properties = {}

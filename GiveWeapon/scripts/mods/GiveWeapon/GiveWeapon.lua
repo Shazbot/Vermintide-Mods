@@ -88,7 +88,7 @@ mod.get_skins = function(item_type)
 	end
 end
 
-mod.create_weapon = function(item_type, give_random_skin, rarity)
+mod.create_weapon = function(item_type, give_random_skin, rarity, no_skin)
 	if not mod.current_careers then
 		local player = Managers.player:local_player()
 		local profile_index = player:profile_index()
@@ -179,7 +179,8 @@ mod.create_weapon = function(item_type, give_random_skin, rarity)
 					new_item.rarity = rarity
 					new_item.data.rarity = rarity
 					new_item.CustomData.rarity = rarity
-					if rarity == "default" then
+
+					if no_skin then
 						new_item.skin = nil
 					end
 				end
@@ -248,7 +249,8 @@ mod.on_create_weapon_click = function(button) -- luacheck: ignore button
 		end
 
 		local rarity = mod:get(mod.SETTING_NAMES.NO_SKINS) and "default" or "exotic"
-		local backend_id = mod.create_weapon(item_type, false, rarity)
+		local no_skin = mod:get(mod.SETTING_NAMES.NO_SKINS)
+		local backend_id = mod.create_weapon(item_type, false, rarity, no_skin)
 		mod:pcall(function()
 			local backend_items = Managers.backend:get_interface("items")
 

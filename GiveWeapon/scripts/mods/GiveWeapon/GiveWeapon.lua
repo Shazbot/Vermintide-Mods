@@ -246,7 +246,9 @@ mod.on_create_weapon_click = function(button) -- luacheck: ignore button
 		if trait_name then
 			table.insert(mod.traits, trait_name)
 		end
-		local backend_id = mod.create_weapon(item_type)
+
+		local rarity = mod:get(mod.SETTING_NAMES.NO_SKINS) and "default" or "exotic"
+		local backend_id = mod.create_weapon(item_type, false, rarity)
 		mod:pcall(function()
 			local backend_items = Managers.backend:get_interface("items")
 

@@ -88,7 +88,7 @@ mod.get_skins = function(item_type)
 	end
 end
 
-mod.create_weapon = function(item_type, give_random_skin)
+mod.create_weapon = function(item_type, give_random_skin, rarity)
 	if not mod.current_careers then
 		local player = Managers.player:local_player()
 		local profile_index = player:profile_index()
@@ -172,6 +172,18 @@ mod.create_weapon = function(item_type, give_random_skin)
 
 				ItemHelper.mark_backend_id_as_new(new_backend_id)
 
+				local backend_items = Managers.backend:get_interface("items")
+				local new_item = backend_items:get_item_from_id(new_backend_id)
+
+				if rarity then
+					new_item.rarity = rarity
+					new_item.data.rarity = rarity
+					new_item.CustomData.rarity = rarity
+					if rarity == "default" then
+						new_item.skin = nil
+					end
+				end
+
 				mod.properties = {}
 				mod.traits = {}
 				return new_backend_id
@@ -227,7 +239,29 @@ mod.create_item_types_dropdown = function(profile_index, window_size)
 	mod.item_types_dropdown:select_index(1)
 end
 
+mod.on_create_weapon_click = function(button) -- luacheck: ignore button
+	local item_type = mod.career_item_types[mod.item_types_dropdown.index]
+	if item_type then
+		local trait_name = mod.trait_names[mod.sorted_trait_names[mod.traits_dropdown.index]]
+		if trait_name then
+			table.insert(mod.traits, trait_name)
+		end
+		local backend_id = mod.create_weapon(item_type)
+		mod:pcall(function()
+			local backend_items = Managers.backend:get_interface("items")
+
+			if mod.loadout_inv_view then
+				backend_items:_refresh()
+				local inv_item_grid = mod.loadout_inv_view._item_grid
+				inv_item_grid:change_item_filter(inv_item_grid._item_filter, false)
+				inv_item_grid:repopulate_current_inventory_page()
+			end
+		end)
+	end
+end
+
 mod.create_window = function(self, profile_index, loadout_inv_view)
+	mod.loadout_inv_view = loadout_inv_view
 	local scale = UIResolutionScale_pow2()
 	local screen_width, screen_height = UIResolution() -- luacheck: ignore screen_width
 	local window_size = {905+190+15, 80+32}
@@ -242,38 +276,7 @@ mod.create_window = function(self, profile_index, loadout_inv_view)
 	local pos_y = mod.pos_y
 
 	mod.create_weapon_button = self.main_window:create_button("create_weapon_button", {pos_x+90, pos_y+window_size[2]-35-35}, {200, 30}, nil, ">Create Weapon<", nil)
-	mod.create_weapon_button.on_click = function(button) -- luacheck: ignore button
-			local item_type = mod.career_item_types[mod.item_types_dropdown.index]
-			if item_type then
-				local trait_name = mod.trait_names[mod.sorted_trait_names[mod.traits_dropdown.index]]
-				if trait_name then
-					table.insert(mod.traits, trait_name)
-				end
-				local backend_id = mod.create_weapon(item_type)
-				mod:pcall(function()
-					local backend_items = Managers.backend:get_interface("items")
-					local item = backend_items:get_item_from_id(backend_id)
-
-					item.rarity = "exotic"
-					item.data.rarity = "exotic"
-					item.CustomData.rarity = "exotic"
-
-					if mod:get(mod.SETTING_NAMES.NO_SKINS) then
-						item.rarity = "default"
-						item.data.rarity = "default"
-						item.CustomData.rarity = "default"
-						item.skin = nil
-					end
-
-					if loadout_inv_view then
-						backend_items:_refresh()
-						local inv_item_grid = loadout_inv_view._item_grid
-						inv_item_grid:change_item_filter(inv_item_grid._item_filter, false)
-						inv_item_grid:repopulate_current_inventory_page()
-					end
-				end)
-			end
-		end
+	mod.create_weapon_button.on_click = mod.on_create_weapon_click
 
 	mod.heroes_dropdown = self.main_window:create_dropdown("heroes_dropdown", {pos_x, pos_y+window_size[2]-35},  {180, 30}, nil, mod.hero_options, nil, 1)
 	mod.heroes_dropdown.on_index_changed = function(dropdown)

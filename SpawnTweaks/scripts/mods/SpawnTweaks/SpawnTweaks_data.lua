@@ -987,7 +987,7 @@ mod.add_option(
 	  ["default_value"] = false,
 	},
 	"Lords Don't Spawn Adds",
-	"Lords don't enter spawn enemies states, useful if using them in weighted spawning.",
+	"Lords don't enter spawn enemies states, useful if using them in weighted spawning, since their AI can't handle that outside their boss area.",
 	mutator_options_subs
 )
 

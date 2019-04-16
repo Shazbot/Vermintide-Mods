@@ -212,7 +212,7 @@ mod.presets_update_func = function()
 		local resolutions = pl.Map(pl.Set(mod.presets:map(
 			function(preset)
 				local res = preset.screen_resolution
-				return string.format("%sx%s", tostring(res[1]), tostring(res[2]))
+				return mod.get_string_resolution(res)
 			end)
 			:append(mod.get_current_resolution())
 		)):keys()

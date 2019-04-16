@@ -1,7 +1,5 @@
 local mod = get_mod("HideBuffs")
 
-local pl = require'pl.import_into'()
-
 mod.persistent = mod:persistent_table("persistent")
 
 --- Keep track of player ammo and hp from Numeric UI for use in equipment_ui.
@@ -261,6 +259,7 @@ mod:hook(Material, "set_vector2", function(func, gui_material, ...)
 
 	return func(gui_material, ...)
 end)
+mod:hook_disable(Material, "set_vector2")
 
 mod:hook(UnitFramesHandler, "_create_unit_frame_by_type", function(func, self, frame_type, frame_index)
 	local unit_frame = func(self, frame_type, frame_index)

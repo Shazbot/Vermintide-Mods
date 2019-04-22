@@ -66,6 +66,22 @@ mod:hook_origin(GearUtils, "link_units", function(world, attachment_node_linking
 	end
 end)
 
+--- Crash prevention.
+mod:hook(MenuWorldPreviewer, "_spawn_item_unit", function(func, self, unit, item_slot_type, item_template, unit_attachment_node_linking, scene_graph_links, material_settings)
+	mod:pcall(function()
+		func(self, unit, item_slot_type, item_template, unit_attachment_node_linking, scene_graph_links, material_settings)
+	end)
+end)
+
+--- Crash prevention.
+mod:hook(SimpleHuskInventoryExtension, "_wield_slot", function(func, self, world, equipment, slot_name, unit_1p, unit_3p)
+	local item_data
+	mod:pcall(function()
+		item_data = func(self, world, equipment, slot_name, unit_1p, unit_3p)
+	end)
+	return item_data
+end)
+
 --- Workaround for wiz staffs crashing the game because of effects that weren't loaded.
 --- Need to find a way to load those packages manually.
 --- Could be a mega bad idea performance-wise.

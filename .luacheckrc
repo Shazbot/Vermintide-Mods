@@ -50,6 +50,7 @@ globals = {
 	"Vector3Box", "QuaternionBox",
 	"BTCorruptorGrabAction", "BTPackMasterAttackAction",
 	"GameModeAdventure", "BTConditions", "UITooltipPasses",
+	"MenuWorldPreviewer", "SimpleHuskInventoryExtension",
 
 	"PriorityBuffUI",
 }

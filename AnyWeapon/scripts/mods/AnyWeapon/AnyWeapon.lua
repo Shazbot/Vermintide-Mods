@@ -1,8 +1,4 @@
-local mod = get_mod("AnyWeapon") -- luacheck: ignore get_mod
-
--- luacheck: globals StateTitleScreenInitNetwork LobbyInternal LobbyAux Managers ItemMasterList
--- luacheck: globals DamageUtils AreaDamageSystem ExplosionTemplates ItemGridUI
--- luacheck: globals World Matrix4x4Box Unit GearUtils PackageManager
+local mod = get_mod("AnyWeapon")
 
 local pl = require'pl.import_into'()
 local tablex = require'pl.tablex'
@@ -68,18 +64,34 @@ end)
 
 --- Crash prevention.
 mod:hook(MenuWorldPreviewer, "_spawn_item_unit", function(func, self, unit, item_slot_type, item_template, unit_attachment_node_linking, scene_graph_links, material_settings)
-	mod:pcall(function()
+	pcall(function()
 		func(self, unit, item_slot_type, item_template, unit_attachment_node_linking, scene_graph_links, material_settings)
 	end)
 end)
 
 --- Crash prevention.
+mod:hook(Unit, "animation_event", function(func, ...)
+	pcall(function(...)
+		return func(...)
+	end, ...)
+end)
+
+--- Crash prevention.
 mod:hook(SimpleHuskInventoryExtension, "_wield_slot", function(func, self, world, equipment, slot_name, unit_1p, unit_3p)
 	local item_data
-	mod:pcall(function()
+	pcall(function()
 		item_data = func(self, world, equipment, slot_name, unit_1p, unit_3p)
 	end)
 	return item_data
+end)
+
+--- Crash prevention.
+mod:hook(SimpleInventoryExtension, "_wield_slot", function(func, self, equipment, slot_data, unit_1p, unit_3p, buff_extension)
+	local ret_val
+	pcall(function()
+		ret_val = func(self, equipment, slot_data, unit_1p, unit_3p, buff_extension)
+	end)
+	return ret_val
 end)
 
 --- Workaround for wiz staffs crashing the game because of effects that weren't loaded.

@@ -51,7 +51,9 @@ globals = {
 	"BTCorruptorGrabAction", "BTPackMasterAttackAction",
 	"GameModeAdventure", "BTConditions", "UITooltipPasses",
 	"MenuWorldPreviewer", "SimpleHuskInventoryExtension",
-	"SimpleInventoryExtension",
+	"SimpleInventoryExtension", "PackageManager",
+	"LobbyAux", "AreaDamageSystem", "ExplosionTemplates",
+	"ItemGridUI", "Matrix4x4Box",
 
 	"PriorityBuffUI",
 }

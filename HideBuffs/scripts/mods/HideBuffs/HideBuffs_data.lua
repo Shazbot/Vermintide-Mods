@@ -671,6 +671,38 @@ mod.add_option(
 	player_ui_group.sub_widgets,
 	5
 )
+local show_clip_using_overcharge_subs = mod.add_option(
+	"PLAYER_UI_SHOW_CLIP_USING_OVERCHARGE",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Show Ammo Using Heat Bar",
+	"Show ammo in clip using the heat/overcharge bar."
+		.."\nDoesn't show on weapons with 1 ammo clips like bows.",
+	player_ui_group.sub_widgets,
+	1
+)
+mod.add_option(
+	"PLAYER_UI_SHOW_CLIP_USE_GREY_COLOR",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Use Grey Color",
+	"Default color is orange, choose to use grey instead.",
+	show_clip_using_overcharge_subs
+)
+mod.add_option(
+	"PLAYER_UI_SHOW_CLIP_ON_LONG_RELOAD_WEAPONS",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Show On Long Reload Weapons",
+	"Show on 1 ammo clip weapons with long reload, like handgun.",
+	show_clip_using_overcharge_subs
+)
 
 local player_item_slots_subs = mod.add_option(
 	"PLAYER_ITEM_SLOTS_GROUP",

@@ -612,16 +612,6 @@ mod:hook_safe(SubtitleGui, "update", function(self)
 	subtitle_widget.offset[2] = mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_SUBTITLES_OFFSET_Y)
 end)
 
---- Reposition the heat bar.
-mod:hook_safe(OverchargeBarUI, "update", function(self)
-	local charge_bar = self.charge_bar
-	if not charge_bar.offset then
-		charge_bar.offset = { 0, 0, 0 }
-	end
-	charge_bar.offset[1] = mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_HEAT_BAR_OFFSET_X)
-	charge_bar.offset[2] = mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_HEAT_BAR_OFFSET_Y)
-end)
-
 --- Reposition the Twitch voting UI.
 mod:hook(TwitchVoteUI, "_draw", function(func, self, dt, t)
 	local local_position = self._ui_scenegraph.base_area.local_position
@@ -684,6 +674,7 @@ mod:dofile("scripts/mods/HideBuffs/upload_settings")
 mod:dofile("scripts/mods/HideBuffs/presets_data")
 mod:dofile("scripts/mods/HideBuffs/presets")
 mod:dofile("scripts/mods/HideBuffs/breakpoints")
+mod:dofile("scripts/mods/HideBuffs/overcharge_bar")
 
 --- MOD FUNCTIONS ---
 mod.reapply_pickup_ranges = function()

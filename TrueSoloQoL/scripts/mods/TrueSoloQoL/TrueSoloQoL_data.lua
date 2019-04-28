@@ -8,6 +8,9 @@ mod.SETTING_NAMES = {
 	DISABLE_LEVEL_INTRO_AUDIO = "DISABLE_LEVEL_INTRO_AUDIO",
 	DISABLE_ULT_VOICE_LINE = "DISABLE_ULT_VOICE_LINE",
 	DISABLE_MUTATOR_EXPLOSIONS = "DISABLE_MUTATOR_EXPLOSIONS",
+	SHOW_BOSS_PATH_PROGRESS = "SHOW_BOSS_PATH_PROGRESS",
+	DRAW_BOSS_EVENTS = "DRAW_BOSS_EVENTS",
+	DISABLE_FOG = "DISABLE_FOG",
 }
 
 local mod_data = {
@@ -64,6 +67,27 @@ mod_data.options_widgets = {
 		["widget_type"] = "checkbox",
 		["text"] = mod:localize("DISABLE_MUTATOR_EXPLOSIONS"),
 		["tooltip"] = mod:localize("DISABLE_MUTATOR_EXPLOSIONS_T"),
+		["default_value"] = false,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.SHOW_BOSS_PATH_PROGRESS,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("SHOW_BOSS_PATH_PROGRESS"),
+		["tooltip"] = mod:localize("SHOW_BOSS_PATH_PROGRESS_T"),
+		["default_value"] = false,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.DRAW_BOSS_EVENTS,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("DRAW_BOSS_EVENTS"),
+		["tooltip"] = mod:localize("DRAW_BOSS_EVENTS_T"),
+		["default_value"] = false,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.DISABLE_FOG,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("DISABLE_FOG"),
+		["tooltip"] = mod:localize("DISABLE_FOG_T"),
 		["default_value"] = false,
 	},
 }

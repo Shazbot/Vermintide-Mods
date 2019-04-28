@@ -47,6 +47,28 @@ return {
 	DISABLE_MUTATOR_EXPLOSIONS_T = {
 		en = "Disable the purple explosion effect."
 	},
+
+	SHOW_BOSS_PATH_PROGRESS = {
+		en = "Show Boss Path Progress"
+	},
+	SHOW_BOSS_PATH_PROGRESS_T = {
+		en = "Show progress to next boss trigger using Streaming Info mod."
+	},
+
+	DRAW_BOSS_EVENTS = {
+		en = "Visualize Boss Triggers"
+	},
+	DRAW_BOSS_EVENTS_T = {
+		en = "Draw a sphere around boss triggers."
+	},
+
+	DISABLE_FOG = {
+		en = "Disable Fog"
+	},
+	DISABLE_FOG_T = {
+		en = "Disable the fog. Toggling off may require map restart."
+	},
+
 	dlc_level_command_description = {
 		en = "Start plaza dlc level."
 	},

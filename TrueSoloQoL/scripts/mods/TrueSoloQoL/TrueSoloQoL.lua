@@ -266,6 +266,12 @@ mod:hook(StateLoading, "_trigger_sound_events", function(func, self, level_key)
 	return func(self, level_key)
 end)
 
+mod:hook_safe(MoodHandler, "apply_environment_variables", function(self, shading_env)
+  if mod:get(mod.SETTING_NAMES.DISABLE_FOG) then
+		ShadingEnvironment.set_scalar(shading_env, "fog_enabled", 0)
+	end
+end)
+
 --- Disable ult voice line from local player.
 mod.get_vo_hook = function(career_name) -- luacheck: ignore career_name
 	return
@@ -323,3 +329,14 @@ end
 mod:command("dlc", mod:localize("dlc_level_command_description"), function() mod.start_dlc_level() end)
 
 mod:dofile("scripts/mods/"..mod:get_name().."/assassin_hero_warning")
+mod:dofile("scripts/mods/"..mod:get_name().."/draw_boss_sphere")
+
+mod.on_game_state_changed = function(status, state)
+	if state == "StateIngame" then
+		if status == "exit" and mod.line_object then
+			local world = Managers.world:world("level_world")
+			World.destroy_line_object(world, mod.line_object)
+			mod.line_object = nil
+		end
+	end
+end

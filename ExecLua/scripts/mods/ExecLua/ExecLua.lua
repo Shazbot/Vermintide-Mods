@@ -8,7 +8,7 @@ end)
 
 mod.simple_ui = get_mod("SimpleUI")
 
-mod.exec_window_size = {1200, 750}
+mod.exec_window_size = {1200, 1750}
 mod.exec_window_position = { 0, 0 }
 mod.lines = pl.List()
 mod.textboxes = pl.List{}
@@ -45,7 +45,7 @@ mod.create_exec_window = function()
 
 	mod.textboxes = pl.List{}
 	local start_y = 65
-	for i = 1, 20 do
+	for i = 1, 100 do
 		local textbox = mod.exec_window:create_textbox(i.."_label",
 			{0, start_y+i*31},
 			{1000, 30},
@@ -79,8 +79,7 @@ mod.create_exec_window = function()
 
 	-- accounts for a scaling issue in SimpleUI on 1440p
 	local exec_window_width = mod.exec_window.size[1]
-	local exec_window_height = mod.exec_window.size[2]
-	mod.exec_window_position[2] = screen_height/2 - exec_window_height/2
+	mod.exec_window_position[2] = -900
 	mod.exec_window_position[1] = screen_width/2 - exec_window_width/2
 end
 

@@ -1,6 +1,8 @@
 local mod = get_mod("SpawnTweaks")
 
-local data = {}
+mod.reverse_twins_data = {}
+
+local data = mod.reverse_twins_data
 data.breed_tier_list = {
 	chaos_fanatic = { "chaos_marauder", "chaos_marauder_with_shield", },
 	skaven_plague_monk = { "skaven_warpfire_thrower", "skaven_poison_wind_globadier", },
@@ -15,7 +17,10 @@ data.breed_tier_list = {
 		"skaven_gutter_runner",
 		"skaven_ratling_gunner",
 	},
-	skaven_warpfire_thrower = "skaven_stormfiend",
+	skaven_warpfire_thrower = {
+		nil, nil, nil,
+		"skaven_stormfiend",
+	},
 	chaos_raider = {
 		"chaos_warrior",
 		"chaos_warrior",
@@ -26,7 +31,7 @@ data.breed_tier_list = {
 		"skaven_rat_ogre",
 	},
 	skaven_ratling_gunner = {
-		nil, nil, nil, nil,
+		nil, nil, nil,
 		"skaven_stormfiend_boss",
 	},
 	chaos_warrior = {
@@ -201,15 +206,89 @@ mod:hook_safe(MutatorHandler, "ai_killed", function(self, killed_unit, killer_un
 	end
 end)
 
+mod.is_boss_spawning_state_disabled = function()
+	return mod:get(mod.SETTING_NAMES.LORDS_ARENT_DEFENSIVE)
+		or mod:get(mod.SETTING_NAMES.REVERSE_TWINS_MUTATOR)
+end
 
 mod:hook(BTConditions, "should_be_defensive", function(func, blackboard)
-	if mod:get(mod.SETTING_NAMES.LORDS_ARENT_DEFENSIVE) then
+	if mod.is_boss_spawning_state_disabled() then
 		return false
 	end
 
-	if not mod:get(mod.SETTING_NAMES.REVERSE_TWINS_MUTATOR) then
-		return func(blackboard)
+	return func(blackboard)
+end)
+
+--- Crash prevention hooks from Creature Spawner by Aussiemon.
+-- Prevent Spinemanglr summon crash #1
+mod:hook(BTEnterHooks, "warlord_defensive_on_enter", function (func, unit, blackboard, ...)
+	return blackboard.spawn_allies_positions and func(unit, blackboard, ...)
+end)
+
+-- Prevent Spinemanglr summon crash #2
+mod:hook(BTSpawnAllies, "enter", function (func, self, unit, blackboard, ...)
+	if blackboard.has_call_position or blackboard.override_spawn_allies_call_position then
+		return func(self, unit, blackboard, ...)
 	end
 
-	return false
+	local action = self._tree_node.action_data
+	local find_spawn_points = action.find_spawn_points
+
+	-- If we need to find spawn points, run the function early to see if it returns
+	if find_spawn_points then
+		local spawn_data = {
+			end_time = math.huge
+		}
+		blackboard.spawning_allies = blackboard.spawning_allies or spawn_data
+
+		local call_position = BTSpawnAllies.find_spawn_point(unit, blackboard, action, spawn_data)
+		if call_position then
+			return func(self, unit, blackboard, ...)
+		else
+			blackboard.spawning_allies = nil
+		end
+	else
+		return func(self, unit, blackboard, ...)
+	end
+end)
+
+-- Prevent Spinemanglr summon crash #3
+mod:hook(BTSpawnAllies, "run", function (func, self, unit, blackboard, ...)
+	return (blackboard.spawning_allies and func(self, unit, blackboard, ...)) or "done"
+end)
+
+-- Prevent Spinemanglr summon crash #4
+mod:hook(BTSpawnAllies, "leave", function (func, self, unit, blackboard, ...)
+	return (blackboard.action and func(self, unit, blackboard, ...))
+end)
+
+-- Prevent Spinemanglr summon crash #5
+mod:hook(BTSpawnAllies, "find_spawn_point", function (func, unit, blackboard, action, data, override_spawn_group, ...)
+	local spawn_group = override_spawn_group or action.optional_go_to_spawn or action.spawn_group
+	local spawner_system = Managers.state.entity:system("spawner_system")
+	local spawners_raw = spawner_system._id_lookup[spawn_group]
+
+	if not spawners_raw and action.use_fallback_spawners then
+		spawners_raw = spawner_system._enabled_spawners
+	end
+
+	-- Use original function if raw spawners exist in this level
+	return spawners_raw and func(unit, blackboard, action, data, override_spawn_group, ...)
+end)
+
+-- Prevent missing blackboard value crash
+--- Modified logic to return 0 if pcall fails.
+mod:hook(Utility, "get_action_utility", function(func, breed_action, action_name, blackboard, from_draw_ai_behavior)
+	local total_utility = 0
+	pcall(function()
+		total_utility = func(breed_action, action_name, blackboard, from_draw_ai_behavior)
+	end)
+	return total_utility
+end)
+
+mod:hook_safe(Breeds["skaven_stormfiend_boss"], "run_on_spawn", function(unit)
+	if mod.is_boss_spawning_state_disabled() then
+		local health_extension = ScriptUnit.extension(unit, "health_system")
+		health_extension.is_invincible = false
+	end
 end)

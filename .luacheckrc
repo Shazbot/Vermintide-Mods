@@ -53,7 +53,10 @@ globals = {
 	"MenuWorldPreviewer", "SimpleHuskInventoryExtension",
 	"SimpleInventoryExtension", "PackageManager",
 	"LobbyAux", "AreaDamageSystem", "ExplosionTemplates",
-	"ItemGridUI", "Matrix4x4Box",
+	"ItemGridUI", "Matrix4x4Box", "LineObject",
+	"EnemyRecycler", "ShadingEnvironment",
+	"MoodHandler", "BTEnterHooks", "BTSpawnAllies",
+	"Utility",
 
 	"PriorityBuffUI",
 }

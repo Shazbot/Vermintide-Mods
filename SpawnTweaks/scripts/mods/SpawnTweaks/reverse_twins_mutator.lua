@@ -1,5 +1,7 @@
 local mod = get_mod("SpawnTweaks")
 
+local pl = require'pl.import_into'()
+
 mod.reverse_twins_data = {}
 
 local data = mod.reverse_twins_data
@@ -18,7 +20,6 @@ data.breed_tier_list = {
 		"skaven_ratling_gunner",
 	},
 	skaven_warpfire_thrower = {
-		nil, nil, nil,
 		"skaven_stormfiend",
 	},
 	chaos_raider = {
@@ -27,15 +28,12 @@ data.breed_tier_list = {
 		"chaos_corruptor_sorcerer",
 	},
 	skaven_pack_master = {
-		nil, nil, nil, nil,
 		"skaven_rat_ogre",
 	},
 	skaven_ratling_gunner = {
-		nil, nil, nil,
 		"skaven_stormfiend_boss",
 	},
 	chaos_warrior = {
-		nil, nil, nil,
 		"chaos_troll",
 		"chaos_spawn",
 		"chaos_exalted_champion_norsca",
@@ -53,17 +51,28 @@ data.breed_tier_list = {
 		"skaven_storm_vermin_with_shield",
 	},
 	skaven_storm_vermin = {
-		nil, nil, nil, nil,
 		"skaven_rat_ogre",
 		"skaven_stormfiend",
 		"skaven_storm_vermin_warlord",
 	},
 	skaven_storm_vermin_with_shield = {
-		nil, nil, nil, nil,
 		"skaven_rat_ogre",
 		"skaven_stormfiend",
 		"skaven_storm_vermin_warlord",
 	}
+}
+data.breed_tier_list.skaven_clan_rat_with_shield = data.breed_tier_list.skaven_clan_rat
+data.breed_tier_list.chaos_marauder_with_shield = data.breed_tier_list.chaos_marauder
+
+data.boss_breeds = pl.List{
+	"skaven_rat_ogre",
+	"skaven_stormfiend",
+	"skaven_stormfiend_boss",
+	"skaven_storm_vermin_warlord",
+	"chaos_troll",
+	"chaos_spawn",
+	"chaos_exalted_champion_norsca",
+	"chaos_exalted_champion_warcamp",
 }
 
 data.breed_explosion_templates = {
@@ -142,13 +151,20 @@ mod:hook_safe(MutatorHandler, "ai_killed", function(self, killed_unit, killer_un
 	local breed_name = breed.name
 	local lower_tier_breed_name = breed_tier_list[breed_name]
 
-	local spawn_chance = mod:get(mod.SETTING_NAMES.REVERSE_TWINS_MUTATOR_CHANCE) or 76
+	local spawn_chance = mod:get(mod.SETTING_NAMES.REVERSE_TWINS_MUTATOR_CHANCE) or 50
 	if spawn_chance + 1 - math.random(100) < 0 then
 		return
 	end
 
 	if type(lower_tier_breed_name) == "table" then
 		lower_tier_breed_name = lower_tier_breed_name[math.random(#lower_tier_breed_name)]
+	end
+
+	if lower_tier_breed_name and data.boss_breeds:contains(lower_tier_breed_name) then
+		local boss_spawn_chance = mod:get(mod.SETTING_NAMES.REVERSE_TWINS_MUTATOR_BOSS_CHANCE) or 50
+		if boss_spawn_chance + 1 - math.random(100) < 0 then
+			return
+		end
 	end
 
 	local position = POSITION_LOOKUP[killed_unit]

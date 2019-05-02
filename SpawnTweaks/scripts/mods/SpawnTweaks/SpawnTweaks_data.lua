@@ -789,10 +789,22 @@ mod.add_option(
 		["widget_type"] = "numeric",
 		["range"] = {0, 100},
 		["unit_text"] = "%",
-	  ["default_value"] = 75,
+	  ["default_value"] = 50,
 	},
 	"Spawn Chance",
 	"Chance for new enemy to spawn on enemy death.",
+	reverse_twins_subs
+)
+mod.add_option(
+	"REVERSE_TWINS_MUTATOR_BOSS_CHANCE",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 100},
+		["unit_text"] = "%",
+	  ["default_value"] = 25,
+	},
+	"Boss And Lord Spawn Chance",
+	"The second roll if a boss or lord was selected to spawn.",
 	reverse_twins_subs
 )
 

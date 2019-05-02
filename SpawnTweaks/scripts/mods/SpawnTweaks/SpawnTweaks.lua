@@ -833,6 +833,8 @@ mod:dofile("scripts/mods/"..mod:get_name().."/scary_elites_mutator")
 mod:dofile("scripts/mods/"..mod:get_name().."/verminhood_mutator")
 mod:dofile("scripts/mods/"..mod:get_name().."/reverse_twins_mutator")
 mod:dofile("scripts/mods/"..mod:get_name().."/specials_always_fail")
+--- Mutators directory.
+mod:dofile("scripts/mods/"..mod:get_name().."/mutators/no_invis")
 
 mod.on_unload = function()
 	mod.persistent.ingame_entered = mod.ingame_entered

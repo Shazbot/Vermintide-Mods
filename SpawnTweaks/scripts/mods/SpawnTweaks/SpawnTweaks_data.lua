@@ -849,6 +849,16 @@ mod.add_option(
 	mutator_options_subs
 )
 mod.add_option(
+	"NO_INVIS_MUTATOR",
+	{
+		["widget_type"] = "checkbox",
+    ["default_value"] = false,
+	},
+	"Disable Invisibility",
+	"Disable invisiblity from ults. Need to test with other players.",
+	mutator_options_subs
+)
+mod.add_option(
 	"PLAYER_DMG_DEALT_MULTIPLIER",
 	{
 		["widget_type"] = "numeric",

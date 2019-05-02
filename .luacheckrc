@@ -56,7 +56,8 @@ globals = {
 	"ItemGridUI", "Matrix4x4Box", "LineObject",
 	"EnemyRecycler", "ShadingEnvironment",
 	"MoodHandler", "BTEnterHooks", "BTSpawnAllies",
-	"Utility",
+	"Utility", "GenericStatusExtension",
+	"StatusSystem",
 
 	"PriorityBuffUI",
 }

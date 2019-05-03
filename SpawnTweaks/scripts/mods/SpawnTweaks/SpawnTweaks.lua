@@ -6,6 +6,10 @@ local stringx = require'pl.stringx'
 
 fassert(pl, "Spawn Tweaks must be lower than Penlight Lua Libraries in your launcher's load order.")
 
+mod.persistent = mod:persistent_table("persistent")
+local EvtD = require("scripts/mods/SpawnTweaks/EventDispatcher")
+mod.dispatcher = EvtD()
+
 --- Don't play horde warning sound when hordes disabled.
 mod:hook(HordeSpawner, "play_sound", function(func, ...)
 	if mod:get(mod.SETTING_NAMES.HORDES) == mod.HORDES.DISABLE then
@@ -633,6 +637,8 @@ mod:hook_disable(DamageUtils, "calculate_damage")
 mod:hook(DamageUtils, "add_damage_network_player", function(func, ...)
 	mod:hook_enable(DamageUtils, "calculate_damage")
 
+	mod.dispatcher:emit("before_add_damage_network_player", ...)
+
 	func(...)
 
 	mod:hook_disable(DamageUtils, "calculate_damage")
@@ -812,6 +818,9 @@ mod.update = function()
 end
 
 mod.on_setting_changed = function(setting_name) -- luacheck: ignore setting_name
+	if setting_name == mod.SETTING_NAMES.JUICED_SPECIALS_MUTATOR then
+		mod.dispatcher:emit("juicedSpecialsToggled")
+	end
 end
 
 mod.on_disabled_funcs = {}
@@ -819,6 +828,10 @@ mod.on_disabled = function(init_call)
 	for _, on_disabled_func in ipairs( mod.on_disabled_funcs ) do
 		on_disabled_func(init_call)
 	end
+	mod.dispatcher:emit("onModDisabled")
+end
+mod.on_enabled = function()
+	mod.dispatcher:emit("onModEnabled")
 end
 
 mod:command("ST_reset_breed_dmg", mod:localize("reset_breed_dmg_description"), mod.reset_breed_dmg)
@@ -835,6 +848,7 @@ mod:dofile("scripts/mods/"..mod:get_name().."/reverse_twins_mutator")
 mod:dofile("scripts/mods/"..mod:get_name().."/specials_always_fail")
 --- Mutators directory.
 mod:dofile("scripts/mods/"..mod:get_name().."/mutators/no_invis")
+mod:dofile("scripts/mods/"..mod:get_name().."/mutators/juiced_specials")
 
 mod.on_unload = function()
 	mod.persistent.ingame_entered = mod.ingame_entered
@@ -846,5 +860,4 @@ mod.on_game_state_changed = function(status, state)
 	end
 end
 
-mod.persistent = mod:persistent_table("persistent")
 mod.ingame_entered = mod.persistent.ingame_entered

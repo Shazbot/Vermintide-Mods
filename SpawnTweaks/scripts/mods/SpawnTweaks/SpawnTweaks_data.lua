@@ -809,17 +809,6 @@ mod.add_option(
 )
 
 mod.add_option(
-	"SCARY_ELITES_MUTATOR",
-	{
-		["widget_type"] = "checkbox",
-	  ["default_value"] = false,
-	},
-	"Scary Elites Mutator",
-	"Elite enemies are immune to stagger. SV shields are breakable."
-		.."\nIncludes: chaos_warrior, skaven_storm_vermin_commander, chaos_raider, skaven_storm_vermin, chaos_berzerker, skaven_storm_vermin_with_shield, skaven_plague_monk.",
-	mutator_options_subs
-)
-mod.add_option(
 	"VERMINHOOD_MUTATOR",
 	{
 		["widget_type"] = "dropdown",
@@ -848,6 +837,29 @@ mod.add_option(
 		.."\nSo in Split mode an ogre would take even amount of dmg, in Pool mode ogre HP takes majority of the damage."
 		.."\nThis by itself makes the game easier all things considered."
 		.."\nNeeds testing with other players.",
+	mutator_options_subs
+)
+
+mod.add_option(
+	"SCARY_ELITES_MUTATOR",
+	{
+		["widget_type"] = "checkbox",
+	  ["default_value"] = false,
+	},
+	"Scary Elites Mutator",
+	"Elite enemies are immune to stagger. SV shields are breakable."
+		.."\nIncludes: chaos_warrior, skaven_storm_vermin_commander, chaos_raider, skaven_storm_vermin, chaos_berzerker, skaven_storm_vermin_with_shield, skaven_plague_monk.",
+	mutator_options_subs
+)
+
+mod.add_option(
+	"JUICED_SPECIALS_MUTATOR",
+	{
+		["widget_type"] = "checkbox",
+    ["default_value"] = false,
+	},
+	"Scary Specials Mutator",
+	"Make the specials extra scurry.",
 	mutator_options_subs
 )
 mod.add_option(

@@ -57,7 +57,12 @@ globals = {
 	"EnemyRecycler", "ShadingEnvironment",
 	"MoodHandler", "BTEnterHooks", "BTSpawnAllies",
 	"Utility", "GenericStatusExtension",
-	"StatusSystem",
+	"StatusSystem", "BreedActions",
+	"BTSkulkIdleAction", "BTStaggerAction",
+	"BTNinjaApproachAction", "BTNinjaApproachAction",
+	"BTTargetPouncedAction", "BTCrazyJumpAction",
+	"BTSkulkAroundAction",
+	"BTRatlingGunnerShootAction", "BTRatlingGunnerWindUpAction",
 
 	"PriorityBuffUI",
 }

@@ -305,6 +305,10 @@ mod.specials_mut.disable_hooks = function()
 end
 
 mod.specials_mut.disable_mut = function()
+	if not mod.persistent.juiced_specials_backups_done then
+		return
+	end
+
 	Breeds = pl.tablex.merge(Breeds, table.clone(mod.persistent.specials_mut.breeds_backups), true)
 	BreedActions = pl.tablex.merge(BreedActions, table.clone(mod.persistent.specials_mut.breed_actions_backups), true)
 
@@ -337,13 +341,19 @@ mod.specials_mut.on_mutator_toggled = function()
 		mod.specials_mut.disable_mut()
 	end
 end
-mod.dispatcher:on("juicedSpecialsToggled", function(...) mod.specials_mut.on_mutator_toggled(...) end)
 
-mod.dispatcher:on("onModDisabled", function()
-	mod.specials_mut.disable_hooks()
-end)
-mod.dispatcher:on("onModEnabled", function()
-	mod.specials_mut.on_mutator_toggled()
-end)
+mod.dispatcher:on("juicedSpecialsToggled",
+	function(...)
+		mod.specials_mut.on_mutator_toggled(...)
+	end)
+
+mod.dispatcher:on("onModDisabled",
+	function()
+		mod.specials_mut.disable_hooks()
+	end)
+mod.dispatcher:on("onModEnabled",
+	function()
+		mod.specials_mut.on_mutator_toggled()
+	end)
 
 mod.specials_mut.disable_hooks()

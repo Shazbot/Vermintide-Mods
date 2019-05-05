@@ -857,6 +857,7 @@ end
 mod.on_game_state_changed = function(status, state)
 	if status == "enter" and state == "StateIngame" then
 		mod.ingame_entered = true
+		mod.dispatcher:emit("onStateIngameEntered")
 	end
 end
 

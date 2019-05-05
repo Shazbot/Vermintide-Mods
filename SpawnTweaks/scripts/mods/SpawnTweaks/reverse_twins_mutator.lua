@@ -321,13 +321,26 @@ mod:hook_safe(Breeds["skaven_stormfiend_boss"], "run_on_spawn", function(unit)
 	end
 end)
 
---- Load lord packages on startup.
-mod:hook(EnemyPackageLoader, "setup_startup_enemies",
-function(func, ...)
-	for _, category in ipairs( EnemyPackageLoaderSettings.categories ) do
-		if category.id == "level_specific" then
-			category.dynamic_loading = false
+--- Load some breed packages on map start.
+mod.reverse_twins_data.breeds_to_auto_load = {
+	"chaos_exalted_champion_warcamp",
+	"skaven_storm_vermin_warlord",
+	"skaven_storm_vermin_champion",
+	"skaven_stormfiend_boss",
+	"skaven_explosive_loot_rat",
+}
+mod.dispatcher:on("onStateIngameEntered",
+function()
+	if not mod:get(mod.SETTING_NAMES.REVERSE_TWINS_MUTATOR) then
+		return
+	end
+
+	local enemy_package_loader = Managers.state.game_mode.level_transition_handler.enemy_package_loader
+
+	for _, breed_name in ipairs( mod.reverse_twins_data.breeds_to_auto_load ) do
+		if not enemy_package_loader.breed_processed[breed_name] then
+			local ignore_breed_limits = true
+			enemy_package_loader:request_breed(breed_name, ignore_breed_limits)
 		end
 	end
-	return func(...)
 end)

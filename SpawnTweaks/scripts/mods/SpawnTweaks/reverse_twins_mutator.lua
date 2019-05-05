@@ -6,18 +6,19 @@ mod.reverse_twins_data = {}
 
 local data = mod.reverse_twins_data
 data.breed_tier_list = {
-	chaos_fanatic = { "chaos_marauder", "chaos_marauder_with_shield", },
-	skaven_plague_monk = { "skaven_warpfire_thrower", "skaven_poison_wind_globadier", },
+	chaos_fanatic = {
+		"chaos_marauder",
+		"chaos_marauder_with_shield",
+	},
 	chaos_marauder = { "chaos_berzerker", "chaos_raider", },
 	chaos_berzerker = {
 		"chaos_vortex_sorcerer",
 		"chaos_warrior",
 		"chaos_warrior",
 	},
-	skaven_storm_vermin_commander = {
-		"skaven_pack_master",
-		"skaven_gutter_runner",
-		"skaven_ratling_gunner",
+	skaven_plague_monk = {
+		"skaven_warpfire_thrower",
+		"skaven_poison_wind_globadier",
 	},
 	skaven_warpfire_thrower = {
 		"skaven_stormfiend",
@@ -54,11 +55,19 @@ data.breed_tier_list = {
 		"skaven_rat_ogre",
 		"skaven_stormfiend",
 		"skaven_storm_vermin_warlord",
+		"skaven_ratling_gunner",
+	},
+	skaven_storm_vermin_commander = {
+		"skaven_pack_master",
+		"skaven_gutter_runner",
+		"skaven_ratling_gunner",
+		"skaven_poison_wind_globadier",
 	},
 	skaven_storm_vermin_with_shield = {
 		"skaven_rat_ogre",
 		"skaven_stormfiend",
 		"skaven_storm_vermin_warlord",
+		"skaven_ratling_gunner",
 	}
 }
 data.breed_tier_list.skaven_clan_rat_with_shield = data.breed_tier_list.skaven_clan_rat
@@ -152,7 +161,7 @@ mod:hook_safe(MutatorHandler, "ai_killed", function(self, killed_unit, killer_un
 	local lower_tier_breed_name = breed_tier_list[breed_name]
 
 	local spawn_chance = mod:get(mod.SETTING_NAMES.REVERSE_TWINS_MUTATOR_CHANCE) or 50
-	if spawn_chance + 1 - math.random(100) < 0 then
+	if spawn_chance - math.random(100) < 0 then
 		return
 	end
 
@@ -162,7 +171,10 @@ mod:hook_safe(MutatorHandler, "ai_killed", function(self, killed_unit, killer_un
 
 	if lower_tier_breed_name and data.boss_breeds:contains(lower_tier_breed_name) then
 		local boss_spawn_chance = mod:get(mod.SETTING_NAMES.REVERSE_TWINS_MUTATOR_BOSS_CHANCE) or 50
-		if boss_spawn_chance + 1 - math.random(100) < 0 then
+		if lower_tier_breed_name == "skaven_stormfiend" then
+			boss_spawn_chance = math.round(boss_spawn_chance*0.85)
+		end
+		if boss_spawn_chance - math.random(100) < 0 then
 			return
 		end
 	end
@@ -307,4 +319,15 @@ mod:hook_safe(Breeds["skaven_stormfiend_boss"], "run_on_spawn", function(unit)
 		local health_extension = ScriptUnit.extension(unit, "health_system")
 		health_extension.is_invincible = false
 	end
+end)
+
+--- Load lord packages on startup.
+mod:hook(EnemyPackageLoader, "setup_startup_enemies",
+function(func, ...)
+	for _, category in ipairs( EnemyPackageLoaderSettings.categories ) do
+		if category.id == "level_specific" then
+			category.dynamic_loading = false
+		end
+	end
+	return func(...)
 end)

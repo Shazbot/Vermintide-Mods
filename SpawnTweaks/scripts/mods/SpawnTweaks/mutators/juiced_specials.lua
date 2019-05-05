@@ -347,14 +347,3 @@ mod.dispatcher:on("onModEnabled", function()
 end)
 
 mod.specials_mut.disable_hooks()
-
---- Load lord packages on startup.
-mod:hook(EnemyPackageLoader, "setup_startup_enemies",
-function(func, ...)
-	for _, category in ipairs( EnemyPackageLoaderSettings.categories ) do
-		if category.id == "level_specific" then
-			category.dynamic_loading = false
-		end
-	end
-	return func(...)
-end)

@@ -805,6 +805,16 @@ mod.add_option(
 	"Distance from the player at which to start hiding teammates.",
 	invisible_teammates_subs
 )
+mod.add_option(
+	"INVISIBLE_TEAMMATES_MUTATOR_REVERSE",
+	{
+		["widget_type"] = "checkbox",
+	  ["default_value"] = false,
+	},
+	"Reverse",
+	"Hide teammates that are within distance instead.",
+	invisible_teammates_subs
+)
 
 local reverse_twins_subs = mod.add_option(
 	"REVERSE_TWINS_MUTATOR",

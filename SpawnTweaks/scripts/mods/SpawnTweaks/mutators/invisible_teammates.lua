@@ -7,6 +7,7 @@ mod.invis_mut.invis_update = function()
 		return
 	end
 
+	local reverse = mod:get(mod.SETTING_NAMES.INVISIBLE_TEAMMATES_MUTATOR_REVERSE)
 	local hide_distance_sq = mod:get(mod.SETTING_NAMES.INVISIBLE_TEAMMATES_MUTATOR_DISTANCE)^2
 	if Managers.state.network and Managers.player and Managers.player:local_player() then
 		local local_player_unit = Managers.player:local_player().player_unit
@@ -24,9 +25,9 @@ mod.invis_mut.invis_update = function()
 						local dist_sq = Vector3.distance_squared(position, position_player)
 
 						if dist_sq > hide_distance_sq then
-							scale = 0
+							scale = reverse and 1 or 0
 						else
-							scale = 1
+							scale = reverse and 0 or 1
 						end
 					end
 				end

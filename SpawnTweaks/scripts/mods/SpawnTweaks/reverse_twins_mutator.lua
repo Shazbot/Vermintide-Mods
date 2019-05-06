@@ -340,6 +340,12 @@ function()
 	for _, breed_name in ipairs( mod.reverse_twins_data.breeds_to_auto_load ) do
 		if not enemy_package_loader.breed_processed[breed_name] then
 			local ignore_breed_limits = true
+
+			if not enemy_package_loader._breed_category_lookup[breed_name] then
+					local breed_list = table.clone(mod.reverse_twins_data.breeds_to_auto_load)
+					enemy_package_loader:_create_breed_category_lookup(breed_list, "spawn_tweaks_reverse_twins", math.huge)
+			end
+
 			enemy_package_loader:request_breed(breed_name, ignore_breed_limits)
 		end
 	end

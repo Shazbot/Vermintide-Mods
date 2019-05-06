@@ -815,6 +815,7 @@ mod.update = function()
 	for _, update_func in ipairs( mod.update_funcs ) do
 		update_func()
 	end
+	mod.dispatcher:emit("onModUpdate")
 end
 
 mod.on_setting_changed = function(setting_name) -- luacheck: ignore setting_name
@@ -849,6 +850,7 @@ mod:dofile("scripts/mods/"..mod:get_name().."/specials_always_fail")
 --- Mutators directory.
 mod:dofile("scripts/mods/"..mod:get_name().."/mutators/no_invis")
 mod:dofile("scripts/mods/"..mod:get_name().."/mutators/juiced_specials")
+mod:dofile("scripts/mods/"..mod:get_name().."/mutators/invisible_teammates")
 
 mod.on_unload = function()
 	mod.persistent.ingame_entered = mod.ingame_entered

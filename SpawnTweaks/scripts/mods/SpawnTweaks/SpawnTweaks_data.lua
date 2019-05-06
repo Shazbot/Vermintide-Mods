@@ -773,6 +773,39 @@ local mutator_options_subs = mod.add_option(
 	"Mutator Options",
 	"Other options for mutators."
 )
+local local_mutators_subs = mod.add_option(
+	"MUTATOR_OPTIONS_GROUP",
+	{
+		["widget_type"] = "group",
+	},
+	"Local Mutators",
+	"Mutators that work locally per player and are not host controlled."
+		.."\nMeaning it won't cause crashes, but works only for those who have it enabled.",
+	mutator_options_subs
+)
+local invisible_teammates_subs = mod.add_option(
+	"INVISIBLE_TEAMMATES_MUTATOR",
+	{
+		["widget_type"] = "checkbox",
+	  ["default_value"] = false,
+	},
+	"Invisible Teammates",
+	"Hide your teammates based on distance from the player.",
+	local_mutators_subs
+)
+mod.add_option(
+	"INVISIBLE_TEAMMATES_MUTATOR_DISTANCE",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 100},
+	  ["default_value"] = 5,
+	  ["decimals_number"] = 1,
+	},
+	"Distance",
+	"Distance from the player at which to start hiding teammates.",
+	invisible_teammates_subs
+)
+
 local reverse_twins_subs = mod.add_option(
 	"REVERSE_TWINS_MUTATOR",
 	{

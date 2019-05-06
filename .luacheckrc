@@ -65,6 +65,7 @@ globals = {
 	"BTRatlingGunnerShootAction", "BTRatlingGunnerWindUpAction",
 	"PerceptionUtils", "BTSuicideRunAction",
 	"EnemyPackageLoader", "EnemyPackageLoaderSettings",
+	"CareerExtension",
 
 	"PriorityBuffUI",
 }

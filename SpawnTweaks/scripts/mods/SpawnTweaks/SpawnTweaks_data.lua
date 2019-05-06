@@ -815,6 +815,26 @@ mod.add_option(
 	"Hide teammates that are within distance instead.",
 	invisible_teammates_subs
 )
+mod.add_option(
+	"DISABLE_ULT_CD_ON_STRIKE",
+	{
+		["widget_type"] = "checkbox",
+	  ["default_value"] = false,
+	},
+	"Disable Ult CD On Strike",
+	"Disable Ult cooldown reduction when hitting enemies.",
+	local_mutators_subs
+)
+mod.add_option(
+	"DISABLE_ULT_CD_ON_GETTING_HIT",
+	{
+		["widget_type"] = "checkbox",
+	  ["default_value"] = false,
+	},
+	"Disable Ult CD On Getting Hit",
+	"Disable Ult cooldown reduction when hit.",
+	local_mutators_subs
+)
 
 local reverse_twins_subs = mod.add_option(
 	"REVERSE_TWINS_MUTATOR",

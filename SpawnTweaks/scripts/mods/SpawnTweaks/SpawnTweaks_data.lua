@@ -998,6 +998,19 @@ mod.add_option(
 	mutator_options_subs
 )
 mod.add_option(
+	"PLAYER_WHITE_HP_GAIN_MULTIPLIER",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 1000},
+		["unit_text"] = "%",
+		["default_value"] = 100,
+	},
+	"Player White HP Gain Multiplier",
+	"Multiply the amount of white/temp HP players gain."
+		.."\nDoesn't affect white hp gained from hp share talent that disables normal healing.",
+	mutator_options_subs
+)
+mod.add_option(
 	"KEEP_GIVING_BOMBS",
 	{
 		["widget_type"] = "checkbox",

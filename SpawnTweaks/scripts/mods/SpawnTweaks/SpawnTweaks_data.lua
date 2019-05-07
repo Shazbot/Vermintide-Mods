@@ -822,7 +822,8 @@ mod.add_option(
 	  ["default_value"] = false,
 	},
 	"Disable Ult CD On Strike",
-	"Disable Ult cooldown reduction when hitting enemies.",
+	"Disable Ult cooldown reduction when hitting enemies."
+		.."\nREQUIRES A CAREER SWITCH TO APPLY CHANGES",
 	local_mutators_subs
 )
 mod.add_option(
@@ -832,7 +833,8 @@ mod.add_option(
 	  ["default_value"] = false,
 	},
 	"Disable Ult CD On Getting Hit",
-	"Disable Ult cooldown reduction when hit.",
+	"Disable Ult cooldown reduction when hit."
+		.."\nREQUIRES A CAREER SWITCH TO APPLY CHANGES",
 	local_mutators_subs
 )
 

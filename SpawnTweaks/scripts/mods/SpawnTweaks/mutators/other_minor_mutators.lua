@@ -2,7 +2,6 @@ local mod = get_mod("SpawnTweaks")
 
 local pl = require'pl.import_into'()
 
-
 --- WHITE HP MULTIPLIER ---
 --- Get whether heal_type gives green/permanent HP.
 mod.is_permanent_heal = function(heal_type)

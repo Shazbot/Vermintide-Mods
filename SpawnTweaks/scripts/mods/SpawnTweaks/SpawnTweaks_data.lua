@@ -838,6 +838,18 @@ mod.add_option(
 	local_mutators_subs
 )
 
+mod.add_option(
+	"RESTART_ON_DEFEAT",
+	{
+		["widget_type"] = "checkbox",
+	  ["default_value"] = false,
+	},
+	"Restart Map On Defeat",
+	"Auto-restarts the map on defeat."
+		.."\nTo return to inn with full party you can write /st_win in chat.",
+	mutator_options_subs
+)
+
 local reverse_twins_subs = mod.add_option(
 	"REVERSE_TWINS_MUTATOR",
 	{

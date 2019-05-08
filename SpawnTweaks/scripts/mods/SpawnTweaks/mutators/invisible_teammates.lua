@@ -11,7 +11,10 @@ mod.invis_mut.invis_update = function()
 	local hide_distance_sq = mod:get(mod.SETTING_NAMES.INVISIBLE_TEAMMATES_MUTATOR_DISTANCE)^2
 	if Managers.state.network and Managers.player and Managers.player:local_player() then
 		local local_player_unit = Managers.player:local_player().player_unit
-		local position_player = Unit.world_position(local_player_unit, 0)
+		local position_player = nil
+		if local_player_unit then
+			position_player = Unit.world_position(local_player_unit, 0)
+		end
 		for _, player in pairs( Managers.player:human_and_bot_players() ) do
 			local player_unit = player.player_unit
 

@@ -212,7 +212,7 @@ mod:hook(ConflictDirector, "spawn_queued_unit", function(func, self, breed, boxe
 		return
 	end
 
-	if mod:get(mod.SETTING_NAMES.AMBIENTS) == mod.AMBIENTS.CUSTOMIZE
+	if mod.are_ambients_customized()
 	and spawn_type == "roam"
 	then
 		if mod:get(mod.SETTING_NAMES.CUSTOM_AMBIENTS_TOGGLE_GROUP) then
@@ -455,7 +455,7 @@ mod:hook_safe(Pacing, "update", function(self, t, dt, alive_player_units) -- lua
 end)
 
 mod:hook(ConflictDirector, "update_horde_pacing", function(func, self, t, dt)
-	if mod:get(mod.SETTING_NAMES.HORDES) ~= mod.HORDES.CUSTOMIZE then
+	if not mod.are_hordes_customized() then
 		return func(self, t, dt)
 	end
 
@@ -484,7 +484,7 @@ mod:hook(ConflictDirector, "update_horde_pacing", function(func, self, t, dt)
 end)
 
 mod:hook(ConflictDirector, "update", function(func, self, ...)
-	if mod:get(mod.SETTING_NAMES.HORDES) ~= mod.HORDES.CUSTOMIZE then
+	if not mod.are_hordes_customized() then
 		return func(self, ...)
 	end
 
@@ -514,7 +514,7 @@ mod:hook(ConflictDirector, "update", function(func, self, ...)
 end)
 
 mod:hook(ConflictDirector, "horde_killed", function(func, self, ...)
-	if mod:get(mod.SETTING_NAMES.HORDES) ~= mod.HORDES.CUSTOMIZE then
+	if not mod.are_hordes_customized() then
 		return func(self, ...)
 	end
 
@@ -540,7 +540,7 @@ end)
 
 --- Change ambient density.
 mod:hook(SpawnZoneBaker, "spawn_amount_rats", function(func, self, spawns, pack_sizes, pack_rotations, pack_types, zone_data_list, nodes, num_wanted_rats, pack_type, area, zone)
-	if mod:get(mod.SETTING_NAMES.AMBIENTS) == mod.AMBIENTS.CUSTOMIZE then
+	if mod.are_ambients_customized() then
 		num_wanted_rats = math.round(num_wanted_rats * mod:get(mod.SETTING_NAMES.AMBIENTS_MULTIPLIER)/100)
 	end
 
@@ -725,7 +725,7 @@ end)
 
 --- Spawn hordes from both directions.
 mod:hook(HordeSpawner, "find_good_vector_horde_pos", function(func, self, main_target_pos, distance, check_reachable)
-	if mod:get(mod.SETTING_NAMES.HORDES) ~= mod.HORDES.CUSTOMIZE
+	if not mod.are_hordes_customized()
 	or not mod:get(mod.SETTING_NAMES.HORDES_BOTH_DIRECTIONS) then
 		return func(self, main_target_pos, distance, check_reachable)
 	end
@@ -799,6 +799,10 @@ end
 
 mod.are_specials_customized = function()
 	return mod:get(mod.SETTING_NAMES.SPECIALS) == mod.SPECIALS.CUSTOMIZE
+end
+
+mod.are_ambients_customized = function()
+	return mod:get(mod.SETTING_NAMES.AMBIENTS) == mod.AMBIENTS.CUSTOMIZE
 end
 
 mod.reset_breed_dmg = function()

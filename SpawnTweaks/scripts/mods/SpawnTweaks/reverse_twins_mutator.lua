@@ -10,7 +10,10 @@ data.breed_tier_list = {
 		"chaos_marauder",
 		"chaos_marauder_with_shield",
 	},
-	chaos_marauder = { "chaos_berzerker", "chaos_raider", },
+	chaos_marauder = {
+		"chaos_berzerker",
+		"chaos_raider",
+	},
 	chaos_berzerker = {
 		"chaos_vortex_sorcerer",
 		"chaos_warrior",

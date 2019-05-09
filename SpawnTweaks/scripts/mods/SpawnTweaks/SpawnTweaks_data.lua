@@ -850,6 +850,41 @@ mod.add_option(
 	mutator_options_subs
 )
 
+local upscale_breeds_subs = mod.add_option(
+	"UPSCALE_BREEDS_MUTATOR",
+	{
+		["widget_type"] = "checkbox",
+	  ["default_value"] = false,
+	},
+	"Upscale Breeds",
+	"Chance to switch enemy type(breed) to a higher tier breed on spawn.",
+	mutator_options_subs
+)
+mod.add_option(
+	"UPSCALE_BREEDS_MUTATOR_CHANCE",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 100},
+		["unit_text"] = "%",
+	  ["default_value"] = 50,
+	},
+	"Upscale Chance",
+	"Chance for new enemy to be a tier higher.",
+	upscale_breeds_subs
+)
+mod.add_option(
+	"UPSCALE_BREEDS_MUTATOR_SUCCESSIVE_CHANCE",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 100},
+		["unit_text"] = "%",
+	  ["default_value"] = 25,
+	},
+	"Successive Upscale Chance",
+	"After getting upscaled, chance to get upscaled once more.",
+	upscale_breeds_subs
+)
+
 local reverse_twins_subs = mod.add_option(
 	"REVERSE_TWINS_MUTATOR",
 	{

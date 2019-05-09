@@ -857,6 +857,7 @@ mod:dofile("scripts/mods/"..mod:get_name().."/mutators/juiced_specials")
 mod:dofile("scripts/mods/"..mod:get_name().."/mutators/invisible_teammates")
 mod:dofile("scripts/mods/"..mod:get_name().."/mutators/other_minor_mutators")
 mod:dofile("scripts/mods/"..mod:get_name().."/mutators/restart_on_defeat")
+mod:dofile("scripts/mods/"..mod:get_name().."/mutators/upscale_breeds")
 
 mod.on_unload = function()
 	mod.persistent.ingame_entered = mod.ingame_entered

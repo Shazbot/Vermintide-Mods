@@ -47,6 +47,7 @@ mod.mutators = {
 		LORD_DMG_MULTIPLIER = 200,
 		disable_patrols = true,
 		NO_BOTS = true,
+		RESTART_ON_DEFEAT = true,
 	},
 	skeet_shot = {
 		skaven_ratling_gunner_toggle = true,

@@ -850,41 +850,6 @@ mod.add_option(
 	mutator_options_subs
 )
 
-local upscale_breeds_subs = mod.add_option(
-	"UPSCALE_BREEDS_MUTATOR",
-	{
-		["widget_type"] = "checkbox",
-	  ["default_value"] = false,
-	},
-	"Upscale Breeds",
-	"Chance to switch enemy type(breed) to a higher tier breed on spawn.",
-	mutator_options_subs
-)
-mod.add_option(
-	"UPSCALE_BREEDS_MUTATOR_CHANCE",
-	{
-		["widget_type"] = "numeric",
-		["range"] = {0, 100},
-		["unit_text"] = "%",
-	  ["default_value"] = 50,
-	},
-	"Upscale Chance",
-	"Chance for new enemy to be a tier higher.",
-	upscale_breeds_subs
-)
-mod.add_option(
-	"UPSCALE_BREEDS_MUTATOR_SUCCESSIVE_CHANCE",
-	{
-		["widget_type"] = "numeric",
-		["range"] = {0, 100},
-		["unit_text"] = "%",
-	  ["default_value"] = 25,
-	},
-	"Successive Upscale Chance",
-	"After getting upscaled, chance to get upscaled once more.",
-	upscale_breeds_subs
-)
-
 local reverse_twins_subs = mod.add_option(
 	"REVERSE_TWINS_MUTATOR",
 	{
@@ -950,6 +915,64 @@ mod.add_option(
 		.."\nThis by itself makes the game easier all things considered."
 		.."\nNeeds testing with other players.",
 	mutator_options_subs
+)
+
+local lose_green_hp_subs = mod.add_option(
+	"LOSE_GREEN_HP_MUTATOR",
+	{
+		["widget_type"] = "checkbox",
+	  ["default_value"] = false,
+	},
+	"Force Green HP Loss",
+	"When you take a hit that temporary HP would cover up, instead also lose some green HP.",
+	mutator_options_subs
+)
+mod.add_option(
+	"LOSE_GREEN_HP_MUTATOR_CHANCE",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 100},
+		["unit_text"] = "%",
+	  ["default_value"] = 10,
+	},
+	"HP Loss %%",
+	"%% of damage to go to green HP instead of to white HP.",
+	lose_green_hp_subs
+)
+
+local upscale_breeds_subs = mod.add_option(
+	"UPSCALE_BREEDS_MUTATOR",
+	{
+		["widget_type"] = "checkbox",
+	  ["default_value"] = false,
+	},
+	"Upscale Breeds",
+	"Chance to switch enemy type(breed) to a higher tier breed on spawn.",
+	mutator_options_subs
+)
+mod.add_option(
+	"UPSCALE_BREEDS_MUTATOR_CHANCE",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 100},
+		["unit_text"] = "%",
+	  ["default_value"] = 50,
+	},
+	"Upscale Chance",
+	"Chance for new enemy to be a tier higher.",
+	upscale_breeds_subs
+)
+mod.add_option(
+	"UPSCALE_BREEDS_MUTATOR_SUCCESSIVE_CHANCE",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 100},
+		["unit_text"] = "%",
+	  ["default_value"] = 25,
+	},
+	"Successive Upscale Chance",
+	"After getting upscaled, chance to get upscaled once more.",
+	upscale_breeds_subs
 )
 
 mod.add_option(

@@ -49,7 +49,6 @@ data.breed_tier_list = {
 	},
 	skaven_clan_rat = {
 		"skaven_plague_monk",
-		"skaven_explosive_loot_rat",
 		"skaven_storm_vermin_commander",
 		"skaven_storm_vermin",
 		"skaven_storm_vermin_with_shield",
@@ -330,7 +329,6 @@ mod.reverse_twins_data.breeds_to_auto_load = {
 	"skaven_storm_vermin_warlord",
 	"skaven_storm_vermin_champion",
 	"skaven_stormfiend_boss",
-	"skaven_explosive_loot_rat",
 }
 mod.dispatcher:on("onStateIngameEntered",
 function()

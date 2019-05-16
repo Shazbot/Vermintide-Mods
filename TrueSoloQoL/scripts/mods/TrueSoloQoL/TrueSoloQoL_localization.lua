@@ -53,6 +53,7 @@ return {
 	},
 	SHOW_BOSS_PATH_PROGRESS_T = {
 		en = "Show progress to next boss trigger using Streaming Info mod."
+			.."\nType /info in chat if text doesn't get removed.",
 	},
 
 	DRAW_BOSS_EVENTS = {

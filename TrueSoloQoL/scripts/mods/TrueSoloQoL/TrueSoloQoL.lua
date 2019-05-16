@@ -340,3 +340,22 @@ mod.on_game_state_changed = function(status, state)
 		end
 	end
 end
+
+mod.on_disabled = function()
+	if mod:get(mod.SETTING_NAMES.mod.SETTING_NAMES.SHOW_BOSS_PATH_PROGRESS) then
+		local streaming_info = get_mod("StreamingInfo")
+		if streaming_info then
+			streaming_info.set_info_lines()
+		end
+	end
+end
+
+mod.on_setting_changed = function(setting_name)
+	if setting_name == mod.SETTING_NAMES.SHOW_BOSS_PATH_PROGRESS
+	and not mod:get(mod.SETTING_NAMES.mod.SETTING_NAMES.SHOW_BOSS_PATH_PROGRESS) then
+		local streaming_info = get_mod("StreamingInfo")
+		if streaming_info then
+			streaming_info.set_info_lines()
+		end
+	end
+end

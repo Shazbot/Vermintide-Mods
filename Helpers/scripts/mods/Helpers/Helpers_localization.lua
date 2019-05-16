@@ -20,7 +20,7 @@ local localization = {
 		en = "Hotkey to kill the bots."
 	},
 	kill_bots_command_description = {
-		en = "Make ult ready."
+		en = "Kill the bots."
 	},
 
 	PAUSE_HOTKEY = {

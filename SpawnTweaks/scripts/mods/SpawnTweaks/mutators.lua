@@ -8,6 +8,7 @@ mod.simple_ui = get_mod("SimpleUI")
 mod.mutators_list = {
 	"true_solo",
 	"no_bots",
+	"restart_map",
 	"disable_spawns",
 	"skeet_shot",
 	"bomberman",
@@ -16,8 +17,7 @@ mod.mutators_list = {
 mod.mutators_info = {
 	true_solo = {
 		name = "True Solo",
-		desc = "True Solo is the challenge of finishing the map solo without bot help."
-			.."\nI suggest using True Solo QoL Tweaks mod to quickly restart map on defeat."
+		desc = "True Solo is the challenge of finishing a map solo without bot help."
 	},
 	skeet_shot = {
 		name = "Skeet Shot",
@@ -32,6 +32,11 @@ mod.mutators_info = {
 	no_bots = {
 		name = "No Bots",
 		desc = "Remove bots from the game."
+	},
+	restart_map = {
+		name = "Restart Map",
+		desc = "Restart the map on defeat, instead of going to the inn."
+			.."\nTo force a return to inn when with other people you can write /st_win in chat.",
 	},
 	bomberman = {
 		name = "Bomberman",
@@ -83,6 +88,9 @@ mod.mutators = {
 	},
 	no_bots = {
 		NO_BOTS = true,
+	},
+	restart_map = {
+		RESTART_ON_DEFEAT = true,
 	},
 	bomberman = {
 		PLAYER_ITEM_SLOT_MELEE_DMG_MULTIPLIER = 0,
@@ -223,7 +231,7 @@ mod.create_window = function()
 		mutator_chk.tooltip = mutator_localized_name.."\n"..mod.mutators_info[mutator_name].desc
 	end
 
-	local reset_button = mod.main_window:create_button("reset_button", {235+120, window_size[2]-35-10-50}, {80, 30}, nil, "Reset All")
+	local reset_button = mod.main_window:create_button("reset_button", {235+135, window_size[2]-35-10-40}, {80, 30}, nil, "Reset All")
 	reset_button.on_click = function()
 		for _, mutator_ckh in pairs( mod.mutator_chks ) do
 			mutator_ckh.value = false
@@ -255,7 +263,7 @@ mod.create_window = function()
 	-- mod.priority_dropdown = mod.main_window:create_dropdown("priority_dropdown", {235-20+80, window_size[2]-35-10-50-30-50},  {200, 30}, nil, skin_options, nil, 1)
 	-- mod.priority_dropdown:select_index(1)
 
-	local summary_title = mod.main_window:create_label("summary_title", {5+30+40+155-20, window_size[2]-35-35-35-10-50-70-10}, {80, 40}, nil, "Summary")
+	local summary_title = mod.main_window:create_label("summary_title", {5+30+40+155-20, window_size[2]-35-35-35-10-50-70-10-5}, {80, 40}, nil, "Summary")
 	summary_title.tooltip =
 		"Summary"
 		.."\nList of all the changes Spawn Tweaks is currently doing. Default value is in brackets."
@@ -263,7 +271,7 @@ mod.create_window = function()
 		.."\nClick Reset All if you don't want anything active."
 
 	for i = 1, 30 do
-		local summary = mod.main_window:create_label("summary_"..i, {5+30+10+10+155, window_size[2]-30-35-20-35-10-50-70+2-(28*i)}, {100, 40}, nil, "")
+		local summary = mod.main_window:create_label("summary_"..i, {5+30+10+10+155, window_size[2]-30-35-20-35-10-50-70-5+2-(28*i)}, {100, 40}, nil, "")
 		table.insert(mod.summary_labels, summary)
 	end
 

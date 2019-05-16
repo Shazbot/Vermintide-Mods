@@ -23,10 +23,16 @@ end
 mod.green_hp_mut.FORCED_PERMANENT_DAMAGE_TYPES = {}
 
 mod:hook(PlayerUnitHealthExtension, "add_damage", function(func, self, attacker_unit, damage_amount, hit_zone_name, damage_type, hit_position, damage_direction, damage_source_name, hit_ragdoll_actor, damaging_unit, hit_react_type, is_critical_strike, added_dot)
+	local white_hp_to_green_hp_ratio = mod:get(mod.SETTING_NAMES.WHITE_HP_TO_GREEN_HP)/100
+	if damage_type == "temporary_health_degen"
+	and white_hp_to_green_hp_ratio > 0
+	then
+		self:add_heal(self.unit, damage_amount*white_hp_to_green_hp_ratio, nil, "health_regen")
+	end
+
 	if not mod:get(mod.SETTING_NAMES.LOSE_GREEN_HP_MUTATOR) then
 		return func(self, attacker_unit, damage_amount, hit_zone_name, damage_type, hit_position, damage_direction, damage_source_name, hit_ragdoll_actor, damaging_unit, hit_react_type, is_critical_strike, added_dot)
 	end
-
 
 	if DamageUtils.is_in_inn then
 		return

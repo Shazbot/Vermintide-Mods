@@ -917,6 +917,79 @@ mod.add_option(
 	mutator_options_subs
 )
 
+local hp_mutators_subs = mod.add_option(
+	"HP_MUTATORS_GROUP",
+	{
+		["widget_type"] = "group",
+	},
+	"HP Related",
+	"Mutators that address white and green HP.",
+	mutator_options_subs
+)
+mod.add_option(
+	"PLAYER_WHITE_HP_GAIN_MULTIPLIER",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 1000},
+		["unit_text"] = "%",
+		["default_value"] = 100,
+	},
+	"Player White HP Gain Multiplier",
+	"Multiply the amount of white/temp HP players gain."
+		.."\nDoesn't affect white hp gained from hp share talent that disables normal healing.",
+	hp_mutators_subs
+)
+mod.add_option(
+	"WHITE_HP_DEGEN_AMOUNT",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 15},
+	  ["default_value"] = 0.25,
+	  ["decimals_number"] = 2,
+	},
+	"White HP Degen Amount",
+	"White HP loss per each degenerating tick."
+		.."\nDefault is 0.25.",
+	hp_mutators_subs
+)
+mod.add_option(
+	"WHITE_HP_DEGEN_DELAY",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 15},
+	  ["default_value"] = 0.5,
+	  ["decimals_number"] = 2,
+	},
+	"White HP Degen Frequency",
+	"White HP seconds between degenerating ticks."
+		.."\nDefault is 0.5.",
+	hp_mutators_subs
+)
+mod.add_option(
+	"WHITE_HP_DEGEN_START",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 15},
+	  ["default_value"] = 3,
+	  ["decimals_number"] = 1,
+	},
+	"White HP Degen Start Delay",
+	"White HP delay in seconds before starting to degenerate."
+		.."\nDefault is 3.",
+	hp_mutators_subs
+)
+mod.add_option(
+	"WHITE_HP_TO_GREEN_HP",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 100},
+		["unit_text"] = "%",
+	  ["default_value"] = 0,
+	},
+	"White HP Degen To Green HP %%",
+	"%% of degenerated White HP to be recieved as Green HP.",
+	hp_mutators_subs
+)
 local lose_green_hp_subs = mod.add_option(
 	"LOSE_GREEN_HP_MUTATOR",
 	{
@@ -925,7 +998,7 @@ local lose_green_hp_subs = mod.add_option(
 	},
 	"Force Green HP Loss",
 	"When you take a hit that temporary HP would cover up, instead also lose some green HP.",
-	mutator_options_subs
+	hp_mutators_subs
 )
 mod.add_option(
 	"LOSE_GREEN_HP_MUTATOR_CHANCE",
@@ -1087,19 +1160,6 @@ mod.add_option(
 	},
 	"Player Bomb Slot Dmg Multiplier",
 	"Multiply the damage from bomb slot weapons.",
-	mutator_options_subs
-)
-mod.add_option(
-	"PLAYER_WHITE_HP_GAIN_MULTIPLIER",
-	{
-		["widget_type"] = "numeric",
-		["range"] = {0, 1000},
-		["unit_text"] = "%",
-		["default_value"] = 100,
-	},
-	"Player White HP Gain Multiplier",
-	"Multiply the amount of white/temp HP players gain."
-		.."\nDoesn't affect white hp gained from hp share talent that disables normal healing.",
 	mutator_options_subs
 )
 mod.add_option(
@@ -1295,5 +1355,10 @@ mod.get_defaults = function()
 	return defaults
 end
 mod.setting_defaults = mod.get_defaults()
+
+mod.is_setting_at_default = function(setting_name)
+	return mod:get(mod.SETTING_NAMES[setting_name])
+		== mod.setting_defaults[mod.SETTING_NAMES[setting_name]]
+end
 
 return mod_data

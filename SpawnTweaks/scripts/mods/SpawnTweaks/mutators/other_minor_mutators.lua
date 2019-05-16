@@ -19,6 +19,21 @@ mod:hook(DamageUtils, "heal_network", function(func, healed_unit, healer_unit, h
 	return func(healed_unit, healer_unit, heal_amount, heal_type)
 end)
 
+
+mod:hook(PlayerUnitHealthExtension, "health_degen_settings", function(func, ...)
+	local degen_amount, degen_delay, degen_start = func(...)
+	if not mod.is_setting_at_default(mod.SETTING_NAMES.WHITE_HP_DEGEN_AMOUNT) then
+		degen_amount = mod:get(mod.SETTING_NAMES.WHITE_HP_DEGEN_AMOUNT)
+	end
+	if not mod.is_setting_at_default(mod.SETTING_NAMES.WHITE_HP_DEGEN_DELAY) then
+		degen_delay = mod:get(mod.SETTING_NAMES.WHITE_HP_DEGEN_DELAY)
+	end
+	if not mod.is_setting_at_default(mod.SETTING_NAMES.WHITE_HP_DEGEN_START) then
+		degen_start = mod:get(mod.SETTING_NAMES.WHITE_HP_DEGEN_START)
+	end
+	return degen_amount, degen_delay, degen_start
+end)
+
 --- Disable ult cd on player striking and getting hit.
 mod:hook(CareerExtension, "extensions_ready", function(func, self, world, unit)
 	local disable_ult_cd_on_strike = mod:get(mod.SETTING_NAMES.DISABLE_ULT_CD_ON_STRIKE)

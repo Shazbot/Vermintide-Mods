@@ -88,7 +88,7 @@ mod.on_setting_changed = function(setting_name)
 			mod:get(mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_AMMO_DURATION)
 
 		BuffTemplates.custom_dps_timed.buffs[1].duration =
-			mod:get(mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_DPS_TIMED)
+			mod:get(mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_DPS_TIMED_DURATION)
 	end
 
 	if setting_name == mod.SETTING_NAMES.MINI_HUD_PRESET then

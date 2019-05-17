@@ -1918,7 +1918,7 @@ mod.add_option(
 	other_elements_subs
 )
 
-mod.add_option(
+local show_presets_subs = mod.add_option(
 	"SHOW_PRESETS_UI",
 	{
 		["widget_type"] = "checkbox",
@@ -1928,6 +1928,16 @@ mod.add_option(
 	"Whether to show the presets UI in the keep.",
 	nil,
 	1
+)
+mod.add_option(
+	"SHOW_PRESETS_UI_OUTSIDE_KEEP",
+	{
+		["widget_type"] = "checkbox",
+	  ["default_value"] = false,
+	},
+	"Show Outside Keep",
+	"Show during normal maps.",
+	show_presets_subs
 )
 
 mod.add_option(

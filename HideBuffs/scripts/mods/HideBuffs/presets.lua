@@ -179,10 +179,15 @@ end
 
 --- Open UI on chat open.
 mod.on_chat_gui_update = function(chat_gui)
-	if Managers.state.game_mode
-	and Managers.state.game_mode:level_key() ~= "inn_level"
+	if not Managers.state.game_mode
 	or not mod:get(mod.SETTING_NAMES.SHOW_PRESETS_UI)
 	or not mod.simple_ui
+	then
+		return
+	end
+
+	if Managers.state.game_mode:level_key() ~= "inn_level"
+	and not mod:get(mod.SETTING_NAMES.SHOW_PRESETS_UI_OUTSIDE_KEEP)
 	then
 		return
 	end

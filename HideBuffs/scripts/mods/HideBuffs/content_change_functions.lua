@@ -16,7 +16,23 @@ mod.player_ability_dynamic_content_change_fun = function (content, style)
 	size[1] = bar_length * ability_progress
 end
 
-mod.team_grimoire_debuff_divider_content_change_fun =  function (content, style)
+mod.team_ammo_indicator_content_check_fun = function (content, style)
+	local ammo_progress = content.ammo_percent
+
+	if ammo_progress then
+		local make_green = ammo_progress > 0.33
+		style.color[2] = make_green and 0 or 255
+		style.color[4] = make_green and 0 or 255
+	end
+
+	if mod:get(mod.SETTING_NAMES.TEAM_UI_KEEP_AMMO_ICON_VISIBLE) then
+		return ammo_progress and ammo_progress > 0
+	end
+
+	return ammo_progress and ammo_progress > 0 and ammo_progress <= 0.33
+end
+
+mod.team_grimoire_debuff_divider_content_change_fun = function (content, style)
 	local hp_bar_content = content.hp_bar
 	local internal_bar_value = hp_bar_content.internal_bar_value
 	local actual_active_percentage = content.actual_active_percentage or 1

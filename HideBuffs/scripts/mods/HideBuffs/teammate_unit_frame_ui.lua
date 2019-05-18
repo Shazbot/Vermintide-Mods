@@ -209,6 +209,15 @@ mod.teammate_unit_frame_draw = function(unit_frame_ui)
 	def_dynamic_w.style.ammo_indicator.offset[1] = 60 + delta_x + hp_bar_offset_x
 	def_dynamic_w.style.ammo_indicator.offset[2] = -40 + delta_y/2 + hp_bar_offset_y
 
+	-- Change the ammo indicator icon content change function for
+	-- the option to keep it always shown and have it in green.
+	local passes = def_dynamic_w.element.passes
+	for i = #passes, 1, -1 do
+		if passes[i].texture_id == "ammo_indicator" then
+			passes[i].content_check_function = mod.team_ammo_indicator_content_check_fun
+		end
+	end
+
 	static_w_style.ability_bar_bg.offset[1] = -46 + hp_bar_offset_x
 	static_w_style.ability_bar_bg.offset[2] = -34 + hp_bar_offset_y
 
@@ -333,6 +342,10 @@ mod.teammate_unit_frame_draw = function(unit_frame_ui)
 	next_icon_offset = next_icon_offset + (self.is_wounded and 30 or 0)
 
 	if self.important_icons_enabled then
-		def_dynamic_w.style.ammo_indicator.offset[1] = def_dynamic_w.style.ammo_indicator.offset[1] + next_icon_offset
+		local ammo_indicator_offset_x = def_dynamic_w.style.ammo_indicator.offset[1] + next_icon_offset
+		if def_dynamic_w.style.ammo_indicator.offset[1] ~= ammo_indicator_offset_x then
+			self:set_dirty()
+		end
+		def_dynamic_w.style.ammo_indicator.offset[1] = ammo_indicator_offset_x
 	end
 end

@@ -1431,6 +1431,18 @@ mod.add_option(
 )
 
 mod.add_option(
+	"TEAM_UI_KEEP_AMMO_ICON_VISIBLE",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Always Show Ammo Status Icon",
+	"Always keep the teammate yellow/red ammo status icon visible.",
+	team_ui_group.sub_widgets,
+	2
+)
+
+mod.add_option(
 	"TEAM_UI_PORTRAIT_ICONS",
 	{
 		["widget_type"] = "dropdown",

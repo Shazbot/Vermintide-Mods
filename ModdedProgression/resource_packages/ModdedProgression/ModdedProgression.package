@@ -1,0 +1,11 @@
+mod = [
+	"ModdedProgression"
+]
+
+package = [
+	"resource_packages/ModdedProgression/ModdedProgression"
+]
+
+lua = [
+	"scripts/mods/ModdedProgression/*"
+]

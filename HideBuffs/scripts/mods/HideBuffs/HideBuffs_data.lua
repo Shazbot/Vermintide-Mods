@@ -25,6 +25,7 @@ mod.SETTING_NAMES = {
 	BUFFS_GROUP = "BUFFS_GROUP",
 	BUFFS_OFFSET_X = "BUFFS_OFFSET_X",
 	BUFFS_OFFSET_Y = "BUFFS_OFFSET_Y",
+	CENTERED_BUFFS = "CENTERED_BUFFS",
 	REVERSE_BUFF_DIRECTION = "REVERSE_BUFF_DIRECTION",
 	BUFFS_FLOW_VERTICALLY = "BUFFS_FLOW_VERTICALLY",
 	TEAM_UI_GROUP = "TEAM_UI_GROUP",
@@ -416,6 +417,13 @@ mod_data.options_widgets:extend({
 		["text"] = mod:localize("BUFFS_GROUP"),
 		["tooltip"] = mod:localize("BUFFS_GROUP_T"),
 		["sub_widgets"] = {
+			{
+				["setting_name"] = mod.SETTING_NAMES.CENTERED_BUFFS,
+				["widget_type"] = "checkbox",
+				["text"] = mod:localize("CENTERED_BUFFS"),
+				["tooltip"] = mod:localize("CENTERED_BUFFS_T"),
+				["default_value"] = false,
+			},
 			{
 				["setting_name"] = mod.SETTING_NAMES.REVERSE_BUFF_DIRECTION,
 				["widget_type"] = "checkbox",

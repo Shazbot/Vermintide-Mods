@@ -28,17 +28,28 @@ local buff_ui_definitions = local_require("scripts/ui/hud_ui/buff_ui_definitions
 local BUFF_SIZE = buff_ui_definitions.BUFF_SIZE
 local BUFF_SPACING = buff_ui_definitions.BUFF_SPACING
 mod:hook(BuffUI, "_align_widgets", function (func, self, ...)
-	if not mod:get(mod.SETTING_NAMES.REVERSE_BUFF_DIRECTION) then
+	local in_reverse = mod:get(mod.SETTING_NAMES.REVERSE_BUFF_DIRECTION)
+	local are_centered = mod:get(mod.SETTING_NAMES.CENTERED_BUFFS)
+
+	if not in_reverse
+	and not are_centered then
 		return func(self, ...)
 	end
 
 	local horizontal_spacing = BUFF_SIZE[1] + BUFF_SPACING
 
+	local num_buffs = #self._active_buffs
+	local total_length = num_buffs * horizontal_spacing - BUFF_SPACING
+
 	for index, data in ipairs(self._active_buffs) do
 		local widget = data.widget
 		local widget_offset = widget.offset
-		local buffs_direction = mod:get(mod.SETTING_NAMES.REVERSE_BUFF_DIRECTION) and -1 or 1
+		local buffs_direction = in_reverse and -1 or 1
 		local target_position = buffs_direction * (index - 1) * horizontal_spacing
+		if are_centered then
+			target_position = target_position
+				+ (in_reverse and total_length/2 or -total_length/2)
+		end
 		data.target_position = target_position
 		data.target_distance = math.abs(widget_offset[1] - target_position)
 

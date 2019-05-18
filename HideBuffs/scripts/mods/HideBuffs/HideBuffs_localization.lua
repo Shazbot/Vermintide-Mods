@@ -150,6 +150,12 @@ mod.localizations:update({
 	REVERSE_BUFF_DIRECTION_T = {
 		en = "Make active buffs flow from right to left."
 	},
+	CENTERED_BUFFS = {
+		en = "Center Buffs"
+	},
+	CENTERED_BUFFS_T = {
+		en = "Center the buffs."
+	},
 	BUFFS_FLOW_VERTICALLY = {
 		en = "Buffs Flow Vertically"
 	},

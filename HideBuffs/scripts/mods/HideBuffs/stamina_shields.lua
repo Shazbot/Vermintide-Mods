@@ -33,3 +33,23 @@ mod:hook(FatigueUI, "draw", function(func, self, dt)
 
 	return func(self, dt)
 end)
+
+--- Change shields opacity.
+mod:hook_safe(FatigueUI, "start_fade_in", function(self)
+	local shields_opacity = mod:get(mod.SETTING_NAMES.SHIELDS_OPACITY)
+
+	if shields_opacity == 255 then
+		return
+	end
+
+	local active_shields = self.active_shields
+	local shields = self.shields
+
+	for i = 1, active_shields, 1 do
+		for shield, is_active in pairs( shields[i].animations ) do
+			if is_active then
+				shield.data_array[5] = shields_opacity
+			end
+		end
+	end
+end)

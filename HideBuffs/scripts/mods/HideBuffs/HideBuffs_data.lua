@@ -1073,6 +1073,17 @@ mod.add_option(
 	"Adjust the spacing between stamina shields.",
 	shields_subs
 )
+mod.add_option(
+	"SHIELDS_OPACITY",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 255},
+		["default_value"] = 255,
+	},
+	"Shields Opacity",
+	"Adjust shields transparency, 0 is fully transparent.",
+	shields_subs
+)
 
 local hide_ui_elements_group_index = pl.tablex.find_if(mod_data.options_widgets,
 	function(option_widget)

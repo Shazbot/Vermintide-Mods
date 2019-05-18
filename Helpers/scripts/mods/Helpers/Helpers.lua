@@ -113,3 +113,31 @@ end
 mod:command("fail", mod:localize("fail_level_command_description"), function() mod.fail_level() end)
 mod:command("win", mod:localize("win_level_command_description"), function() mod.win_level() end)
 mod:command("restart", mod:localize("restart_level_command_description"), function() mod.restart_level() end)
+
+
+mod:command("bot_toggle",
+"Toggle bots on/off for current level."
+	.."\nUse to spawn bots in inn."
+	.."\nInn bots can lead to a rare nav crash.",
+function()
+	mod:pcall(function()
+		local level_settings = LevelHelper:current_level_settings()
+		level_settings.no_bots_allowed = not level_settings.no_bots_allowed
+	end)
+end)
+
+mod:command("invincible_toggle",
+"Toggle player and bot invincibility.",
+function()
+	mod:pcall(function()
+		script_data.player_invincible = not script_data.player_invincible
+	end)
+end)
+
+mod:command("inn_dmg",
+"Enables taking damage in the inn.",
+function()
+	mod:pcall(function()
+		DamageUtils.is_in_inn = false
+	end)
+end)

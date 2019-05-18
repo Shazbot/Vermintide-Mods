@@ -70,6 +70,13 @@ return {
 		en = "Disable the fog. Toggling off may require map restart."
 	},
 
+	DISABLE_SUN_SHADOWS = {
+		en = "Disable Sun Shadows"
+	},
+	DISABLE_SUN_SHADOWS_T = {
+		en = "Disable sun shadows. Toggling off may require map restart."
+	},
+
 	dlc_level_command_description = {
 		en = "Start plaza dlc level."
 	},

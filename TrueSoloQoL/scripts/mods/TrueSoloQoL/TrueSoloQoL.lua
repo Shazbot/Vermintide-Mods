@@ -270,6 +270,9 @@ mod:hook_safe(MoodHandler, "apply_environment_variables", function(self, shading
   if mod:get(mod.SETTING_NAMES.DISABLE_FOG) then
 		ShadingEnvironment.set_scalar(shading_env, "fog_enabled", 0)
 	end
+	if mod:get(mod.SETTING_NAMES.DISABLE_SUN_SHADOWS) then
+		ShadingEnvironment.set_scalar(shading_env, "sun_shadows_enabled", 0)
+	end
 end)
 
 --- Disable ult voice line from local player.

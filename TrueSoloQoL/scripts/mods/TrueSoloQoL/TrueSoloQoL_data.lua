@@ -11,6 +11,7 @@ mod.SETTING_NAMES = {
 	SHOW_BOSS_PATH_PROGRESS = "SHOW_BOSS_PATH_PROGRESS",
 	DRAW_BOSS_EVENTS = "DRAW_BOSS_EVENTS",
 	DISABLE_FOG = "DISABLE_FOG",
+	DISABLE_SUN_SHADOWS = "DISABLE_SUN_SHADOWS",
 }
 
 local mod_data = {
@@ -88,6 +89,13 @@ mod_data.options_widgets = {
 		["widget_type"] = "checkbox",
 		["text"] = mod:localize("DISABLE_FOG"),
 		["tooltip"] = mod:localize("DISABLE_FOG_T"),
+		["default_value"] = false,
+	},
+	{
+		["setting_name"] = mod.SETTING_NAMES.DISABLE_SUN_SHADOWS,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("DISABLE_SUN_SHADOWS"),
+		["tooltip"] = mod:localize("DISABLE_SUN_SHADOWS_T"),
 		["default_value"] = false,
 	},
 }

@@ -4,6 +4,12 @@ local pl = require'pl.import_into'()
 
 fassert(pl, "Info Dump For Streaming requires Penlight Lua Libraries!")
 
+mod.persistent = mod:persistent_table("persistent")
+mod.persistent.temp_external_lines = mod.persistent.temp_external_lines or {}
+mod.persistent.perm_external_lines = mod.persistent.perm_external_lines or {}
+mod.temp_external_lines = mod.persistent.temp_external_lines
+mod.perm_external_lines = mod.persistent.perm_external_lines
+
 mod.streaming_data = {}
 
 mod.out_lines_setting_key = "out_lines"
@@ -182,6 +188,19 @@ mod.get_text_size = function (gui, font_size, line)
 	return width, full_font_height
 end
 
+mod.draw_line = function(gui, font_size, line, layer, start_x, start_y, longest, height, vertical_spacing, header_color)
+	local line_width, line_height = mod.get_text_size(gui, font_size, line)
+	if line_width > longest then
+		longest = line_width
+	end
+	height = height + line_height
+	local pos = Vector3(start_x, start_y-height, layer)
+	height = height + vertical_spacing
+	Gui.text(gui, line, mod.font_mtrl, font_size, mod.font, pos, header_color)
+
+	return longest, height
+end
+
 mod.draw_perm_info = function(owner)
 	local self = owner
 
@@ -210,27 +229,22 @@ mod.draw_perm_info = function(owner)
 
 	local start_x = mod:get(mod.SETTING_NAMES.PERM_OFFSET_X)
 	local start_y = RESOLUTION_LOOKUP.res_h + mod:get(mod.SETTING_NAMES.PERM_OFFSET_Y)
-	local i = 0
 
 	mod:pcall(function()
-			local bg_w = 0
-			local bg_h = 0
-			mod.perm_lines
-				:foreach(function(line)
-					local line_width, line_height = mod.get_text_size(gui, font_size, line)
-					if line_width > bg_w then
-						bg_w = line_width
-					end
-					bg_h = bg_h + line_height
-					local pos = Vector3(start_x, start_y-bg_h, 1012)
-					bg_h = bg_h + vertical_spacing
-					Gui.text(gui, line, mod.font_mtrl, font_size, mod.font, pos, header_color)
-					i = i + 1
-				end)
-			bg_h = bg_h - vertical_spacing
+			local longest = 0
+			local height = 0
+			mod.perm_lines:foreach(function(line)
+				longest, height = mod.draw_line(gui, font_size, line, 1012, start_x, start_y, longest, height, vertical_spacing, header_color)
+			end)
+			for _, lines in pairs( mod.perm_external_lines ) do
+				for _, line in ipairs( lines ) do
+					longest, height = mod.draw_line(gui, font_size, line, 1002, start_x, start_y, longest, height, vertical_spacing, header_color)
+				end
+			end
+			height = height - vertical_spacing
 			Gui.rect(gui,
-				Vector3(start_x - 10, start_y - bg_h - 10, 1011),
-				Vector2(bg_w + 20, bg_h),
+				Vector3(start_x - 10, start_y - height - 10, 1011),
+				Vector2(longest + 20, height),
 				Color(bg_alpha, 0, 0, 0)
 			)
 	end)
@@ -264,31 +278,27 @@ mod.draw_temp_info = function(owner)
 
 	local start_x = mod:get(mod.SETTING_NAMES.OFFSET_X)
 	local start_y = RESOLUTION_LOOKUP.res_h + mod:get(mod.SETTING_NAMES.OFFSET_Y)
-	local i = 0
 
 	mod:pcall(function()
 		local current_frame = Application.time_since_launch()
 		if mod.drew_rect_at_frame ~= current_frame then
 			mod.drew_rect_at_frame = current_frame
 
-			local bg_w = 0
-			local bg_h = 0
+			local longest = 0
+			local height = 0
 			pl.List(pl.stringx.splitlines(mod.get_streaming_info())):extend(mod.out_lines)
 				:foreach(function(line)
-					local line_width, line_height = mod.get_text_size(gui, font_size, line)
-					if line_width > bg_w then
-						bg_w = line_width
-					end
-					bg_h = bg_h + line_height
-					local pos = Vector3(start_x, start_y-bg_h, 1002)
-					bg_h = bg_h + vertical_spacing
-					Gui.text(gui, line, mod.font_mtrl, font_size, mod.font, pos, header_color)
-					i = i + 1
+					longest, height = mod.draw_line(gui, font_size, line, 1002, start_x, start_y, longest, height, vertical_spacing, header_color)
 				end)
-			bg_h = bg_h - vertical_spacing
+			for _, lines in pairs( mod.temp_external_lines ) do
+				for _, line in ipairs( lines ) do
+					longest, height = mod.draw_line(gui, font_size, line, 1002, start_x, start_y, longest, height, vertical_spacing, header_color)
+				end
+			end
+			height = height - vertical_spacing
 			Gui.rect(gui,
-				Vector3(start_x - 10, start_y - bg_h - 10, 1001),
-				Vector2(bg_w + 20, bg_h),
+				Vector3(start_x - 10, start_y - height - 10, 1001),
+				Vector2(longest + 20, height),
 				Color(bg_alpha, 0, 0, 0)
 			)
 		end
@@ -362,3 +372,15 @@ mod.on_disabled = function(init_call) -- luacheck: ignore init_call
 	end
 	mod:hook_enable(StateLoading, "on_exit")
 end
+
+mod.on_enabled = function()
+	mod.create_external_lines()
+end
+
+mod.create_external_lines = function()
+	mod.persistent.temp_external_lines = mod.persistent.temp_external_lines or {}
+	mod.persistent.perm_external_lines = mod.persistent.perm_external_lines or {}
+	mod.temp_external_lines = mod.persistent.temp_external_lines
+	mod.perm_external_lines = mod.persistent.perm_external_lines
+end
+mod.create_external_lines()

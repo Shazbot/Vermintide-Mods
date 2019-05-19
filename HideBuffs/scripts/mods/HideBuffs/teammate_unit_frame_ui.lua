@@ -163,18 +163,32 @@ mod.teammate_unit_frame_draw = function(unit_frame_ui)
 	end
 
 	local start_x = -35
+	local start_y = 2
 	local item_spacing = mod:get(mod.SETTING_NAMES.TEAM_UI_ITEM_SLOTS_SPACING)
 	local item_size = mod:get(mod.SETTING_NAMES.TEAM_UI_ITEM_SLOTS_SIZE) + 4
 
 	for i = 1, 3 do
-		loadout_dynamic.style["item_slot_"..i].offset[1] = start_x+2.5+item_spacing*(i-1)
-		loadout_dynamic.style["item_slot_"..i].size[1] = item_size-4
-		loadout_dynamic.style["item_slot_"..i].size[2] = item_size-4
+		local item_slot_style = loadout_dynamic.style["item_slot_"..i]
+
+		local horizontal_index = i
+		local vertical_index = 1
+		if mod:get(mod.SETTING_NAMES.TEAM_UI_ITEM_SLOTS_VERTICAL_FLOW) then
+			horizontal_index = 1
+			vertical_index = i
+		end
+
+		item_slot_style.offset[1] = start_x+2.5+item_spacing*(horizontal_index-1)
+		item_slot_style.offset[2] = start_y-item_spacing*(vertical_index-1)
+
+		item_slot_style.size[1] = item_size-4
+		item_slot_style.size[2] = item_size-4
 
 		for _, item_slot_name in ipairs( mod.item_slot_widgets ) do
-			loadout_dynamic.style[item_slot_name..i].offset[1] = start_x+item_spacing*(i-1)
-			loadout_dynamic.style[item_slot_name..i].size[1] = item_size
-			loadout_dynamic.style[item_slot_name..i].size[2] = item_size
+			local other_slot_elements_style = loadout_dynamic.style[item_slot_name..i]
+			other_slot_elements_style.offset[1] = start_x+item_spacing*(horizontal_index-1)
+			other_slot_elements_style.offset[2] = start_y-2-item_spacing*(vertical_index-1)
+			other_slot_elements_style.size[1] = item_size
+			other_slot_elements_style.size[2] = item_size
 		end
 	end
 

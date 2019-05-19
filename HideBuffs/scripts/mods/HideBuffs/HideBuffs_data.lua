@@ -1559,6 +1559,16 @@ local team_ui_item_slots_subs = mod.add_option(
 	team_ui_group.sub_widgets
 )
 mod.add_option(
+	"TEAM_UI_ITEM_SLOTS_VERTICAL_FLOW",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Flow Vertically",
+	"Make item slots flow vertically.",
+	team_ui_item_slots_subs
+)
+mod.add_option(
 	"TEAM_UI_ITEM_SLOTS_OFFSET_X",
 	{
 		["widget_type"] = "numeric",

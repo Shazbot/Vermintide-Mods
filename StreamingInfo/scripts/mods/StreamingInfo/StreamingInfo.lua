@@ -377,6 +377,30 @@ mod.on_enabled = function()
 	mod.create_external_lines()
 end
 
+mod.on_setting_changed = function(setting_name)
+	mod.dw_enabled = nil
+	mod.ons_enabled = nil
+	mod.cached_mutators = nil
+
+	-- Handle turning off options by clearing everything.
+	if not mod:get(setting_name) then
+		if setting_name == mod.SETTING_NAMES.MUTATORS_INFO_TEMP then
+			mod.temp_external_lines["FSMutators"] = nil
+		end
+		if setting_name == mod.SETTING_NAMES.MUTATORS_INFO then
+			mod.perm_external_lines["FSMutators"] = nil
+		end
+		if setting_name == mod.SETTING_NAMES.ONS_DW_INFO_TEMP then
+			mod.temp_external_lines["DWONS"] = nil
+		end
+		if setting_name == mod.SETTING_NAMES.ONS_DW_INFO then
+			mod.perm_external_lines["DWONS"] = nil
+		end
+	end
+end
+
+mod:dofile("scripts/mods/"..mod:get_name().."/additional_info_lines")
+
 mod.create_external_lines = function()
 	mod.persistent.temp_external_lines = mod.persistent.temp_external_lines or {}
 	mod.persistent.perm_external_lines = mod.persistent.perm_external_lines or {}

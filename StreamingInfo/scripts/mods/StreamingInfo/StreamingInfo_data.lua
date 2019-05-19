@@ -40,6 +40,56 @@ mod.add_option = function(setting_name, option_widget, en_text, en_tooltip, grou
 	return option_widget.sub_widgets
 end
 
+local additional_lines_subs = mod.add_option(
+	"ADDITIONAL_LINES_GROUP",
+	{
+		["widget_type"] = "group",
+	},
+	"Show Additional Info",
+	"Add additional lines."
+)
+mod.add_option(
+	"ONS_DW_INFO_TEMP",
+	{
+		["widget_type"] = "checkbox",
+	  ["default_value"] = true,
+	},
+	"Onslaught And Deathwish Temp",
+	"Auto-add lines for Onslaught and Deathwish to temporary lines.",
+	additional_lines_subs
+)
+mod.add_option(
+	"ONS_DW_INFO",
+	{
+		["widget_type"] = "checkbox",
+	  ["default_value"] = false,
+	},
+	"Onslaught And Deathwish",
+	"Auto-add lines for Onslaught and Deathwish to permanent lines.",
+	additional_lines_subs
+)
+
+mod.add_option(
+	"MUTATORS_INFO_TEMP",
+	{
+		["widget_type"] = "checkbox",
+	  ["default_value"] = true,
+	},
+	"Active FS Mutators Temp",
+	"Auto-add lines for active Fatshark mutators to temporary lines.",
+	additional_lines_subs
+)
+mod.add_option(
+	"MUTATORS_INFO",
+	{
+		["widget_type"] = "checkbox",
+	  ["default_value"] = false,
+	},
+	"Active FS Mutators",
+	"Auto-add lines for active Fatshark mutators to permanent lines.",
+	additional_lines_subs
+)
+
 mod.add_option(
 	"RED",
 	{

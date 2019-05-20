@@ -7,7 +7,7 @@ local stringx = require'pl.stringx'
 fassert(pl, "Spawn Tweaks must be lower than Penlight Lua Libraries in your launcher's load order.")
 
 mod.persistent = mod:persistent_table("persistent")
-local EvtD = require("scripts/mods/SpawnTweaks/EventDispatcher")
+local EvtD = require("scripts/mods/"..mod:get_name().."/EventDispatcher")
 mod.dispatcher = EvtD()
 
 --- Don't play horde warning sound when hordes disabled.

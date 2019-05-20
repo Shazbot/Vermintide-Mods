@@ -115,7 +115,7 @@ mod.create_presets_window = function()
 	local presets_dropdown = mod.presets_window:create_dropdown(
 		"presets_dropdown",
 		{0, 50+50},
-		{150, 25},
+		{220, 25},
 		"middle_top",
 		indexed_preset_names,
 		nil,

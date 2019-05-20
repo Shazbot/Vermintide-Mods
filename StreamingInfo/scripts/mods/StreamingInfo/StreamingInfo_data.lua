@@ -55,7 +55,8 @@ mod.add_option(
 	  ["default_value"] = true,
 	},
 	"Onslaught And Deathwish Temp",
-	"Auto-add lines for Onslaught and Deathwish to temporary lines.",
+	"Auto-add lines for Onslaught and Deathwish to temporary lines."
+		.."\nThis requires the DwOns QoL mod to work.",
 	additional_lines_subs
 )
 mod.add_option(
@@ -65,7 +66,8 @@ mod.add_option(
 	  ["default_value"] = false,
 	},
 	"Onslaught And Deathwish",
-	"Auto-add lines for Onslaught and Deathwish to permanent lines.",
+	"Auto-add lines for Onslaught and Deathwish to permanent lines."
+		.."\nThis requires the DwOns QoL mod to work.",
 	additional_lines_subs
 )
 

@@ -382,7 +382,7 @@ mod.on_setting_changed = function(setting_name)
 	mod.ons_enabled = nil
 	mod.cached_mutators = nil
 
-	-- Handle turning off options by clearing everything.
+	-- Handle turning off Show Additional Info options by clearing everything.
 	if not mod:get(setting_name) then
 		if setting_name == mod.SETTING_NAMES.MUTATORS_INFO_TEMP then
 			mod.temp_external_lines["FSMutators"] = nil

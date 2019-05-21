@@ -156,6 +156,12 @@ mod.localizations:update({
 	CENTERED_BUFFS_T = {
 		en = "Center the buffs."
 	},
+	CENTERED_BUFFS_REALIGN = {
+		en = "Center On Screen"
+	},
+	CENTERED_BUFFS_REALIGN_T = {
+		en = "Also center on the middle of the screen."
+	},
 	BUFFS_FLOW_VERTICALLY = {
 		en = "Buffs Flow Vertically"
 	},

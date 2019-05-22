@@ -639,7 +639,6 @@ mod:hook(TwitchIconView, "_draw", function(func, self, ...)
 	return func(self, ...)
 end)
 
-
 --- Disable White HP flashing.
 mod:hook(UnitFrameUI, "_update_bar_flash", function(func, self, widget, style, time, dt)
 	if mod:get(mod.SETTING_NAMES.STOP_WHITE_HP_FLASHING) then

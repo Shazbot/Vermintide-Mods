@@ -75,7 +75,7 @@ end
 
 mod.upload_setting_info =
 	"Upload UI Tweaks"
-	.."\nUploads your UI Tweaks settings so I can create a preset other can use."
+	.."\nUploads your UI Tweaks settings so I can create a preset others can use."
 	.."\nWrite your name so I know whom to credit or feel free to stay anonymous."
 	.."\nTo add your comment type:"
 	.."\n/ut_upload_settings Author is prop joe. This is comment text. Blah blah."

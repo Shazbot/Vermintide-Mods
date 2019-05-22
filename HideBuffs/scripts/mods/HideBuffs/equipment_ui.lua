@@ -24,11 +24,17 @@ mod:hook(EquipmentUI, "update", function(func, self, ...)
 			end
 		end
 
-		-- ammo counter
-		for _, widget in ipairs( self._ammo_widgets ) do
+		-- ammo counter offset
+		local ammo_widgets = self._ammo_widgets
+
+		for _, widget in ipairs( ammo_widgets ) do
 			widget.offset[1] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_OFFSET_X)
 			widget.offset[2] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_OFFSET_Y)
 		end
+
+		-- ammmo counter bg layer and opacity
+		ammo_widgets[5].offset[3] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_BG_LAYER)
+		ammo_widgets[5].style.texture_id.color[1] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_BG_OPACITY)
 
 		-- hide first 2 item slots
 		local weapon_slots_visible = not mod:get(mod.SETTING_NAMES.HIDE_WEAPON_SLOTS)

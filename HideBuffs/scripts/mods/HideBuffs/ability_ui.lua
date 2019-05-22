@@ -5,10 +5,19 @@ mod.player_ability_ability_effect_left_content_check_fun = function()
 end
 
 mod.player_ability_input_text_content_check_fun = function()
-	return not mod:get(mod.SETTING_NAMES.HIDE_HOTKEYS)
+	return not Managers.input:is_device_active("gamepad")
+		and not mod:get(mod.SETTING_NAMES.HIDE_HOTKEYS)
 end
 
 mod:hook(AbilityUI, "draw", function (func, self, dt)
+	for _, pass in ipairs( self._widgets[1].element.passes ) do
+		if pass.style_id == "input_text"
+		or pass.style_id == "input_text_shadow"
+		then
+			pass.content_check_function = mod.player_ability_input_text_content_check_fun
+		end
+	end
+
 	if mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET) then
 		self._mod_was_in_mini_hud = true
 
@@ -16,14 +25,6 @@ mod:hook(AbilityUI, "draw", function (func, self, dt)
 			if pass.style_id == "ability_effect_left"
 				or pass.style_id == "ability_effect_top_left" then
 					pass.content_check_function = mod.player_ability_ability_effect_left_content_check_fun
-			end
-		end
-
-		for _, pass in ipairs( self._widgets[1].element.passes ) do
-			if pass.style_id == "input_text"
-			or pass.style_id == "input_text_shadow"
-			then
-				pass.content_check_function = mod.player_ability_input_text_content_check_fun
 			end
 		end
 
@@ -57,13 +58,13 @@ mod:hook(AbilityUI, "draw", function (func, self, dt)
 			local widget_offset = self._widgets[1].offset
 			widget_offset[1] = -1+3
 			widget_offset[2] = 17
-			if mod.using_rect_player_layout() then
+			local using_rect_layout = mod.using_rect_player_layout()
+			if using_rect_layout then
 				local ability_bar_height = mod:get(mod.SETTING_NAMES.PLAYER_ULT_BAR_HEIGHT)
 				widget_offset[1] = widget_offset[1] + 1
 				widget_offset[2] = widget_offset[2] + ability_bar_height/2 + 3
 			end
 			widget_offset[3] = 60
-			local using_rect_layout = mod.using_rect_player_layout()
 			local ability_bar_highlight_w = mod.hp_bar_width*(using_rect_layout and 1.04 or 0.95)
 			ability_widget_style.ability_bar_highlight.texture_size[1] = ability_bar_highlight_w
 			ability_widget_style.ability_bar_highlight.texture_size[2] = 54

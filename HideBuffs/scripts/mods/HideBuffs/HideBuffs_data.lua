@@ -689,6 +689,19 @@ mod.add_option(
 	player_ui_group.sub_widgets,
 	5
 )
+mod.add_option(
+	"PLAYER_UI_PLAYER_ULT_SKULL_OPACITY",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 255},
+		["default_value"] = 255,
+	},
+	"Player Charged Ult Skull Opacity",
+	"Change the ult-is-ready skull opacity, 0 is fully transparent.",
+	player_ui_group.sub_widgets,
+	6
+)
+
 local show_clip_using_overcharge_subs = mod.add_option(
 	"PLAYER_UI_SHOW_CLIP_USING_OVERCHARGE",
 	{

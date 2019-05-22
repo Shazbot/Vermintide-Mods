@@ -10,6 +10,7 @@ mod.player_ability_input_text_content_check_fun = function()
 end
 
 mod:hook(AbilityUI, "draw", function (func, self, dt)
+	-- Assign a new content_check_function for hiding the hotkey.
 	for _, pass in ipairs( self._widgets[1].element.passes ) do
 		if pass.style_id == "input_text"
 		or pass.style_id == "input_text_shadow"
@@ -17,6 +18,14 @@ mod:hook(AbilityUI, "draw", function (func, self, dt)
 			pass.content_check_function = mod.player_ability_input_text_content_check_fun
 		end
 	end
+
+	-- Skull opacity.
+	local ability_widget_style = self._widgets[1].style
+	local skull_opacity = mod:get(mod.SETTING_NAMES.PLAYER_UI_PLAYER_ULT_SKULL_OPACITY)
+	ability_widget_style.ability_effect_top_left.color[1] = skull_opacity
+	ability_widget_style.ability_effect_top_right.color[1] = skull_opacity
+	ability_widget_style.ability_effect_left.color[1] = skull_opacity
+	ability_widget_style.ability_effect_right.color[1] = skull_opacity
 
 	if mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET) then
 		self._mod_was_in_mini_hud = true
@@ -34,7 +43,6 @@ mod:hook(AbilityUI, "draw", function (func, self, dt)
 
 			local skull_offsets = { 0, -15 }
 			local hp_bar_width = mod.hp_bar_width
-			local ability_widget_style = self._widgets[1].style
 			ability_widget_style.ability_effect_left.offset[1] = -hp_bar_width/2 - 50
 			ability_widget_style.ability_effect_left.horizontal_alignment = "center"
 			ability_widget_style.ability_effect_left.offset[2] = skull_offsets[2]
@@ -92,7 +100,7 @@ mod:hook(AbilityUI, "draw", function (func, self, dt)
 			if pass.style_id == "input_text"
 			or pass.style_id == "input_text_shadow"
 			then
-				pass.content_check_function = function (content, style)
+				pass.content_check_function = function (content, style) -- luacheck: no unused
 					return not Managers.input:is_device_active("gamepad")
 						and not mod:get(mod.SETTING_NAMES.HIDE_HOTKEYS)
 				end

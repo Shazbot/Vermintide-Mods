@@ -97,7 +97,8 @@ mod.on_setting_changed = function(setting_name)
 
 	if setting_name == mod.SETTING_NAMES.BUFFS_FLOW_VERTICALLY
 	or setting_name == mod.SETTING_NAMES.REVERSE_BUFF_DIRECTION
-	or setting_name == mod.SETTING_NAMES.CENTERED_BUFFS then
+	or setting_name == mod.SETTING_NAMES.CENTERED_BUFFS
+	or setting_name == mod.SETTING_NAMES.CENTERED_BUFFS_REALIGN then
 		mod.realign_buff_widgets = true
 		mod.reset_buff_widgets = true
 	end

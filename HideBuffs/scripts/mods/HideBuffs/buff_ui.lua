@@ -129,7 +129,7 @@ mod:hook(BuffUI, "draw", function(func, self, dt)
 		and mod:get(mod.SETTING_NAMES.CENTERED_BUFFS_REALIGN)
 		then
 			self.ui_scenegraph.pivot.horizontal_alignment = "center"
-			self.ui_scenegraph.pivot.local_position[1] = 0
+			self.ui_scenegraph.pivot.local_position[1] = -66
 		else
 			self.ui_scenegraph.pivot.horizontal_alignment = "left"
 			self.ui_scenegraph.pivot.local_position[1] = 150

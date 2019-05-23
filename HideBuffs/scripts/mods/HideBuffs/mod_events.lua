@@ -9,6 +9,9 @@ end
 mod.on_game_state_changed = function(status, state)
 	if status == "enter" and state == "StateIngame" then
 		mod.was_ingame_entered = true
+
+		-- Load locally saved presets.
+		Managers.save:auto_load(mod.local_presets_file_name, callback(mod, "cb_load_local_presets_done"), mod.force_local_save)
 	end
 
 	if mod.reset_custom_buff_counters then

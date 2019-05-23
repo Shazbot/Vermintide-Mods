@@ -111,6 +111,8 @@ mod.create_presets_window = function()
 	mod.valid_presets:insert(1, mod.empty_preset)
 	mod.valid_presets:insert(2, mod.local_preset)
 	mod.valid_presets:insert(3, mod.defaults_preset)
+	mod.valid_presets:splice(4, mod.local_presets:values())
+
 	local indexed_preset_names = pl.tablex.index_map(mod.valid_presets:map(mod.get_name_from_preset))
 	local presets_dropdown = mod.presets_window:create_dropdown(
 		"presets_dropdown",

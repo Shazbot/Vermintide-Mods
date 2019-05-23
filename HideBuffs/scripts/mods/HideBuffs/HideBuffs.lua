@@ -674,6 +674,7 @@ mod:dofile("scripts/mods/HideBuffs/presets_data")
 mod:dofile("scripts/mods/HideBuffs/presets")
 mod:dofile("scripts/mods/HideBuffs/breakpoints")
 mod:dofile("scripts/mods/HideBuffs/overcharge_bar")
+mod:dofile("scripts/mods/HideBuffs/local_presets")
 
 --- MOD FUNCTIONS ---
 mod.reapply_pickup_ranges = function()

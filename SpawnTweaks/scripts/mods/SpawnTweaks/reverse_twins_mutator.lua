@@ -351,3 +351,50 @@ function()
 		end
 	end
 end)
+
+mod.dispatcher:on("onModDisabled",
+	function()
+		UtilityConsiderations.stormfiend_boss_charge.distance_to_target.max_value = 20
+	end)
+mod.dispatcher:on("onModEnabled",
+	function()
+		UtilityConsiderations.stormfiend_boss_charge.distance_to_target.max_value = 5
+	end)
+
+-- Gatekeeper tweaks.
+mod:hook(BTTransformAction, "enter", function(func, self, unit, blackboard, t)
+	if not mod:get(mod.SETTING_NAMES.REVERSE_TWINS_MUTATOR) then
+		return func(self, unit, blackboard, t)
+	end
+
+	mod:pcall(function()
+		local health_extension = ScriptUnit.has_extension(unit, "health_system")
+		if health_extension then
+			local damage = 0
+			health_extension:set_current_damage(damage)
+			local network_manager = Managers.state.network
+			local go_id, is_level_unit = network_manager:game_object_or_level_id(unit)
+			local state = NetworkLookup.health_statuses[health_extension.state]
+			Managers.state.network.network_transmit:send_rpc_clients("rpc_sync_damage_taken", go_id, is_level_unit, false, damage, state)
+		end
+	end)
+
+	return func(self, unit, blackboard, t)
+end)
+
+mod:hook(Breeds.chaos_exalted_champion_norsca, "run_on_update", function(func, unit, blackboard, t, dt)
+	if not mod:get(mod.SETTING_NAMES.REVERSE_TWINS_MUTATOR) then
+		return func(unit, blackboard, t, dt)
+	end
+
+	local blackboard_phase = blackboard.current_phase
+
+	func(unit, blackboard, t, dt)
+
+	local hp = ScriptUnit.extension(blackboard.unit, "health_system"):current_health_percent()
+	if blackboard_phase == 1
+	and blackboard.current_phase == 2
+	and hp > 0.33 then
+		blackboard.current_phase = 1
+	end
+end)

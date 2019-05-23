@@ -66,7 +66,8 @@ globals = {
 	"PerceptionUtils", "BTSuicideRunAction",
 	"EnemyPackageLoader", "EnemyPackageLoaderSettings",
 	"CareerExtension", "StartGameWindowMissionSelection",
-	"StatisticsUtil",
+	"StatisticsUtil", "BTTransformAction", "BTSpawningAction",
+	"UtilityConsiderations",
 
 	"PriorityBuffUI",
 }

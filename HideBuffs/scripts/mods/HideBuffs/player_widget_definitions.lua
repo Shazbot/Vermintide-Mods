@@ -240,7 +240,7 @@ mod.rect_player_ui_layout_def =
 		hp_bar_border = {
 			thickness = 2,
 			color = { 255,255,255,255 },
-			offset = { 0,0,0 },
+			offset = { 0,0,10 },
 			size = { 500,50 },
 		},
 		ult_bar_bg = {

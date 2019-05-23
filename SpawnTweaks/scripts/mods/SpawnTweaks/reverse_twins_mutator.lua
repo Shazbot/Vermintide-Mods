@@ -352,13 +352,25 @@ function()
 	end
 end)
 
+mod.handle_reverse_twins_toggle = function()
+	if mod:get(mod.SETTING_NAMES.REVERSE_TWINS_MUTATOR) then
+		UtilityConsiderations.stormfiend_boss_charge.distance_to_target.max_value = 5
+	else
+		UtilityConsiderations.stormfiend_boss_charge.distance_to_target.max_value = 20
+	end
+end
+
 mod.dispatcher:on("onModDisabled",
 	function()
 		UtilityConsiderations.stormfiend_boss_charge.distance_to_target.max_value = 20
 	end)
 mod.dispatcher:on("onModEnabled",
 	function()
-		UtilityConsiderations.stormfiend_boss_charge.distance_to_target.max_value = 5
+		mod.handle_reverse_twins_toggle()
+	end)
+mod.dispatcher:on("reverseTwinsToggled",
+	function()
+		mod.handle_reverse_twins_toggle()
 	end)
 
 -- Gatekeeper tweaks.

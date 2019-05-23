@@ -826,6 +826,9 @@ mod.on_setting_changed = function(setting_name) -- luacheck: ignore setting_name
 	if setting_name == mod.SETTING_NAMES.JUICED_SPECIALS_MUTATOR then
 		mod.dispatcher:emit("juicedSpecialsToggled")
 	end
+	if setting_name == mod.SETTING_NAMES.REVERSE_TWINS_MUTATOR then
+		mod.dispatcher:emit("reverseTwinsToggled")
+	end
 end
 
 mod.on_disabled_funcs = {}

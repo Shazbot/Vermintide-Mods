@@ -120,19 +120,23 @@ mod:hook(BuffUI, "draw", function(func, self, dt)
 			mod.reset_buff_widgets = true
 		end
 
-		if mod.realign_buff_widgets then
-			mod.realign_buff_widgets = false
-			self:_align_widgets()
-		end
-
 		if mod:get(mod.SETTING_NAMES.CENTERED_BUFFS)
 		and mod:get(mod.SETTING_NAMES.CENTERED_BUFFS_REALIGN)
 		then
 			self.ui_scenegraph.pivot.horizontal_alignment = "center"
-			self.ui_scenegraph.pivot.local_position[1] = -66
+			if mod:get(mod.SETTING_NAMES.REVERSE_BUFF_DIRECTION) then
+				self.ui_scenegraph.pivot.local_position[1] = -66
+			else
+				self.ui_scenegraph.pivot.local_position[1] = 0
+			end
 		else
 			self.ui_scenegraph.pivot.horizontal_alignment = "left"
 			self.ui_scenegraph.pivot.local_position[1] = 150
+		end
+
+		if mod.realign_buff_widgets then
+			mod.realign_buff_widgets = false
+			self:_align_widgets()
 		end
 
 		local buffs_offset_x = mod:get(mod.SETTING_NAMES.BUFFS_OFFSET_X)

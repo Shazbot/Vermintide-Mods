@@ -47,6 +47,7 @@ mod.delete_local_preset = function(preset_name)
 		end
 
 		mod.local_presets[preset_name] = nil
+		Managers.save:auto_save(mod.local_presets_file_name, mod.local_presets, nil, mod.force_local_save)
 
 		mod:echo("Deleted preset "..preset_name.."!")
 	end)

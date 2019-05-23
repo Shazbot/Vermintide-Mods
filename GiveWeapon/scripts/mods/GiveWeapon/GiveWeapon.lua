@@ -363,3 +363,5 @@ mod:hook(HeroWindowLoadoutInventory, "on_exit", function(func, self)
 
 	mod:destroy_windows()
 end)
+
+mod:dofile("scripts/mods/"..mod:get_name().."/wooden_2h_hammer")

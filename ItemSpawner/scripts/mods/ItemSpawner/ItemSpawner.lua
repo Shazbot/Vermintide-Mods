@@ -12,6 +12,15 @@ mod.current_pickup_name = mod.persistent_storage.pickup_name
 
 mod.spawn_item = function(pickup_name)
 	mod:pcall(function()
+		if not Managers.player.is_server
+		and (pickup_name == "training_dummy"
+		or pickup_name == "training_dummy_armored"
+		or pickup_name == "training_dummy_skaven")
+		then
+			mod:echo("Need to be host to spawn training dummies!")
+			return
+		end
+
 		local spawn_method = "rpc_spawn_pickup_with_physics"
 		if pickup_name == "all_ammo" then
 			spawn_method = "rpc_spawn_pickup"

@@ -17,13 +17,13 @@ mod_data.options_widgets = {
 		["tooltip"] = mod:localize("NO_SKINS_T"),
 		["default_value"] = false,
 	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.FORCE_WOODEN_HAMMER,
-		["widget_type"] = "checkbox",
-		["text"] = mod:localize("FORCE_WOODEN_HAMMER"),
-		["tooltip"] = mod:localize("FORCE_WOODEN_HAMMER_T"),
-		["default_value"] = false,
-	},
+	-- {
+	-- 	["setting_name"] = mod.SETTING_NAMES.FORCE_WOODEN_HAMMER,
+	-- 	["widget_type"] = "checkbox",
+	-- 	["text"] = mod:localize("FORCE_WOODEN_HAMMER"),
+	-- 	["tooltip"] = mod:localize("FORCE_WOODEN_HAMMER_T"),
+	-- 	["default_value"] = false,
+	-- },
 }
 
 return mod_data

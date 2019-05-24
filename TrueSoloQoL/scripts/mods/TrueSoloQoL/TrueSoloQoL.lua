@@ -348,7 +348,7 @@ mod.on_disabled = function()
 	if mod:get(mod.SETTING_NAMES.SHOW_BOSS_PATH_PROGRESS) then
 		local streaming_info = get_mod("StreamingInfo")
 		if streaming_info then
-			streaming_info.set_info_lines()
+			streaming_info.perm_external_lines["BOSS_PATH_PROGRESS"] = nil
 		end
 	end
 end
@@ -358,7 +358,7 @@ mod.on_setting_changed = function(setting_name)
 	and not mod:get(mod.SETTING_NAMES.SHOW_BOSS_PATH_PROGRESS) then
 		local streaming_info = get_mod("StreamingInfo")
 		if streaming_info then
-			streaming_info.set_info_lines()
+			streaming_info.perm_external_lines["BOSS_PATH_PROGRESS"] = nil
 		end
 	end
 end

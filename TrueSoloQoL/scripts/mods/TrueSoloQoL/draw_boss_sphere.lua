@@ -8,11 +8,12 @@ mod:hook(EnemyRecycler, "update", function(func, self, t, dt, player_positions, 
 
 			local streaming_info = get_mod("StreamingInfo")
 			if streaming_info then
-				streaming_info.set_info_lines(
-					"Next:       "..current_path..";"
-					.."Current:  "..ahead_path..";"
-					.."Delta:      "..(current_path-ahead_path)
-				)
+				streaming_info.perm_external_lines["BOSS_PATH_PROGRESS"] =
+				{
+					"Next:       "..current_path,
+					"Current:  "..ahead_path,
+					"Delta:      "..(current_path-ahead_path),
+				}
 			end
 		end
 

@@ -783,6 +783,7 @@ local local_mutators_subs = mod.add_option(
 		.."\nMeaning it won't cause crashes, but works only for those who have it enabled.",
 	mutator_options_subs
 )
+
 local invisible_teammates_subs = mod.add_option(
 	"INVISIBLE_TEAMMATES_MUTATOR",
 	{
@@ -815,6 +816,50 @@ mod.add_option(
 	"Hide teammates that are within distance instead.",
 	invisible_teammates_subs
 )
+
+local invisible_enemies_subs = mod.add_option(
+	"INVISIBLE_ENEMIES_MUTATOR",
+	{
+		["widget_type"] = "checkbox",
+	  ["default_value"] = false,
+	},
+	"Invisible Enemies",
+	"Hide your enemies based on distance from the player.",
+	local_mutators_subs
+)
+mod.add_option(
+	"INVISIBLE_ENEMIES_MUTATOR_DISTANCE",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 100},
+	  ["default_value"] = 10,
+	  ["decimals_number"] = 1,
+	},
+	"Distance",
+	"Distance from the player at which to start hiding enemies.",
+	invisible_enemies_subs
+)
+mod.add_option(
+	"INVISIBLE_ENEMIES_MUTATOR_REVERSE",
+	{
+		["widget_type"] = "checkbox",
+	  ["default_value"] = false,
+	},
+	"Reverse",
+	"Hide enemies that are within distance instead.",
+	invisible_enemies_subs
+)
+mod.add_option(
+	"INVISIBLE_ENEMIES_MUTATOR_SHOW_WEAPONS",
+	{
+		["widget_type"] = "checkbox",
+	  ["default_value"] = false,
+	},
+	"Show Weapons",
+	"Don't hide enemy weapons.",
+	invisible_enemies_subs
+)
+
 mod.add_option(
 	"DISABLE_ULT_CD_ON_STRIKE",
 	{

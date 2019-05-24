@@ -862,6 +862,7 @@ mod:dofile("scripts/mods/"..mod:get_name().."/mutators/other_minor_mutators")
 mod:dofile("scripts/mods/"..mod:get_name().."/mutators/restart_on_defeat")
 mod:dofile("scripts/mods/"..mod:get_name().."/mutators/upscale_breeds")
 mod:dofile("scripts/mods/"..mod:get_name().."/mutators/lose_green_hp")
+mod:dofile("scripts/mods/"..mod:get_name().."/mutators/invisible_enemies")
 
 mod.on_unload = function()
 	mod.persistent.ingame_entered = mod.ingame_entered

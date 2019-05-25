@@ -67,7 +67,7 @@ globals = {
 	"EnemyPackageLoader", "EnemyPackageLoaderSettings",
 	"CareerExtension", "StartGameWindowMissionSelection",
 	"StatisticsUtil", "BTTransformAction", "BTSpawningAction",
-	"UtilityConsiderations",
+	"UtilityConsiderations", "BTChaosSorcererPlagueSkulkAction",
 
 	"PriorityBuffUI",
 }

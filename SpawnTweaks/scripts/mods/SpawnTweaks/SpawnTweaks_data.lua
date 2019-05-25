@@ -968,7 +968,9 @@ local hp_mutators_subs = mod.add_option(
 		["widget_type"] = "group",
 	},
 	"HP Related",
-	"Mutators that address white and green HP.",
+	"Mutators that address white and green HP."
+		.."\nA lot of what made Vermintide 1 different was the lack of white hp, taking even a single hit in V1 mattered."
+		.."\nI'm hoping something in that direction can be achieved with some combination of these options.",
 	mutator_options_subs
 )
 mod.add_option(
@@ -1065,7 +1067,8 @@ local upscale_breeds_subs = mod.add_option(
 	  ["default_value"] = false,
 	},
 	"Upscale Breeds",
-	"Chance to switch enemy type(breed) to a higher tier breed on spawn.",
+	"Chance to switch enemy type(breed) to a higher tier breed on spawn."
+		.."\nKnown issues: can cause enemies to get stuck on some spawn locations.",
 	mutator_options_subs
 )
 mod.add_option(

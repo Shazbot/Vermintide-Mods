@@ -323,6 +323,21 @@ mod:hook_safe(Breeds["skaven_stormfiend_boss"], "run_on_spawn", function(unit)
 	end
 end)
 
+--- Leech skip skulk on spawn.
+mod:hook(BTChaosSorcererPlagueSkulkAction, "enter", function(func, self, unit, blackboard, t)
+	if not mod:get(mod.SETTING_NAMES.REVERSE_TWINS_MUTATOR) then
+		return func(self, unit, blackboard, t)
+	end
+
+	local action = self._tree_node.action_data
+	local initial_skulk_time_temp = table.clone(action.initial_skulk_time)
+	action.initial_skulk_time = { 0,0 }
+
+	func(self, unit, blackboard, t)
+
+	action.initial_skulk_time = initial_skulk_time_temp
+end)
+
 --- Load some breed packages on map start.
 mod.reverse_twins_data.breeds_to_auto_load = {
 	"chaos_exalted_champion_warcamp",

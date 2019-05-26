@@ -351,6 +351,10 @@ function()
 		return
 	end
 
+	if not Managers.player.is_server then
+		return
+	end
+
 	local enemy_package_loader = Managers.state.game_mode.level_transition_handler.enemy_package_loader
 
 	for _, breed_name in ipairs( mod.reverse_twins_data.breeds_to_auto_load ) do

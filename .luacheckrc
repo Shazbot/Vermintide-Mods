@@ -68,6 +68,7 @@ globals = {
 	"CareerExtension", "StartGameWindowMissionSelection",
 	"StatisticsUtil", "BTTransformAction", "BTSpawningAction",
 	"UtilityConsiderations", "BTChaosSorcererPlagueSkulkAction",
+	"GameNetworkManager", "LevelHelper",
 
 	"PriorityBuffUI",
 }

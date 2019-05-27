@@ -114,7 +114,6 @@ mod:command("fail", mod:localize("fail_level_command_description"), function() m
 mod:command("win", mod:localize("win_level_command_description"), function() mod.win_level() end)
 mod:command("restart", mod:localize("restart_level_command_description"), function() mod.restart_level() end)
 
-
 mod:command("bot_toggle",
 "Toggle bots on/off for current level."
 	.."\nUse to spawn bots in inn."

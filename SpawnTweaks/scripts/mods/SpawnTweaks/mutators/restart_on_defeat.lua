@@ -23,6 +23,7 @@ mod:hook(GameModeAdventure, "evaluate_end_conditions", function(func, self, roun
 
 	if ended
 	and reason == "lost"
+	and not mod.restart_on_defeat.skip_restart
 	and (
 		mod:get(mod.SETTING_NAMES.RESTART_ON_DEFEAT)
 		or mod.restart_on_defeat.do_restart
@@ -31,6 +32,8 @@ mod:hook(GameModeAdventure, "evaluate_end_conditions", function(func, self, roun
 		mod.restart_on_defeat.do_restart = false
 		return ended, "reload"
 	end
+
+	mod.restart_on_defeat.skip_restart = false
 
 	return ended, reason
 end)
@@ -70,6 +73,20 @@ mod.restart_level = function()
 		mod.fail_level()
 	end)
 end
+
+mod.fail_level_to_inn = function()
+	mod:pcall(function()
+		if Managers.state.game_mode:level_key() == "inn_level" then
+			mod:echo("Can't restart in the keep.")
+			return
+		end
+
+		mod.restart_on_defeat.do_insta_fail = true
+		mod.restart_on_defeat.skip_restart = true
+		Managers.state.game_mode:fail_level()
+	end)
+end
+mod:command("st_inn", "Fail and return to inn.", function() mod.fail_level_to_inn() end)
 
 mod:command("st_win", "Win the level.",
 	function()

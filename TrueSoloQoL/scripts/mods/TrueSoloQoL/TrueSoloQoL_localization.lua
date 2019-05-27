@@ -47,6 +47,12 @@ return {
 	DISABLE_MUTATOR_EXPLOSIONS_T = {
 		en = "Disable the purple explosion effect."
 	},
+	DONT_RESTART = {
+		en = "Don't Restart On Defeat"
+	},
+	DONT_RESTART_T = {
+		en = "Don't restart level on defeat."
+	},
 
 	SHOW_BOSS_PATH_PROGRESS = {
 		en = "Show Boss Path Progress"

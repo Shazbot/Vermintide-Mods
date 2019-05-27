@@ -6,20 +6,44 @@ fassert(pl, "True Solo QoL Tweaks must be lower than Penlight Lua Libraries in y
 
 --- Restart the level on mission failure.
 --- Without it we'd transitions to the inn.
-mod:hook(GameModeManager, "server_update", function (func, self, dt, t)
-	local original_evaluate_end_conditions = self._game_mode.evaluate_end_conditions
-	self._game_mode.evaluate_end_conditions = function(...)
-		local ended, reason = original_evaluate_end_conditions(...)
-		if ended and reason == "lost" then
-			return ended, "reload"
-		end
+mod:hook(GameModeAdventure, "evaluate_end_conditions", function(func, self, round_started, dt, t, ...)
+	if mod:get(mod.SETTING_NAMES.DONT_RESTART) then
+		mod.do_insta_fail = false
+		mod.skip_restart = false
+		return func(self, round_started, dt, t, ...)
+	end
+
+	if self.lost_condition_timer and mod.do_insta_fail then
+		mod.do_insta_fail = false
+		self.lost_condition_timer = t - 1
+	end
+	local ended, reason = func(self, round_started, dt, t, ...)
+
+	if ended and mod.skip_restart then
+		mod.skip_restart = false
 		return ended, reason
 	end
 
-	func(self, dt, t)
+	if ended and reason == "lost" then
+		return ended, "reload"
+	end
 
-	self._game_mode.evaluate_end_conditions = original_evaluate_end_conditions
+	return ended, reason
 end)
+
+mod.fail_level_to_inn = function()
+	mod:pcall(function()
+		if Managers.state.game_mode:level_key() == "inn_level" then
+			mod:echo("Can't restart in the keep.")
+			return
+		end
+
+		mod.do_insta_fail = true
+		mod.skip_restart = true
+		Managers.state.game_mode:fail_level()
+	end)
+end
+mod:command("inn", "Fail and return to inn.", function() mod.fail_level_to_inn() end)
 
 --- Track frame_index to know if it's bot UI. Player frame_index is nil.
 mod:hook(UnitFrameUI, "_create_ui_elements", function (func, self, frame_index)

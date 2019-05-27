@@ -12,6 +12,7 @@ mod.SETTING_NAMES = {
 	DRAW_BOSS_EVENTS = "DRAW_BOSS_EVENTS",
 	DISABLE_FOG = "DISABLE_FOG",
 	DISABLE_SUN_SHADOWS = "DISABLE_SUN_SHADOWS",
+	DONT_RESTART = "DONT_RESTART",
 }
 
 local mod_data = {
@@ -21,6 +22,13 @@ local mod_data = {
 }
 
 mod_data.options_widgets = {
+	{
+		["setting_name"] = mod.SETTING_NAMES.DONT_RESTART,
+		["widget_type"] = "checkbox",
+		["text"] = mod:localize("DONT_RESTART"),
+		["tooltip"] = mod:localize("DONT_RESTART_T"),
+		["default_value"] = false,
+	},
 	{
 		["setting_name"] = mod.SETTING_NAMES.ASSASSIN_TEXT_WARNING,
 		["widget_type"] = "checkbox",

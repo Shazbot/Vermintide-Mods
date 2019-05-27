@@ -1,5 +1,7 @@
 local mod = get_mod("ModdedProgression")
 
+local pl = require'pl.import_into'()
+
 local vmf = get_mod("VMF")
 
 mod:hook_safe(StatisticsUtil, "_register_completed_level_difficulty", function(_, level_id, _, difficulty_name)
@@ -7,14 +9,17 @@ mod:hook_safe(StatisticsUtil, "_register_completed_level_difficulty", function(_
 		return
 	end
 
+	local flush_settings = false
+
 	local dwons_mod = get_mod("is-dwons-on")
 	if dwons_mod then
 		local dw_enabled, ons_enabled = dwons_mod.get_status()
 		local completions_lookup = {
 			ONS_COMPLETION = ons_enabled,
 			DW_COMPLETION = dw_enabled,
+			DWONS_COMPLETION = dw_enabled and ons_enabled,
 		}
-		local flush_settings = false
+
 		for completion_key, enabled in pairs( completions_lookup ) do
 			if enabled then
 				local completions = mod:get(completion_key) or {}
@@ -23,9 +28,25 @@ mod:hook_safe(StatisticsUtil, "_register_completed_level_difficulty", function(_
 				flush_settings = true
 			end
 		end
-		if flush_settings then
-			vmf.save_unsaved_settings_to_file()
+	end
+
+	if mod.map_start_time then
+		mod.map_time = Managers.time:time("game") - mod.map_start_time
+		if mod.map_time > 60 then
+			local map_times = mod:get("MAP_TIMES") or {}
+			map_times[level_id] = map_times[level_id] or {}
+			map_times[level_id] =
+				pl.List(map_times[level_id])
+				:append(mod.map_time)
+				:sorted()
+				:slice(1,10)
+			mod:set("MAP_TIMES", map_times)
+			flush_settings = true
 		end
+	end
+
+	if flush_settings then
+		vmf.save_unsaved_settings_to_file()
 	end
 end)
 
@@ -39,12 +60,53 @@ mod:hook_safe(StartGameWindowMissionSelection, "_present_acts", function(self)
 
 		local ons_completion = mod:get("ONS_COMPLETION") or {}
 		local dw_completion = mod:get("DW_COMPLETION") or {}
+		local dwons_completion = mod:get("DWONS_COMPLETION") or {}
 
 		new_widget.content.ons = ons_completion[level_key]
 		new_widget.content.dw = dw_completion[level_key]
+		new_widget.content.dwons = dwons_completion[level_key]
 
 		table.insert(self.mod_widgets, new_widget)
 	end
+end)
+
+mod:hook(StartGameWindowMissionSelection, "update", function(func, self, dt, t)
+	mod:pcall(function()
+		self._widgets_by_name.selected_level.offset[1] = 0
+		self._widgets_by_name.selected_level.offset[2] = 210
+		self._widgets_by_name.selected_level.offset[3] = 50
+
+		if not self.mod_progression_text then
+			self.mod_progression_text = UIWidget.init(UIWidgets.create_simple_text("", "description_text", nil, nil, mod.description_text_style))
+			self.mod_progression_text.offset[2] = 270
+		end
+
+		local level_id = self._selected_level_id or ""
+
+		local map_times = mod:get("MAP_TIMES") or {}
+
+		local map_time = "00:00"
+
+		if map_times[level_id] and map_times[level_id][1] then
+			local total_secs = map_times[level_id][1]
+			local mins = math.floor(total_secs/60)
+			local secs = math.round(total_secs % 60)
+			map_time = mins..":"..secs
+		end
+
+		local ons_completion = mod:get("ONS_COMPLETION") or {}
+		local dw_completion = mod:get("DW_COMPLETION") or {}
+		local dwons_completion = mod:get("DWONS_COMPLETION") or {}
+
+		self.mod_progression_text.content.text = pl.List{
+			"Time: "..map_time,
+			string.format("Onslaught: %s", ons_completion[level_id] and "Yes" or "No"),
+			string.format("Deathwish: %s", dw_completion[level_id] and "Yes" or "No"),
+			string.format("DwOns: %s", dwons_completion[level_id] and "Yes" or "No"),
+		}:join("\n")
+	end)
+
+	return func(self, dt, t)
 end)
 
 mod:hook_safe(StartGameWindowMissionSelection, "draw", function(self, dt)
@@ -62,75 +124,12 @@ mod:hook_safe(StartGameWindowMissionSelection, "draw", function(self, dt)
 		end
 	end
 
+	if self.mod_progression_text then
+		UIRenderer.draw_widget(ui_renderer, self.mod_progression_text)
+	end
+
 	UIRenderer.end_pass(ui_renderer)
 end)
 
-mod.create_level_widget = function(scenegraph_id)
-	local widget = {
-		element = {}
-	}
-	local passes = {
-		{
-			pass_type = "texture",
-			style_id = "frame",
-			texture_id = "frame",
-			content_check_function = function (content)
-				return content.ons
-			end
-
-		},
-		{
-			pass_type = "texture",
-			style_id = "icon",
-			texture_id = "icon",
-			content_check_function = function (content)
-				return content.dw
-			end
-		},
-	}
-	local content = {
-		frame = "achievement_banner",
-		icon = "end_screen_banner_victory",
-		ons = false,
-		dw = false,
-	}
-	local style = {
-		frame = {
-			vertical_alignment = "center",
-			horizontal_alignment = "center",
-			texture_size = {
-				164,
-				125
-			},
-			offset = {
-				0,-90,50
-			},
-			color = {
-				255,
-				220,20,60
-			}
-		},
-		icon = {
-			vertical_alignment = "center",
-			horizontal_alignment = "center",
-			texture_size = {
-				680/5,
-				240/5,
-			},
-			offset = {
-				0,-88,51
-			},
-			color = {
-				255,
-				255,255,255
-			}
-		},
-	}
-	widget.element.passes = passes
-	widget.content = content
-	widget.style = style
-	widget.offset = {0,0,0}
-	widget.scenegraph_id = scenegraph_id
-
-	return widget
-end
+mod:dofile("scripts/mods/"..mod:get_name().."/widget_definitions")
+mod:dofile("scripts/mods/"..mod:get_name().."/map_timer")

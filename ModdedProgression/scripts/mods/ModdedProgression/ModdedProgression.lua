@@ -5,6 +5,13 @@ local pl = require'pl.import_into'()
 local vmf = get_mod("VMF")
 
 mod:hook_safe(StatisticsUtil, "_register_completed_level_difficulty", function(_, level_id, _, difficulty_name)
+	if mod.map_start_time then
+		mod.map_time = Managers.time:time("game") - mod.map_start_time
+		if mod.map_time < 60 then
+			return
+		end
+	end
+
 	local flush_settings = false
 
 	local true_solo = false
@@ -65,7 +72,7 @@ mod:hook_safe(StatisticsUtil, "_register_completed_level_difficulty", function(_
 
 		if mod.map_start_time then
 			mod.map_time = Managers.time:time("game") - mod.map_start_time
-			if mod.map_time > 60 then
+			if mod.map_time >= 60 then
 				local map_times = mod:get("MAP_TIMES") or {}
 				map_times[level_id] = map_times[level_id] or {}
 				map_times[level_id] =

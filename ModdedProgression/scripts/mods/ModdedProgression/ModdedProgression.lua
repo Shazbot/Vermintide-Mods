@@ -7,6 +7,14 @@ local vmf = get_mod("VMF")
 mod:hook_safe(StatisticsUtil, "_register_completed_level_difficulty", function(_, level_id, _, difficulty_name)
 	local flush_settings = false
 
+	local true_solo = false
+	if Managers.player.is_server then
+		local players = Managers.player:human_and_bot_players()
+		if #pl.Map(players):keys() == 1 then
+			true_solo = true
+		end
+	end
+
 	local dw_enabled, ons_enabled = false, false
 	local dwons_mod = get_mod("is-dwons-on")
 	if dwons_mod then
@@ -23,6 +31,7 @@ mod:hook_safe(StatisticsUtil, "_register_completed_level_difficulty", function(_
 		ONS_DIFFICULTY = ons_enabled,
 		DW_DIFFICULTY = dw_enabled,
 		DWONS_DIFFICULTY = dw_enabled and ons_enabled,
+		TS_DIFFICULTY = true_solo,
 	}
 
 	local difficulty_index = pl.tablex.find(DefaultDifficulties, difficulty_name)
@@ -69,6 +78,8 @@ mod:hook_safe(StatisticsUtil, "_register_completed_level_difficulty", function(_
 			end
 		end
 	end
+
+	mod.map_start_time = nil
 
 	if flush_settings then
 		vmf.save_unsaved_settings_to_file()
@@ -123,10 +134,18 @@ mod:hook(StartGameWindowMissionSelection, "update", function(func, self, dt, t)
 
 		local level_id = self._selected_level_id or ""
 
+		local modded_muts_names = pl.List{
+			"Onslaught",
+			"Deathwish",
+			"DwOns",
+			"True Solo",
+		}
+
 		local modded_mut_to_difficutly_done_setting_lookup = pl.Map{
 			Onslaught = "ONS_DIFFICULTY",
 			Deathwish = "DW_DIFFICULTY",
 			DwOns = "DWONS_DIFFICULTY",
+			["True Solo"] = "TS_DIFFICULTY",
 		}
 
 		local modded_mut_to_done_on_hardest_lookup = pl.Map{
@@ -136,22 +155,25 @@ mod:hook(StartGameWindowMissionSelection, "update", function(func, self, dt, t)
 		}
 
 		local info_out = {}
-		for modded_mut, done_on_difficulty_setting in pairs( modded_mut_to_difficutly_done_setting_lookup ) do
+		modded_muts_names:foreach(function(modded_mut_name)
+			local done_on_difficulty_setting = modded_mut_to_difficutly_done_setting_lookup[modded_mut_name]
 			local done_on_difficulty = mod:get(done_on_difficulty_setting) or {}
+
 			local done_difficulty = done_on_difficulty[level_id]
-			if modded_mut_to_done_on_hardest_lookup[modded_mut][level_id] then
-				info_out[modded_mut] = "Yes"
+			if modded_mut_to_done_on_hardest_lookup[modded_mut_name]
+			and modded_mut_to_done_on_hardest_lookup[modded_mut_name][level_id] then
+				info_out[modded_mut_name] = "Yes"
 			elseif not done_difficulty then
-				info_out[modded_mut] = "No"
+				info_out[modded_mut_name] = "No"
 			elseif done_difficulty == "hardest" then
-				info_out[modded_mut] = "Yes"
+				info_out[modded_mut_name] = "Yes"
 			else
-				info_out[modded_mut] = Localize(DifficultySettings[done_difficulty].display_name)
+				info_out[modded_mut_name] = Localize(DifficultySettings[done_difficulty].display_name)
 			end
-		end
+		end)
 
 		self.mod_progression_text.content.text =
-			modded_mut_to_difficutly_done_setting_lookup:keys():map(function(modded_mut)
+			modded_muts_names:map(function(modded_mut)
 				return string.format("%s: %s", modded_mut, info_out[modded_mut])
 			end)
 			:insert(1, "Time: "..mod.get_map_time(level_id))

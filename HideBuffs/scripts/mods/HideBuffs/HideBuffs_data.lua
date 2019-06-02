@@ -1242,6 +1242,26 @@ mod.add_option(
 	hide_ui_elements_group.sub_widgets
 )
 mod.add_option(
+	"HIDE_LOADING_SCREEN_TIPS",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Hide Level Intro Tips",
+	"Hide the tips on the map loading screen.",
+	hide_ui_elements_group.sub_widgets
+)
+mod.add_option(
+	"HIDE_LOADING_SCREEN_SUBTITLES",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Hide Level Intro Subtitles",
+	"Hide the subtitles on the map loading screen.",
+	hide_ui_elements_group.sub_widgets
+)
+mod.add_option(
 	"DISABLE_LEVEL_INTRO_AUDIO",
 	{
 		["widget_type"] = "checkbox",

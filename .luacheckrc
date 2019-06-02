@@ -69,6 +69,7 @@ globals = {
 	"StatisticsUtil", "BTTransformAction", "BTSpawningAction",
 	"UtilityConsiderations", "BTChaosSorcererPlagueSkulkAction",
 	"GameNetworkManager", "LevelHelper",
+	"LoadingView",
 
 	"PriorityBuffUI",
 }

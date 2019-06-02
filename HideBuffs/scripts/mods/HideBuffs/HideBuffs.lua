@@ -569,15 +569,6 @@ mod:hook(OutlineSystem, "always", function(func, self, ...)
 	return func(self, ...)
 end)
 
---- Disable level intro audio.
-mod:hook(StateLoading, "_trigger_sound_events", function(func, self, level_key)
-	if mod:get(mod.SETTING_NAMES.DISABLE_LEVEL_INTRO_AUDIO) then
-		return
-	end
-
-	return func(self, level_key)
-end)
-
 --- Mute Olesya in the Ubersreik levels.
 mod:hook(DialogueSystem, "trigger_sound_event_with_subtitles", function(func, self, sound_event, subtitle_event, speaker_name)
 	local level_key = Managers.state.game_mode and Managers.state.game_mode:level_key()
@@ -664,6 +655,7 @@ mod:dofile("scripts/mods/HideBuffs/buff_ui")
 mod:dofile("scripts/mods/HideBuffs/ability_ui")
 mod:dofile("scripts/mods/HideBuffs/equipment_ui")
 mod:dofile("scripts/mods/HideBuffs/second_buff_bar")
+mod:dofile("scripts/mods/HideBuffs/level_loading_screen")
 mod:dofile("scripts/mods/HideBuffs/persistent_ammo_counter")
 mod:dofile("scripts/mods/HideBuffs/locked_and_loaded_compat")
 mod:dofile("scripts/mods/HideBuffs/faster_chest_opening")

@@ -140,3 +140,5 @@ function()
 		DamageUtils.is_in_inn = false
 	end)
 end)
+
+script_data.current_difficulty_setting = "hardest"

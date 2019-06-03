@@ -257,6 +257,7 @@ mod:hook(SpecialsPacing, "specials_by_slots", function(func, self, t, specials_s
 	if spawn_cooldown_min ~= mod.setting_defaults[mod.SETTING_NAMES.SPAWN_COOLDOWN_MIN]
 	or spawn_cooldown_max ~= mod.setting_defaults[mod.SETTING_NAMES.SPAWN_COOLDOWN_MAX]
 	then
+		spawn_cooldown_max = math.max(spawn_cooldown_min, spawn_cooldown_max)
 		new_method_data = tablex.deepcopy(method_data)
 		new_method_data.spawn_cooldown = {
 			spawn_cooldown_min,
@@ -283,11 +284,20 @@ mod:hook(SpecialsPacing.setup_functions, "specials_by_slots", function(func, t, 
 		return func(t, slots, method_data, ...)
 	end
 
-	local new_method_data = tablex.deepcopy(method_data)
-	new_method_data.after_safe_zone_delay = {
-		mod:get(mod.SETTING_NAMES.SAFE_ZONE_DELAY_MIN),
-		mod:get(mod.SETTING_NAMES.SAFE_ZONE_DELAY_MAX)
-	}
+	local new_method_data = method_data
+
+	local safe_zone_delay_min = mod:get(mod.SETTING_NAMES.SAFE_ZONE_DELAY_MIN)
+	local safe_zone_delay_max = mod:get(mod.SETTING_NAMES.SAFE_ZONE_DELAY_MAX)
+	if safe_zone_delay_min ~= mod.setting_defaults[mod.SETTING_NAMES.SAFE_ZONE_DELAY_MIN]
+	or safe_zone_delay_max ~= mod.setting_defaults[mod.SETTING_NAMES.SAFE_ZONE_DELAY_MAX]
+	then
+		safe_zone_delay_max = math.max(safe_zone_delay_min, safe_zone_delay_max)
+		new_method_data = tablex.deepcopy(method_data)
+		new_method_data.after_safe_zone_delay = {
+			safe_zone_delay_min,
+			safe_zone_delay_max
+		}
+	end
 
 	local original_specials_settings = tablex.deepcopy(CurrentSpecialsSettings)
 	CurrentSpecialsSettings.max_specials = mod:get(mod.SETTING_NAMES.MAX_SPECIALS)
@@ -468,6 +478,7 @@ mod:hook(ConflictDirector, "update_horde_pacing", function(func, self, t, dt)
 	if horde_frequency_min ~= mod.setting_defaults[mod.SETTING_NAMES.HORDE_FREQUENCY_MIN]
 	or horde_frequency_max ~= mod.setting_defaults[mod.SETTING_NAMES.HORDE_FREQUENCY_MAX]
 	then
+		horde_frequency_max = math.max(horde_frequency_min, horde_frequency_max)
 		original_horde_frequency = tablex.deepcopy(CurrentPacing.horde_frequency)
 		CurrentPacing.horde_frequency = {
 			horde_frequency_min,
@@ -499,6 +510,7 @@ mod:hook(ConflictDirector, "update", function(func, self, ...)
 	or horde_startup_max ~= mod.setting_defaults[mod.SETTING_NAMES.HORDE_STARTUP_MAX]
 	then
 		original_horde_startup_time = tablex.deepcopy(CurrentPacing.horde_startup_time)
+		horde_startup_max = math.max(horde_startup_min, horde_startup_max)
 		CurrentPacing.horde_startup_time = {
 			horde_startup_min,
 			horde_startup_max
@@ -525,6 +537,7 @@ mod:hook(ConflictDirector, "horde_killed", function(func, self, ...)
 	or horde_frequency_max ~= mod.setting_defaults[mod.SETTING_NAMES.HORDE_FREQUENCY_MAX]
 	then
 		original_horde_frequency = tablex.deepcopy(CurrentPacing.horde_frequency)
+		horde_frequency_max = math.max(horde_frequency_min, horde_frequency_max)
 		CurrentPacing.horde_frequency = {
 			horde_frequency_min,
 			horde_frequency_max

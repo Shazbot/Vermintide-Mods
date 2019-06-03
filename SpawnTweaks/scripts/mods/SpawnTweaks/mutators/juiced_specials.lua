@@ -319,6 +319,34 @@ mod.specials_mut.is_mut_enabled = function()
 	return mod:get(mod.SETTING_NAMES.JUICED_SPECIALS_MUTATOR)
 end
 
+mod.specials_mut.disabled_units = {}
+mod:hook(ConflictDirector, "_post_spawn_unit", function(func, self, ai_unit, go_id, breed, ...)
+	if not mod.specials_mut.is_mut_enabled() then
+		return func(self, ai_unit, go_id, breed, ...)
+	end
+
+	if breed.name == "skaven_pack_master" then
+		Unit.set_local_scale(ai_unit, 0, Vector3(0.85,0.85,0.85))
+		Unit.disable_physics(ai_unit)
+		table.insert(mod.specials_mut.disabled_units, ai_unit)
+	end
+
+	return func(self, ai_unit, go_id, breed, ...)
+end)
+
+mod.dispatcher:on(
+	"onModUpdate",
+	function()
+		if not mod.specials_mut.is_mut_enabled() then
+			return
+		end
+
+		for _, unit in ipairs( mod.specials_mut.disabled_units ) do
+			Unit.enable_physics(unit)
+		end
+		mod.specials_mut.disabled_units = {}
+	end)
+
 mod.juiced_specials_update_func = function()
 	if Breeds and not mod.persistent.juiced_specials_backups_done then
 		mod.persistent.juiced_specials_backups_done = true

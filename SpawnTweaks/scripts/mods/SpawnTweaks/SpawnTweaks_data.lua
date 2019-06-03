@@ -929,6 +929,17 @@ mod.add_option(
 	"The second roll if a boss or lord was selected to spawn.",
 	reverse_twins_subs
 )
+mod.add_option(
+	"REVERSE_TWINS_MUTATOR_BOMB_RATS",
+	{
+		["widget_type"] = "checkbox",
+	  ["default_value"] = false,
+	},
+	"Include Bomb Rats",
+	"Include bomb rats as a spawnable enemy."
+		.."\nOptional due to a very rare engine crash that can happen and that is not something I can fix.",
+	reverse_twins_subs
+)
 
 mod.add_option(
 	"VERMINHOOD_MUTATOR",

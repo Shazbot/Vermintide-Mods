@@ -75,6 +75,9 @@ data.breed_tier_list = {
 data.breed_tier_list.skaven_clan_rat_with_shield = data.breed_tier_list.skaven_clan_rat
 data.breed_tier_list.chaos_marauder_with_shield = data.breed_tier_list.chaos_marauder
 
+data.breed_tier_list_bomb_rats = table.clone(data.breed_tier_list)
+table.insert(data.breed_tier_list_bomb_rats.skaven_clan_rat, "skaven_explosive_loot_rat")
+
 data.boss_breeds = pl.List{
 	"skaven_rat_ogre",
 	"skaven_stormfiend",
@@ -156,6 +159,9 @@ mod:hook_safe(MutatorHandler, "ai_killed", function(self, killed_unit, killer_un
 	end
 
 	local breed_tier_list = data.breed_tier_list
+	if mod:get(mod.SETTING_NAMES.REVERSE_TWINS_MUTATOR_BOMB_RATS) then
+		breed_tier_list = data.breed_tier_list_bomb_rats
+	end
 	local breed_explosion_templates = data.breed_explosion_templates
 	local blackboard = BLACKBOARDS[killed_unit]
 	local breed = blackboard.breed

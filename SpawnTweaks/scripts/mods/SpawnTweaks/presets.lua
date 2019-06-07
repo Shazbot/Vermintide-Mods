@@ -108,7 +108,7 @@ mod.dump_settings = function()
 	end
 end
 
-mod:command("ST_save_preset", mod:localize("save_preset_command_description"), mod.save_preset)
-mod:command("ST_load_preset", mod:localize("load_preset_command_description"), mod.load_preset)
-mod:command("ST_delete_preset", mod:localize("delete_preset_command_description"), mod.delete_preset)
-mod:command("ST_dump_settings", mod:localize("dump_settings_command_description"), mod.dump_settings)
+mod:command("st_save_preset", mod:localize("save_preset_command_description"), mod.save_preset)
+mod:command("st_load_preset", mod:localize("load_preset_command_description"), mod.load_preset)
+mod:command("st_delete_preset", mod:localize("delete_preset_command_description"), mod.delete_preset)
+mod:command("st_dump_settings", mod:localize("dump_settings_command_description"), mod.dump_settings)

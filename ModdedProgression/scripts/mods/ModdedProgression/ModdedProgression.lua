@@ -128,6 +128,20 @@ mod.get_map_time = function(level_id)
 	return map_time
 end
 
+mod.modded_muts_names = pl.List{
+	"Onslaught",
+	"Deathwish",
+	"DwOns",
+	"True Solo",
+}
+
+mod.modded_mut_to_difficutly_done_setting_lookup = pl.Map{
+	Onslaught = "ONS_DIFFICULTY",
+	Deathwish = "DW_DIFFICULTY",
+	DwOns = "DWONS_DIFFICULTY",
+	["True Solo"] = "TS_DIFFICULTY",
+}
+
 mod:hook(StartGameWindowMissionSelection, "update", function(func, self, dt, t)
 	mod:pcall(function()
 		self._widgets_by_name.selected_level.offset[1] = 0
@@ -141,20 +155,6 @@ mod:hook(StartGameWindowMissionSelection, "update", function(func, self, dt, t)
 
 		local level_id = self._selected_level_id or ""
 
-		local modded_muts_names = pl.List{
-			"Onslaught",
-			"Deathwish",
-			"DwOns",
-			"True Solo",
-		}
-
-		local modded_mut_to_difficutly_done_setting_lookup = pl.Map{
-			Onslaught = "ONS_DIFFICULTY",
-			Deathwish = "DW_DIFFICULTY",
-			DwOns = "DWONS_DIFFICULTY",
-			["True Solo"] = "TS_DIFFICULTY",
-		}
-
 		local modded_mut_to_done_on_hardest_lookup = pl.Map{
 			Onslaught = mod:get("ONS_COMPLETION") or {},
 			Deathwish = mod:get("DW_COMPLETION") or {},
@@ -162,8 +162,8 @@ mod:hook(StartGameWindowMissionSelection, "update", function(func, self, dt, t)
 		}
 
 		local info_out = {}
-		modded_muts_names:foreach(function(modded_mut_name)
-			local done_on_difficulty_setting = modded_mut_to_difficutly_done_setting_lookup[modded_mut_name]
+		mod.modded_muts_names:foreach(function(modded_mut_name)
+			local done_on_difficulty_setting = mod.modded_mut_to_difficutly_done_setting_lookup[modded_mut_name]
 			local done_on_difficulty = mod:get(done_on_difficulty_setting) or {}
 
 			local done_difficulty = done_on_difficulty[level_id]
@@ -180,7 +180,7 @@ mod:hook(StartGameWindowMissionSelection, "update", function(func, self, dt, t)
 		end)
 
 		self.mod_progression_text.content.text =
-			modded_muts_names:map(function(modded_mut)
+			mod.modded_muts_names:map(function(modded_mut)
 				return string.format("%s: %s", modded_mut, info_out[modded_mut])
 			end)
 			:insert(1, "Time: "..mod.get_map_time(level_id))
@@ -214,3 +214,5 @@ end)
 
 mod:dofile("scripts/mods/"..mod:get_name().."/widget_definitions")
 mod:dofile("scripts/mods/"..mod:get_name().."/map_timer")
+mod:dofile("scripts/mods/"..mod:get_name().."/achievement_templates")
+mod:dofile("scripts/mods/"..mod:get_name().."/achievements")

@@ -6,7 +6,7 @@ AchievementTemplates.achievements.modprog_ts_champ = {
 	desc = "modprog_ts_champ_desc",
 	completed = function()
 		local completed = false
-		for _, difficutly_name in pairs( mod:get("TS_DIFFICULTY") ) do
+		for _, difficutly_name in pairs( mod:get("TS_DIFFICULTY") or {} ) do
 			if difficutly_name == "harder"
 			or difficutly_name == "hardest"
 			then
@@ -24,7 +24,7 @@ AchievementTemplates.achievements.modprog_ts_legend = {
 	desc = "modprog_ts_legend_desc",
 	completed = function()
 		local completed = false
-		for _, difficutly_name in pairs( mod:get("TS_DIFFICULTY") ) do
+		for _, difficutly_name in pairs( mod:get("TS_DIFFICULTY") or {} ) do
 			if difficutly_name == "hardest"
 			then
 				completed = true
@@ -42,7 +42,7 @@ AchievementTemplates.achievements.modprog_dwons_champ = {
 	desc = "modprog_dwons_champ_desc",
 	completed = function()
 		local completed = false
-		for _, difficutly_name in pairs( mod:get("DWONS_DIFFICULTY") ) do
+		for _, difficutly_name in pairs( mod:get("DWONS_DIFFICULTY") or {} ) do
 			if difficutly_name == "harder"
 			or difficutly_name == "hardest"
 			then
@@ -60,7 +60,7 @@ AchievementTemplates.achievements.modprog_dwons_legend = {
 	desc = "modprog_dwons_legend_desc",
 	completed = function()
 		local completed = false
-		for _, difficutly_name in pairs( mod:get("DWONS_DIFFICULTY") ) do
+		for _, difficutly_name in pairs( mod:get("DWONS_DIFFICULTY") or {} ) do
 			if difficutly_name == "hardest"
 			then
 				completed = true
@@ -78,7 +78,7 @@ AchievementTemplates.achievements.modprog_dw_champ = {
 	desc = "modprog_dw_champ_desc",
 	completed = function()
 		local completed = false
-		for _, difficutly_name in pairs( mod:get("DW_DIFFICULTY") ) do
+		for _, difficutly_name in pairs( mod:get("DW_DIFFICULTY") or {} ) do
 			if difficutly_name == "harder"
 			or difficutly_name == "hardest"
 			then
@@ -96,7 +96,7 @@ AchievementTemplates.achievements.modprog_dw_legend = {
 	desc = "modprog_dw_legend_desc",
 	completed = function()
 		local completed = false
-		for _, difficutly_name in pairs( mod:get("DW_DIFFICULTY") ) do
+		for _, difficutly_name in pairs( mod:get("DW_DIFFICULTY") or {} ) do
 			if difficutly_name == "hardest"
 			then
 				completed = true
@@ -114,7 +114,7 @@ AchievementTemplates.achievements.modprog_ons_champ = {
 	desc = "modprog_ons_champ_desc",
 	completed = function()
 		local completed = false
-		for _, difficutly_name in pairs( mod:get("ONS_DIFFICULTY") ) do
+		for _, difficutly_name in pairs( mod:get("ONS_DIFFICULTY") or {} ) do
 			if difficutly_name == "harder"
 			or difficutly_name == "hardest"
 			then
@@ -132,7 +132,7 @@ AchievementTemplates.achievements.modprog_ons_legend = {
 	desc = "modprog_ons_legend_desc",
 	completed = function()
 		local completed = false
-		for _, difficutly_name in pairs( mod:get("ONS_DIFFICULTY") ) do
+		for _, difficutly_name in pairs( mod:get("ONS_DIFFICULTY") or {} ) do
 			if difficutly_name == "hardest"
 			then
 				completed = true

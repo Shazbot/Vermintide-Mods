@@ -70,7 +70,7 @@ globals = {
 	"UtilityConsiderations", "BTChaosSorcererPlagueSkulkAction",
 	"GameNetworkManager", "LevelHelper",
 	"LoadingView", "HeroViewStateAchievements",
-	"AchievementManager",
+	"AchievementManager", "AchievementTemplates",
 
 	"PriorityBuffUI",
 }

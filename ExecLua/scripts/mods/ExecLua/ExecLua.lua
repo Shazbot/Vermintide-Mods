@@ -8,6 +8,8 @@ end)
 
 mod.simple_ui = get_mod("SimpleUI")
 
+mod:dofile("scripts/mods/"..mod:get_name().."/snippets")
+
 mod.exec_window_size = {1200, 1750}
 mod.exec_window_position = { 0, 0 }
 mod.lines = pl.List()
@@ -32,7 +34,7 @@ mod.do_exec = function()
 end
 
 mod.create_exec_window = function()
-	local screen_width, screen_height = UIResolution()
+	local screen_width = UIResolution()
 
 	mod.exec_window = mod.simple_ui:create_window("presets", mod.exec_window_position, mod.exec_window_size)
 
@@ -90,14 +92,24 @@ mod.destroy_exec_window = function()
 	end
 end
 
+mod.set_lines = function(lines)
+	mod.lines = lines
+
+  for i, textbox in ipairs( mod.textboxes ) do
+		textbox.text = mod.lines[i] or ""
+  end
+end
+
 mod:hook("ChatGui", "update", function(func, self, ...)
 	mod:pcall(function()
 		if Keyboard.pressed(Keyboard.button_index("f2")) then
 			if mod.exec_window then
 				mod.destroy_exec_window()
+				mod.destroy_snippets_window()
 			else
 				self:block_input()
 				mod.create_exec_window()
+				mod.create_snippets_window()
 			end
 		end
 
@@ -127,13 +139,17 @@ mod:hook("ChatGui", "update", function(func, self, ...)
 		  end
 
 		  mod.pasted = newly_pasted
-		  mod.lines = pl.stringx.splitlines(newly_pasted)
-
-		  for i, textbox in ipairs( mod.textboxes ) do
-				textbox.text = mod.lines[i] or ""
-		  end
+		  mod.set_lines(pl.stringx.splitlines(newly_pasted))
 		end
 	end)
 
 	return func(self, ...)
 end)
+
+mod.on_game_state_changed = function(status, state)
+	if status == "enter" and state == "StateIngame" then
+		mod.load_snippets()
+	end
+end
+
+mod:command("refresh_snippets", "Refresh snippets.", function() mod.load_snippets() end)

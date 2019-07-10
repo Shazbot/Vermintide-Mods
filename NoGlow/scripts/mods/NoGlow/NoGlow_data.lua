@@ -1,5 +1,3 @@
--- luacheck: globals get_mod
-
 local mod = get_mod("NoGlow")
 
 local mod_data = {

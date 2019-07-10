@@ -1,5 +1,3 @@
--- luacheck: globals get_mod WeaponSkins WeaponMaterialSettingsTemplates GearUtils
-
 local mod = get_mod("NoGlow")
 
 mod:hook(GearUtils, "spawn_inventory_unit", function(func, world, hand, third_person_extension_template, unit_name, node_linking_settings, slot_name, item_data, owner_unit_1p, owner_unit_3p, unit_template, extra_extension_data, ammo_percent, material_settings)

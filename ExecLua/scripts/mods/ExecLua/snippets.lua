@@ -6,6 +6,8 @@ mod.simple_ui = get_mod("SimpleUI")
 
 mod.snippets = pl.List()
 
+mod.url_origin = "https://gist.verminti.de"
+
 mod.apply_snippet = function(snippet)
 	mod.set_lines(pl.stringx.splitlines(snippet.code))
 end
@@ -96,10 +98,7 @@ mod.get_snippets_cb = function (self, success, code, headers, data, userdata) --
 	mod.snippets_definitions = pl.List(cjson.decode(data))
 
 	for _, snippet_definition in ipairs( mod.snippets_definitions ) do
-		local url =
-			"https://raw.githubusercontent.com/ManuelBlanc/vermintide-snippets/master/lua_snippets/"
-			..snippet_definition.filename
-			..".lua"
+		local url = mod.url_origin..snippet_definition.uri
 
 		Managers.curl:get(url, {}, callback(mod, "get_snippet_cb"), { title = snippet_definition.title }, {})
 	end
@@ -119,7 +118,7 @@ mod.load_snippets = function()
 		mod.snippets = pl.List()
 		mod.snippets:insert(1, mod.empty_snippet)
 
-		local url = "https://raw.githubusercontent.com/ManuelBlanc/vermintide-snippets/master/snippets.json"
+		local url = mod.url_origin.."/index.json"
 		Managers.curl:get(url, {}, callback(mod, "get_snippets_cb"), { title = "bleh" }, {})
 	end)
 end

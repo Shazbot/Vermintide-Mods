@@ -189,6 +189,15 @@ mod:hook(TerrorEventMixer.run_functions, "roaming_patrol", function (func, event
 	return func(event, element, t, dt)
 end)
 
+--- Disable fixed event spawns.
+mod:hook(TerrorEventMixer.init_functions, "spawn_at_raw", function (func, ...)
+	if mod:get(mod.SETTING_NAMES.DISABLE_FIXED_SPAWNS) then
+		return
+	end
+
+	return func(...)
+end)
+
 local breeds_specials = {
 	"skaven_gutter_runner",
 	"skaven_pack_master",
@@ -202,6 +211,14 @@ local breeds_specials = {
 --- More ambient elites. Replaces trash ambients with elites.
 --- trash spawn without a spawn_type == ambient trash
 mod:hook(ConflictDirector, "spawn_queued_unit", function(func, self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, ...)
+	if breed
+	and breed.name
+	and breed.name == "skaven_loot_rat"
+	and mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.DISABLE
+	then
+		return
+	end
+
 	if mod:get(mod.SETTING_NAMES.SPECIALS) == mod.SPECIALS.DISABLE and tablex.find(breeds_specials, breed.name) then
 		if not stringx.lfind(debug.traceback(), "CreatureSpawner") then
 			return

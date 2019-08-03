@@ -415,6 +415,14 @@ mod:hook(TerrorEventMixer.run_functions, "spawn", function (func, event, element
 		return true
 	end
 
+	if not tablex.find(mod.boss_events, event.name)
+	and string.find(event.name, "_event_specials_") == nil
+	and string.find(event.name, "patrol") == nil
+	and mod:get(mod.SETTING_NAMES.DISABLE_FIXED_SPAWNS)
+	then
+		return true
+	end
+
 	if mod.are_bosses_customized() then
 		if stringx.count(event.name, "boss_event") > 0 and stringx.count(event.name, "patrol") == 0 then
 			local pruned_bosses = mod.get_filtered_boss_list()

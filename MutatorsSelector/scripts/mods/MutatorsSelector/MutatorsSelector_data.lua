@@ -6,6 +6,19 @@ local mod_data = {
 	is_togglable = true,
 }
 
+mod:hook("Localize", function(func, id, ...)
+		local localized = func(id, ...)
+
+		if string.find(localized, "<") == 1 then
+			localized = string.match(localized, "<display_name_mutator_(.+)>") or localized
+			if string.match(localized, "<description_mutator_(.+)>") then
+				localized = "Description missing, this is an unreleased mutator!"
+			end
+		end
+
+		return localized
+end)
+
 mod_data.options_widgets = (function()
 	local mutator_checkboxes = {}
 	for mut_name, mut_template in pairs( MutatorTemplates ) do
@@ -20,5 +33,7 @@ mod_data.options_widgets = (function()
 	end
 	return mutator_checkboxes
 end)()
+
+mod:hook_disable("Localize")
 
 return mod_data

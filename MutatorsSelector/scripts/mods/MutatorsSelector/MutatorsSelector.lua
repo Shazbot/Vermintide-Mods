@@ -9,7 +9,7 @@ mod:hook(MutatorHandler, "init", function(func, self, mutators, ...) -- luacheck
 		end
 	end
 
-	return func(self, mutators, ...)
+	pcall(func, self, mutators, ...)
 end)
 
 mod:hook(MutatorHandler, "activate_mutators", function(func, self)

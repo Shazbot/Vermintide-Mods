@@ -417,7 +417,7 @@ EquipmentUI._mod_update_ammo = function (self, left_hand_wielded_unit, right_han
 		return
 	end
 
-	local max_ammo = ammo_extension:get_max_ammo()
+	local max_ammo = ammo_extension:max_ammo()
 	local remaining_ammo = ammo_extension:total_remaining_ammo()
 
 	if max_ammo and remaining_ammo then
@@ -440,7 +440,7 @@ mod.player_requires_reload = function()
 			local left_unit = slot_data.left_unit_1p
 			local ammo_extn = (right_unit and ScriptUnit.has_extension(right_unit, "ammo_system")) or
 				(left_unit and ScriptUnit.has_extension(left_unit, "ammo_system"))
-			if ammo_extn and (not ammo_extn:ammo_available_immediately()) and (ammo_extn.reload_time > 0.66) and
+			if ammo_extn and (not ammo_extn:ammo_available_immediately()) and (ammo_extn._reload_time > 0.66) and
 					(ammo_extn:ammo_count() < ammo_extn:clip_size()) then
 				return true,
 					ammo_extn:ammo_count() > 0 and ammo_extn:ammo_count() ~= ammo_extn:clip_size(),

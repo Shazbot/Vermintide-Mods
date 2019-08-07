@@ -127,7 +127,7 @@ UITooltipPasses.weapon_kills = {
 
 		return data
 	end,
-	draw = function (draw, ui_renderer, pass_data, ui_scenegraph, pass_definition, ui_style, ui_content, position, size, input_service, dt, ui_style_global, item, data, draw_downwards)
+	draw = function (data, draw, draw_downwards, ui_renderer, pass_data, ui_scenegraph, pass_definition, ui_style, ui_content, position, size, input_service, dt, ui_style_global, item)
 		local alpha_multiplier = pass_data.alpha_multiplier
 		local alpha = 255 * alpha_multiplier
 		local start_layer = pass_data.start_layer or DEFAULT_START_LAYER

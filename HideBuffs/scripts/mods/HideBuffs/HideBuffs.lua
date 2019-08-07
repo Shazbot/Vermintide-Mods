@@ -283,7 +283,7 @@ mod:hook(UnitFramesHandler, "update", function(func, self, ...)
 	if mod.realign_team_member_frames then
 		mod.realign_team_member_frames = false
 
-		self:_align_team_member_frames()
+		self:_align_party_member_frames()
 
 		-- dirtify the portrait widget
 		for _, unit_frame in ipairs(self._unit_frames) do
@@ -395,7 +395,7 @@ mod:hook(UnitFramesHandler, "update", function(func, self, ...)
 end)
 
 --- Teammate UI.
-mod:hook_origin(UnitFramesHandler, "_align_team_member_frames", function(self)
+mod:hook_origin(UnitFramesHandler, "_align_party_member_frames", function(self)
 	local start_offset_x = 80 + mod:get(mod.SETTING_NAMES.TEAM_UI_OFFSET_X)
 	local start_offset_y = -100 + mod:get(mod.SETTING_NAMES.TEAM_UI_OFFSET_Y)
 	local spacing = mod:get(mod.SETTING_NAMES.TEAM_UI_SPACING)
@@ -595,7 +595,7 @@ end)
 
 --- Reposition the subtitles.
 mod:hook_safe(SubtitleGui, "update", function(self)
-	local subtitle_widget = self.subtitle_widget
+	local subtitle_widget = self._subtitle_widget
 	if not subtitle_widget.offset then
 		subtitle_widget.offset = { 0, 0, 0 }
 	end

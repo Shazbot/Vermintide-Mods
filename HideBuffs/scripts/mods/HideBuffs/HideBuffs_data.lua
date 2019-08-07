@@ -1933,18 +1933,6 @@ mod.add_option(
 	2
 )
 
-mod.add_option(
-	"SHOW_ITEM_BREAKPOINTS",
-	{
-		["widget_type"] = "checkbox",
-		["default_value"] = false,
-	},
-	"Show Weapon Breakpoints",
-	"Show important weapon breakpoints for Legend in weapon descriptions.",
-	nil,
-	3
-)
-
 local other_elements_subs = mod.add_option(
 	"OTHER_ELEMENTS_GROUP",
 	{

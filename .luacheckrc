@@ -71,6 +71,7 @@ globals = {
 	"GameNetworkManager", "LevelHelper",
 	"LoadingView", "HeroViewStateAchievements",
 	"AchievementManager", "AchievementTemplates",
+	"UIAtlasHelper",
 
 	"PriorityBuffUI",
 }

@@ -300,7 +300,7 @@ mod.reset_custom_buff_counters = function()
 	mod.map_dps_dmg_sum = 0
 end
 
-mod:hook_safe(StateIngame, "update", function(self, dt, main_t)
+mod:hook_safe(StateIngame, "update", function()
 	if not Managers.player
 	or not Managers.player:local_player()
 	or not Managers.player:local_player().player_unit then
@@ -384,6 +384,14 @@ local definitions = local_require("scripts/ui/hud_ui/buff_ui_definitions")
 local BUFF_SIZE = definitions.BUFF_SIZE
 local BUFF_SPACING = definitions.BUFF_SPACING
 mod:hook_origin(BuffUI, "_add_buff", function(self, buff, infinite, end_time)
+	mod.buffs_manager_BuffUI_add_buff(buff)
+
+	if mod.bm.is_priority_buff(buff.buff_type)
+	or mod.bm.is_hidden_buff(buff.buff_type)
+	then
+		return false
+	end
+
 	for buff_name, setting_name in pairs( mod.buff_name_to_setting_name_lookup ) do
 		if buff.buff_type == buff_name and mod:get(setting_name) then
 			return false

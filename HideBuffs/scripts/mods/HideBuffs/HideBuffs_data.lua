@@ -886,7 +886,7 @@ local buffs_group_index = pl.tablex.find_if(mod_data.options_widgets,
 	function(option_widget)
 		return option_widget.setting_name == mod.SETTING_NAMES.BUFFS_GROUP
 	end)
-local buffs_group_group = mod_data.options_widgets[buffs_group_index]
+local buffs_group = mod_data.options_widgets[buffs_group_index]
 
 mod.add_option(
 	"MAX_NUMBER_OF_BUFFS",
@@ -898,7 +898,7 @@ mod.add_option(
 	"Max Active Buffs",
 	"Max number of active buffs to show on the UI."
 		.."\nDefault is 5.",
-	buffs_group_group.sub_widgets
+	buffs_group.sub_widgets
 )
 
 local custom_buffs_subs = mod.add_option(
@@ -909,7 +909,7 @@ local custom_buffs_subs = mod.add_option(
 	"Add New Buffs",
 	"Add some new custom buffs."
 		.."\nI advise increasing the Max Active Buffs option to have enough available buff slots.",
-	buffs_group_group.sub_widgets
+	buffs_group.sub_widgets
 )
 
 mod.add_option(
@@ -1020,6 +1020,21 @@ for setting_name, subwidgets in pairs( custom_buffs_subwidgets ) do
 		subwidgets
 	)
 end
+
+mod.add_option(
+	"SHOW_BUFFS_MANAGER_UI",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = true,
+	},
+	"Show Buff Manager UI",
+	"Show a UI widget that allows you to hide or move buffs to the priority bar."
+		.."\nYou can see it in upper right when you open the chat."
+		.."\nThe Buff Manager works by tracking all the buffs that get applied to you."
+		.."\nNote that to see changes to a buff the buff needs to get reapplied.",
+	buffs_group.sub_widgets,
+	1
+)
 
 local ammo_counter_group_index = pl.tablex.find_if(mod_data.options_widgets,
 	function(option_widget)

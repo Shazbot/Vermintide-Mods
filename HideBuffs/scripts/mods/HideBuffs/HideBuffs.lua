@@ -1,5 +1,8 @@
 local mod = get_mod("HideBuffs")
 
+mod.vmf = get_mod("VMF")
+mod.simple_ui = get_mod("SimpleUI")
+
 mod.persistent = mod:persistent_table("persistent")
 
 --- Keep track of player ammo and hp from Numeric UI for use in equipment_ui.
@@ -439,6 +442,7 @@ mod:hook("ChatGui", "update", function(func, self, ...)
 		self.chat_window_widget.style.background.color[1] = mod:get(mod.SETTING_NAMES.CHAT_BG_ALPHA)
 
 		mod.on_chat_gui_update(self)
+		mod.bm_on_chat_gui_update(self)
 	end)
 
 	return func(self, ...)
@@ -666,6 +670,7 @@ mod:dofile("scripts/mods/HideBuffs/presets_data")
 mod:dofile("scripts/mods/HideBuffs/presets")
 mod:dofile("scripts/mods/HideBuffs/overcharge_bar")
 mod:dofile("scripts/mods/HideBuffs/local_presets")
+mod:dofile("scripts/mods/HideBuffs/buffs_manager")
 
 --- MOD FUNCTIONS ---
 mod.reapply_pickup_ranges = function()

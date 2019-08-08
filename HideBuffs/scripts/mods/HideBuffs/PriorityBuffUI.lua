@@ -178,6 +178,12 @@ PriorityBuffUI._add_buff = function (self, buff, infinite, end_time)
 	end
 
 	local is_priority_buff = false
+
+	if mod.bm.is_priority_buff(buff.buff_type)
+	then
+		is_priority_buff = true
+	end
+
 	for setting_name, buff_names in pairs( mod.priority_buff_setting_name_to_buff_name ) do
 		for _, buff_name in ipairs( buff_names ) do
 			if buff_name == buff.buff_type then

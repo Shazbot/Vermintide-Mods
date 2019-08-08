@@ -156,6 +156,7 @@ mod:hook(BuffUI, "draw", function(func, self, dt)
 		end
 
 		mod.custom_buffs_BuffUI_draw(self)
+		mod.buffs_manager_BuffUI_draw(self)
 	end)
 	return func(self, dt)
 end)

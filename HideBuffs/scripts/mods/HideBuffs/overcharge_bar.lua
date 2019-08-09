@@ -70,7 +70,7 @@ mod:hook(OverchargeBarUI, "_update_overcharge", function(func, self, player, dt)
 
 	if clip_size == 1
 	and (
-		ammo_extension.reload_time < 0.67
+		ammo_extension._reload_time < 0.67
 		or not mod:get(mod.SETTING_NAMES.PLAYER_UI_SHOW_CLIP_ON_LONG_RELOAD_WEAPONS)
 		)
 	then

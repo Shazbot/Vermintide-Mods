@@ -160,3 +160,13 @@ mod:hook(BuffUI, "draw", function(func, self, dt)
 	end)
 	return func(self, dt)
 end)
+
+--- Disable popups some buffs have.
+--- e.g. Paced Strikes, Tranquility
+mod:hook(BuffPresentationUI, "draw", function(func, self, ...)
+	if mod:get(mod.SETTING_NAMES.SECOND_BUFF_BAR_DISABLE_BUFF_POPUPS) then
+		return
+	end
+
+	return func(self, ...)
+end)

@@ -1022,6 +1022,19 @@ for setting_name, subwidgets in pairs( custom_buffs_subwidgets ) do
 end
 
 mod.add_option(
+	"SECOND_BUFF_BAR_DISABLE_BUFF_POPUPS",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Disable Default Buff Popups",
+	"Disable the middle-of-screen popups some buffs normally have."
+		.."\ne.g. Paced Strikes, Tranquility",
+	buffs_group.sub_widgets,
+	1
+)
+
+mod.add_option(
 	"SHOW_BUFFS_MANAGER_UI",
 	{
 		["widget_type"] = "checkbox",
@@ -1887,18 +1900,6 @@ local priority_buff_bar_group_index = pl.tablex.find_if(mod_data.options_widgets
 	end)
 local priority_buff_bar_group = mod_data.options_widgets[priority_buff_bar_group_index]
 mod.add_option(
-	"SECOND_BUFF_BAR_DISABLE_BUFF_POPUPS",
-	{
-		["widget_type"] = "checkbox",
-		["default_value"] = true,
-	},
-	"Disable Default Buff Popups",
-	"Disable the middle-of-screen popups some buffs normally have."
-		.."\ne.g. Paced Strikes, Tranquility",
-	priority_buff_bar_group.sub_widgets,
-	1
-)
-mod.add_option(
 	"PRIORITY_BUFFS_DISABLE_ALIGN_ANIMATION",
 	{
 		["widget_type"] = "checkbox",
@@ -1907,7 +1908,7 @@ mod.add_option(
 	"Disable Align Animation",
 	"Disable the animation of a new buff sliding into place.",
 	priority_buff_bar_group.sub_widgets,
-	2
+	1
 )
 mod.add_option(
 	"SECOND_BUFF_BAR_SIZE_ADJUST_X",

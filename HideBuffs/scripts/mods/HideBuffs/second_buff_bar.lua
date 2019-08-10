@@ -40,14 +40,3 @@ mod:hook_safe(BuffUI, "set_visible", function(self, visible) -- luacheck: ignore
 		mod.buff_ui:set_visible(visible)
 	end
 end)
-
---- Disable priority_buff popups.
---- e.g. Paced Strikes, Tranquility
-mod:hook(BuffPresentationUI, "draw", function(func, self, dt)
-	if mod:get(mod.SETTING_NAMES.SECOND_BUFF_BAR)
-	and mod:get(mod.SETTING_NAMES.SECOND_BUFF_BAR_DISABLE_BUFF_POPUPS) then
-		return
-	end
-
-	return func(self, dt)
-end)

@@ -1651,6 +1651,18 @@ mod.add_option(
 	team_ui_item_slots_subs
 )
 mod.add_option(
+	"TEAM_UI_ITEM_SLOTS_ALPHA",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 255},
+		["default_value"] = 100,
+	},
+	"Opacity",
+	"Adjust opacity of empty item slots."
+		.."\nDefault is 100.",
+	team_ui_item_slots_subs
+)
+mod.add_option(
 	"TEAM_UI_ITEM_SLOTS_OFFSET_X",
 	{
 		["widget_type"] = "numeric",

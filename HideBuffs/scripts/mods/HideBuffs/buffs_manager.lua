@@ -183,6 +183,11 @@ bm.create_window = function()
 		{100, 30},
 		"middle_top",
 		bm.is_buff_manager_maximized and "Hide" or "Show")
+	show_button.tooltip =
+		"Buff Manager"
+		.."\nHide or prioritize buffs."
+		.."\nTracks the recieved buffs,"
+		.."\nso empty at game start."
 	show_button.on_click = function()
 		bm.is_buff_manager_maximized = not bm.is_buff_manager_maximized
 		bm.reload_window()

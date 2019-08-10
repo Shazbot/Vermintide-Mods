@@ -47,6 +47,10 @@ mod.item_slot_widgets = {
 	"item_slot_frame_",
 	"item_slot_highlight_",
 }
+mod.item_slot_background_widgets = {
+	"item_slot_bg_",
+	"item_slot_frame_",
+}
 
 --- Healshare talents.
 mod.healshare_buff_names = {

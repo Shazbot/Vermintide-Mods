@@ -166,6 +166,7 @@ mod.teammate_unit_frame_draw = function(unit_frame_ui)
 	local start_y = 2
 	local item_spacing = mod:get(mod.SETTING_NAMES.TEAM_UI_ITEM_SLOTS_SPACING)
 	local item_size = mod:get(mod.SETTING_NAMES.TEAM_UI_ITEM_SLOTS_SIZE) + 4
+	local item_slots_alpha = mod:get(mod.SETTING_NAMES.TEAM_UI_ITEM_SLOTS_ALPHA)
 
 	for i = 1, 3 do
 		local item_slot_style = loadout_dynamic.style["item_slot_"..i]
@@ -189,6 +190,10 @@ mod.teammate_unit_frame_draw = function(unit_frame_ui)
 			other_slot_elements_style.offset[2] = start_y-2-item_spacing*(vertical_index-1)
 			other_slot_elements_style.size[1] = item_size
 			other_slot_elements_style.size[2] = item_size
+		end
+
+		for _, item_slot_name in ipairs( mod.item_slot_background_widgets ) do
+			loadout_dynamic.style[item_slot_name..i].color[1] = item_slots_alpha
 		end
 	end
 

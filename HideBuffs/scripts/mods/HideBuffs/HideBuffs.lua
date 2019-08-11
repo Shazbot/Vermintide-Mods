@@ -620,9 +620,16 @@ end)
 
 --- Reposition the Twitch voting UI.
 mod:hook(TwitchVoteUI, "_draw", function(func, self, dt, t)
+	local offset_x = mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_TWITCH_VOTE_OFFSET_X)
+	local offset_y = mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_TWITCH_VOTE_OFFSET_Y)
+
 	local local_position = self._ui_scenegraph.base_area.local_position
-	local_position[1] = 0 + mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_TWITCH_VOTE_OFFSET_X)
-	local_position[2] = 120 + mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_TWITCH_VOTE_OFFSET_Y)
+	local_position[1] = 0 + offset_x
+	local_position[2] = 120 + offset_y
+
+	local results_local_position = self._ui_scenegraph.result_area.local_position
+	results_local_position[1] = 0 + offset_x
+	results_local_position[2] = 200 + offset_y
 
 	return func(self, dt, t)
 end)

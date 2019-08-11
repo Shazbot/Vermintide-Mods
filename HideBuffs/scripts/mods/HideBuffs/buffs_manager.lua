@@ -46,9 +46,9 @@ mod.buffs_manager_BuffUI_add_buff = function(buff)
 	local buff_type = buff.buff_type
 	if not bm.added_buffs[buff_type] then
 		bm.added_buffs[buff_type] = icon
-		mod:pcall(function()
+		if bm.main_window then
 			bm.reload_window()
-		end)
+		end
 	end
 end
 
@@ -56,7 +56,8 @@ bm.set_in_storage = function(settings_key, buff_type, to_set)
 	local buff_manager_storage = mod:get(bm.buffs_manager_storage_key) or {}
 	local priority_buffs = pl.Set(buff_manager_storage[settings_key] or {})
 
-	priority_buffs = to_set and priority_buffs:union(pl.Set{buff_type}) or priority_buffs:difference(pl.Set{buff_type})
+	priority_buffs = to_set and pl.Set.union(priority_buffs, pl.Set{buff_type})
+		or pl.Set.difference(priority_buffs, pl.Set{buff_type})
 
 	buff_manager_storage[settings_key] = priority_buffs:values()
 	mod:set(bm.buffs_manager_storage_key, buff_manager_storage)
@@ -118,6 +119,7 @@ bm.create_window = function()
 				"top_left"
 			)
 			default_chk.text = "Normal"
+			default_chk.tooltip = buff_type
 			default_chk.value = not (bm.is_priority_buff(buff_type) or bm.is_hidden_buff(buff_type))
 			default_chk.on_value_changed = function()
 				local is_normal = default_chk.value
@@ -139,6 +141,7 @@ bm.create_window = function()
 				"top_left"
 			)
 			priority_chk.text = "Priority"
+			priority_chk.tooltip = buff_type
 			priority_chk.value = bm.is_priority_buff(buff_type)
 			priority_chk.on_value_changed = function()
 				local is_priority = priority_chk.value
@@ -161,6 +164,7 @@ bm.create_window = function()
 				"top_left"
 			)
 			hide_chk.text = "Hide"
+			hide_chk.tooltip = buff_type
 			hide_chk.value = bm.is_hidden_buff(buff_type)
 			hide_chk.on_value_changed = function()
 				local is_hidden = hide_chk.value
@@ -199,9 +203,8 @@ bm.create_window = function()
 
 	bm.main_window:init()
 
-	bm.main_window.transparent = false
 	bm.main_window.theme = table.clone(bm.main_window.theme)
-	bm.main_window.theme.color[1] = 255
+	bm.main_window.theme.color[1] = 200
 
 	if bm.is_buff_manager_maximized then
 		bm.maximize_window()
@@ -250,12 +253,7 @@ mod.bm_on_chat_gui_update = function(chat_gui)
 
 	if not chat_gui.chat_focused then
 		bm.destroy_window()
-		bm.main_window_closed = false
-	elseif
-	mod.was_ingame_entered
-	and not bm.main_window
-	and not bm.main_window_closed
-	then
+	elseif mod.was_ingame_entered and not bm.main_window then
 		bm.reload_window()
 	end
 end

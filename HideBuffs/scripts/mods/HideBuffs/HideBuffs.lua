@@ -512,11 +512,22 @@ mod:hook(MissionObjectiveUI, "draw", function(func, self, dt)
 	return func(self, dt)
 end)
 
---- Hide boss hp bar.
+--- Hide or reposition boss hp bar.
 mod:hook(BossHealthUI, "_draw", function(func, self, dt, t)
 	if mod:get(mod.SETTING_NAMES.HIDE_BOSS_HP_BAR) then
 		return
 	end
+
+	-- boss hp bar position
+	local local_position = self.ui_scenegraph.pivot.local_position
+	if not mod.boss_health_ui_default_position then
+		mod.boss_health_ui_default_position = table.clone(local_position)
+	end
+
+	local_position[1] = mod.boss_health_ui_default_position[1]
+		+ mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_BOSS_HP_BAR_OFFSET_X)
+	local_position[2] = mod.boss_health_ui_default_position[2]
+		+ mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_BOSS_HP_BAR_OFFSET_Y)
 
 	return func(self, dt, t)
 end)

@@ -2041,6 +2041,30 @@ mod.add_option(
 	"Optionally offset the Twitch voting UI on the y axis.",
 	other_elements_subs
 )
+mod.add_option(
+	"OTHER_ELEMENTS_BOSS_HP_BAR_OFFSET_X",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-2000, 2000},
+		["unit_text"] = "px",
+		["default_value"] = 0,
+	},
+	"Boss HP Bar Offset X",
+	"Optionally offset the Boss HP Bar on the x axis.",
+	other_elements_subs
+)
+mod.add_option(
+	"OTHER_ELEMENTS_BOSS_HP_BAR_OFFSET_Y",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-2000, 2000},
+		["unit_text"] = "px",
+		["default_value"] = 0,
+	},
+	"Boss HP Bar Offset Y",
+	"Optionally offset the Boss HP Bar on the y axis.",
+	other_elements_subs
+)
 
 local show_presets_subs = mod.add_option(
 	"SHOW_PRESETS_UI",

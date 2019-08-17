@@ -1,5 +1,7 @@
 local mod = get_mod("HideBuffs")
 
+local pl = require'pl.import_into'()
+
 mod.buff_name_to_setting_name_lookup = {
 	["victor_bountyhunter_passive_infinite_ammo_buff"] =
 		mod.SETTING_NAMES.VICTOR_BOUNTYHUNTER_PASSIVE_INFINITE_AMMO_BUFF,
@@ -159,6 +161,30 @@ mod:hook(BuffUI, "draw", function(func, self, dt)
 		mod.buffs_manager_BuffUI_draw(self)
 	end)
 	return func(self, dt)
+end)
+
+mod:hook(BuffUI, "_sync_buffs", function(func, self, ...)
+	if not mod:get(mod.SETTING_NAMES.BUFFS_PRESERVE_ORDER) then
+		return func(self, ...)
+	end
+
+	local before = pl.List(self._active_buffs):map(function(buff)
+			return buff.template.name
+		end)
+
+	func(self, ...)
+
+	for _, before_buff in ripairs( before ) do
+		local new_index = pl.tablex.find_if(self._active_buffs, function(buff)
+				return buff.template.name == before_buff
+			end)
+		if new_index then
+			local shuffled_buff = table.remove(self._active_buffs, new_index)
+			table.insert(self._active_buffs, 1, shuffled_buff)
+		end
+	end
+
+	self:_align_widgets()
 end)
 
 --- Disable popups some buffs have.

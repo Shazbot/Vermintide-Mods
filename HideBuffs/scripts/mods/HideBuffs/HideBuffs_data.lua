@@ -1022,6 +1022,19 @@ for setting_name, subwidgets in pairs( custom_buffs_subwidgets ) do
 end
 
 mod.add_option(
+	"BUFFS_PRESERVE_ORDER",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Preserve Buff Order",
+	"When a new buff appears or a buff gets refreshed try to preserve existing order of buffs."
+		.."\nSo a new buff will always appear at the end.",
+	buffs_group.sub_widgets,
+	1
+)
+
+mod.add_option(
 	"SECOND_BUFF_BAR_DISABLE_BUFF_POPUPS",
 	{
 		["widget_type"] = "checkbox",

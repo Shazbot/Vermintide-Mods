@@ -718,10 +718,10 @@ mod.add_option(
 	"PLAYER_UI_SHOW_CLIP_USE_GREY_COLOR",
 	{
 		["widget_type"] = "checkbox",
-		["default_value"] = false,
+		["default_value"] = true,
 	},
 	"Use Grey Color",
-	"Default color is orange, choose to use grey instead.",
+	"Use grey instead of the default orange heat bar color.",
 	show_clip_using_overcharge_subs
 )
 mod.add_option(
@@ -1079,27 +1079,27 @@ mod.add_option(
 	1
 )
 mod.add_option(
-	"AMMO_COUNTER_BG_LAYER",
-	{
-		["widget_type"] = "numeric",
-		["range"] = {-100, 100},
-		["default_value"] = 0,
-	},
-	"Backgound Layer Index",
-	"Change the layer index of the background texture, for example lower it to put it behind the HP bar."
-		.."\nDefault is 0.",
-	ammo_counter_group.sub_widgets
-)
-mod.add_option(
 	"AMMO_COUNTER_BG_OPACITY",
 	{
 		["widget_type"] = "numeric",
 		["range"] = {0, 255},
 		["default_value"] = 200,
 	},
-	"Backgound Layer Index",
+	"Background Opacity",
 	"Change the opacity of the background texture, 0 is fully transparent."
 		.."\nDefault is 200.",
+	ammo_counter_group.sub_widgets
+)
+mod.add_option(
+	"AMMO_COUNTER_BG_LAYER",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-100, 100},
+		["default_value"] = 0,
+	},
+	"Background Layer Index",
+	"Change the layer index of the background texture, for example lower it to put it behind the HP bar."
+		.."\nDefault is 0.",
 	ammo_counter_group.sub_widgets
 )
 

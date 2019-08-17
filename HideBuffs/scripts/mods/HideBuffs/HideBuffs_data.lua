@@ -1913,6 +1913,18 @@ local priority_buff_bar_group_index = pl.tablex.find_if(mod_data.options_widgets
 	end)
 local priority_buff_bar_group = mod_data.options_widgets[priority_buff_bar_group_index]
 mod.add_option(
+	"PRIORITY_BUFFS_PRESERVE_ORDER",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Preserve Buff Order",
+	"When a new buff appears or a buff gets refreshed try to preserve existing order of buffs."
+		.."\nSo a new buff will always appear at the end.",
+	priority_buff_bar_group.sub_widgets,
+	1
+)
+mod.add_option(
 	"PRIORITY_BUFFS_DISABLE_ALIGN_ANIMATION",
 	{
 		["widget_type"] = "checkbox",

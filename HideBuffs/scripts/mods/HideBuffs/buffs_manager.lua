@@ -59,7 +59,7 @@ bm.set_in_storage = function(settings_key, buff_type, to_set)
 	priority_buffs = to_set and pl.Set.union(priority_buffs, pl.Set{buff_type})
 		or pl.Set.difference(priority_buffs, pl.Set{buff_type})
 
-	buff_manager_storage[settings_key] = priority_buffs:values()
+	buff_manager_storage[settings_key] = pl.Set.values(priority_buffs)
 	mod:set(bm.buffs_manager_storage_key, buff_manager_storage)
 	mod.vmf.save_unsaved_settings_to_file()
 end

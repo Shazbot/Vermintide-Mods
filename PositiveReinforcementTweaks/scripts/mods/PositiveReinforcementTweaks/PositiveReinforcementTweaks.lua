@@ -172,7 +172,9 @@ mod.alignment_offsets_lookup = {
 	0,
 }
 
-local positive_enforcement_events -- keep a reference to PositiveReinforcementUI._positive_enforcement_events to pass into draw_widget
+-- keep a reference to PositiveReinforcementUI._positive_enforcement_events to pass into draw_widget
+local positive_enforcement_events
+
 mod:hook(UIRenderer, "draw_widget", function(func, ui_renderer, widget)
 	local original_offset_y = widget.offset[2]
 	for _, event in ipairs(positive_enforcement_events) do
@@ -232,18 +234,26 @@ mod:hook(PositiveReinforcementUI, "update", function (func, self, dt, t)
 end)
 
 --- Disable kill message for breeds.
-mod:hook(PositiveReinforcementUI, "event_add_positive_enforcement_kill", function(func, self, hash, is_local_player, event_type, profile_index, career_index, breed_name)
-	if breed_name and mod:get(mod.SETTING_NAMES[breed_name]) then
-		return
+mod:hook(PositiveReinforcementUI, "event_add_positive_enforcement_kill", function(func, self, hash, is_local_player, event_type, breed_name_attacker, breed_name_killed)
+	if breed_name_killed then
+		if mod:get(mod.SETTING_NAMES[breed_name_killed]) then
+			return
+		end
+
+		-- for SV also check skaven_storm_vermin_commander
+		if breed_name_killed == "skaven_storm_vermin_commander"
+		and mod:get(mod.SETTING_NAMES["skaven_storm_vermin"]) then
+			return
+		end
+
+		-- for beastmen_standard_bearer also check the _crater variant
+		if breed_name_killed == "beastmen_standard_bearer_crater"
+		and mod:get(mod.SETTING_NAMES["beastmen_standard_bearer"]) then
+			return
+		end
 	end
 
-	-- for SV also check skaven_storm_vermin_commander
-	if breed_name and breed_name == "skaven_storm_vermin_commander"
-	and mod:get(mod.SETTING_NAMES["skaven_storm_vermin"]) then
-		return
-	end
-
-	return func(self, hash, is_local_player, event_type, profile_index, career_index, breed_name)
+	return func(self, hash, is_local_player, event_type, breed_name_attacker, breed_name_killed)
 end)
 
 mod.reposition_widgets = true

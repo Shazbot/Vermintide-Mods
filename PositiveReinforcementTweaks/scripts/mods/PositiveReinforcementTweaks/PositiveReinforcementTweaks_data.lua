@@ -47,11 +47,15 @@ mod.killfeed_breeds = {
 	"skaven_loot_rat",
 	"skaven_pack_master",
 	"skaven_gutter_runner",
+	"beastmen_standard_bearer",
+	"beastmen_bestigor",
 }
 
 local breen_name_to_localized = {
-	skaven_storm_vermin_with_shield = "Stormvermin with shield",
+	skaven_storm_vermin_with_shield = "Stormvermin With Shield",
 	chaos_corruptor_sorcerer = "Lifeleech Sorcerer",
+	beastmen_standard_bearer = "Beastmen Standard Bearer",
+	beastmen_bestigor = "Bestigor",
 }
 mod:hook("Localize", function(func, id, ...)
 	if breen_name_to_localized[id] then

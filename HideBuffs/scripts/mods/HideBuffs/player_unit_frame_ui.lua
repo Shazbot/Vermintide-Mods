@@ -3,6 +3,15 @@ local mod = get_mod("HideBuffs")
 mod.player_unit_frame_update = function(unit_frame_ui)
 	local self = unit_frame_ui
 
+	if mod.force_player_unit_frame_dirty then
+		mod.force_player_unit_frame_dirty = false
+
+		for _, widget in pairs(self._widgets) do
+			self:_set_widget_dirty(widget)
+		end
+		self:set_dirty()
+	end
+
 	-- change portrait texture_size for PORTRAIT_ICONS
 	if not self._hb_mod_cached_character_portrait_texture_size then -- keep the default portrait texture_size cached
 		if self._default_widgets.default_static.style.character_portrait.texture_size then

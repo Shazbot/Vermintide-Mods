@@ -29,19 +29,20 @@ mod.buff_name_to_setting_name_lookup = {
 local buff_ui_definitions = local_require("scripts/ui/hud_ui/buff_ui_definitions")
 local BUFF_SIZE = buff_ui_definitions.BUFF_SIZE
 local BUFF_SPACING = buff_ui_definitions.BUFF_SPACING
-mod:hook(BuffUI, "_align_widgets", function (func, self, ...)
+mod:hook_origin(BuffUI, "_align_widgets", function (self, ...)
 	local in_reverse = mod:get(mod.SETTING_NAMES.REVERSE_BUFF_DIRECTION)
 	local are_centered = mod:get(mod.SETTING_NAMES.CENTERED_BUFFS)
 
-	if not in_reverse
-	and not are_centered then
-		return func(self, ...)
-	end
+	local adjusted_buff_spacing = BUFF_SPACING + mod:get(mod.SETTING_NAMES.BUFFS_ADJUST_SPACING)
+	local adjusted_buff_size = {
+		BUFF_SIZE[1] + mod:get(mod.SETTING_NAMES.BUFFS_SIZE_ADJUST_X),
+		BUFF_SIZE[2] + mod:get(mod.SETTING_NAMES.BUFFS_SIZE_ADJUST_Y),
+	}
 
-	local horizontal_spacing = BUFF_SIZE[1] + BUFF_SPACING
+	local horizontal_spacing = adjusted_buff_size[1] + adjusted_buff_spacing
 
 	local num_buffs = #self._active_buffs
-	local total_length = num_buffs * horizontal_spacing - BUFF_SPACING
+	local total_length = num_buffs * horizontal_spacing - adjusted_buff_spacing
 
 	for index, data in ipairs(self._active_buffs) do
 		local widget = data.widget
@@ -139,6 +140,30 @@ mod:hook(BuffUI, "draw", function(func, self, dt)
 		if mod.realign_buff_widgets then
 			mod.realign_buff_widgets = false
 			self:_align_widgets()
+		end
+
+		for _, data in ipairs(self._active_buffs) do
+			local widget = data.widget
+
+			if not widget.cloned then
+				widget.cloned = pl.tablex.pairmap(function(k,v)
+					local parent_temp = v.parent
+					v.parent = nil
+					local cloned = table.clone(v)
+					v.parent = parent_temp
+					return cloned,k end, widget.style)
+			end
+
+			for name, style in pairs( widget.style ) do
+				if style.size then
+					style.size[1] = widget.cloned[name].size[1] + mod:get(mod.SETTING_NAMES.BUFFS_SIZE_ADJUST_X)
+					style.size[2] = widget.cloned[name].size[2] + mod:get(mod.SETTING_NAMES.BUFFS_SIZE_ADJUST_Y)
+				end
+			end
+
+			local buffs_alpha = mod:get(mod.SETTING_NAMES.BUFFS_ALPHA)
+			widget.style.texture_icon_bg.color[1] = buffs_alpha
+			widget.style.texture_frame.color[1] = buffs_alpha
 		end
 
 		local buffs_offset_x = mod:get(mod.SETTING_NAMES.BUFFS_OFFSET_X)

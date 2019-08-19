@@ -1,7 +1,5 @@
 local mod = get_mod("HideBuffs")
 
-local tablex = require'pl.tablex'
-
 mod.teammate_unit_frame_update = function(unit_frame_ui)
 	local self = unit_frame_ui
 	if self._teammate_custom_widget then -- update important icons
@@ -69,30 +67,45 @@ mod.teammate_unit_frame_update = function(unit_frame_ui)
 		teammate_widget_style.hp_text_shadow.font_size = numeric_ui_font_size
 	end
 
+	local are_portraits_customized = mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_ICONS) ~= mod.PORTRAIT_ICONS.DEFAULT
+
 	if not self._hb_mod_cached_character_portrait_size then -- keep the default portrait size cached
 		self._hb_mod_cached_character_portrait_size = table.clone(self._default_widgets.default_static.style.character_portrait.size)
 	end
 	local portrait_scale = mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_SCALE)/100
-	local scaled_character_portrait_size = tablex.map("*", self._hb_mod_cached_character_portrait_size, portrait_scale)
-	if mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_ICONS) ~= mod.PORTRAIT_ICONS.DEFAULT then
-		self._default_widgets.default_static.style.character_portrait.size = tablex.map("*", {80,80}, portrait_scale)
+	local portrait_size = self._default_widgets.default_static.style.character_portrait.size
+	if are_portraits_customized then
+		portrait_size[1] = 80 * portrait_scale
+		portrait_size[2] = 80 * portrait_scale
 	else
-		self._default_widgets.default_static.style.character_portrait.size = scaled_character_portrait_size
+		portrait_size[1] = self._hb_mod_cached_character_portrait_size[1] * portrait_scale
+		portrait_size[2] = self._hb_mod_cached_character_portrait_size[2] * portrait_scale
 	end
 
 	local status_icon_dynamic = self:_widget_by_feature("status_icon", "dynamic")
 	local status_icon_style = status_icon_dynamic.style
-	status_icon_style.portrait_icon.size = tablex.map("*", self._hb_mod_cached_character_portrait_size, portrait_scale)
+
+	status_icon_style.portrait_icon.size[1] = self._hb_mod_cached_character_portrait_size[1] * portrait_scale
+	status_icon_style.portrait_icon.size[2] = self._hb_mod_cached_character_portrait_size[2] * portrait_scale
+
+	-- scale the status icon overlay by 0.75 if using custom portrait icons
+	if are_portraits_customized then
+		local status_icon_scale = 0.75
+		status_icon_style.portrait_icon.size[1] = status_icon_style.portrait_icon.size[1] * status_icon_scale
+		status_icon_style.portrait_icon.size[2] = status_icon_style.portrait_icon.size[2] * status_icon_scale
+	end
 
 	local team_ui_portrait_offset_x = mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_OFFSET_X)
 	local team_ui_portrait_offset_y = mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_OFFSET_Y)
 
-	local portrait_size = status_icon_style.portrait_icon.size
-	status_icon_style.portrait_icon.offset[1] = -portrait_size[1]/2 + team_ui_portrait_offset_x
+	local status_icon_size = status_icon_style.portrait_icon.size
+	status_icon_style.portrait_icon.offset[1] = -status_icon_size[1]/2 + team_ui_portrait_offset_x
+
 	local delta_y = self._hb_mod_cached_character_portrait_size[2] -
 		self._default_widgets.default_static.style.character_portrait.size[2]
-	if mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_ICONS) ~= mod.PORTRAIT_ICONS.DEFAULT then
-		delta_y = self._hb_mod_cached_character_portrait_size[2] - scaled_character_portrait_size[2]
+	if are_portraits_customized then
+		delta_y = self._hb_mod_cached_character_portrait_size[2]
+			- status_icon_size[2]
 	end
 	status_icon_style.portrait_icon.offset[2] = delta_y/2 + team_ui_portrait_offset_y
 
@@ -166,7 +179,9 @@ mod.teammate_unit_frame_draw = function(unit_frame_ui)
 	local start_y = 2
 	local item_spacing = mod:get(mod.SETTING_NAMES.TEAM_UI_ITEM_SLOTS_SPACING)
 	local item_size = mod:get(mod.SETTING_NAMES.TEAM_UI_ITEM_SLOTS_SIZE) + 4
-	local item_slots_alpha = mod:get(mod.SETTING_NAMES.TEAM_UI_ITEM_SLOTS_ALPHA)
+
+	local item_slots_empty_alpha = mod:get(mod.SETTING_NAMES.TEAM_UI_ITEM_SLOTS_ALPHA)
+	local item_slots_filled_alpha = mod:get(mod.SETTING_NAMES.TEAM_UI_ITEM_SLOTS_FILLED_ALPHA)
 
 	for i = 1, 3 do
 		local item_slot_style = loadout_dynamic.style["item_slot_"..i]
@@ -192,8 +207,10 @@ mod.teammate_unit_frame_draw = function(unit_frame_ui)
 			other_slot_elements_style.size[2] = item_size
 		end
 
+		local is_slot_empty = loadout_dynamic.content["item_slot_"..i] == "icons_placeholder"
 		for _, item_slot_name in ipairs( mod.item_slot_background_widgets ) do
-			loadout_dynamic.style[item_slot_name..i].color[1] = item_slots_alpha
+			loadout_dynamic.style[item_slot_name..i].color[1] =
+				is_slot_empty and item_slots_empty_alpha or item_slots_filled_alpha
 		end
 	end
 

@@ -78,8 +78,6 @@ mod.presets_window_size = {350, 250}
 mod.presets_window_position = { 0, 0 }
 
 mod.create_presets_window = function()
-	local screen_width, screen_height = UIResolution()
-
 	mod.presets_window = mod.simple_ui:create_window("presets", mod.presets_window_position, mod.presets_window_size)
 
 	mod.presets_window.position = mod.presets_window_position
@@ -149,6 +147,8 @@ mod.create_presets_window = function()
 		window:focus()
 	end
 
+	mod.reset_presets_window_position()
+
 	mod.presets_window:init()
 
 	-- on_index_changed go after init or we get into a stack overflow loop
@@ -160,7 +160,11 @@ mod.create_presets_window = function()
 	mod.presets_window.transparent = false
 	mod.presets_window.theme.color[1] = 100
 
-	-- accounts for a scaling issue in SimpleUI on 1440p
+	mod.reset_presets_window_position()
+end
+
+mod.reset_presets_window_position = function()
+	local screen_width, screen_height = UIResolution()
 	local presets_window_width = mod.presets_window.size[1]
 	local presets_window_height = mod.presets_window.size[2]
 	mod.presets_window_position[2] = screen_height - presets_window_height
@@ -185,23 +189,20 @@ mod.on_chat_gui_update = function(chat_gui)
 	or not mod:get(mod.SETTING_NAMES.SHOW_PRESETS_UI)
 	or not mod.simple_ui
 	then
+		mod.destroy_presets_window()
 		return
 	end
 
 	if Managers.state.game_mode:level_key() ~= "inn_level"
 	and not mod:get(mod.SETTING_NAMES.SHOW_PRESETS_UI_OUTSIDE_KEEP)
 	then
+		mod.destroy_presets_window()
 		return
 	end
 
 	if not chat_gui.chat_focused then
 		mod.destroy_presets_window()
-		mod.presets_window_closed = false
-	elseif
-	mod.was_ingame_entered
-	and not mod.presets_window
-	and not mod.presets_window_closed
-	then
+	elseif mod.was_ingame_entered and not mod.presets_window then
 		mod.user_preset = mod.get_preset_data()
 		mod.reload_presets_window()
 	end

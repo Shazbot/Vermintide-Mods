@@ -141,9 +141,11 @@ mod:hook(UnitFrameUI, "set_ammo_percentage", function (func, self, ammo_percent)
 	if self.is_teammate then
 		mod:pcall(function()
 			local widget = self._teammate_custom_widget
-			self:_on_player_ammo_changed("ammo", widget, ammo_percent)
-			self:_set_widget_dirty(widget)
-			self:set_dirty()
+			if widget then
+				self:_on_player_ammo_changed("ammo", widget, ammo_percent)
+				self:_set_widget_dirty(widget)
+				self:set_dirty()
+			end
 		end)
 	end
 
@@ -439,7 +441,7 @@ mod:hook("ChatGui", "update", function(func, self, ...)
 		local position = self.ui_scenegraph.chat_window_root.local_position
 		position[1] = mod:get(mod.SETTING_NAMES.CHAT_OFFSET_X)
 		position[2] = 200 + mod:get(mod.SETTING_NAMES.CHAT_OFFSET_Y)
-		self.chat_window_widget.style.background.color[1] = mod:get(mod.SETTING_NAMES.CHAT_BG_ALPHA)
+		UISettings.chat.window_background_alpha = mod:get(mod.SETTING_NAMES.CHAT_BG_ALPHA)
 
 		mod.on_chat_gui_update(self)
 		mod.bm_on_chat_gui_update(self)
@@ -459,16 +461,16 @@ mod:hook(TutorialUI, "update_mission_tooltip", function(func, self, ...)
 
 	if mod:get(mod.SETTING_NAMES.UNOBTRUSIVE_MISSION_TOOLTIP) then
 		mod:pcall(function()
-			local widget = self.tooltip_mission_widget
-			widget.style.texture_id.size = nil
-			widget.style.texture_id.offset = { 0, 0 }
-			if widget.style.text.text_color[1] ~= 0 then
-				widget.style.texture_id.color[1] = 100
-				widget.style.text.text_color[1] = 100
-				widget.style.text_shadow.text_color[1] = 100
+			local widget_style = self.tooltip_mission_widget.style
+			widget_style.texture_id.size = nil
+			widget_style.texture_id.offset = { 0, 0 }
+			if widget_style.text.text_color[1] ~= 0 then
+				widget_style.texture_id.color[1] = 100
+				widget_style.text.text_color[1] = 100
+				widget_style.text_shadow.text_color[1] = 100
 			else
-				widget.style.texture_id.size = { 32, 32 }
-				widget.style.texture_id.offset = { 16+16, 16 }
+				widget_style.texture_id.size = { 32, 32 }
+				widget_style.texture_id.offset = { 16+16, 16 }
 			end
 		end)
 	end

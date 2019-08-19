@@ -201,11 +201,17 @@ bm.create_window = function()
 		window:focus()
 	end
 
+	bm.reset_position()
+
 	bm.main_window:init()
 
 	bm.main_window.theme = table.clone(bm.main_window.theme)
 	bm.main_window.theme.color[1] = 200
 
+	bm.reset_position()
+end
+
+bm.reset_position = function()
 	if bm.is_buff_manager_maximized then
 		bm.maximize_window()
 	else
@@ -248,6 +254,7 @@ mod.bm_on_chat_gui_update = function(chat_gui)
 	or not mod:get(mod.SETTING_NAMES.SHOW_BUFFS_MANAGER_UI)
 	or not mod.simple_ui
 	then
+		bm.destroy_window()
 		return
 	end
 

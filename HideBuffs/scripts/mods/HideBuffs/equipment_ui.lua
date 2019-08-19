@@ -31,6 +31,13 @@ mod:hook(EquipmentUI, "update", function(func, self, ...)
 			widget.offset[1] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_OFFSET_X)
 			widget.offset[2] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_OFFSET_Y)
 		end
+		if mod.force_ammo_dirty then
+			for _, widget in pairs(self._ammo_widgets) do
+				self:_set_widget_dirty(widget)
+			end
+			self:set_dirty()
+			mod.force_ammo_dirty = false
+		end
 
 		-- ammmo counter bg layer and opacity
 		ammo_widgets[5].offset[3] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_BG_LAYER)

@@ -1022,6 +1022,60 @@ for setting_name, subwidgets in pairs( custom_buffs_subwidgets ) do
 end
 
 mod.add_option(
+	"BUFFS_ADJUST_SPACING",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-8, 300},
+		["unit_text"] = "px",
+		["default_value"] = 0,
+	},
+	"Adjust Buff Spacing",
+	"Adjust the amount of empty space between buffs.",
+	buffs_group.sub_widgets,
+	1
+)
+
+mod.add_option(
+	"BUFFS_SIZE_ADJUST_X",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-30, 200},
+		["unit_text"] = "px",
+		["default_value"] = 0,
+	},
+	"Buff Width Adjustment",
+	"Change the buff icon width.",
+	buffs_group.sub_widgets,
+	1
+)
+mod.add_option(
+	"BUFFS_SIZE_ADJUST_Y",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-30, 200},
+		["unit_text"] = "px",
+		["default_value"] = 0,
+	},
+	"Buff Height Adjustment",
+	"Change the buff icon height.",
+	buffs_group.sub_widgets,
+	1
+)
+
+mod.add_option(
+	"BUFFS_ALPHA",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 255},
+		["default_value"] = 255,
+	},
+	"Buff Icon Opacity",
+	"Adjust buff icon transparency, 0 is fully transparent.",
+	buffs_group.sub_widgets,
+	1
+)
+
+mod.add_option(
 	"BUFFS_PRESERVE_ORDER",
 	{
 		["widget_type"] = "checkbox",
@@ -1686,6 +1740,18 @@ mod.add_option(
 	"Opacity",
 	"Adjust opacity of empty item slots."
 		.."\nDefault is 100.",
+	team_ui_item_slots_subs
+)
+mod.add_option(
+	"TEAM_UI_ITEM_SLOTS_FILLED_ALPHA",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 255},
+		["default_value"] = 255,
+	},
+	"Filled Slot Opacity",
+	"Adjust opacity of non-empty item slots."
+		.."\nDefault is 255.",
 	team_ui_item_slots_subs
 )
 mod.add_option(

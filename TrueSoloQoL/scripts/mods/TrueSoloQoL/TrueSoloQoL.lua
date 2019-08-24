@@ -106,6 +106,15 @@ function(func, self, ...)
 	script_data.cap_num_bots = original_cap_num_bots
 end)
 
+--- Prevent a crash with disabled bots.
+mod:hook(AdventureSpawning, "force_update_spawn_positions", function(func, ...)
+	if not mod:get(mod.SETTING_NAMES.AUTO_KILL_BOTS) then
+		return func(...)
+	end
+
+	pcall(func, ...)
+end)
+
 mod:hook("Localize", function(func, key)
 	for _, string in ipairs( { "ASSASSIN_WARNING_", "PACK_WARNING_" } ) do
 		if pl.stringx.count(key, string) > 0 then

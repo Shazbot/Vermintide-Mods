@@ -59,6 +59,7 @@ mod.SETTING_NAMES = {
 	UNOBTRUSIVE_FLOATING_OBJECTIVE = "UNOBTRUSIVE_FLOATING_OBJECTIVE",
 	UNOBTRUSIVE_MISSION_TOOLTIP = "UNOBTRUSIVE_MISSION_TOOLTIP",
 	CHAT_BG_ALPHA = "CHAT_BG_ALPHA",
+	AMMO_DIVIDER_TEXT = "AMMO_DIVIDER_TEXT",
 }
 
 mod.sorted_priority_buffs = {
@@ -1167,6 +1168,117 @@ mod.add_option(
 	"Background Layer Index",
 	"Change the layer index of the background texture, for example lower it to put it behind the HP bar."
 		.."\nDefault is 0.",
+	ammo_counter_group.sub_widgets
+)
+mod.add_option(
+	"AMMO_COUNTER_AMMO_CLIP_FONT_SIZE",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {10, 100},
+		["default_value"] = 72,
+	},
+	"Clip Ammo Font Size",
+	"Set font size of ammo in clip."
+		.."\nDefault is 72.",
+	ammo_counter_group.sub_widgets
+)
+mod.add_option(
+	"AMMO_COUNTER_AMMO_CLIP_OFFSET_X",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-2000, 2000},
+		["unit_text"] = "px",
+		["default_value"] = 0,
+	},
+	"Clip Ammo Offset X",
+	"Optionally offset the current ammo in clip on the x axis.",
+	ammo_counter_group.sub_widgets
+)
+mod.add_option(
+	"AMMO_COUNTER_AMMO_CLIP_OFFSET_Y",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-2000, 2000},
+		["unit_text"] = "px",
+		["default_value"] = 0,
+	},
+	"Clip Ammo Offset Y",
+	"Optionally offset the current ammo in clip on the y axis.",
+	ammo_counter_group.sub_widgets
+)
+mod.add_option(
+	"AMMO_COUNTER_AMMO_REMAINING_FONT_SIZE",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {10, 100},
+		["default_value"] = 40,
+	},
+	"Remaining Ammo Font Size",
+	"Set font size of remaining ammo."
+		.."\nDefault is 40.",
+	ammo_counter_group.sub_widgets
+)
+mod.add_option(
+	"AMMO_COUNTER_AMMO_REMAINING_OFFSET_X",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-2000, 2000},
+		["unit_text"] = "px",
+		["default_value"] = 0,
+	},
+	"Remaining Ammo Offset X",
+	"Optionally offset the remaining ammo on the x axis.",
+	ammo_counter_group.sub_widgets
+)
+mod.add_option(
+	"AMMO_COUNTER_AMMO_REMAINING_OFFSET_Y",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-2000, 2000},
+		["unit_text"] = "px",
+		["default_value"] = 0,
+	},
+	"Remaining Ammo Offset Y",
+	"Optionally offset the remaining ammo on the y axis.",
+	ammo_counter_group.sub_widgets
+)
+mod.add_option(
+	"AMMO_COUNTER_AMMO_DIVIDER_FONT_SIZE",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {10, 100},
+		["default_value"] = 40,
+	},
+	"Ammo Divider Font Size",
+	"Set font size of the ammo divider."
+		.."\nDefault is 40."
+		.."\nYou can also use /ut_set_ammo_divider to change it from /.",
+	ammo_counter_group.sub_widgets
+)
+mod.add_option(
+	"AMMO_COUNTER_AMMO_DIVIDER_OFFSET_X",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-2000, 2000},
+		["unit_text"] = "px",
+		["default_value"] = 0,
+	},
+	"Ammo Divider Offset X",
+	"Optionally offset the ammo divider on the x axis."
+		.."\nYou can also use /ut_set_ammo_divider to change it from /.",
+	ammo_counter_group.sub_widgets
+)
+mod.add_option(
+	"AMMO_COUNTER_AMMO_DIVIDER_OFFSET_Y",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-2000, 2000},
+		["unit_text"] = "px",
+		["default_value"] = 0,
+	},
+	"Ammo Divider Offset Y",
+	"Optionally offset the ammo divider on the y axis."
+		.."\nYou can also use /ut_set_ammo_divider to change it from /.",
 	ammo_counter_group.sub_widgets
 )
 

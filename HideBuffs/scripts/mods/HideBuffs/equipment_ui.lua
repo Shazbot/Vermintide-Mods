@@ -43,6 +43,31 @@ mod:hook(EquipmentUI, "update", function(func, self, ...)
 		ammo_widgets[5].offset[3] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_BG_LAYER)
 		ammo_widgets[5].style.texture_id.color[1] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_BG_OPACITY)
 
+		local ammo_widgets_by_name = self._ammo_widgets_by_name
+
+		local ammo_text_remaining = ammo_widgets_by_name.ammo_text_remaining
+		local ammo_remaining_font_size = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_REMAINING_FONT_SIZE)
+		ammo_text_remaining.style.text.font_size = ammo_remaining_font_size
+		ammo_text_remaining.style.text_shadow.font_size = ammo_remaining_font_size
+		ammo_text_remaining.offset[1] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_REMAINING_OFFSET_X)
+		ammo_text_remaining.offset[2] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_REMAINING_OFFSET_Y)
+
+		local ammo_text_clip = ammo_widgets_by_name.ammo_text_clip
+		local ammo_clip_font_size = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_CLIP_FONT_SIZE)
+		ammo_text_clip.style.text.font_size = ammo_clip_font_size
+		ammo_text_clip.style.text_shadow.font_size = ammo_clip_font_size
+		ammo_text_clip.offset[1] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_CLIP_OFFSET_X)
+		ammo_text_clip.offset[2] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_CLIP_OFFSET_Y)
+
+		local ammo_text_center = ammo_widgets_by_name.ammo_text_center
+		local ammo_divider_font_size = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_DIVIDER_FONT_SIZE)
+		ammo_text_center.style.text.font_size = ammo_divider_font_size
+		ammo_text_center.style.text_shadow.font_size = ammo_divider_font_size
+		ammo_text_center.offset[1] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_DIVIDER_OFFSET_X)
+		ammo_text_center.offset[2] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_DIVIDER_OFFSET_Y)
+
+		ammo_text_center.content.text = mod:get(mod.SETTING_NAMES.AMMO_DIVIDER_TEXT) or "/"
+
 		-- hide first 2 item slots
 		local weapon_slots_visible = not mod:get(mod.SETTING_NAMES.HIDE_WEAPON_SLOTS)
 		if mod.change_slot_visibility
@@ -552,3 +577,17 @@ mod.handle_player_rect_layout_widget = function(unit_frame_ui)
 	widget.offset[1] = player_ui_offset_x - 37+1
 	widget.offset[2] = player_ui_offset_y + 24
 end
+
+mod.ut_set_ammo_divider_info = "Replace ammo divider (default is /) with any custom text."
+mod.set_ammo_divider = function(...)
+	local args={...}
+	if #args ~= 0 then
+		local new_divider = table.concat(args, " ")
+		mod:set(mod.SETTING_NAMES.AMMO_DIVIDER_TEXT, new_divider, true)
+		mod.force_ammo_dirty = true
+		mod.vmf.save_unsaved_settings_to_file()
+	else
+		mod:echo("New divider missing! e.g. /ut_set_ammo_divider /")
+	end
+end
+mod:command("ut_set_ammo_divider", mod.ut_set_ammo_divider_info, function(...) mod.set_ammo_divider(...) end)

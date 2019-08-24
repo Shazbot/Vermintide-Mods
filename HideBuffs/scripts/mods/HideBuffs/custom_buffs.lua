@@ -232,12 +232,15 @@ mod.add_ammo_hook = function(func, self, amount)
 		return func(self, amount)
 	end
 
+	local ammo_before = self:total_remaining_ammo()
+
+	func(self, amount)
+
 	local local_player_unit = Managers.player:local_player().player_unit
 	if local_player_unit and self.owner_unit == local_player_unit then
-		mod.increase_buff_stacks(self.owner_unit, "custom_scavenger", amount)
+		local ammo_delta = self:total_remaining_ammo() - ammo_before
+		mod.increase_buff_stacks(self.owner_unit, "custom_scavenger", ammo_delta)
 	end
-
-	return func(self, amount)
 end
 
 mod:hook(GenericAmmoUserExtension, "add_ammo_to_reserve", mod.add_ammo_hook)

@@ -35,7 +35,8 @@ mod.teammate_unit_frame_update = function(unit_frame_ui)
 		teammate_widget_content.cooldown_string = def_dynamic.content.cooldown_string or ""
 		teammate_widget_content.ammo_string = def_dynamic.content.ammo_string or ""
 		teammate_widget_content.ammo_percent = def_dynamic.content.ammo_percent
-		teammate_widget_content.ammo_style = def_dynamic.content.ammo_style
+		local ammo_style = def_dynamic.content.ammo_style
+		teammate_widget_content.ammo_style = ammo_style
 
 		local teammate_widget_style = self._teammate_custom_widget.style
 		local ammo_text_x = 80 + mod:get(mod.SETTING_NAMES.TEAM_UI_NUMERIC_UI_AMMO_OFFSET_X)
@@ -65,6 +66,17 @@ mod.teammate_unit_frame_update = function(unit_frame_ui)
 		local numeric_ui_font_size = mod:get(mod.SETTING_NAMES.TEAM_UI_NUMERIC_UI_HP_FONT_SIZE)
 		teammate_widget_style.hp_text.font_size = numeric_ui_font_size
 		teammate_widget_style.hp_text_shadow.font_size = numeric_ui_font_size
+
+		-- since ammo font size depends on ammo_style the options size
+		-- is converted to a delta from default font size in options
+		local numeric_ui_ammo_font_size = ((ammo_style == 2 and 18) or 22)
+			+ (mod:get(mod.SETTING_NAMES.TEAM_UI_NUMERIC_UI_AMMO_FONT_SIZE) - 22)
+		teammate_widget_style.ammo_text.font_size = numeric_ui_ammo_font_size
+		teammate_widget_style.ammo_text_shadow.font_size = numeric_ui_ammo_font_size
+
+		local numeric_ui_ult_font_size = mod:get(mod.SETTING_NAMES.TEAM_UI_NUMERIC_UI_ULT_CD_FONT_SIZE)
+		teammate_widget_style.cooldown_text.font_size = numeric_ui_ult_font_size
+		teammate_widget_style.cooldown_text_shadow.font_size = numeric_ui_ult_font_size
 	end
 
 	local are_portraits_customized = mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_ICONS) ~= mod.PORTRAIT_ICONS.DEFAULT

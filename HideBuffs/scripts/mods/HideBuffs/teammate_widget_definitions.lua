@@ -123,10 +123,7 @@ mod.teammate_ui_custom_def =
 				text_id = "ammo_string",
 				retained_mode = false,
 				content_change_function = function (content, style)
-					style.font_size = (content.ammo_style == 2 and 18) or 22
 					style.font_type = (content.ammo_style == 2 and "hell_shark_header") or "hell_shark"
-
-					return
 				end,
 				content_check_function = function (content)
 					if content.ammo_string and content.ammo_string == "-1" then
@@ -153,10 +150,7 @@ mod.teammate_ui_custom_def =
 				text_id = "ammo_string",
 				retained_mode = false,
 				content_change_function = function (content, style)
-					style.font_size = (content.ammo_style == 2 and 18) or 22
 					style.font_type = (content.ammo_style == 2 and "hell_shark_header") or "hell_shark"
-
-					return
 				end,
 				content_check_function = function (content)
 					if content.ammo_string and content.ammo_string == "-1" then

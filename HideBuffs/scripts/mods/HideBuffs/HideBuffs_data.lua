@@ -854,7 +854,8 @@ mod.add_option(
 		["default_value"] = 17,
 	},
 	"HP Font Size",
-	"Set HP font size.",
+	"Set HP font size."
+		.."\nDefault is 17.",
 	player_numeric_ui_group_subs
 )
 mod.add_option(
@@ -879,6 +880,18 @@ mod.add_option(
 	},
 	"Ult CD Offset Y",
 	"Optionally offset the ult timer on the y axis.",
+	player_numeric_ui_group_subs
+)
+mod.add_option(
+	"PLAYER_NUMERIC_UI_ULT_CD_FONT_SIZE",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {10, 40},
+		["default_value"] = 16,
+	},
+	"Ult CD Font Size",
+	"Set ult timer font size."
+		.."\nDefault is 16.",
 	player_numeric_ui_group_subs
 )
 
@@ -1921,7 +1934,8 @@ mod.add_option(
 		["default_value"] = 17,
 	},
 	"HP Font Size",
-	"Set HP font size.",
+	"Set HP font size."
+		.."\nDefault is 17.",
 	team_ui_numeric_ui_group_subs
 )
 mod.add_option(
@@ -1949,6 +1963,18 @@ mod.add_option(
 	team_ui_numeric_ui_group_subs
 )
 mod.add_option(
+	"TEAM_UI_NUMERIC_UI_AMMO_FONT_SIZE",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {10, 40},
+		["default_value"] = 22,
+	},
+	"Ammo Font Size",
+	"Set ammo counter font size."
+		.."\nDefault is 22.",
+	team_ui_numeric_ui_group_subs
+)
+mod.add_option(
 	"TEAM_UI_NUMERIC_UI_ULT_CD_OFFSET_X",
 	{
 		["widget_type"] = "numeric",
@@ -1970,6 +1996,18 @@ mod.add_option(
 	},
 	"Ult CD Offset Y",
 	"Optionally offset the ult timer on the y axis.",
+	team_ui_numeric_ui_group_subs
+)
+mod.add_option(
+	"TEAM_UI_NUMERIC_UI_ULT_CD_FONT_SIZE",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {10, 40},
+		["default_value"] = 16,
+	},
+	"Ult CD Font Size",
+	"Set ult timer font size."
+		.."\nDefault is 16.",
 	team_ui_numeric_ui_group_subs
 )
 

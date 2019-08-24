@@ -397,6 +397,10 @@ mod.handle_player_numeric_ui = function(unit_frame_ui)
 	num_ui_widget_style.hp_text.font_size = numeric_ui_font_size
 	num_ui_widget_style.hp_text_shadow.font_size = numeric_ui_font_size
 
+	local numeric_ui_ult_font_size = mod:get(mod.SETTING_NAMES.PLAYER_NUMERIC_UI_ULT_CD_FONT_SIZE)
+	num_ui_widget_style.cooldown_text.font_size = numeric_ui_ult_font_size
+	num_ui_widget_style.cooldown_text_shadow.font_size = numeric_ui_ult_font_size
+
 	num_ui_widget.offset[1] = player_ui_offset_x - mod.hp_bar_width/2
 	num_ui_widget.offset[2] = player_ui_offset_y - 59
 	if mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET) and self._hb_mod_widget then

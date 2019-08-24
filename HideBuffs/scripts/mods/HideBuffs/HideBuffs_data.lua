@@ -1183,6 +1183,21 @@ mod.add_option(
 	ammo_counter_group.sub_widgets
 )
 mod.add_option(
+	"AMMO_COUNTER_AMMO_CLIP_ALIGNMENT",
+	{
+		["widget_type"] = "dropdown",
+		["default_value"] = 1,
+		["options"] = {
+			{ text = mod:localize("right"), value = mod.ALIGNMENTS.RIGHT }, --1
+			{ text = mod:localize("left"), value = mod.ALIGNMENTS.LEFT }, --2
+			{ text = mod:localize("center"), value = mod.ALIGNMENTS.CENTER }, --3
+		},
+	},
+	"Clip Ammo Alignment",
+	"Change the horizontal alignment of ammo in clip.",
+	ammo_counter_group.sub_widgets
+)
+mod.add_option(
 	"AMMO_COUNTER_AMMO_CLIP_OFFSET_X",
 	{
 		["widget_type"] = "numeric",
@@ -1216,6 +1231,21 @@ mod.add_option(
 	"Remaining Ammo Font Size",
 	"Set font size of remaining ammo."
 		.."\nDefault is 40.",
+	ammo_counter_group.sub_widgets
+)
+mod.add_option(
+	"AMMO_COUNTER_AMMO_REMAINING_ALIGNMENT",
+	{
+		["widget_type"] = "dropdown",
+		["default_value"] = 1,
+		["options"] = {
+			{ text = mod:localize("left"), value = mod.ALIGNMENTS.LEFT }, --1
+			{ text = mod:localize("right"), value = mod.ALIGNMENTS.RIGHT }, --2
+			{ text = mod:localize("center"), value = mod.ALIGNMENTS.CENTER }, --3
+		},
+	},
+	"Remaining Ammo Alignment",
+	"Change the horizontal alignment of the remaining ammo.",
 	ammo_counter_group.sub_widgets
 )
 mod.add_option(
@@ -1772,7 +1802,7 @@ mod.add_option(
 	"TEAM_UI_PLAYER_NAME_ALIGNMENT",
 	{
 		["widget_type"] = "dropdown",
-		["default_value"] = mod.ALIGNMENTS.CENTER,
+		["default_value"] = 1,
 		["options"] = {
 			{ text = mod:localize("center"), value = mod.ALIGNMENTS.CENTER }, --1
 			{ text = mod:localize("left"), value = mod.ALIGNMENTS.LEFT }, --2

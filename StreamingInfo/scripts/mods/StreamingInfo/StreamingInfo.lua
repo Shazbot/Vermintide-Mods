@@ -19,11 +19,14 @@ mod.out_lines = pl.List()
 
 mod.append_traits = function(out, slot)
 	local traits = slot.traits
-	if traits and #traits then
+	if traits then
 		for _,trait_name in ipairs(traits) do
-			local localized_trait_name = Localize(WeaponTraits.traits[trait_name].display_name)
-			out:write(localized_trait_name)
-			out:write(", ")
+			local trait = WeaponTraits.traits[trait_name] or WeaveTraits.traits[trait_name]
+			if trait then
+				local localized_trait_name = Localize(trait.display_name)
+				out:write(localized_trait_name)
+				out:write(", ")
+			end
 		end
 	end
 	local properties = slot.properties

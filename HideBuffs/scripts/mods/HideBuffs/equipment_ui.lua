@@ -27,9 +27,11 @@ mod:hook(EquipmentUI, "update", function(func, self, ...)
 		-- ammo counter offset
 		local ammo_widgets = self._ammo_widgets
 
+		local ammo_counter_offset_x = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_OFFSET_X)
+		local ammo_counter_offset_y = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_OFFSET_Y)
 		for _, widget in ipairs( ammo_widgets ) do
-			widget.offset[1] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_OFFSET_X)
-			widget.offset[2] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_OFFSET_Y)
+			widget.offset[1] = ammo_counter_offset_x
+			widget.offset[2] = ammo_counter_offset_y
 		end
 		if mod.force_ammo_dirty then
 			for _, widget in pairs(self._ammo_widgets) do
@@ -49,15 +51,19 @@ mod:hook(EquipmentUI, "update", function(func, self, ...)
 		local ammo_clip_font_size = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_CLIP_FONT_SIZE)
 		ammo_text_clip.style.text.font_size = ammo_clip_font_size
 		ammo_text_clip.style.text_shadow.font_size = ammo_clip_font_size
-		ammo_text_clip.offset[1] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_CLIP_OFFSET_X)
-		ammo_text_clip.offset[2] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_CLIP_OFFSET_Y)
+		ammo_text_clip.offset[1] = ammo_counter_offset_x
+			+ mod:get(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_CLIP_OFFSET_X)
+		ammo_text_clip.offset[2] = ammo_counter_offset_y
+			+ mod:get(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_CLIP_OFFSET_Y)
 
 		local ammo_text_remaining = ammo_widgets_by_name.ammo_text_remaining
 		local ammo_remaining_font_size = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_REMAINING_FONT_SIZE)
 		ammo_text_remaining.style.text.font_size = ammo_remaining_font_size
 		ammo_text_remaining.style.text_shadow.font_size = ammo_remaining_font_size
-		ammo_text_remaining.offset[1] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_REMAINING_OFFSET_X)
-		ammo_text_remaining.offset[2] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_REMAINING_OFFSET_Y)
+		ammo_text_remaining.offset[1] = ammo_counter_offset_x
+			+ mod:get(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_REMAINING_OFFSET_X)
+		ammo_text_remaining.offset[2] = ammo_counter_offset_y
+			+ mod:get(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_REMAINING_OFFSET_Y)
 
 		local ammo_remaining_horizontal_alignment = mod.ALIGNMENTS_LOOKUP[mod:get(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_REMAINING_ALIGNMENT)]
 		ammo_text_remaining.style.text.horizontal_alignment = ammo_remaining_horizontal_alignment
@@ -72,8 +78,10 @@ mod:hook(EquipmentUI, "update", function(func, self, ...)
 		ammo_text_center.style.text.font_size = ammo_divider_font_size
 		ammo_text_center.style.text_shadow.font_size = ammo_divider_font_size
 
-		ammo_text_center.offset[1] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_DIVIDER_OFFSET_X)
-		ammo_text_center.offset[2] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_DIVIDER_OFFSET_Y)
+		ammo_text_center.offset[1] = ammo_counter_offset_x
+			+ mod:get(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_DIVIDER_OFFSET_X)
+		ammo_text_center.offset[2] = ammo_counter_offset_y
+			+ mod:get(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_DIVIDER_OFFSET_Y)
 
 		ammo_text_center.content.text = mod:get(mod.SETTING_NAMES.AMMO_DIVIDER_TEXT) or "/"
 

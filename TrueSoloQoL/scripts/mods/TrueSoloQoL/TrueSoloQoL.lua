@@ -219,7 +219,7 @@ mod:hook(AreaIndicatorUI, "update", function(func, self, dt)
 	return func(self, dt)
 end)
 
-mod:hook(ConflictDirector, "spawn_queued_unit", function(func, self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, optional_data, group_data, unit_data)
+mod:hook(ConflictDirector, "spawn_queued_unit", function(func, self, breed, ...)
 	local notification_data = mod.breed_notification_data[breed.name]
 	if notification_data then
 		if mod:get(mod.SETTING_NAMES.ASSASSIN_TEXT_WARNING) then
@@ -243,7 +243,7 @@ mod:hook(ConflictDirector, "spawn_queued_unit", function(func, self, breed, boxe
 		end
 	end
 
-	return func(self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, optional_data, group_data, unit_data)
+	return func(self, breed, ...)
 end)
 
 --- Disable the purple explosion effect.

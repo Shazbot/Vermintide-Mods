@@ -264,9 +264,9 @@ mod:hook(ConflictDirector, "spawn_queued_unit", function(func, self, breed, boxe
 end)
 
 --- Specials cooldowns.
-mod:hook(SpecialsPacing, "specials_by_slots", function(func, self, t, specials_settings, method_data, slots, spawn_queue)
+mod:hook(SpecialsPacing, "specials_by_slots", function(func, self, t, specials_settings, method_data, ...)
 	if not mod.are_specials_customized() then
-		return func(self, t, specials_settings, method_data, slots, spawn_queue)
+		return func(self, t, specials_settings, method_data, ...)
 	end
 
 	local new_method_data
@@ -286,7 +286,7 @@ mod:hook(SpecialsPacing, "specials_by_slots", function(func, self, t, specials_s
 	if not new_method_data then
 		new_method_data = method_data
 	end
-	func(self, t, specials_settings, new_method_data, slots, spawn_queue)
+	func(self, t, specials_settings, new_method_data, ...)
 end)
 
 --- Did we disable all the specials breeds through checkboxes?
@@ -580,12 +580,12 @@ mod:hook(ConflictDirector, "horde_killed", function(func, self, ...)
 end)
 
 --- Change ambient density.
-mod:hook(SpawnZoneBaker, "spawn_amount_rats", function(func, self, spawns, pack_sizes, pack_rotations, pack_types, zone_data_list, nodes, num_wanted_rats, pack_type, area, zone)
+mod:hook(SpawnZoneBaker, "spawn_amount_rats", function(func, self, spawns, pack_sizes, pack_rotations, pack_members, zone_data_list, nodes, num_wanted_rats, ...)
 	if mod.are_ambients_customized() then
 		num_wanted_rats = math.round(num_wanted_rats * mod:get(mod.SETTING_NAMES.AMBIENTS_MULTIPLIER)/100)
 	end
 
-	return func(self, spawns, pack_sizes, pack_rotations, pack_types, zone_data_list, nodes, num_wanted_rats, pack_type, area, zone)
+	return func(self, spawns, pack_sizes, pack_rotations, pack_members, zone_data_list, nodes, num_wanted_rats, ...)
 end)
 
 mod:hook(ConflictDirector, "update_mini_patrol", function(func, self, ...)

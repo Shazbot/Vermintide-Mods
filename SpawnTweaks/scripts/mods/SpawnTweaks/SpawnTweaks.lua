@@ -20,9 +20,9 @@ mod:hook(HordeSpawner, "play_sound", function(func, ...)
 end)
 
 --- Event hordes size adjustment.
-mod:hook(SpawnerSystem, "_try_spawn_breed", function (func, self, breed_name, spawn_list_per_breed, spawn_list, breed_limits, active_enemies, group_template)
+mod:hook(SpawnerSystem, "_try_spawn_breed", function (func, self, breed_name, spawn_list_per_breed, ...)
 	if mod:get(mod.SETTING_NAMES.HORDES) == mod.HORDES.DEFAULT then
-		return func(self, breed_name, spawn_list_per_breed, spawn_list, breed_limits, active_enemies, group_template)
+		return func(self, breed_name, spawn_list_per_breed, ...)
 	end
 
 	local num_to_spawn = spawn_list_per_breed[breed_name]
@@ -35,7 +35,7 @@ mod:hook(SpawnerSystem, "_try_spawn_breed", function (func, self, breed_name, sp
 		spawn_list_per_breed[breed_name] = num_to_spawn
 	end
 
-	return func(self, breed_name, spawn_list_per_breed, spawn_list, breed_limits, active_enemies, group_template)
+	return func(self, breed_name, spawn_list_per_breed, ...)
 end)
 
 mod.original_random_interval = nil
@@ -205,7 +205,8 @@ local breeds_specials = {
 	"skaven_poison_wind_globadier",
 	"chaos_vortex_sorcerer",
 	"chaos_corruptor_sorcerer",
-	"skaven_warpfire_thrower"
+	"skaven_warpfire_thrower",
+	"beastmen_standard_bearer",
 }
 --- Disable timed specials.
 --- More ambient elites. Replaces trash ambients with elites.
@@ -398,13 +399,15 @@ mod.boss_events = {
 	"boss_event_chaos_troll",
 	"boss_event_chaos_spawn",
 	"boss_event_storm_fiend",
-	"boss_event_rat_ogre"
+	"boss_event_rat_ogre",
+	"boss_event_minotaur",
 }
 mod.bosses = pl.List{
 	"skaven_stormfiend",
 	"skaven_rat_ogre",
 	"chaos_troll",
-	"chaos_spawn"
+	"chaos_spawn",
+	"beastmen_minotaur",
 }
 mod:hook(TerrorEventMixer.run_functions, "spawn", function (func, event, element, ...)
 	if mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.DISABLE and tablex.find(mod.boss_events, event.name) then
@@ -714,7 +717,7 @@ mod.boss_events_lookup = {
 	[mod.BOSS_EVENTS.BOTH] = mod.no_empty_events_both,
 }
 
-mod:hook_safe(ConflictDirector, "set_updated_settings", function(self, conflict_settings_name) -- luacheck: ignore self conflict_settings_name
+mod:hook_safe(ConflictDirector, "set_updated_settings", function(self)
 	if mod:is_enabled() then
 		CurrentBossSettings = tablex.deepcopy(CurrentBossSettings)
 
@@ -812,9 +815,9 @@ mod:hook(AIGroupTemplates.spline_patrol, "update", function(func, world, nav_wor
 end)
 
 --- Disable blob vector hordes.
-mod:hook(HordeSpawner, "horde", function(func, self, horde_type, extra_data, no_fallback)
+mod:hook(HordeSpawner, "horde", function(func, self, ...)
 	if not mod.are_hordes_customized() then
-		return func(self, horde_type, extra_data, no_fallback)
+		return func(self, ...)
 	end
 
 	local temp_vector_blob_chance = CurrentHordeSettings.chance_of_vector_blob
@@ -822,7 +825,7 @@ mod:hook(HordeSpawner, "horde", function(func, self, horde_type, extra_data, no_
 		CurrentHordeSettings.chance_of_vector_blob = 0
 	end
 
-	func(self, horde_type, extra_data, no_fallback)
+	func(self, ...)
 
 	CurrentHordeSettings.chance_of_vector_blob = temp_vector_blob_chance
 end)
@@ -860,7 +863,7 @@ mod.update = function()
 	mod.dispatcher:emit("onModUpdate")
 end
 
-mod.on_setting_changed = function(setting_name) -- luacheck: ignore setting_name
+mod.on_setting_changed = function(setting_name)
 	if setting_name == mod.SETTING_NAMES.JUICED_SPECIALS_MUTATOR then
 		mod.dispatcher:emit("juicedSpecialsToggled")
 	end

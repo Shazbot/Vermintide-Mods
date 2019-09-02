@@ -29,7 +29,9 @@ mod.buff_name_to_setting_name_lookup = {
 local buff_ui_definitions = local_require("scripts/ui/hud_ui/buff_ui_definitions")
 local BUFF_SIZE = buff_ui_definitions.BUFF_SIZE
 local BUFF_SPACING = buff_ui_definitions.BUFF_SPACING
-mod:hook_origin(BuffUI, "_align_widgets", function (self, ...)
+-- CHECK
+-- BuffUI._align_widgets = function (self)
+mod:hook_origin(BuffUI, "_align_widgets", function (self)
 	local in_reverse = mod:get(mod.SETTING_NAMES.REVERSE_BUFF_DIRECTION)
 	local are_centered = mod:get(mod.SETTING_NAMES.CENTERED_BUFFS)
 
@@ -65,6 +67,8 @@ mod:hook_origin(BuffUI, "_align_widgets", function (self, ...)
 end)
 
 local ALIGNMENT_DURATION_TIME = 0.3
+-- CHECK
+-- BuffUI._update_pivot_alignment = function (self, dt)
 mod:hook_origin(BuffUI, "_update_pivot_alignment", function(self, dt)
 	local alignment_duration = self._alignment_duration
 

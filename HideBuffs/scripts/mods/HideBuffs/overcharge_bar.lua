@@ -11,6 +11,8 @@ mod:hook_safe(OverchargeBarUI, "update", function(self)
 end)
 
 --- Show ammo in clip using the overcharge bar.
+-- CHECK
+-- OverchargeBarUI._update_overcharge = function (self, player, dt)
 mod:hook(OverchargeBarUI, "_update_overcharge", function(func, self, player, dt)
 	local has_overcharge = func(self, player, dt)
 

@@ -1,6 +1,8 @@
 local mod = get_mod("HideBuffs")
 
 --- Disable level intro audio.
+-- CHECK
+-- StateLoading._trigger_sound_events = function (self, level_key)
 mod:hook(StateLoading, "_trigger_sound_events", function(func, self, level_key)
 	if mod:get(mod.SETTING_NAMES.DISABLE_LEVEL_INTRO_AUDIO) then
 		return

@@ -137,6 +137,8 @@ mod:hook(UnitFrameUI, "draw", function(func, self, dt)
 	end
 end)
 
+-- CHECK
+-- UnitFrameUI.set_ammo_percentage = function (self, ammo_percent)
 mod:hook(UnitFrameUI, "set_ammo_percentage", function (func, self, ammo_percent)
 	if self.is_teammate then
 		mod:pcall(function()
@@ -197,6 +199,8 @@ mod:hook(UnitFrameUI, "update", function(func, self, ...)
 	return func(self, ...)
 end)
 
+-- CHECK
+-- UnitFrameUI._update_portrait_opacity = function (self, is_dead, is_knocked_down, needs_help, assisted_respawn)
 mod:hook(UnitFrameUI, "_update_portrait_opacity", function(func, self, is_dead, is_knocked_down, needs_help, assisted_respawn)
 	local widget = self:_widget_by_feature("default", "static")
 	local color = widget.style.character_portrait.color
@@ -266,6 +270,8 @@ mod:hook(Material, "set_vector2", function(func, gui_material, ...)
 end)
 mod:hook_disable(Material, "set_vector2")
 
+-- CHECK
+-- UnitFramesHandler._create_unit_frame_by_type = function (self, frame_type, frame_index)
 mod:hook(UnitFramesHandler, "_create_unit_frame_by_type", function(func, self, frame_type, frame_index)
 	local unit_frame = func(self, frame_type, frame_index)
 	if frame_type == "player" and mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET) then
@@ -489,6 +495,8 @@ mod:hook(TutorialUI, "update", function(func, self, ...)
 end)
 
 --- Change size and transparency of floating objective icon.
+-- CHECK
+-- TutorialUI.update_objective_tooltip_widget = function (self, widget_holder, player_unit, dt)
 mod:hook(TutorialUI, "update_objective_tooltip_widget", function(func, self, widget_holder, player_unit, dt)
 	func(self, widget_holder, player_unit, dt)
 
@@ -506,16 +514,16 @@ mod:hook(TutorialUI, "update_objective_tooltip_widget", function(func, self, wid
 	end
 end)
 
-mod:hook(MissionObjectiveUI, "draw", function(func, self, dt)
+mod:hook(MissionObjectiveUI, "draw", function(func, self, ...)
 	if mod:get(mod.SETTING_NAMES.NO_MISSION_OBJECTIVE) then
 		return
 	end
 
-	return func(self, dt)
+	return func(self, ...)
 end)
 
 --- Hide or reposition boss hp bar.
-mod:hook(BossHealthUI, "_draw", function(func, self, dt, t)
+mod:hook(BossHealthUI, "_draw", function(func, self, ...)
 	if mod:get(mod.SETTING_NAMES.HIDE_BOSS_HP_BAR) then
 		return
 	end
@@ -531,7 +539,7 @@ mod:hook(BossHealthUI, "_draw", function(func, self, dt, t)
 	local_position[2] = mod.boss_health_ui_default_position[2]
 		+ mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_BOSS_HP_BAR_OFFSET_Y)
 
-	return func(self, dt, t)
+	return func(self, ...)
 end)
 
 -- not making this mod.disable_outlines to attempt some optimization
@@ -539,6 +547,8 @@ end)
 local disable_outlines = false
 
 --- Hide HUD when inspecting or when "Hide HUD" toggled with hotkey.
+-- CHECK
+-- GameModeManager.has_activated_mutator = function (self, name)
 mod:hook(GameModeManager, "has_activated_mutator", function(func, self, name, ...)
 	if name == "realism" then
 		if mod:get(mod.SETTING_NAMES.HIDE_HUD_WHEN_INSPECTING) then
@@ -565,7 +575,9 @@ mod:hook(GameModeManager, "has_activated_mutator", function(func, self, name, ..
 end)
 
 --- Patch realism visibility_group to show LevelCountdownUI.
-mod:hook(IngameHud, "_update_component_visibility", function(func, self)
+-- CHECK
+-- IngameHud._update_component_visibility = function (self)
+mod:hook(IngameHud, "_update_component_visibility", function(func, self, ...)
 	if self._definitions then
 		for _, visibility_group in ipairs( self._definitions.visibility_groups ) do
 			if visibility_group.name == "realism" then
@@ -574,7 +586,7 @@ mod:hook(IngameHud, "_update_component_visibility", function(func, self)
 		end
 	end
 
-	return func(self)
+	return func(self, ...)
 end)
 
 --- Disable hero outlines.
@@ -587,7 +599,9 @@ mod:hook(OutlineSystem, "always", function(func, self, ...)
 end)
 
 --- Mute Olesya in the Ubersreik levels.
-mod:hook(DialogueSystem, "trigger_sound_event_with_subtitles", function(func, self, sound_event, subtitle_event, speaker_name)
+-- CHECK
+-- DialogueSystem.trigger_sound_event_with_subtitles = function (self, sound_event, subtitle_event, speaker_name, source_unit, unit_node)
+mod:hook(DialogueSystem, "trigger_sound_event_with_subtitles", function(func, self, sound_event, subtitle_event, speaker_name, ...)
 	local level_key = Managers.state.game_mode and Managers.state.game_mode:level_key()
 
 	if speaker_name == "ferry_lady"
@@ -598,7 +612,7 @@ mod:hook(DialogueSystem, "trigger_sound_event_with_subtitles", function(func, se
 		return
 	end
 
-	return func(self, sound_event, subtitle_event, speaker_name)
+	return func(self, sound_event, subtitle_event, speaker_name, ...)
 end)
 
 --- Hide name of new location text.
@@ -621,7 +635,7 @@ mod:hook_safe(SubtitleGui, "update", function(self)
 end)
 
 --- Reposition the Twitch voting UI.
-mod:hook(TwitchVoteUI, "_draw", function(func, self, dt, t)
+mod:hook(TwitchVoteUI, "_draw", function(func, self, ...)
 	local offset_x = mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_TWITCH_VOTE_OFFSET_X)
 	local offset_y = mod:get(mod.SETTING_NAMES.OTHER_ELEMENTS_TWITCH_VOTE_OFFSET_Y)
 
@@ -633,7 +647,7 @@ mod:hook(TwitchVoteUI, "_draw", function(func, self, dt, t)
 	results_local_position[1] = 0 + offset_x
 	results_local_position[2] = 200 + offset_y
 
-	return func(self, dt, t)
+	return func(self, ...)
 end)
 
 --- Hide the "Waiting for rescue" message.
@@ -655,12 +669,12 @@ mod:hook(TwitchIconView, "_draw", function(func, self, ...)
 end)
 
 --- Disable White HP flashing.
-mod:hook(UnitFrameUI, "_update_bar_flash", function(func, self, widget, style, time, dt)
+mod:hook(UnitFrameUI, "_update_bar_flash", function(func, self, ...)
 	if mod:get(mod.SETTING_NAMES.STOP_WHITE_HP_FLASHING) then
 		return
 	end
 
-	return func(self, widget, style, time, dt)
+	return func(self, ...)
 end)
 
 -- execute this in an external file

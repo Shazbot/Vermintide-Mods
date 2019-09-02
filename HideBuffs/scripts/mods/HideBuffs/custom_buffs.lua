@@ -136,6 +136,8 @@ mod.buff_ui_remove_buff_hook = function(func, self, index)
 	return func(self, index)
 end
 
+-- CHECK
+-- BuffUI._remove_buff = function (self, index)
 mod:hook(BuffUI, "_remove_buff", mod.buff_ui_remove_buff_hook)
 mod:hook(PriorityBuffUI, "_remove_buff", mod.buff_ui_remove_buff_hook)
 
@@ -200,6 +202,8 @@ mod.increase_buff_stacks = function(unit, buff_name, num_stacks)
 end
 
 --- HP hooks.
+-- CHECK
+-- PlayerUnitHealthExtension.add_heal = function (self, healer_unit, heal_amount, heal_source_name, heal_type)
 mod:hook(PlayerUnitHealthExtension, "add_heal", function(func, self, healer_unit, heal_amount, heal_source_name, heal_type)
 	if not mod:get(mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_TEMP_HP) then
 		return func(self, healer_unit, heal_amount, heal_source_name, heal_type)
@@ -245,10 +249,16 @@ mod.add_ammo_hook = function(func, self, amount)
 	end
 end
 
+-- CHECK
+-- GenericAmmoUserExtension.add_ammo_to_reserve = function (self, amount)
+-- CHECK
+-- GenericAmmoUserExtension.add_ammo = function (self, amount)
 mod:hook(GenericAmmoUserExtension, "add_ammo_to_reserve", mod.add_ammo_hook)
 mod:hook(GenericAmmoUserExtension, "add_ammo", mod.add_ammo_hook)
 
 --- Damage taken hooks.
+-- CHECK
+-- PlayerUnitHealthExtension.add_damage = function (self, attacker_unit, damage_amount, hit_zone_name, damage_type, hit_position, damage_direction, damage_source_name, hit_ragdoll_actor, damaging_unit, hit_react_type, is_critical_strike, added_dot, first_hit, total_hits, backstab_multiplier)
 mod:hook(PlayerUnitHealthExtension, "add_damage", function(func, self, attacker_unit, damage_amount, hit_zone_name, damage_type, ...)
 	if not mod:get(mod.SETTING_NAMES.PLAYER_UI_CUSTOM_BUFFS_DMG_TAKEN)
 	or damage_type == "temporary_health_degen"

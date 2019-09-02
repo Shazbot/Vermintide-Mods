@@ -1,11 +1,11 @@
 local mod = get_mod("HideBuffs")
 
-mod:hook(HeroViewStateLoot, "_open_chest", function(func, self, selected_item)
+mod:hook(HeroViewStateLoot, "_open_chest", function(func, self, ...)
 	self._mod_show_loot = false
-	return func(self, selected_item)
+	return func(self, ...)
 end)
 
-mod:hook(HeroViewStateLoot, "_handle_input", function(func, self, dt, t)
+mod:hook(HeroViewStateLoot, "_handle_input", function(func, self, ...)
 	if mod:get(mod.SETTING_NAMES.FASTER_CHEST_OPENING) then
 		if not self._wait_for_backend_reload
 		and self._chest_presentation_active
@@ -21,12 +21,12 @@ mod:hook(HeroViewStateLoot, "_handle_input", function(func, self, dt, t)
 		end
 	end
 
-	return func(self, dt, t)
+	return func(self, ...)
 end)
 
-mod:hook(HeroViewStateLoot, "_update_chest_open_wait_time", function(func, self, dt, t)
+mod:hook(HeroViewStateLoot, "_update_chest_open_wait_time", function(func, self, ...)
 	if not mod:get(mod.SETTING_NAMES.FASTER_CHEST_OPENING) then
-		return func(self, dt, t)
+		return func(self, ...)
 	end
 
 	local chest_open_wait_duration = self._chest_open_wait_duration
@@ -50,9 +50,9 @@ mod:hook(HeroViewStateLoot, "_update_chest_open_wait_time", function(func, self,
 	end
 end)
 
-mod:hook(HeroViewStateLoot, "_update_chest_zoom_in_time", function(func, self, dt, t)
+mod:hook(HeroViewStateLoot, "_update_chest_zoom_in_time", function(func, self, ...)
 	if not mod:get(mod.SETTING_NAMES.FASTER_CHEST_OPENING) then
-		return func(self, dt, t)
+		return func(self, ...)
 	end
 
 	local chest_zoom_in_duration = self._chest_zoom_in_duration

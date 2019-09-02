@@ -35,6 +35,8 @@ mod.get_reinforcement_scenegraph_definition = function()
 end
 
 --- Make scenegraph creation use own scenegraph definition instead.
+-- CHECK
+-- PositiveReinforcementUI.create_ui_elements = function (self)
 mod:hook(PositiveReinforcementUI, "create_ui_elements", function (func, self)
 	local original_init_scenegraph = UISceneGraph.init_scenegraph
 	UISceneGraph.init_scenegraph = function (scenegraph) -- luacheck: ignore scenegraph
@@ -73,6 +75,8 @@ mod.event_colors = {
 	personal = Colors.get_table("dodger_blue")
 }
 
+-- CHECK
+-- PositiveReinforcementUI.add_event = function (self, hash, is_local_player, color_from, event_type, ...)
 mod:hook_safe(PositiveReinforcementUI, "add_event", function (self, hash, is_local_player, color_from, event_type, ...) -- luacheck: ignore hash is_local_player color_from ...
 	local events = pl.List(self._positive_enforcement_events)
 
@@ -175,6 +179,8 @@ mod.alignment_offsets_lookup = {
 -- keep a reference to PositiveReinforcementUI._positive_enforcement_events to pass into draw_widget
 local positive_enforcement_events
 
+-- CHECK
+-- UIRenderer.draw_widget = function (self, ui_widget)
 mod:hook(UIRenderer, "draw_widget", function(func, ui_renderer, widget)
 	local original_offset_y = widget.offset[2]
 	for _, event in ipairs(positive_enforcement_events) do
@@ -191,6 +197,8 @@ mod:hook(UIRenderer, "draw_widget", function(func, ui_renderer, widget)
 end)
 mod:hook_disable(UIRenderer, "draw_widget")
 
+-- CHECK
+-- PositiveReinforcementUI.update = function (self, dt, t)
 mod:hook(PositiveReinforcementUI, "update", function (func, self, dt, t)
 	if mod.init_new_scenegraph  then
 		mod.init_new_scenegraph = false
@@ -234,6 +242,8 @@ mod:hook(PositiveReinforcementUI, "update", function (func, self, dt, t)
 end)
 
 --- Disable kill message for breeds.
+-- CHECK
+-- PositiveReinforcementUI.event_add_positive_enforcement_kill = function (self, hash, is_local_player, event_type, breed_name_attacker, breed_name_killed)
 mod:hook(PositiveReinforcementUI, "event_add_positive_enforcement_kill", function(func, self, hash, is_local_player, event_type, breed_name_attacker, breed_name_killed)
 	if breed_name_killed then
 		if mod:get(mod.SETTING_NAMES[breed_name_killed]) then

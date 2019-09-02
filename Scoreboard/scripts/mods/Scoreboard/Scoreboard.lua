@@ -142,7 +142,8 @@ mod.bosses = pl.List{
 	"skaven_stormfiend",
 	"skaven_rat_ogre",
 	"chaos_troll",
-	"chaos_spawn"
+	"chaos_spawn",
+	"beastmen_minotaur"
 }
 
 local Unit_get_data = Unit.get_data

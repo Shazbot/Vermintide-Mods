@@ -109,6 +109,8 @@ mod.get_streaming_info = function()
 	return out:value()
 end
 
+-- CHECK
+-- DifficultyManager.set_difficulty = function (self, difficulty)
 mod:hook(DifficultyManager, "set_difficulty", function (func, self, difficulty)
 	local current_difficulty = Localize(DifficultySettings[difficulty].display_name)
 	if mod.streaming_data.difficulty ~= current_difficulty then
@@ -118,6 +120,9 @@ mod:hook(DifficultyManager, "set_difficulty", function (func, self, difficulty)
 	return func(self, difficulty)
 end)
 
+
+-- CHECK
+-- BackendUtils.get_loadout_item = function (career_name, slot)
 mod:hook(BackendUtils, "get_loadout_item", function (func, career_name, slot)
 	local item_data = func(career_name, slot)
 

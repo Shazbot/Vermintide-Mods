@@ -1,5 +1,7 @@
 local mod = get_mod("SpawnTweaks")
 
+-- CHECK
+-- AiUtils.is_of_interest_to_gutter_runner = function (gutter_runner_unit, enemy_unit, blackboard, ignore_knocked_down)
 mod:hook(AiUtils, "is_of_interest_to_gutter_runner", function(func, gutter_runner_unit, enemy_unit, blackboard, ...)
 	if mod.are_specials_customized()
 	and mod:get(mod.SETTING_NAMES.ASSASSINS_ALWAYS_FAIL)

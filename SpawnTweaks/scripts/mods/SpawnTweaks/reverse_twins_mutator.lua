@@ -153,6 +153,8 @@ mod:hook_safe(MutatorHandler, "update", function(self, dt, t) -- luacheck: no un
 	end
 end)
 
+-- CHECK
+-- MutatorHandler.ai_killed = function (self, killed_unit, killer_unit, death_data, killing_blow)
 mod:hook_safe(MutatorHandler, "ai_killed", function(self, killed_unit, killer_unit, death_data) -- luacheck: no unused
 	if not mod:get(mod.SETTING_NAMES.REVERSE_TWINS_MUTATOR) then
 		return
@@ -314,6 +316,8 @@ end)
 
 -- Prevent missing blackboard value crash
 --- Modified logic to return 0 if pcall fails.
+-- CHECK
+-- Utility.get_action_utility = function (breed_action, action_name, blackboard, from_draw_ai_behavior)
 mod:hook(Utility, "get_action_utility", function(func, breed_action, action_name, blackboard, from_draw_ai_behavior)
 	local total_utility = 0
 	pcall(function()

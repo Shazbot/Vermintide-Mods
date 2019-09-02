@@ -20,6 +20,8 @@ mod:hook(HordeSpawner, "play_sound", function(func, ...)
 end)
 
 --- Event hordes size adjustment.
+-- CHECK
+-- SpawnerSystem._try_spawn_breed = function (self, breed_name, spawn_list_per_breed, spawn_list, breed_limits, active_enemies, side_id, group_template)
 mod:hook(SpawnerSystem, "_try_spawn_breed", function (func, self, breed_name, spawn_list_per_breed, ...)
 	if mod:get(mod.SETTING_NAMES.HORDES) == mod.HORDES.DEFAULT then
 		return func(self, breed_name, spawn_list_per_breed, ...)
@@ -138,6 +140,8 @@ mod:hook(HordeSpawner, "compose_horde_spawn_list", mod.horde_compose_hook)
 mod:hook(HordeSpawner, "compose_blob_horde_spawn_list", mod.blob_horde_compose_hook)
 
 --- Fix for an assert crash for missing next queued breed when downsizing hordes.
+-- CHECK
+-- HordeSpawner.spawn_unit = function (self, hidden_spawn, breed_name, goal_pos, horde)
 mod:hook(HordeSpawner, "spawn_unit", function (func, self, hidden_spawn, breed_name, ...)
 	if breed_name == nil then
 		return
@@ -156,7 +160,7 @@ mod:hook(AIInterestPointSystem, "spawn_interest_points", function (func, ...)
 end)
 
 --- Disable boss doors.
-mod:hook(DoorSystem, "update", function(func, self, context, t)
+mod:hook(DoorSystem, "update", function(func, self, ...)
 	if mod:get(mod.SETTING_NAMES.BOSSES) == mod.BOSSES.DISABLE
 	or (
 		mod.are_bosses_customized() and
@@ -168,25 +172,25 @@ mod:hook(DoorSystem, "update", function(func, self, context, t)
 		end
 	end
 
-	return func(self, context, t)
+	return func(self, ...)
 end)
 
 --- Disable patrols.
-mod:hook(TerrorEventMixer.run_functions, "spawn_patrol", function (func, event, element, t, dt)
+mod:hook(TerrorEventMixer.run_functions, "spawn_patrol", function (func, ...)
 	if mod:get(mod.SETTING_NAMES.DISABLE_PATROLS) then
 		return true
 	end
 
-	return func(event, element, t, dt)
+	return func(...)
 end)
 
 --- Disable roaming patrols.
-mod:hook(TerrorEventMixer.run_functions, "roaming_patrol", function (func, event, element, t, dt)
+mod:hook(TerrorEventMixer.run_functions, "roaming_patrol", function (func, ...)
 	if mod:get(mod.SETTING_NAMES.DISABLE_ROAMING_PATROLS) then
 		return true
 	end
 
-	return func(event, element, t, dt)
+	return func(...)
 end)
 
 --- Disable fixed event spawns.
@@ -211,6 +215,8 @@ local breeds_specials = {
 --- Disable timed specials.
 --- More ambient elites. Replaces trash ambients with elites.
 --- trash spawn without a spawn_type == ambient trash
+-- CHECK
+-- ConflictDirector.spawn_queued_unit = function (self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, optional_data, group_data, unit_data)
 mod:hook(ConflictDirector, "spawn_queued_unit", function(func, self, breed, boxed_spawn_pos, boxed_spawn_rot, spawn_category, spawn_animation, spawn_type, ...)
 	if breed
 	and breed.name
@@ -264,6 +270,8 @@ mod:hook(ConflictDirector, "spawn_queued_unit", function(func, self, breed, boxe
 end)
 
 --- Specials cooldowns.
+-- CHECK
+-- SpecialsPacing.specials_by_slots = function (self, t, specials_settings, method_data, slots, spawn_queue)
 mod:hook(SpecialsPacing, "specials_by_slots", function(func, self, t, specials_settings, method_data, ...)
 	if not mod.are_specials_customized() then
 		return func(self, t, specials_settings, method_data, ...)
@@ -492,9 +500,9 @@ mod:hook_safe(Pacing, "update", function(self, t, dt, alive_player_units) -- lua
 	self.total_intensity = self.total_intensity * mod:get(mod.SETTING_NAMES.THREAT_MULTIPLIER)
 end)
 
-mod:hook(ConflictDirector, "update_horde_pacing", function(func, self, t, dt)
+mod:hook(ConflictDirector, "update_horde_pacing", function(func, self, ...)
 	if not mod.are_hordes_customized() then
-		return func(self, t, dt)
+		return func(self, ...)
 	end
 
 	local original_push_horde_if_num_alive_grunts_above = RecycleSettings.push_horde_if_num_alive_grunts_above
@@ -514,7 +522,7 @@ mod:hook(ConflictDirector, "update_horde_pacing", function(func, self, t, dt)
 		}
 	end
 
-	func(self, t, dt)
+	func(self, ...)
 
 	if original_horde_frequency then
 		CurrentPacing.horde_frequency = original_horde_frequency
@@ -612,7 +620,9 @@ mod:hook(TerrorEventMixer.init_functions, "control_specials", function(func, eve
 end)
 
 --- Specials always enabled.
-mod:hook(SpecialsPacing, "update", function(func, self, t, alive_specials, specials_population, player_positions)
+-- CHECK
+-- SpecialsPacing.update = function (self, t, alive_specials, specials_population, player_positions)
+mod:hook(SpecialsPacing, "update", function(func, self, t, alive_specials, specials_population, ...)
 	if mod:get(mod.SETTING_NAMES.ALWAYS_SPECIALS) then
 		specials_population = 1
 	end
@@ -623,11 +633,13 @@ mod:hook(SpecialsPacing, "update", function(func, self, t, alive_specials, speci
 		end
 	end
 
-	return func(self, t, alive_specials, specials_population, player_positions)
+	return func(self, t, alive_specials, specials_population, ...)
 end)
 
 --- Change damage dealt.
 --- Only used as an intermediate hook inside DamageUtils.add_damage_network_player.
+-- CHECK
+-- DamageUtils.calculate_damage = function (damage_output, target_unit, attacker_unit, hit_zone_name, original_power_level, boost_curve, boost_damage_multiplier, is_critical_strike, damage_profile, target_index, backstab_multiplier, damage_source)
 mod:hook(DamageUtils, "calculate_damage", function(func, damage_output, target_unit, attacker_unit, hit_zone_name,
 original_power_level, boost_curve, boost_damage_multiplier, is_critical_strike, damage_profile, target_index, backstab_multiplier, damage_source)
 	local dmg = func(damage_output, target_unit, attacker_unit, hit_zone_name, original_power_level,
@@ -685,6 +697,8 @@ mod:hook(DamageUtils, "add_damage_network_player", function(func, ...)
 	mod:hook_disable(DamageUtils, "calculate_damage")
 end)
 
+-- CHECK
+-- DamageUtils.add_damage_network = function (attacked_unit, attacker_unit, original_damage_amount, hit_zone_name, damage_type, hit_position, damage_direction, damage_source, hit_ragdoll_actor, damaging_unit, buff_attack_type, hit_react_type, is_critical_strike, added_dot, first_hit, total_hits, backstab_multiplier)
 mod:hook(DamageUtils, "add_damage_network", function(func, attacked_unit, attacker_unit, original_damage_amount, ...)
 	local dmg = original_damage_amount
 
@@ -717,7 +731,7 @@ mod.boss_events_lookup = {
 	[mod.BOSS_EVENTS.BOTH] = mod.no_empty_events_both,
 }
 
-mod:hook_safe(ConflictDirector, "set_updated_settings", function(self)
+mod:hook_safe(ConflictDirector, "set_updated_settings", function()
 	if mod:is_enabled() then
 		CurrentBossSettings = tablex.deepcopy(CurrentBossSettings)
 
@@ -765,6 +779,8 @@ mod:hook_safe(ConflictDirector, "set_updated_settings", function(self)
 end)
 
 --- Spawn hordes from both directions.
+-- CHECK
+-- HordeSpawner.find_good_vector_horde_pos = function (self, main_target_pos, distance, check_reachable)
 mod:hook(HordeSpawner, "find_good_vector_horde_pos", function(func, self, main_target_pos, distance, check_reachable)
 	if not mod.are_hordes_customized()
 	or not mod:get(mod.SETTING_NAMES.HORDES_BOTH_DIRECTIONS) then

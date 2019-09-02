@@ -7,6 +7,8 @@ mod.restart_on_defeat = {}
 mod.restart_on_defeat.do_insta_fail = false
 mod.restart_on_defeat.do_restart = false
 
+-- CHECK
+-- GameModeAdventure.evaluate_end_conditions = function (self, round_started, dt, t, mutator_handler)
 mod:hook(GameModeAdventure, "evaluate_end_conditions", function(func, self, round_started, dt, t, ...)
 	if not mod.restart_on_defeat.do_insta_fail
 	and not mod.restart_on_defeat.do_restart

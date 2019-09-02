@@ -12,6 +12,8 @@ mod.elite_breeds = pl.List{
 	"skaven_plague_monk",
 }
 
+-- CHECK
+-- DamageUtils.stagger_ai = function (t, damage_profile, target_index, power_level, target_unit, attacker_unit, hit_zone_name, attack_direction, boost_curve_multiplier, is_critical_strike, blocked, damage_source)
 mod:hook(DamageUtils, "stagger_ai", function(func, t, damage_profile, target_index, power_level, target_unit, ...)
 	if not mod:get(mod.SETTING_NAMES.SCARY_ELITES_MUTATOR) then
 		return func(t, damage_profile, target_index, power_level, target_unit, ...)
@@ -30,6 +32,8 @@ mod:hook(DamageUtils, "stagger_ai", function(func, t, damage_profile, target_ind
 	return func(t, damage_profile, target_index, power_level, target_unit, ...)
 end)
 
+-- CHECK
+-- WeaponSystem.send_rpc_attack_hit = function (self, damage_source_id, attacker_unit_id, hit_unit_id, hit_zone_id, hit_position, attack_direction, damage_profile_id, ...)
 mod:hook(WeaponSystem, "rpc_attack_hit", function(func, self, sender, damage_source_id, attacker_unit_id, hit_unit_id, ...)
 	if not mod:get(mod.SETTING_NAMES.SCARY_ELITES_MUTATOR) then
 		return func(self, sender, damage_source_id, attacker_unit_id, hit_unit_id, ...)

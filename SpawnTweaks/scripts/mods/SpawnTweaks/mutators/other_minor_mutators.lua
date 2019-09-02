@@ -7,6 +7,8 @@ local pl = require'pl.import_into'()
 mod.is_permanent_heal = function(heal_type)
 	return heal_type == "healing_draught" or heal_type == "bandage" or heal_type == "bandage_trinket" or heal_type == "buff_shared_medpack" or heal_type == "career_passive" or heal_type == "health_regen" or heal_type == "debug"
 end
+-- CHECK
+-- DamageUtils.heal_network = function (healed_unit, healer_unit, heal_amount, heal_type)
 mod:hook(DamageUtils, "heal_network", function(func, healed_unit, healer_unit, heal_amount, heal_type)
 	local player_white_hp_gain_multiplier = mod:get(mod.SETTING_NAMES.PLAYER_WHITE_HP_GAIN_MULTIPLIER)
 	if player_white_hp_gain_multiplier == mod.setting_defaults[mod.SETTING_NAMES.PLAYER_WHITE_HP_GAIN_MULTIPLIER] then
@@ -18,7 +20,6 @@ mod:hook(DamageUtils, "heal_network", function(func, healed_unit, healer_unit, h
 	end
 	return func(healed_unit, healer_unit, heal_amount, heal_type)
 end)
-
 
 mod:hook(PlayerUnitHealthExtension, "health_degen_settings", function(func, ...)
 	local degen_amount, degen_delay, degen_start = func(...)
@@ -35,6 +36,8 @@ mod:hook(PlayerUnitHealthExtension, "health_degen_settings", function(func, ...)
 end)
 
 --- Disable ult cd on player striking and getting hit.
+-- CHECK
+-- CareerExtension.extensions_ready = function (self, world, unit)
 mod:hook(CareerExtension, "extensions_ready", function(func, self, world, unit)
 	local disable_ult_cd_on_strike = mod:get(mod.SETTING_NAMES.DISABLE_ULT_CD_ON_STRIKE)
 	local disable_ult_cd_on_getting_hit = mod:get(mod.SETTING_NAMES.DISABLE_ULT_CD_ON_GETTING_HIT)

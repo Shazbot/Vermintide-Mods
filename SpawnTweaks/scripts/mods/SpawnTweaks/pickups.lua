@@ -16,6 +16,8 @@ mod:hook(mod, "on_setting_changed", function(func, setting_name)
 	return func(setting_name)
 end)
 
+-- CHECK
+-- PickupSystem._spawn_pickup = function (self, pickup_settings, pickup_name, position, rotation, with_physics, spawn_type, owner_peer_id, spawn_limit)
 mod:hook(PickupSystem, "_spawn_pickup", function(func, self, pickup_settings, pickup_name, ...)
 	if mod:get(mod.SETTING_NAMES["MAP_PICKUPS_DISABLE_"..pickup_name]) then
 		if mod:get(mod.SETTING_NAMES.MAP_PICKUPS_REPLACE_DISABLED) and #mod.enabled_map_pickups > 0 then

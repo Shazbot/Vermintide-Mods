@@ -54,6 +54,8 @@ mod.upscale_breeds.get_upscaled_breed = function(breed_name, upscale_chance)
 	return Breeds[upper_tier_breed_name]
 end
 
+-- CHECK
+-- ConflictDirector._spawn_unit = function (self, breed, spawn_pos, spawn_rot, spawn_category, spawn_animation, spawn_type, optional_data, group_data, spawn_index)
 mod:hook(ConflictDirector, "_spawn_unit", function(func, self, breed, spawn_pos, spawn_rot, spawn_category, spawn_animation, spawn_type, optional_data, group_data, spawn_index)
 	if mod:get(mod.SETTING_NAMES.UPSCALE_BREEDS_MUTATOR) then
 		local upscale_chance = mod:get(mod.SETTING_NAMES.UPSCALE_BREEDS_MUTATOR_CHANCE)

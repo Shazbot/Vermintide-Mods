@@ -120,6 +120,8 @@ end)
 
 --- When running to explode use distance from player 1 instead of 2
 --- to start exploding.
+-- CHECK
+-- PerceptionUtils.pick_closest_target = function (ai_unit, blackboard, breed)
 mod:hook(PerceptionUtils, "pick_closest_target",
 function(func, ai_unit, blackboard, breed)
 	local closest_enemy, closest_dist = func(ai_unit, blackboard, breed)

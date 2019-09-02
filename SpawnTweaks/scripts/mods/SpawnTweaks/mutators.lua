@@ -250,19 +250,6 @@ mod.create_window = function()
 		.."\nMenu to enable mutators that work via Spawn Tweaks settings."
 		-- .."\nPost a comment on mod workshop page or message me on discord if you have any other mutator ideas."
 
-	local skin_options = {
-		["Only mutators"] = 1,
-		["Above mutators"] = 2,
-		["Mixed"] = 3,
-	}
-	-- local options_priority_label = mod.main_window:create_label("options_priority_label", {235+60, window_size[2]-35-5-50-50}, {200, 30}, nil, "Options Priority")
-	-- options_priority_label.tooltip = "How values in mod options interact with values in mutators."
-	-- 	.."\nOnly mutators will keep only mutator values enabled."
-	-- 	.."\nAbove mutators will always prioritize mod options values."
-	-- 	.."\nMixed with prioritize mutator values, but won't disable all other settings."
-	-- mod.priority_dropdown = mod.main_window:create_dropdown("priority_dropdown", {235-20+80, window_size[2]-35-10-50-30-50},  {200, 30}, nil, skin_options, nil, 1)
-	-- mod.priority_dropdown:select_index(1)
-
 	local summary_title = mod.main_window:create_label("summary_title", {5+30+40+155-20, window_size[2]-35-35-35-10-50-70-10-5}, {80, 40}, nil, "Summary")
 	summary_title.tooltip =
 		"Summary"
@@ -300,7 +287,7 @@ mod.destroy_windows = function()
 	end
 end
 
-mod:hook(StartGameWindowAdventure, "draw", function(func, self, dt)
+mod:hook(StartGameWindowAdventure, "draw", function(func, self, ...)
 	mod:pcall(function()
 		self._widgets_by_name.adventure_texture.style.texture_id.color[1] = 0
 		self._widgets_by_name.adventure_title_divider.style.texture_id.color[1] = 0
@@ -308,10 +295,10 @@ mod:hook(StartGameWindowAdventure, "draw", function(func, self, dt)
 		self._widgets_by_name.description_text.style.text_shadow.text_color[1] = 0
 		self._widgets_by_name.adventure_title.offset[2] = -420
 	end)
-	return func(self, dt)
+	return func(self, ...)
 end)
 
-mod:hook(StartGameWindowMutator, "draw", function(func, self, dt)
+mod:hook(StartGameWindowMutator, "draw", function(func, self, ...)
 	mod:pcall(function()
 		self._widgets_by_name.mutator_texture.style.texture_id.color[1] = 0
 		self._widgets_by_name.mutator_title_divider.style.texture_id.color[1] = 0
@@ -319,10 +306,10 @@ mod:hook(StartGameWindowMutator, "draw", function(func, self, dt)
 		self._widgets_by_name.description_text.style.text_shadow.text_color[1] = 0
 		self._widgets_by_name.mutator_title.offset[2] = -420
 	end)
-	return func(self, dt)
+	return func(self, ...)
 end)
 
-mod:hook(StartGameWindowMission, "draw", function(func, self, dt)
+mod:hook(StartGameWindowMission, "draw", function(func, self, ...)
 	mod:pcall(function()
 		self._widgets_by_name.map_texture.style.texture_id.color[1] = 0
 		self._widgets_by_name.mission_title_divider.style.texture_id.color[1] = 0
@@ -330,15 +317,15 @@ mod:hook(StartGameWindowMission, "draw", function(func, self, dt)
 		self._widgets_by_name.description_text.style.text_shadow.text_color[1] = 0
 		self._widgets_by_name.mission_title.offset[2] = -420
 	end)
-	return func(self, dt)
+	return func(self, ...)
 end)
 
-mod:hook(StartGameWindowTwitchLogin, "draw", function(func, self, dt)
+mod:hook(StartGameWindowTwitchLogin, "draw", function(func, self, ...)
 	mod:pcall(function()
 		self._widgets_by_name.twitch_title_divider.style.texture_id.color[1] = 255
 		self._widgets_by_name.description_text.content.text = "Spawn Tweaks menu not shown here\nbut it's still active."
 	end)
-	return func(self, dt)
+	return func(self, ...)
 end)
 
 for _, obj in ipairs( { StartGameWindowAdventure, StartGameWindowMutator, StartGameWindowMission } ) do

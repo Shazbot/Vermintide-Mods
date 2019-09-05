@@ -301,6 +301,8 @@ mod:hook(BTSpawnAllies, "leave", function (func, self, unit, blackboard, ...)
 end)
 
 -- Prevent Spinemanglr summon crash #5
+-- CHECK
+-- BTSpawnAllies.find_spawn_point = function (unit, blackboard, action, data, override_spawn_group)
 mod:hook(BTSpawnAllies, "find_spawn_point", function (func, unit, blackboard, action, data, override_spawn_group, ...)
 	local spawn_group = override_spawn_group or action.optional_go_to_spawn or action.spawn_group
 	local spawner_system = Managers.state.entity:system("spawner_system")

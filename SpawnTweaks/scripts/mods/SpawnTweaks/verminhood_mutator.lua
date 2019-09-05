@@ -15,7 +15,8 @@ for _, health_ext_obj in ipairs( { GenericHealthExtension, RatOgreHealthExtensio
 			return func(self, attacker_unit, damage_amount, hit_zone_name, damage_type, ...)
 		end
 
-		mod:hook_disable(health_ext_obj, "add_damage")
+		mod:hook_disable(GenericHealthExtension, "add_damage")
+		mod:hook_disable(RatOgreHealthExtension, "add_damage")
 
 		local dmg = damage_amount
 
@@ -83,7 +84,8 @@ for _, health_ext_obj in ipairs( { GenericHealthExtension, RatOgreHealthExtensio
 			end
 		end)
 
-		mod:hook_enable(health_ext_obj, "add_damage")
+		mod:hook_enable(GenericHealthExtension, "add_damage")
+		mod:hook_enable(RatOgreHealthExtension, "add_damage")
 
 		return
 	end)

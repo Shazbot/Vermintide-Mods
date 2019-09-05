@@ -63,7 +63,11 @@ mod.new_random_interval = function (numbers)
 	return result
 end
 
-mod.horde_compose_hook = function (func, self, variant, ...)
+--- Timed hordes size adjustment.
+-- CHECK
+-- HordeSpawner.compose_horde_spawn_list = function (self, variant)
+mod:hook(HordeSpawner, "compose_horde_spawn_list",
+function (func, self, variant, ...)
 	if mod:get(mod.SETTING_NAMES.HORDES) == mod.HORDES.DEFAULT then
 		return func(self, variant, ...)
 	end
@@ -114,30 +118,25 @@ mod.horde_compose_hook = function (func, self, variant, ...)
 	end
 
 	return return_val_1, return_val_2, return_val_3
-end
+end)
 
-mod.blob_horde_compose_hook = function (func, self, variant, ...)
+-- CHECK
+-- HordeSpawner.compose_blob_horde_spawn_list = function (self, composition_type)
+mod:hook(HordeSpawner, "compose_blob_horde_spawn_list",
+function (func, self, composition_type, ...)
 	if mod:get(mod.SETTING_NAMES.HORDES) == mod.HORDES.DEFAULT then
-		return func(self, variant, ...)
+		return func(self, composition_type, ...)
 	end
-
-	-- if mod:get(mod.SETTING_NAMES.HORDE_TYPES) == mod.HORDE_TYPES.CUSTOM then
-	-- 	mod.horde_compose_hook(func, self, variant, ...)
-	-- end
 
 	mod.original_random_interval = ConflictUtils.random_interval
 	ConflictUtils.random_interval = mod.new_random_interval
 
-	local return_val_1, return_val_2, return_val_3 = func(self, variant, ...)
+	local return_val_1, return_val_2, return_val_3 = func(self, composition_type, ...)
 
 	ConflictUtils.random_interval = mod.original_random_interval
 
 	return return_val_1, return_val_2, return_val_3
-end
-
---- Timed hordes size adjustment.
-mod:hook(HordeSpawner, "compose_horde_spawn_list", mod.horde_compose_hook)
-mod:hook(HordeSpawner, "compose_blob_horde_spawn_list", mod.blob_horde_compose_hook)
+end)
 
 --- Fix for an assert crash for missing next queued breed when downsizing hordes.
 -- CHECK
@@ -151,6 +150,8 @@ mod:hook(HordeSpawner, "spawn_unit", function (func, self, hidden_spawn, breed_n
 end)
 
 --- Disable ambients.
+-- CHECK
+-- AIInterestPointSystem.spawn_interest_points = function (self)
 mod:hook(AIInterestPointSystem, "spawn_interest_points", function (func, ...)
 	if mod:get(mod.SETTING_NAMES.AMBIENTS) == mod.AMBIENTS.DISABLE then
 		return
@@ -166,7 +167,7 @@ mod:hook(DoorSystem, "update", function(func, self, ...)
 		mod.are_bosses_customized() and
 		mod:get(mod.SETTING_NAMES.NO_BOSS_DOOR) and self.is_server
 	) then
-		for map_section, _ in pairs(table.clone(self._active_groups)) do
+		for map_section, _ in pairs(self._active_groups) do
 			self:open_boss_doors(map_section)
 			self._active_groups[map_section] = nil
 		end
@@ -305,6 +306,8 @@ mod.are_all_specials_disabled = function()
 end
 
 --- Specials spawn delay from start of the level.
+-- CHECK
+-- specials_by_slots = function (t, slots, method_data, state_data)
 mod:hook(SpecialsPacing.setup_functions, "specials_by_slots", function(func, t, slots, method_data, ...)
 	if not mod.are_specials_customized() then
 		return func(t, slots, method_data, ...)
@@ -342,6 +345,8 @@ mod.get_num_alive_bosses = function()
 end
 
 --- Change max of same special; replace special with a random boss.
+-- CHECK
+-- get_random_breed = function (slots, specials_settings, method_data, state_data)
 mod:hook(SpecialsPacing.select_breed_functions, "get_random_breed", function(func, slots, specials_settings, method_data, ...)
 	local allow_replacing_specials_with_bosses =
 		mod:get(mod.SETTING_NAMES.SPECIAL_TO_BOSS_CHANCE_ALLOW_BOSS_STACKING)
@@ -481,6 +486,8 @@ mod:hook_safe(ConflictDirector, "calculate_threat_value", function(self)
 	end
 end)
 
+-- CHECK
+-- Pacing.update = function (self, t, dt, alive_player_units)
 mod:hook_safe(Pacing, "update", function(self, t, dt, alive_player_units) -- luacheck: ignore t dt
 	-- don't do anything if at default
 	if mod:get(mod.SETTING_NAMES.THREAT_MULTIPLIER) == mod.setting_defaults[mod.SETTING_NAMES.THREAT_MULTIPLIER] then
@@ -588,6 +595,8 @@ mod:hook(ConflictDirector, "horde_killed", function(func, self, ...)
 end)
 
 --- Change ambient density.
+-- CHECK
+-- SpawnZoneBaker.spawn_amount_rats = function (self, spawns, pack_sizes, pack_rotations, pack_members, zone_data_list, nodes, num_wanted_rats, pack_type, area, zone)
 mod:hook(SpawnZoneBaker, "spawn_amount_rats", function(func, self, spawns, pack_sizes, pack_rotations, pack_members, zone_data_list, nodes, num_wanted_rats, ...)
 	if mod.are_ambients_customized() then
 		num_wanted_rats = math.round(num_wanted_rats * mod:get(mod.SETTING_NAMES.AMBIENTS_MULTIPLIER)/100)
@@ -596,6 +605,8 @@ mod:hook(SpawnZoneBaker, "spawn_amount_rats", function(func, self, spawns, pack_
 	return func(self, spawns, pack_sizes, pack_rotations, pack_members, zone_data_list, nodes, num_wanted_rats, ...)
 end)
 
+-- CHECK
+-- ConflictDirector.update_mini_patrol = function (self, t, dt)
 mod:hook(ConflictDirector, "update_mini_patrol", function(func, self, ...)
 	local temp_cp_mini_patrol = CurrentPacing.mini_patrol.only_spawn_below_intensity
 	local temp_rc_max_grunts = RecycleSettings.max_grunts
@@ -611,6 +622,8 @@ mod:hook(ConflictDirector, "update_mini_patrol", function(func, self, ...)
 end)
 
 --- Specials always enabled.
+-- CHECK
+-- control_specials = function (event, element, t)
 mod:hook(TerrorEventMixer.init_functions, "control_specials", function(func, event, element, t)
 	if mod:get(mod.SETTING_NAMES.ALWAYS_SPECIALS) then
 		element.enable = true
@@ -815,6 +828,8 @@ mod:hook(HordeSpawner, "find_good_vector_horde_pos", function(func, self, main_t
 end)
 
 --- Patrols start aggroed.
+-- CHECK
+-- update = function (world, nav_world, group, t, dt)
 mod:hook(AIGroupTemplates.spline_patrol, "update", function(func, world, nav_world, group, ...)
 	if not mod.are_bosses_customized()
 	or not mod:get(mod.SETTING_NAMES.AGGRO_PATROLS) then
@@ -844,6 +859,14 @@ mod:hook(HordeSpawner, "horde", function(func, self, ...)
 	func(self, ...)
 
 	CurrentHordeSettings.chance_of_vector_blob = temp_vector_blob_chance
+end)
+
+--- Crash prevention about something that broke with 2.0 and I'm not sure why
+--- An AI group was initialized with size=0 but 1 AIs was assigned to it.
+--- fassert(group.num_spawned_members <= group.size
+mod:hook(AIGroupSystem, "init_extension",
+function(func, ...)
+	pcall(func, ...)
 end)
 
 mod.are_hordes_customized = function()

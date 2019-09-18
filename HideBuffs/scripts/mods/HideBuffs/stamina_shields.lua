@@ -1,55 +1,69 @@
 local mod = get_mod("HideBuffs")
 
 mod:hook(FatigueUI, "draw", function(func, self, dt)
+	-- we're going to still update shields when they're hidden
+	-- so they update correctly when always visible
+	local player_unit = self.local_player.player_unit
+	if not self.active and Unit.alive(player_unit) then
+		local status_extension = ScriptUnit.extension(player_unit, "status_system")
+		self:update_shields(status_extension, dt)
+	end
+
 	local shields = self.shields
 	local active_shields = self.active_shields
 
 	local offset = mod:get(mod.SETTING_NAMES.SHIELDS_SPACING)
 	local total_width = offset * (active_shields - 1)
-	local half_width = total_width / 2
+	local shields_adjust_size = mod:get(mod.SETTING_NAMES.SHIELDS_SIZE_ADJUST)
 
 	for i = 1, active_shields, 1 do
 		local shield = shields[i]
-		mod:pcall(function()
-			local shield_style = shield.style
-			local width_offet = half_width - offset * (i - 1)
-			shield_style.offset[1] = width_offet
+		local shield_style = shield.style
+		local width_offset = total_width/2 - offset * (i - 1)
+		shield_style.offset[1] = width_offset - shields_adjust_size/2
 
-			if not shield.offset then
-				shield.offset = { 0,0,0 }
-			end
-			shield.offset[1] = mod:get(mod.SETTING_NAMES.SHIELDS_OFFSET_X)
-			shield.offset[2] = mod:get(mod.SETTING_NAMES.SHIELDS_OFFSET_Y)
+		if not shield.offset then
+			shield.offset = { 0,0,0 }
+		end
+		shield.offset[1] = mod:get(mod.SETTING_NAMES.SHIELDS_OFFSET_X)
+		shield.offset[2] = mod:get(mod.SETTING_NAMES.SHIELDS_OFFSET_Y)
 
-			local shields_size_adjust = mod:get(mod.SETTING_NAMES.SHIELDS_SIZE_ADJUST)
+		local shields_size_adjust = shields_adjust_size
 
-			shield_style.size[1] = 90 + shields_size_adjust
-			shield_style.size[2] = 90 + shields_size_adjust
+		shield_style.size[1] = 90 + shields_size_adjust
+		shield_style.size[2] = 90 + shields_size_adjust
 
-			shield_style.texture_glow_id.texture_size[1] = 64 + shields_size_adjust
-			shield_style.texture_glow_id.texture_size[2] = 64 + shields_size_adjust
-		end)
+		shield_style.texture_glow_id.texture_size[1] = 64 + shields_size_adjust
+		shield_style.texture_glow_id.texture_size[2] = 64 + shields_size_adjust
 	end
 
 	return func(self, dt)
 end)
 
---- Change shields opacity.
-mod:hook_safe(FatigueUI, "start_fade_in", function(self)
-	local shields_opacity = mod:get(mod.SETTING_NAMES.SHIELDS_OPACITY)
-
-	if shields_opacity == 255 then
-		return
-	end
-
+--- Set shields opacity when faded in or out.
+mod.set_stam_shields_anim_opacity = function(fatigue_ui, from, to)
+	local self = fatigue_ui
 	local active_shields = self.active_shields
 	local shields = self.shields
 
 	for i = 1, active_shields, 1 do
 		for shield, is_active in pairs( shields[i].animations ) do
 			if is_active then
-				shield.data_array[5] = shields_opacity
+				shield.data_array[4] = from
+				shield.data_array[5] = to
 			end
 		end
 	end
+end
+
+mod:hook_safe(FatigueUI, "start_fade_in", function(self)
+	local shields_to_opacity = mod:get(mod.SETTING_NAMES.SHIELDS_OPACITY)
+	local shields_from_opacity = mod:get(mod.SETTING_NAMES.SHIELDS_FADED_OPACITY)
+	mod.set_stam_shields_anim_opacity(self, shields_from_opacity, shields_to_opacity)
+end)
+
+mod:hook_safe(FatigueUI, "start_fade_out", function(self)
+	local shields_to_opacity = mod:get(mod.SETTING_NAMES.SHIELDS_FADED_OPACITY)
+	local shields_from_opacity = mod:get(mod.SETTING_NAMES.SHIELDS_OPACITY)
+	mod.set_stam_shields_anim_opacity(self, shields_from_opacity, shields_to_opacity)
 end)

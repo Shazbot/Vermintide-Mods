@@ -1367,7 +1367,8 @@ mod.add_option(
 		["default_value"] = 30,
 	},
 	"Spacing Between Shields",
-	"Adjust the spacing between stamina shields.",
+	"Adjust the spacing between stamina shields."
+		.."\nDefault is 30.",
 	shields_subs
 )
 mod.add_option(
@@ -1377,8 +1378,23 @@ mod.add_option(
 		["range"] = {0, 255},
 		["default_value"] = 255,
 	},
-	"Shields Opacity",
-	"Adjust shields transparency, 0 is fully transparent.",
+	"Opacity",
+	"Adjust shields opacity, 0 is fully transparent."
+		.."\nDefault is 255."
+		.."\nSet both opacities to the same value to have no fade-in/out.",
+	shields_subs
+)
+mod.add_option(
+	"SHIELDS_FADED_OPACITY",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 255},
+		["default_value"] = 0,
+	},
+	"Faded Opacity",
+	"Adjust shields opacity when faded out, 0 is fully transparent."
+		.."\nDefault is 0."
+		.."\nSet both opacities to the same value to disable fade-in/out.",
 	shields_subs
 )
 

@@ -757,6 +757,9 @@ mod:hook_safe(ConflictDirector, "set_updated_settings", function()
 
 		if mod:get(mod.SETTING_NAMES.MAX_ONE_BOSS) then
 			if CurrentBossSettings.boss_events then
+				if not CurrentBossSettings.boss_events.max_events_of_this_kind then
+					CurrentBossSettings.boss_events.max_events_of_this_kind = {}
+				end
 				CurrentBossSettings.boss_events.max_events_of_this_kind.event_boss = 1
 			end
 		end

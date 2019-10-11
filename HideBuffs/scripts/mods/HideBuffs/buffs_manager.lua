@@ -44,7 +44,7 @@ end
 mod.buffs_manager_BuffUI_add_buff = function(buff)
 	local icon = buff.template.icon
 	local buff_type = buff.buff_type
-	if not bm.added_buffs[buff_type] then
+	if buff_type and not bm.added_buffs[buff_type] then
 		bm.added_buffs[buff_type] = icon
 		if bm.main_window then
 			bm.reload_window()

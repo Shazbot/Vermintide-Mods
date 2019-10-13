@@ -6,10 +6,16 @@ return {
 		en = "Hide UI of dead bots and restart level on defeat."
 	},
 	assassin_text_warning = {
-		en = "Assassin/Pack Text Warning"
+		en = "Assassin Text Warning"
 	},
 	assassin_text_warning_tooltip = {
-		en = "Make a notification on assassin and packmaster spawn."
+		en = "Show a text warning on assassin spawn."
+	},
+	packmaster_text_warning = {
+		en = "Packmaster Text Warning"
+	},
+	packmaster_text_warning_tooltip = {
+		en = "Show a text warning on packmaster spawn."
 	},
 	DONT_RESPAWN_BOTS = {
 		en = "Bots Don't Respawn"

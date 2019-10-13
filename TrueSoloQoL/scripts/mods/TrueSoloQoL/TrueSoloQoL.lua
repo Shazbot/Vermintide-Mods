@@ -183,12 +183,14 @@ end
 mod.breed_notification_data = {
 	skaven_gutter_runner = {
 		num_alive_func = mod.get_num_alive_assassins,
+		setting_name = mod.SETTING_NAMES.ASSASSIN_TEXT_WARNING,
 		text_alone = "ASSASSIN_WARNING_ASS!",
 		text_alone_dupe = "ASSASSIN_WARNING_ASS!_DUPE",
 		text_multi = "ASSASSIN_WARNING_ASS_",
 	},
 	skaven_pack_master = {
 		num_alive_func = mod.get_num_alive_packmasters,
+		setting_name = mod.SETTING_NAMES.PACKMASTER_TEXT_WARNING,
 		text_alone = "PACK_WARNING_PACK!",
 		text_alone_dupe = "PACK_WARNING_PACK!_DUPE",
 		text_multi = "PACK_WARNING_PACK_",
@@ -222,7 +224,7 @@ end)
 mod:hook(ConflictDirector, "spawn_queued_unit", function(func, self, breed, ...)
 	local notification_data = mod.breed_notification_data[breed.name]
 	if notification_data then
-		if mod:get(mod.SETTING_NAMES.ASSASSIN_TEXT_WARNING) then
+		if mod:get(notification_data.setting_name) then
 			UISettings.area_indicator.wait_time = 0
 			mod:pcall(function()
 				local player_unit = Managers.player:local_player().player_unit

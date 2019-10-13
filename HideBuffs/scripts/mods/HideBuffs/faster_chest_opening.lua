@@ -50,9 +50,9 @@ mod:hook(HeroViewStateLoot, "_update_chest_open_wait_time", function(func, self,
 	end
 end)
 
-mod:hook(HeroViewStateLoot, "_update_chest_zoom_in_time", function(func, self, ...)
+mod:hook(HeroViewStateLoot, "_update_chest_zoom_in_time", function(func, self, dt, ...)
 	if not mod:get(mod.SETTING_NAMES.FASTER_CHEST_OPENING) then
-		return func(self, ...)
+		return func(self, dt, ...)
 	end
 
 	local chest_zoom_in_duration = self._chest_zoom_in_duration

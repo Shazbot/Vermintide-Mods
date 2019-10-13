@@ -839,6 +839,8 @@ mod:hook(AIGroupTemplates.spline_patrol, "update", function(func, world, nav_wor
 		return func(world, nav_world, group, ...)
 	end
 
+	local side = group.side
+	local VALID_TARGETS_PLAYERS_AND_BOTS = side.VALID_ENEMY_TARGETS_PLAYERS_AND_BOTS
 	local state = group.state
 	if state == "patrolling" then
 		group.target_units = table.clone(VALID_TARGETS_PLAYERS_AND_BOTS)

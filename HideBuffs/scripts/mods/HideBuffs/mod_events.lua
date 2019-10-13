@@ -2,6 +2,10 @@ local mod = get_mod("HideBuffs")
 
 local pl = require'pl.import_into'()
 
+mod.on_disabled = function()
+	mod:hook_enable(UnitFrameUI, "set_portrait_status")
+end
+
 mod.on_unload = function()
 	mod.persistent.was_ingame_entered = mod.was_ingame_entered
 end

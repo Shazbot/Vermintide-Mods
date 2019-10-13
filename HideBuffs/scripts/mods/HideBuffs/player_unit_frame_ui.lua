@@ -13,9 +13,10 @@ mod.player_unit_frame_update = function(unit_frame_ui)
 	end
 
 	-- change portrait texture_size for PORTRAIT_ICONS
+	local character_portrait = self._default_widgets.default_static.style.character_portrait
 	if not self._hb_mod_cached_character_portrait_texture_size then -- keep the default portrait texture_size cached
-		if self._default_widgets.default_static.style.character_portrait.texture_size then
-			self._hb_mod_cached_character_portrait_texture_size = table.clone(self._default_widgets.default_static.style.character_portrait.texture_size)
+		if character_portrait.texture_size then
+			self._hb_mod_cached_character_portrait_texture_size = table.clone(character_portrait.texture_size)
 		else
 			-- default texture_size is missing if not using console definitions
 			-- so just set the default values
@@ -23,11 +24,14 @@ mod.player_unit_frame_update = function(unit_frame_ui)
 		end
 	end
 	if mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_ICONS) ~= mod.PORTRAIT_ICONS.DEFAULT then
-		self._default_widgets.default_static.style.character_portrait.texture_size[1] = 80
-		self._default_widgets.default_static.style.character_portrait.texture_size[2] = 80
+		if not character_portrait.texture_size then
+			character_portrait.texture_size = {}
+		end
+		character_portrait.texture_size[1] = 80
+		character_portrait.texture_size[2] = 80
 	else
-		self._default_widgets.default_static.style.character_portrait.texture_size[1] = self._hb_mod_cached_character_portrait_texture_size[1]
-		self._default_widgets.default_static.style.character_portrait.texture_size[2] = self._hb_mod_cached_character_portrait_texture_size[2]
+		character_portrait.texture_size[1] = self._hb_mod_cached_character_portrait_texture_size[1]
+		character_portrait.texture_size[2] = self._hb_mod_cached_character_portrait_texture_size[2]
 	end
 
 	-- hide player portrait

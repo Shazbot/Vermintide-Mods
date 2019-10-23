@@ -274,6 +274,12 @@ mod.localizations:update({
 	no_stormfiend_tooltip = {
 		en = "Replace Stormfiend with another random boss."
 	},
+	no_minotaur = {
+		en = "No Minotaur"
+	},
+	no_minotaur_tooltip = {
+		en = "Replace Minotaur with another random boss."
+	},
 	save_preset_command_description = {
 		en = "Save current Spawn Tweaks options into a preset!"
 	},

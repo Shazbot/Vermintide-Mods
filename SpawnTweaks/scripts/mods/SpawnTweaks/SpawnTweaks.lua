@@ -404,6 +404,9 @@ mod.get_filtered_boss_list = function()
 	if mod:get(mod.SETTING_NAMES.NO_STORMFIEND) then
 		pruned_bosses:remove_value("skaven_stormfiend")
 	end
+	if mod:get(mod.SETTING_NAMES.NO_MINOTAUR) then
+		pruned_bosses:remove_value("beastmen_minotaur")
+	end
 	return pruned_bosses
 end
 
@@ -444,7 +447,8 @@ mod:hook(TerrorEventMixer.run_functions, "spawn", function (func, event, element
 			local pruned_bosses = mod.get_filtered_boss_list()
 			if mod:get(mod.SETTING_NAMES.NO_TROLL) and element.breed_name == "chaos_troll"
 			or mod:get(mod.SETTING_NAMES.NO_CHAOS_SPAWN) and element.breed_name == "chaos_spawn"
-			or mod:get(mod.SETTING_NAMES.NO_STORMFIEND) and element.breed_name == "skaven_stormfiend" then
+			or mod:get(mod.SETTING_NAMES.NO_STORMFIEND) and element.breed_name == "skaven_stormfiend"
+				or mod:get(mod.SETTING_NAMES.NO_MINOTAUR) and element.breed_name == "beastmen_minotaur" then
 				element.breed_name = pruned_bosses[math.random(#pruned_bosses)]
 			end
 
@@ -682,16 +686,16 @@ original_power_level, boost_curve, boost_damage_multiplier, is_critical_strike, 
 				return dmg
 			end
 
-			if mod.bosses:contains(breed.name)
-			and mod.are_bosses_customized() then
-				dmg = dmg * mod:get(mod.SETTING_NAMES.BOSS_DMG_MULTIPLIER) / 100
-				return dmg
-			end
+			if mod.are_bosses_customized() then
+				if mod.bosses:contains(breed.name) then
+					dmg = dmg * mod:get(mod.SETTING_NAMES.BOSS_DMG_MULTIPLIER) / 100
+					return dmg
+				end
 
-			if mod.lord_breeds:keys():contains(breed.name)
-			and mod.are_bosses_customized() then
-				dmg = dmg * mod:get(mod.SETTING_NAMES.LORD_DMG_MULTIPLIER) / 100
-				return dmg
+				if mod.lord_breeds:keys():contains(breed.name) then
+					dmg = dmg * mod:get(mod.SETTING_NAMES.LORD_DMG_MULTIPLIER) / 100
+					return dmg
+				end
 			end
 		end
 	end

@@ -70,7 +70,26 @@ data.breed_tier_list = {
 		"skaven_stormfiend",
 		"skaven_storm_vermin_warlord",
 		"skaven_ratling_gunner",
-	}
+	},
+	beastmen_ungor = {
+		"beastmen_gor",
+		"beastmen_gor",
+		"beastmen_ungor_archer",
+	},
+	beastmen_ungor_archer = {
+		"beastmen_gor",
+	},
+	beastmen_gor = {
+		"beastmen_bestigor",
+		"beastmen_bestigor",
+		"beastmen_standard_bearer"
+	},
+	beastmen_bestigor = {
+		"beastmen_minotaur",
+	},
+	beastmen_standard_bearer = {
+		"beastmen_minotaur",
+	},
 }
 data.breed_tier_list.skaven_clan_rat_with_shield = data.breed_tier_list.skaven_clan_rat
 data.breed_tier_list.chaos_marauder_with_shield = data.breed_tier_list.chaos_marauder
@@ -87,6 +106,7 @@ data.boss_breeds = pl.List{
 	"chaos_spawn",
 	"chaos_exalted_champion_norsca",
 	"chaos_exalted_champion_warcamp",
+	"beastmen_minotaur",
 }
 
 data.breed_explosion_templates = {
@@ -106,7 +126,9 @@ data.breed_explosion_templates = {
 	chaos_spawn = "generic_mutator_explosion_large",
 	skaven_stormfiend_boss = "generic_mutator_explosion_large",
 	skaven_storm_vermin = "generic_mutator_explosion_medium",
-	skaven_storm_vermin_with_shield = "generic_mutator_explosion_medium"
+	skaven_storm_vermin_with_shield = "generic_mutator_explosion_medium",
+	beastmen_minotaur = "generic_mutator_explosion_large",
+	beastmen_bestigor = "generic_mutator_explosion_medium",
 }
 data.cb_enemy_spawned_function = function (unit, breed)
 	local blackboard = BLACKBOARDS[unit]

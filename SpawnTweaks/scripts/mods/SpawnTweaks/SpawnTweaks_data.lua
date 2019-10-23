@@ -35,6 +35,7 @@ mod.SETTING_NAMES = {
 	NO_TROLL = "no_troll",
 	NO_CHAOS_SPAWN = "no_chaos_spawn",
 	NO_STORMFIEND = "no_stormfiend",
+	NO_MINOTAUR = "no_minotaur",
 	HORDE_STARTUP_MIN = "horde_startup_min",
 	HORDE_STARTUP_MAX = "horde_startup_max",
 	DISABLE_FIXED_SPAWNS = "disable_fixed_spawns",
@@ -683,6 +684,14 @@ mod_data.options_widgets:extend({
 				["widget_type"] = "checkbox",
 				["text"] = mod:localize("no_stormfiend"),
 				["tooltip"] = mod:localize("no_stormfiend_tooltip"),
+				["default_value"] = false,
+			},
+			{
+				["show_widget_condition"] = {3},
+				["setting_name"] = mod.SETTING_NAMES.NO_MINOTAUR,
+				["widget_type"] = "checkbox",
+				["text"] = mod:localize("no_minotaur"),
+				["tooltip"] = mod:localize("no_minotaur_tooltip"),
 				["default_value"] = false,
 			},
 			{

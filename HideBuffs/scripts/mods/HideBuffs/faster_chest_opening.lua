@@ -24,9 +24,9 @@ mod:hook(HeroViewStateLoot, "_handle_input", function(func, self, ...)
 	return func(self, ...)
 end)
 
-mod:hook(HeroViewStateLoot, "_update_chest_open_wait_time", function(func, self, ...)
+mod:hook(HeroViewStateLoot, "_update_chest_open_wait_time", function(func, self, dt, ...)
 	if not mod:get(mod.SETTING_NAMES.FASTER_CHEST_OPENING) then
-		return func(self, ...)
+		return func(self, dt, ...)
 	end
 
 	local chest_open_wait_duration = self._chest_open_wait_duration

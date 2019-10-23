@@ -131,8 +131,8 @@ mod:hook(BackendUtils, "get_loadout_item", function (func, career_name, slot)
 	return item_data
 end)
 
-mod.font = "gw_arial_16"
-mod.font_mtrl = "materials/fonts/" .. mod.font
+mod.font = "materials/fonts/arial"
+mod.font_name = "arial"
 
 mod:hook_safe(StateLoading, "update", function(self)
 	mod.draw_temp_info(self)
@@ -178,8 +178,8 @@ mod:hook_safe(IngameUI, "update", function(self, dt, t, disable_ingame_ui, end_o
 	mod.draw_temp_info(self)
 end)
 
-mod.text_size = function (gui, text, font_material, font_size, ...)
-	local min, max = Gui.text_extents(gui, text, font_material, font_size, ...)
+mod.text_size = function (gui, text, font_size)
+	local min, max = Gui.text_extents(gui, text, mod.font, font_size)
 	local inv_scaling = RESOLUTION_LOOKUP.inv_scale
 	local width = (max.x + min.x) * inv_scaling
 	local height = (max.y - min.y) * inv_scaling
@@ -188,10 +188,10 @@ mod.text_size = function (gui, text, font_material, font_size, ...)
 end
 
 mod.get_text_size = function (gui, font_size, line)
-	local _, font_min, font_max = UIGetFontHeight(gui, mod.font, font_size)
+	local _, font_min, font_max = UIGetFontHeight(gui, mod.font_name, font_size)
 	local inv_scale = RESOLUTION_LOOKUP.inv_scale
 	local full_font_height = (font_max + math.abs(font_min)) * inv_scale
-	local width = mod.text_size(gui, line, mod.font_mtrl, font_size, full_font_height)
+	local width = mod.text_size(gui, line, font_size)
 
 	return width, full_font_height
 end
@@ -204,7 +204,7 @@ mod.draw_line = function(gui, font_size, line, layer, start_x, start_y, longest,
 	height = height + line_height
 	local pos = Vector3(start_x, start_y-height, layer)
 	height = height + vertical_spacing
-	Gui.text(gui, line, mod.font_mtrl, font_size, mod.font, pos, header_color)
+	Gui.text(gui, line, mod.font, font_size, mod.font, pos, header_color)
 
 	return longest, height
 end

@@ -167,4 +167,22 @@ return {
 	HIT_MARKERS_GROUP = {
 		en = "Hit Markers"
 	},
+	HIT_MARKERS_FF_COLOR_GROUP = {
+		en = "Friendly Fire Markers Color"
+	},
+	HIT_MARKERS_FF_COLOR_GROUP_T = {
+		en = "Set RGB color of the hit markers when you inflict friendly fire."
+	},
+	HIT_MARKERS_HS_AND_CRIT_COLOR_GROUP = {
+		en = "Crit+Headshot Markers Color"
+	},
+	HIT_MARKERS_HS_AND_CRIT_COLOR_GROUP_T = {
+		en = "Set RGB color of the hit markers when you score a critical headshot."
+	},
+	HIT_MARKERS_ARMORED_COLOR_GROUP = {
+		en = "Armor Hit Markers Color"
+	},
+	HIT_MARKERS_ARMORED_COLOR_GROUP_T = {
+		en = "Set RGB color of the hit markers when you fail to damage an armored enemy."
+	},
 }

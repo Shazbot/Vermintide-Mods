@@ -163,14 +163,25 @@ mod.teammate_unit_frame_update = function(unit_frame_ui)
 		local team_ui_name_offset_y = mod:get(mod.SETTING_NAMES.TEAM_UI_NAME_OFFSET_Y)
 
 		local def_static_widget_style = def_static_widget.style
-		def_static_widget_style.player_name.offset[1] = 0 + team_ui_name_offset_x
-		def_static_widget_style.player_name.offset[2] = 110 + team_ui_name_offset_y
-		def_static_widget_style.player_name_shadow.offset[1] = 2 + team_ui_name_offset_x
-		def_static_widget_style.player_name_shadow.offset[2] = 110 - 2 + team_ui_name_offset_y
+		local player_name_style = def_static_widget_style.player_name
+		local player_name_shadow_style = def_static_widget_style.player_name_shadow
+
+		local player_name_alpha = mod:get(mod.SETTING_NAMES.TEAM_UI_PLAYER_NAME_OPACITY)
+		player_name_style.text_color[1] = player_name_alpha
+		player_name_shadow_style.text_color[1] = player_name_alpha
+
+		local player_name_font_size = mod:get(mod.SETTING_NAMES.TEAM_UI_PLAYER_NAME_FONT_SIZE)
+		player_name_style.font_size = player_name_font_size
+		player_name_shadow_style.font_size = player_name_font_size
+
+		player_name_style.offset[1] = 0 + team_ui_name_offset_x
+		player_name_style.offset[2] = 110 + team_ui_name_offset_y
+		player_name_shadow_style.offset[1] = 2 + team_ui_name_offset_x
+		player_name_shadow_style.offset[2] = 110 - 2 + team_ui_name_offset_y
 
 		local team_ui_player_name_alignment = mod.ALIGNMENTS_LOOKUP[mod:get(mod.SETTING_NAMES.TEAM_UI_PLAYER_NAME_ALIGNMENT)]
-		def_static_widget_style.player_name.horizontal_alignment = team_ui_player_name_alignment
-		def_static_widget_style.player_name_shadow.horizontal_alignment = team_ui_player_name_alignment
+		player_name_style.horizontal_alignment = team_ui_player_name_alignment
+		player_name_shadow_style.horizontal_alignment = team_ui_player_name_alignment
 	end
 end
 

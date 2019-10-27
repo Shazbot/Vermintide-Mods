@@ -1800,7 +1800,7 @@ mod.add_option(
 	"Change Portraits",
 	"Change teammate portraits.\nHero uses hero icons, Hats uses hat icons.",
 	team_ui_group.sub_widgets,
-	9
+	14
 )
 mod.add_option(
 	"TEAM_UI_PORTRAIT_ALPHA",
@@ -1812,7 +1812,7 @@ mod.add_option(
 	"Portrait Transparency",
 	"Set portrait transparency, 0 is fully transparent.",
 	team_ui_group.sub_widgets,
-	10
+	15
 )
 mod.add_option(
 	"TEAM_UI_PLAYER_NAME_ALIGNMENT",
@@ -1828,7 +1828,33 @@ mod.add_option(
 	"Player Name Alignment",
 	"Change the horizontal alignment of a player's name.",
 	team_ui_group.sub_widgets,
-	11
+	16
+)
+mod.add_option(
+	"TEAM_UI_PLAYER_NAME_FONT_SIZE",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {10, 40},
+		["default_value"] = 18,
+	},
+	"Player Name Font Size",
+	"Set the player name font size."
+		.."\nDefault is 18.",
+	team_ui_group.sub_widgets,
+	17
+)
+mod.add_option(
+	"TEAM_UI_PLAYER_NAME_OPACITY",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 255},
+		["default_value"] = 255,
+	},
+	"Player Name Opacity",
+	"Set the player name opacity."
+		.."\nDefault is 255.",
+	team_ui_group.sub_widgets,
+	18
 )
 mod.add_option(
 	"TEAM_UI_HP_BAR_SCALE_WIDTH",
@@ -1841,7 +1867,7 @@ mod.add_option(
 	"HP Bar Width Scale",
 	"Scale the width of the HP Bar.",
 	team_ui_group.sub_widgets,
-	5
+	10
 )
 mod.add_option(
 	"TEAM_UI_HP_BAR_SCALE_HEIGHT",
@@ -1854,7 +1880,7 @@ mod.add_option(
 	"HP Bar Height Scale",
 	"Scale the height of the HP Bar.",
 	team_ui_group.sub_widgets,
-	6
+	11
 )
 mod.add_option(
 	"TEAM_UI_HP_BAR_OFFSET_X",
@@ -1867,7 +1893,7 @@ mod.add_option(
 	"HP Bar Offset X",
 	"Optionally offset the HP bar on the x axis.",
 	team_ui_group.sub_widgets,
-	7
+	12
 )
 mod.add_option(
 	"TEAM_UI_HP_BAR_OFFSET_Y",
@@ -1880,7 +1906,7 @@ mod.add_option(
 	"HP Bar Offset Y",
 	"Optionally offset the HP bar on the y axis.",
 	team_ui_group.sub_widgets,
-	8
+	13
 )
 local team_ui_item_slots_subs = mod.add_option(
 	"TEAM_UI_ITEM_SLOTS_GROUP",

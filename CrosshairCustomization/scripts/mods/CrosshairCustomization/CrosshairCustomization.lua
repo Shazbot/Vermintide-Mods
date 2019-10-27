@@ -321,11 +321,24 @@ mod:hook_safe(DamageUtils, "buff_on_attack", function(unit, hit_unit, attack_typ
 	end
 end)
 
---- Set hit_marker_data crit proc flag back to false.
-mod:hook_safe(CrosshairUI, "update_hit_markers", function(self)
+--- Reset hit_marker_data crit proc flag back to false.
+--- Option to show FF hit markers based on damage dealt.
+mod:hook(CrosshairUI, "update_hit_markers", function(func, self, ...)
 	local player_unit = self.local_player.player_unit
 	local hud_extension = ScriptUnit.extension(player_unit, "hud_system")
 	local hit_marker_data = hud_extension.hit_marker_data
+
+	if hit_marker_data.hit_enemy then
+		local damage_amount = hit_marker_data.damage_amount
+		local friendly_fire = hit_marker_data.friendly_fire
+		if friendly_fire
+		and damage_amount < mod:get(mod.SETTING_NAMES.IGNORE_FF_TRESHOLD) then
+			hit_marker_data.hit_enemy = false
+		end
+	end
+
+	func(self, ...)
+
 	hit_marker_data._mod_is_crit_proc = false
 end)
 

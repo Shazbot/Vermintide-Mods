@@ -1,8 +1,5 @@
 local mod = get_mod("WeaponKillCounter")
 
--- luacheck: globals Json UITooltipPasses UIFontByResolution UIGetFontHeight UIPasses RESOLUTION_LOOKUP Localize
--- luacheck: globals UIRenderer ScriptUnit Managers DamageDataIndex AiUtils Colors
-
 mod.WEAPON_KILLS_SETTINGS_KEY = "weapon_kills"
 
 local weapon_kills_table = mod:get(mod.WEAPON_KILLS_SETTINGS_KEY) or {}
@@ -21,45 +18,6 @@ local function increase_kill_counter(backend_id)
 end
 
 local DEFAULT_START_LAYER = 994
-local function get_text_height(ui_renderer, size, ui_style, ui_content, text, ui_style_global)
-	local widget_scale = nil
-
-	if ui_style_global then
-		widget_scale = ui_style_global.scale
-	end
-
-	local font_material, font_size, font_name = nil
-
-	if ui_style.font_type then
-		local font, size_of_font = UIFontByResolution(ui_style, widget_scale)
-		font_name = font[3]
-		font_size = font[2]
-		font_material = font[1]
-		font_size = size_of_font
-	else
-		local font = ui_style.font
-		font_name = font[3]
-		font_size = font[2]
-		font_material = font[1]
-
-		if not ui_style.font_size then
-		end
-	end
-
-	if ui_style.localize then
-		text = Localize(text)
-	end
-
-	local font_height, font_min, font_max = UIGetFontHeight(ui_renderer.gui, font_name, font_size)
-	local texts = UIRenderer.word_wrap(ui_renderer, text, font_material, font_size, size[1])
-	local text_start_index = ui_content.text_start_index or 1
-	local max_texts = ui_content.max_texts or #texts
-	local num_texts = math.min(#texts - text_start_index - 1, max_texts)
-	local inv_scale = RESOLUTION_LOOKUP.inv_scale
-	local full_font_height = (font_max + math.abs(font_min))*inv_scale*num_texts
-
-	return full_font_height
-end
 
 mod:hook(StatisticsUtil, "register_kill", function(func, victim_unit, damage_data, statistics_db, is_server)
 	mod:pcall(function()
@@ -152,7 +110,7 @@ UITooltipPasses.weapon_kills = {
 			local text_size = data.text_size
 			text_size[1] = size[1] - frame_margin * 2
 			text_size[2] = 0
-			local text_height = -1*get_text_height(ui_renderer, text_size, text_style, content, content.text, ui_style_global)
+			local text_height = UIUtils.get_text_height(ui_renderer, text_size, text_style, content.text, ui_style_global)
 			text_size[2] = text_height
 
 			if draw then

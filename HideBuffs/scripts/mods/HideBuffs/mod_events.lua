@@ -2,6 +2,11 @@ local mod = get_mod("HideBuffs")
 
 local pl = require'pl.import_into'()
 
+mod.on_enabled = function()
+	mod:hook_disable("UIAnimation", "init")
+	mod:hook_disable(Material, "set_vector2")
+end
+
 mod.on_disabled = function()
 	mod:hook_enable(UnitFrameUI, "set_portrait_status")
 end

@@ -255,12 +255,11 @@ end)
 --- Catch Material.set_vector2 crash on changed portrait textures.
 mod:hook(UnitFrameUI, "set_portrait_status", function(func, ...)
 	mod:hook_enable(Material, "set_vector2")
-
 	func(...)
-
 	mod:hook_disable(Material, "set_vector2")
 end)
 
+--- Starts disabled.
 mod:hook(Material, "set_vector2", function(func, gui_material, ...)
 	if not gui_material then
 		return
@@ -268,7 +267,6 @@ mod:hook(Material, "set_vector2", function(func, gui_material, ...)
 
 	return func(gui_material, ...)
 end)
-mod:hook_disable(Material, "set_vector2")
 
 -- CHECK
 -- UnitFramesHandler._create_unit_frame_by_type = function (self, frame_type, frame_index)

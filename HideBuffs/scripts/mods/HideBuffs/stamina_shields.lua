@@ -1,5 +1,10 @@
 local mod = get_mod("HideBuffs")
 
+--- Starts disabled.
+mod:hook("UIAnimation", "init", function(func, fun, table, table_index, from, to, ...) -- luacheck: no unused
+	return func(fun, table, table_index, mod.shields_from_opacity, mod.shields_to_opacity, ...)
+end)
+
 mod:hook(FatigueUI, "draw", function(func, self, dt)
 	-- we're going to still update shields when they're hidden
 	-- so they update correctly when always visible
@@ -41,29 +46,20 @@ mod:hook(FatigueUI, "draw", function(func, self, dt)
 end)
 
 --- Set shields opacity when faded in or out.
-mod.set_stam_shields_anim_opacity = function(fatigue_ui, from, to)
-	local self = fatigue_ui
-	local active_shields = self.active_shields
-	local shields = self.shields
+mod:hook(FatigueUI, "start_fade_in", function(func, self)
+	mod.shields_to_opacity = mod:get(mod.SETTING_NAMES.SHIELDS_OPACITY)
+	mod.shields_from_opacity = mod:get(mod.SETTING_NAMES.SHIELDS_FADED_OPACITY)
 
-	for i = 1, active_shields, 1 do
-		for shield, is_active in pairs( shields[i].animations ) do
-			if is_active then
-				shield.data_array[4] = from
-				shield.data_array[5] = to
-			end
-		end
-	end
-end
-
-mod:hook_safe(FatigueUI, "start_fade_in", function(self)
-	local shields_to_opacity = mod:get(mod.SETTING_NAMES.SHIELDS_OPACITY)
-	local shields_from_opacity = mod:get(mod.SETTING_NAMES.SHIELDS_FADED_OPACITY)
-	mod.set_stam_shields_anim_opacity(self, shields_from_opacity, shields_to_opacity)
+	mod:hook_enable("UIAnimation", "init")
+	func(self)
+	mod:hook_disable("UIAnimation", "init")
 end)
 
-mod:hook_safe(FatigueUI, "start_fade_out", function(self)
-	local shields_to_opacity = mod:get(mod.SETTING_NAMES.SHIELDS_FADED_OPACITY)
-	local shields_from_opacity = mod:get(mod.SETTING_NAMES.SHIELDS_OPACITY)
-	mod.set_stam_shields_anim_opacity(self, shields_from_opacity, shields_to_opacity)
+mod:hook(FatigueUI, "start_fade_out", function(func, self)
+	mod.shields_to_opacity = mod:get(mod.SETTING_NAMES.SHIELDS_FADED_OPACITY)
+	mod.shields_from_opacity = mod:get(mod.SETTING_NAMES.SHIELDS_OPACITY)
+
+	mod:hook_enable("UIAnimation", "init")
+	func(self)
+	mod:hook_disable("UIAnimation", "init")
 end)

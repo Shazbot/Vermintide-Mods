@@ -10,8 +10,15 @@ mod:hook(FatigueUI, "draw", function(func, self, dt)
 	-- so they update correctly when always visible
 	local player_unit = self.local_player.player_unit
 	if not self.active and Unit.alive(player_unit) then
+		local parry_indicator_mod = get_mod("Parry Indicator")
+		if parry_indicator_mod then
+			parry_indicator_mod:hook_disable(FatigueUI, "update_shields")
+		end
 		local status_extension = ScriptUnit.extension(player_unit, "status_system")
 		self:update_shields(status_extension, dt)
+		if parry_indicator_mod then
+			parry_indicator_mod:hook_enable(FatigueUI, "update_shields")
+		end
 	end
 
 	local shields = self.shields

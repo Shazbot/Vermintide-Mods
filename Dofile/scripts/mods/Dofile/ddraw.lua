@@ -41,8 +41,7 @@ end
 mod.lines = pl.List()
 
 local font_size = 20
-local font = "gw_arial_16"
-local font_mtrl = "materials/fonts/" .. font
+local font_mtrl = "materials/fonts/arial"
 
 mod.draw_debug_text = function(self, existing_gui)
 	if
@@ -77,7 +76,7 @@ mod.draw_debug_text = function(self, existing_gui)
 
 		lines:foreach(function(line)
 			local pos = Vector3(start_x, start_y-spacing_y*i, 101)
-			Gui.text(gui, line, font_mtrl, font_size, font, pos, header_color)
+			Gui.text(gui, line, font_mtrl, font_size, font_mtrl, pos, header_color)
 			i = i + 1
 			if i > 45 then
 				start_x = start_x + 375

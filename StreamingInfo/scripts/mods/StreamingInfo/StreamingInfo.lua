@@ -61,7 +61,7 @@ mod.get_talents = function()
 			local career_name = career_extension:career_name()
 			local current_talents = talent_interface:get_talents(career_name)
 
-			local talents = pl.List(current_talents):join(" ")
+			local talents = table.concat(current_talents, " ")
 			mod.talents_cached = talents
 			return talents
 		end

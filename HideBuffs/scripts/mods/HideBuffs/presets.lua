@@ -72,6 +72,8 @@ mod.apply_preset = function(preset)
 			end
 		end
 	end)
+
+	mod.force_player_unit_frame_dirty = true
 end
 
 mod.presets_window_size = {350, 250}
@@ -111,7 +113,22 @@ mod.create_presets_window = function()
 	mod.valid_presets:insert(3, mod.defaults_preset)
 	mod.valid_presets:splice(4, mod.local_presets:values())
 
+	-- create the dropdown input from presets, a hash table where
+	-- key is preset name, and value is the index of the dropdown item
+	-- make sure we don't have duplicate names or index_map creates
+	-- a table of values instead of a single value and simple ui crashes
 	local indexed_preset_names = pl.tablex.index_map(mod.valid_presets:map(mod.get_name_from_preset))
+	for name, index in pairs( indexed_preset_names ) do
+		if type(index) == "table" then
+			for i, dropdown_index in ipairs( index ) do
+				if i > 1 then
+					indexed_preset_names[name.." "..i] = dropdown_index
+				end
+			end
+			indexed_preset_names[name] = indexed_preset_names[name][1]
+		end
+	end
+
 	local presets_dropdown = mod.presets_window:create_dropdown(
 		"presets_dropdown",
 		{0, 50+50},

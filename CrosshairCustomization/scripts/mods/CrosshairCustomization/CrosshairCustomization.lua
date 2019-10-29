@@ -1,5 +1,3 @@
--- luacheck: globals get_mod UIRenderer table ScriptUnit CrosshairUI
-
 local mod = get_mod("CrosshairCustomization")
 
 local pl = require'pl.import_into'()
@@ -16,7 +14,12 @@ end
 
 mod.get_color = function()
 	local color_index = mod:get(mod.SETTING_NAMES.COLOR) or mod.COLOR_INDEX.DEFAULT
-	local color = mod.COLORS[color_index] or { 255, mod:get(mod.SETTING_NAMES.CUSTOM_RED), mod:get(mod.SETTING_NAMES.CUSTOM_GREEN), mod:get(mod.SETTING_NAMES.CUSTOM_BLUE) }
+	local color = mod.COLORS[color_index] or {
+		255,
+		mod:get(mod.SETTING_NAMES.CUSTOM_RED),
+		mod:get(mod.SETTING_NAMES.CUSTOM_GREEN),
+		mod:get(mod.SETTING_NAMES.CUSTOM_BLUE)
+	}
 	return color
 end
 
@@ -89,51 +92,52 @@ mod:hook_safe(CrosshairUI, "configure_hit_marker_color_and_size", function (self
 	end
 
 	local hm_rot_texture = hit_marker.style.rotating_texture
+	local hm_color = hm_rot_texture.color
 
 	if not is_armored and not friendly_fire and not is_critical then
 		if mod:get(mod.SETTING_NAMES.HIT_MARKERS_COLOR_GROUP) then
-			hm_rot_texture.color[2] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_RED)
-			hm_rot_texture.color[3] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_GREEN)
-			hm_rot_texture.color[4] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_BLUE)
+			hm_color[2] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_RED)
+			hm_color[3] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_GREEN)
+			hm_color[4] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_BLUE)
 		else
 			local color = mod.get_color()
-			hm_rot_texture.color[2] = color[2]
-			hm_rot_texture.color[3] = color[3]
-			hm_rot_texture.color[4] = color[4]
+			hm_color[2] = color[2]
+			hm_color[3] = color[3]
+			hm_color[4] = color[4]
 		end
 
-		hm_rot_texture.color[1] = 0
+		hm_color[1] = 0
 	end
 
 	-- change the headshot hit marker color
 	if is_armored then
 		if mod:get(mod.SETTING_NAMES.HIT_MARKERS_ARMORED_COLOR_GROUP) then
-			hm_rot_texture.color[2] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_ARMORED_RED)
-			hm_rot_texture.color[3] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_ARMORED_GREEN)
-			hm_rot_texture.color[4] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_ARMORED_BLUE)
+			hm_color[2] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_ARMORED_RED)
+			hm_color[3] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_ARMORED_GREEN)
+			hm_color[4] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_ARMORED_BLUE)
 		end
 	elseif friendly_fire then
 		if mod:get(mod.SETTING_NAMES.HIT_MARKERS_FF_COLOR_GROUP) then
-			hm_rot_texture.color[2] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_FF_RED)
-			hm_rot_texture.color[3] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_FF_GREEN)
-			hm_rot_texture.color[4] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_FF_BLUE)
+			hm_color[2] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_FF_RED)
+			hm_color[3] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_FF_GREEN)
+			hm_color[4] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_FF_BLUE)
 		end
 	elseif is_critical
 	and hit_marker_data._mod_is_crit_proc
 	and mod:get(mod.SETTING_NAMES.HIT_MARKERS_HS_AND_CRIT_COLOR_GROUP) then
-		hm_rot_texture.color[2] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_HS_AND_CRIT_RED)
-		hm_rot_texture.color[3] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_HS_AND_CRIT_GREEN)
-		hm_rot_texture.color[4] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_HS_AND_CRIT_BLUE)
+		hm_color[2] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_HS_AND_CRIT_RED)
+		hm_color[3] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_HS_AND_CRIT_GREEN)
+		hm_color[4] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_HS_AND_CRIT_BLUE)
 	elseif is_critical
 	and mod:get(mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_COLOR_GROUP) then
-		hm_rot_texture.color[2] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_RED)
-		hm_rot_texture.color[3] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_GREEN)
-		hm_rot_texture.color[4] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_BLUE)
+		hm_color[2] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_RED)
+		hm_color[3] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_GREEN)
+		hm_color[4] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_BLUE)
 	elseif hit_marker_data._mod_is_crit_proc
 	and mod:get(mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_PROC_COLOR_GROUP) then
-		hm_rot_texture.color[2] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_PROC_RED)
-		hm_rot_texture.color[3] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_PROC_GREEN)
-		hm_rot_texture.color[4] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_PROC_BLUE)
+		hm_color[2] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_PROC_RED)
+		hm_color[3] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_PROC_GREEN)
+		hm_color[4] = mod:get(mod.SETTING_NAMES.HIT_MARKERS_CRITICAL_PROC_BLUE)
 	end
 
 	-- change hit marker size

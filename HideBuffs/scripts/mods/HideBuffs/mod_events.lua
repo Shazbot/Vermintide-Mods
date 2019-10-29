@@ -5,6 +5,27 @@ local pl = require'pl.import_into'()
 mod.on_enabled = function()
 	mod:hook_disable("UIAnimation", "init")
 	mod:hook_disable(Material, "set_vector2")
+
+	mod.fix_invalid_alignments()
+end
+
+--- Fix some alignment-type options set to wrong values
+--- due to previously wrong defaults for them.
+mod.fix_invalid_alignments = function()
+	local ammo_clip_alignment = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_CLIP_ALIGNMENT)
+	if ammo_clip_alignment == 1 then
+		mod:set(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_CLIP_ALIGNMENT, mod.ALIGNMENTS.RIGHT)
+	end
+
+	local ammo_remaining_alignment = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_REMAINING_ALIGNMENT)
+	if ammo_remaining_alignment == 1 then
+		mod:set(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_REMAINING_ALIGNMENT, mod.ALIGNMENTS.LEFT)
+	end
+
+	local team_ui_player_name_alignment = mod:get(mod.SETTING_NAMES.TEAM_UI_PLAYER_NAME_ALIGNMENT)
+	if team_ui_player_name_alignment == 1 then
+		mod:set(mod.SETTING_NAMES.TEAM_UI_PLAYER_NAME_ALIGNMENT, mod.ALIGNMENTS.CENTER)
+	end
 end
 
 mod.on_disabled = function()

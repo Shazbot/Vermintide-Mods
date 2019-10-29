@@ -1186,11 +1186,11 @@ mod.add_option(
 	"AMMO_COUNTER_AMMO_CLIP_ALIGNMENT",
 	{
 		["widget_type"] = "dropdown",
-		["default_value"] = 1,
+		["default_value"] = mod.ALIGNMENTS.RIGHT,
 		["options"] = {
-			{ text = mod:localize("right"), value = mod.ALIGNMENTS.RIGHT }, --1
-			{ text = mod:localize("left"), value = mod.ALIGNMENTS.LEFT }, --2
-			{ text = mod:localize("center"), value = mod.ALIGNMENTS.CENTER }, --3
+			{ text = mod:localize("right"), value = mod.ALIGNMENTS.RIGHT },
+			{ text = mod:localize("left"), value = mod.ALIGNMENTS.LEFT },
+			{ text = mod:localize("center"), value = mod.ALIGNMENTS.CENTER },
 		},
 	},
 	"Clip Ammo Alignment",
@@ -1237,11 +1237,11 @@ mod.add_option(
 	"AMMO_COUNTER_AMMO_REMAINING_ALIGNMENT",
 	{
 		["widget_type"] = "dropdown",
-		["default_value"] = 1,
+		["default_value"] = mod.ALIGNMENTS.LEFT,
 		["options"] = {
-			{ text = mod:localize("left"), value = mod.ALIGNMENTS.LEFT }, --1
-			{ text = mod:localize("right"), value = mod.ALIGNMENTS.RIGHT }, --2
-			{ text = mod:localize("center"), value = mod.ALIGNMENTS.CENTER }, --3
+			{ text = mod:localize("left"), value = mod.ALIGNMENTS.LEFT },
+			{ text = mod:localize("right"), value = mod.ALIGNMENTS.RIGHT },
+			{ text = mod:localize("center"), value = mod.ALIGNMENTS.CENTER },
 		},
 	},
 	"Remaining Ammo Alignment",
@@ -1792,9 +1792,9 @@ mod.add_option(
 		["widget_type"] = "dropdown",
 		["default_value"] = mod.PORTRAIT_ICONS.DEFAULT,
 		["options"] = {
-			{ text = mod:localize("default"), value = mod.PORTRAIT_ICONS.DEFAULT }, --1
-			{ text = mod:localize("hero"), value = mod.PORTRAIT_ICONS.HERO }, --2
-			{ text = mod:localize("hats"), value = mod.PORTRAIT_ICONS.HATS }, --3
+			{ text = mod:localize("default"), value = mod.PORTRAIT_ICONS.DEFAULT },
+			{ text = mod:localize("hero"), value = mod.PORTRAIT_ICONS.HERO },
+			{ text = mod:localize("hats"), value = mod.PORTRAIT_ICONS.HATS },
 		},
 	},
 	"Change Portraits",
@@ -1818,11 +1818,11 @@ mod.add_option(
 	"TEAM_UI_PLAYER_NAME_ALIGNMENT",
 	{
 		["widget_type"] = "dropdown",
-		["default_value"] = 1,
+		["default_value"] = mod.ALIGNMENTS.CENTER,
 		["options"] = {
-			{ text = mod:localize("center"), value = mod.ALIGNMENTS.CENTER }, --1
-			{ text = mod:localize("left"), value = mod.ALIGNMENTS.LEFT }, --2
-			{ text = mod:localize("right"), value = mod.ALIGNMENTS.RIGHT }, --3
+			{ text = mod:localize("center"), value = mod.ALIGNMENTS.CENTER },
+			{ text = mod:localize("left"), value = mod.ALIGNMENTS.LEFT },
+			{ text = mod:localize("right"), value = mod.ALIGNMENTS.RIGHT },
 		},
 	},
 	"Player Name Alignment",

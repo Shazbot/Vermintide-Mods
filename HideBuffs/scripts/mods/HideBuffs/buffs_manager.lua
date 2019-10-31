@@ -11,7 +11,7 @@ bm.added_buffs = pl.Map{
 
 bm.is_buff_manager_maximized = false
 
-bm.buffs_manager_storage_key = "buff_manager_storage"
+bm.buff_manager_storage_key = "buff_manager_storage"
 bm.priority_buffs_key = "priority_buffs"
 bm.hidden_buffs_key = "hidden_buffs"
 
@@ -53,14 +53,15 @@ mod.buffs_manager_BuffUI_add_buff = function(buff)
 end
 
 bm.set_in_storage = function(settings_key, buff_type, to_set)
-	local buff_manager_storage = mod:get(bm.buffs_manager_storage_key) or {}
+	local buff_manager_storage = mod:get(bm.buff_manager_storage_key) or {}
 	local priority_buffs = pl.Set(buff_manager_storage[settings_key] or {})
 
 	priority_buffs = to_set and pl.Set.union(priority_buffs, pl.Set{buff_type})
 		or pl.Set.difference(priority_buffs, pl.Set{buff_type})
 
 	buff_manager_storage[settings_key] = pl.Set.values(priority_buffs)
-	mod:set(bm.buffs_manager_storage_key, buff_manager_storage)
+	setmetatable(buff_manager_storage[settings_key], nil)
+	mod:set(bm.buff_manager_storage_key, buff_manager_storage)
 	mod.vmf.save_unsaved_settings_to_file()
 end
 
@@ -73,8 +74,8 @@ bm.set_hidden = function(buff_type, is_hidden)
 end
 
 bm.get_in_storage = function(settings_key, buff_type)
-	local buffs_manager_storage = mod:get(bm.buffs_manager_storage_key) or {}
-	local buffs = pl.List(buffs_manager_storage[settings_key] or {})
+	local buff_manager_storage = mod:get(bm.buff_manager_storage_key) or {}
+	local buffs = pl.List(buff_manager_storage[settings_key] or {})
 	return buffs:contains(buff_type)
 end
 

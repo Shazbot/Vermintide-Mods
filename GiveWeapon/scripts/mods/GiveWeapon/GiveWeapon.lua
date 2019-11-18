@@ -257,7 +257,10 @@ mod.on_create_weapon_click = function(button) -- luacheck: ignore button
 			if mod.loadout_inv_view then
 				backend_items:_refresh()
 				local inv_item_grid = mod.loadout_inv_view._item_grid
-				inv_item_grid:change_item_filter(inv_item_grid._item_filter, false)
+				local index = inv_item_grid._selected_page_index
+				local settings = inv_item_grid._category_settings[index]
+				local item_filter = settings.item_filter
+				inv_item_grid:change_item_filter(item_filter, false)
 				inv_item_grid:repopulate_current_inventory_page()
 			end
 		end)

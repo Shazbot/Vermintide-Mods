@@ -88,6 +88,10 @@ mod.get_skins = function(item_type)
 	end
 end
 
+mod:hook(table, "clone", function(func, t, skip_metatable)
+	return func(t, true)
+end)
+
 mod.create_weapon = function(item_type, give_random_skin, rarity, no_skin)
 	if not mod.current_careers then
 		local player = Managers.player:local_player()
@@ -135,7 +139,7 @@ mod.create_weapon = function(item_type, give_random_skin, rarity, no_skin)
 
 				local rnd = math.random(1000000) -- uhh yeah
 				local new_backend_id =  tostring(item_key) .. "_" .. rnd .. "_from_GiveWeapon"
-				local entry = table.clone(ItemMasterList[item_key])
+				local entry = table.clone(ItemMasterList[item_key], true)
 				entry.mod_data = {
 				    backend_id = new_backend_id,
 				    ItemInstanceId = new_backend_id,
@@ -148,7 +152,7 @@ mod.create_weapon = function(item_type, give_random_skin, rarity, no_skin)
 					},
 					rarity = "exotic",
 				    -- traits = { "melee_timed_block_cost", "melee_attack_speed_on_crit" },
-				    traits = table.clone(mod.traits),
+				    traits = table.clone(mod.traits, true),
 				    power_level = 300,
 				    properties = properties,
 				}

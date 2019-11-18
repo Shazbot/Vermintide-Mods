@@ -101,6 +101,17 @@ mod.add_option(
 	nil
 )
 
+mod.add_option(
+	"MUTE_ENEMY_PING",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Mute Enemy Ping Sound",
+	"Mute the sound cue when an enemy gets pinged.",
+	nil
+)
+
 local overcharge_group = mod.add_option(
 	"OVERCHARGE_GROUP",
 	{

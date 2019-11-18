@@ -31,6 +31,11 @@ mod:hook(WwiseWorld, "trigger_event", function(func, wwise_world, sound_event, .
 		return
 	end
 
+	if sound_event == "hud_ping_enemy"
+	and mod:get(mod.SETTING_NAMES.MUTE_ENEMY_PING) then
+		return
+	end
+
 	return func(wwise_world, sound_event, ...)
 end)
 

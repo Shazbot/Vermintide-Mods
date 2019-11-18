@@ -18,6 +18,10 @@ mod:hook(PlayerUnitOverchargeExtension, "hud_sound", function(func, self, event,
 	or event == "staff_overcharge_warning_med"
 	or event == "staff_overcharge_warning_high"
 	or event == "staff_overcharge_warning_critical"
+	or event == "drakegun_overcharge_warning_low"
+	or event == "drakegun_overcharge_warning_med"
+	or event == "drakegun_overcharge_warning_high"
+	or event == "drakegun_overcharge_warning_critical"
 	then
 		return
 	end

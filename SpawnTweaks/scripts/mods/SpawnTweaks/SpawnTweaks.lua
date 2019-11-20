@@ -684,10 +684,12 @@ original_power_level, boost_curve, boost_damage_multiplier, is_critical_strike, 
 
 		local breed = Unit.get_data(target_unit, "breed")
 		if breed then
-			if mod:get(mod.SETTING_NAMES.BREEDS_TOGGLE_GROUP)
-			and mod:get(breed.name.."_dmg_toggle") ~= 100 then
-				dmg = dmg * mod:get(breed.name.."_dmg_toggle") / 100
-				return dmg
+			if mod:get(mod.SETTING_NAMES.BREEDS_TOGGLE_GROUP) then
+				local breed_dmg_multiplier_in_hundreds = mod:get(breed.name.."_dmg_toggle")
+				if breed_dmg_multiplier_in_hundreds and breed_dmg_multiplier_in_hundreds ~= 100 then
+					dmg = dmg * breed_dmg_multiplier_in_hundreds / 100
+					return dmg
+				end
 			end
 
 			if mod.are_bosses_customized() then

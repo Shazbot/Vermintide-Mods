@@ -335,6 +335,9 @@ mod:hook(CrosshairUI, "update_hit_markers", function(func, self, ...)
 	if hit_marker_data.hit_enemy then
 		local damage_amount = hit_marker_data.damage_amount
 		local friendly_fire = hit_marker_data.friendly_fire
+		if damage_amount < mod:get(mod.SETTING_NAMES.IGNORE_TRESHOLD) then
+			hit_marker_data.hit_enemy = false
+		end
 		if friendly_fire
 		and damage_amount < mod:get(mod.SETTING_NAMES.IGNORE_FF_TRESHOLD) then
 			hit_marker_data.hit_enemy = false

@@ -186,9 +186,15 @@ return {
 		en = "Set RGB color of the hit markers when you fail to damage an armored enemy."
 	},
 	IGNORE_FF_TRESHOLD = {
-		en = "Ignore FF Lower Than"
+		en = "Ignore FF Dmg Lower Than"
 	},
 	IGNORE_FF_TRESHOLD_T = {
-		en = "Don't show the friendly fire hit markers if damage is lower than this."
+		en = "Don't show the friendly fire hit markers if friendly fire damage is lower than this."
+	},
+	IGNORE_TRESHOLD = {
+		en = "Ignore Dmg Lower Than"
+	},
+	IGNORE_TRESHOLD_T = {
+		en = "Don't show hit markers if damage is lower than this."
 	},
 }

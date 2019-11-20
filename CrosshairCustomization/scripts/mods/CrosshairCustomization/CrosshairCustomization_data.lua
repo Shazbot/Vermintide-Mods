@@ -65,6 +65,7 @@ mod.SETTING_NAMES = {
     HIT_MARKERS_ARMORED_GREEN = "HIT_MARKERS_ARMORED_GREEN",
     HIT_MARKERS_ARMORED_BLUE = "HIT_MARKERS_ARMORED_BLUE",
     IGNORE_FF_TRESHOLD = "IGNORE_FF_TRESHOLD",
+    IGNORE_TRESHOLD = "IGNORE_TRESHOLD",
 }
 ---! Enums ---
 
@@ -456,6 +457,15 @@ mod_data.options_widgets = {
 				["widget_type"] = "numeric",
 				["text"] = mod:localize("IGNORE_FF_TRESHOLD"),
 				["tooltip"] = mod:localize("IGNORE_FF_TRESHOLD_T"),
+				["range"] = {0, 50},
+				["unit_text"] = " dmg",
+				["default_value"] = 0,
+			},
+			{
+				["setting_name"] = mod.SETTING_NAMES.IGNORE_TRESHOLD,
+				["widget_type"] = "numeric",
+				["text"] = mod:localize("IGNORE_TRESHOLD"),
+				["tooltip"] = mod:localize("IGNORE_TRESHOLD_T"),
 				["range"] = {0, 50},
 				["unit_text"] = " dmg",
 				["default_value"] = 0,

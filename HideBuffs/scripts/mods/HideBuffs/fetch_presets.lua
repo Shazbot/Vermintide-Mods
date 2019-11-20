@@ -76,7 +76,7 @@ mod.set_presets_page = function(page_index)
 		end
 
 		if not tonumber(page_index) then
-			mod:echo("Page number not entered corretly!")
+			mod:echo("Page number not entered correctly!")
 			return
 		end
 

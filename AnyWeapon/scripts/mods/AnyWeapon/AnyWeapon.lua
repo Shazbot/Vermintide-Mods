@@ -1,7 +1,10 @@
 local mod = get_mod("AnyWeapon")
 
 local pl = require'pl.import_into'()
-local tablex = require'pl.tablex'
+
+mod:hook(table, "clone", function(func, t, skip_metatable) -- luacheck: no unused
+	return func(t, true)
+end)
 
 mod:hook(LobbyAux, "create_network_hash", function(func, config_file_name, project_hash) -- luacheck: ignore project_hash
 	return func(config_file_name, "AnyWeapon")
@@ -122,7 +125,7 @@ mod.on_game_state_changed = function()
 	if ItemMasterList then
 		-- keep copy of original around is someone needs it
 		if not mod:persistent_table("cache").ItemMasterList then
-			mod:persistent_table("cache").ItemMasterList = tablex.deepcopy(ItemMasterList)
+			mod:persistent_table("cache").ItemMasterList = table.clone(ItemMasterList, true)
 		end
 
 		for _, weapon_data in pairs( ItemMasterList ) do

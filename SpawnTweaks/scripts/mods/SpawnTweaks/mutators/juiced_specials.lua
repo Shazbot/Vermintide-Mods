@@ -311,8 +311,8 @@ mod.specials_mut.disable_mut = function()
 		return
 	end
 
-	Breeds = pl.tablex.merge(Breeds, table.clone(mod.persistent.specials_mut.breeds_backups), true)
-	BreedActions = pl.tablex.merge(BreedActions, table.clone(mod.persistent.specials_mut.breed_actions_backups), true)
+	Breeds = pl.tablex.merge(Breeds, table.clone(mod.persistent.specials_mut.breeds_backups, true), true)
+	BreedActions = pl.tablex.merge(BreedActions, table.clone(mod.persistent.specials_mut.breed_actions_backups, true), true)
 
 	mod.specials_mut.disable_hooks()
 end

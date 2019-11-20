@@ -109,7 +109,7 @@ mod:hook_safe(PositiveReinforcementUI, "add_event", function (self, hash, is_loc
 	local widget = new_event.widget
 	local passes = pl.List(widget.element.passes)
 
-	widget.style["event_amount_count"] = table.clone(event_amount_count_text_style) -- new style for our text
+	widget.style["event_amount_count"] = table.clone(event_amount_count_text_style, true) -- new style for our text
 
 	-- check if our new pass was already created before
 	local widget_already_patched = #passes:filter(

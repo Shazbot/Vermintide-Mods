@@ -10,6 +10,10 @@ mod.persistent = mod:persistent_table("persistent")
 local EvtD = require("scripts/mods/"..mod:get_name().."/EventDispatcher")
 mod.dispatcher = EvtD()
 
+mod:hook(table, "clone", function(func, t, skip_metatable) -- luacheck: no unused
+	return func(t, true)
+end)
+
 --- Don't play horde warning sound when hordes disabled.
 mod:hook(HordeSpawner, "play_sound", function(func, ...)
 	if mod:get(mod.SETTING_NAMES.HORDES) == mod.HORDES.DISABLE then

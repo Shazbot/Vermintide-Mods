@@ -109,21 +109,29 @@ mod:hook(EquipmentUI, "update", function(func, self, ...)
 			slot_widget_style.texture_icon.texture_size[1] = item_slot_size
 			slot_widget_style.texture_icon.texture_size[2] = item_slot_size
 
-			slot_widget_style.texture_background.texture_size[1] = item_slot_size
-			slot_widget_style.texture_background.texture_size[2] = item_slot_size
+			if slot_widget_style.texture_background then
+				slot_widget_style.texture_background.texture_size[1] = item_slot_size
+				slot_widget_style.texture_background.texture_size[2] = item_slot_size
+			end
 
-			slot_widget_style.texture_highlight.texture_size[1] = item_slot_size-4
-			slot_widget_style.texture_highlight.texture_size[2] = item_slot_size+6
+			if slot_widget_style.texture_highlight then
+				slot_widget_style.texture_highlight.texture_size[1] = item_slot_size-4
+				slot_widget_style.texture_highlight.texture_size[2] = item_slot_size+6
+			end
 
-			slot_widget_style.texture_selected.texture_size[1] = item_slot_size-2
-			slot_widget_style.texture_selected.texture_size[2] = item_slot_size-18
+			if slot_widget_style.texture_selected then
+				slot_widget_style.texture_selected.texture_size[1] = item_slot_size-2
+				slot_widget_style.texture_selected.texture_size[2] = item_slot_size-18
+			end
 
-			slot_widget_style.texture_frame.size[1] = item_slot_size+6
-			slot_widget_style.texture_frame.size[2] = item_slot_size+6
+			if slot_widget_style.texture_frame then
+				slot_widget_style.texture_frame.size[1] = item_slot_size+6
+				slot_widget_style.texture_frame.size[2] = item_slot_size+6
 
-			local resize_offset = -(item_slot_size - 40)/2
-			slot_widget_style.texture_frame.offset[1] = resize_offset
-			slot_widget_style.texture_frame.offset[2] = resize_offset
+				local resize_offset = -(item_slot_size - 40)/2
+				slot_widget_style.texture_frame.offset[1] = resize_offset
+				slot_widget_style.texture_frame.offset[2] = resize_offset
+			end
 		end
 
 		-- reposition the other item slots

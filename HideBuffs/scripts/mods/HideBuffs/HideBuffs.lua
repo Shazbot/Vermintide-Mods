@@ -574,8 +574,8 @@ end)
 
 --- Patch realism visibility_group to show LevelCountdownUI.
 -- CHECK
--- IngameHud._update_component_visibility = function (self)
-mod:hook(IngameHud, "_update_component_visibility", function(func, self, ...)
+-- IngameHud._update_components_visibility = function (self)
+mod:hook(IngameHud, "_update_components_visibility", function(func, self, ...)
 	if self._definitions then
 		for _, visibility_group in ipairs( self._definitions.visibility_groups ) do
 			if visibility_group.name == "realism" then

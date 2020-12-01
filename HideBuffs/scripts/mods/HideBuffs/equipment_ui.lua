@@ -96,6 +96,30 @@ mod:hook(EquipmentUI, "update", function(func, self, ...)
 			self:_set_widget_visibility(self._slot_widgets[2], weapon_slots_visible)
 		end
 
+		-- reposition the enigneer ult icons
+		local hp_bar_delta =
+			mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET) and (mod.hp_bar_width - mod.default_hp_bar_width)
+			or 0
+
+		local rect_layout_offset = mod.using_rect_player_layout() and 40 or 0
+		for i = 1, #self._slot_widgets do
+			local slot_widget = self._slot_widgets[i]
+			local slot_widget_style = slot_widget.style
+
+			if slot_widget_style.reload_icon then
+				slot_widget_style.reload_icon.offset[1] = -37 + (hp_bar_delta) + rect_layout_offset
+				slot_widget_style.reload_icon.offset[2] = 21
+
+				slot_widget_style.texture_icon.offset[1] = 28 - (hp_bar_delta) - rect_layout_offset
+				slot_widget_style.texture_icon.offset[2] = 19.5
+
+				slot_widget_style.texture_selected.offset[1] = 18 - (hp_bar_delta) - rect_layout_offset
+				slot_widget_style.texture_selected.offset[2] = 9
+
+				break
+			end
+		end
+
 		for i = 1, #self._slot_widgets do
 			-- keep original offsets cached
 			local slot_widget = self._slot_widgets[i]
@@ -190,7 +214,7 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 	and self._mod_was_using_mini_hud
 	then
 		local static_widget_1 = self._static_widgets[1]
-		local static_widget_2 = self._static_widgets[2]
+		local static_widget_2 = self._widgets_by_name["background_panel_bg"]
 		self._mod_was_using_mini_hud = false
 
 		local static_widget_1_backup = self._mod_static_widget_1_backup
@@ -212,7 +236,17 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 		self.ui_scenegraph.slot.position[1] = 149 + player_ui_offset_x
 		self.ui_scenegraph.slot.position[2] = 44 + player_ui_offset_y
 
-		self._static_widgets[2].content.visible = true
+		self.ui_scenegraph.background_panel_cog.position[1] = 0 + player_ui_offset_x
+		self.ui_scenegraph.background_panel_cog.position[2] = 0 + player_ui_offset_y
+
+		local background_panel_bg_w = self._widgets_by_name["background_panel_bg"]
+		if background_panel_bg_w then
+			background_panel_bg_w.content.visible = true
+		end
+		local background_panel_cog_w = self._widgets_by_name["background_panel_cog"]
+		if background_panel_cog_w then
+			background_panel_cog_w.content.visible = true
+		end
 	end
 
 	if self._is_visible then
@@ -221,7 +255,7 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 			local using_rect_layout = mod.using_rect_player_layout()
 			mod:pcall(function()
 				local static_widget_1 = self._static_widgets[1]
-				local static_widget_2 = self._static_widgets[2]
+				local static_widget_2 = self._widgets_by_name["background_panel_bg"]
 
 				-- cache original values during first draw with mini_hud active
 				if not self._mod_static_widget_1_backup then
@@ -278,7 +312,17 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 				self.ui_scenegraph.slot.position[1] = 149 + player_ui_offset_x
 				self.ui_scenegraph.slot.position[2] = 44 + 15 + player_ui_offset_y
 
-				self._static_widgets[2].content.visible = false
+				self.ui_scenegraph.background_panel_cog.position[1] = 0 + player_ui_offset_x
+				self.ui_scenegraph.background_panel_cog.position[2] = 0 + 10 + player_ui_offset_y
+
+				local background_panel_bg_w = self._widgets_by_name["background_panel_bg"]
+				if background_panel_bg_w then
+					background_panel_bg_w.content.visible = false
+				end
+				local background_panel_cog_w = self._widgets_by_name["background_panel_cog"]
+				if background_panel_cog_w then
+					background_panel_cog_w.content.visible = false
+				end
 
 				mod.handle_player_ammo_bar(self)
 				mod.handle_player_rect_layout_widget(self)

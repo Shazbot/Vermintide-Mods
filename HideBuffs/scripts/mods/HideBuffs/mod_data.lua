@@ -38,6 +38,8 @@ mod.career_name_to_hat_icon = pl.Map{
 	wh_bountyhunter = "icon_bountyhunter_hat_0000",
 	wh_captain = "icon_witchhunter_hat_0003",
 	wh_zealot = "icon_zealot_hat_0009",
+	dr_engineer = "icon_engineer_hat_0001",
+	es_questingknight = "icon_questing_knight_hat_0000",
 }
 
 --- Elements to reposition inside loadout_dynamic widget.

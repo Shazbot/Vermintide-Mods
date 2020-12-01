@@ -110,14 +110,14 @@ mod.get_streaming_info = function()
 end
 
 -- CHECK
--- DifficultyManager.set_difficulty = function (self, difficulty)
-mod:hook(DifficultyManager, "set_difficulty", function (func, self, difficulty)
+-- DifficultyManager.set_difficulty = function (self, difficulty, tweak)
+mod:hook(DifficultyManager, "set_difficulty", function (func, self, difficulty, ...)
 	local current_difficulty = Localize(DifficultySettings[difficulty].display_name)
 	if mod.streaming_data.difficulty ~= current_difficulty then
 		mod.streaming_data.difficulty = current_difficulty
 	end
 
-	return func(self, difficulty)
+	return func(self, difficulty, ...)
 end)
 
 

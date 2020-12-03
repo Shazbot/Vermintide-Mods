@@ -35,8 +35,8 @@ mod:hook(ItemGridUI, "_on_category_index_change", function(func, self, index, ke
 	local settings = self._category_settings[index]
 	local item_filter = settings.item_filter
 
-	if item_filter == "slot_type == melee" or item_filter == "slot_type == ranged" then
-		settings.item_filter = "slot_type == melee or slot_type == ranged"
+	if item_filter == "( slot_type == melee ) and item_rarity ~= magic" or item_filter == "( slot_type == ranged ) and item_rarity ~= magic" then
+		settings.item_filter = "( slot_type == melee and item_rarity ~= magic ) or ( slot_type == ranged and item_rarity ~= magic )"
 	end
 
 	return func(self, index, keep_page_index)
@@ -119,7 +119,9 @@ local can_wield_all = {
 	"wh_captain",
 	"es_huntsman",
 	"es_knight",
-	"es_mercenary"
+	"es_mercenary",
+	"es_questingknight",
+	"dr_engineer"
 }
 mod.on_game_state_changed = function()
 	if ItemMasterList then

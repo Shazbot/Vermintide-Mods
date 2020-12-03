@@ -3,7 +3,6 @@ local mod = get_mod("TrueSoloQoL") -- luacheck: ignore get_mod
 mod.SETTING_NAMES = {
 	ASSASSIN_TEXT_WARNING = "assassin_text_warning",
 	PACKMASTER_TEXT_WARNING = "packmaster_text_warning",
-	DONT_RESPAWN_BOTS = "DONT_RESPAWN_BOTS",
 	AUTO_KILL_BOTS = "AUTO_KILL_BOTS",
 	ASSASSIN_HERO_WARNING = "ASSASSIN_HERO_WARNING",
 	DISABLE_LEVEL_INTRO_AUDIO = "DISABLE_LEVEL_INTRO_AUDIO",
@@ -42,13 +41,6 @@ mod_data.options_widgets = {
 		["widget_type"] = "checkbox",
 		["text"] = mod:localize("packmaster_text_warning"),
 		["tooltip"] = mod:localize("packmaster_text_warning_tooltip"),
-		["default_value"] = false,
-	},
-	{
-		["setting_name"] = mod.SETTING_NAMES.DONT_RESPAWN_BOTS,
-		["widget_type"] = "checkbox",
-		["text"] = mod:localize("DONT_RESPAWN_BOTS"),
-		["tooltip"] = mod:localize("DONT_RESPAWN_BOTS_T"),
 		["default_value"] = false,
 	},
 	{

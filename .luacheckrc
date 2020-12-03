@@ -72,7 +72,7 @@ globals = {
 	"UIAtlasHelper", "BuffPresentationUI",
 	"AdventureSpawning", "WeaveTraits",
 	"AIGroupSystem", "UIPasses",
-	"PingSystem",
+	"PingSystem", "Pickups", "AiBreedSnippets",
 
 	"PriorityBuffUI",
 }

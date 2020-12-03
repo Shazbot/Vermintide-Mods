@@ -21,6 +21,16 @@ mod.create_skins_dropdown = function(item_type, window_size)
 		mod.skin_names = tablex.pairmap(function(_, skin) return skin, Localize(WeaponSkins.skins[skin].display_name) end, all_skins)
 		mod.sorted_skin_names = all_skins:map(function(skin) return Localize(WeaponSkins.skins[skin].display_name) end)
 
+		-- it used to be each skin had an unique localized name, but not anymore
+		-- so we have to do something about duplicates
+		for localized_skin_name, skin_data in pairs(mod.skin_names) do
+			if type(skin_data) == "table" then
+				mod.skin_names[localized_skin_name] = skin_data[1]
+			end
+		end
+
+		mod.sorted_skin_names = pl.Map.keys(pl.Set(mod.sorted_skin_names))
+
 		table.sort(mod.sorted_skin_names,
 			function(skin_name_first, skin_name_second)
 				local skin_key_first = mod.skin_names[skin_name_first]
@@ -245,8 +255,10 @@ mod.create_item_types_dropdown = function(profile_index, window_size)
 end
 
 mod.on_create_weapon_click = function(button) -- luacheck: ignore button
-	local item_type = mod.career_item_types[mod.item_types_dropdown.index]
-	if item_type then
+	mod:pcall(function()
+		local item_type = mod.career_item_types[mod.item_types_dropdown.index]
+		if not item_type then return end
+
 		local trait_name = mod.trait_names[mod.sorted_trait_names[mod.traits_dropdown.index]]
 		if trait_name then
 			table.insert(mod.traits, trait_name)
@@ -255,20 +267,15 @@ mod.on_create_weapon_click = function(button) -- luacheck: ignore button
 		local rarity = mod:get(mod.SETTING_NAMES.NO_SKINS) and "default" or "exotic"
 		local no_skin = mod:get(mod.SETTING_NAMES.NO_SKINS)
 		local backend_id = mod.create_weapon(item_type, false, rarity, no_skin)
-		mod:pcall(function()
-			local backend_items = Managers.backend:get_interface("items")
+		local backend_items = Managers.backend:get_interface("items")
 
-			if mod.loadout_inv_view then
-				backend_items:_refresh()
-				local inv_item_grid = mod.loadout_inv_view._item_grid
-				local index = inv_item_grid._selected_page_index
-				local settings = inv_item_grid._category_settings[index]
-				local item_filter = settings.item_filter
-				inv_item_grid:change_item_filter(item_filter, false)
-				inv_item_grid:repopulate_current_inventory_page()
-			end
-		end)
-	end
+		if mod.loadout_inv_view then
+			backend_items:_refresh()
+			local inv_item_grid = mod.loadout_inv_view._item_grid
+			inv_item_grid:change_item_filter(mod.item_filter, false)
+			inv_item_grid:repopulate_current_inventory_page()
+		end
+	end)
 end
 
 mod.create_window = function(self, profile_index, loadout_inv_view)
@@ -345,6 +352,11 @@ mod.create_window = function(self, profile_index, loadout_inv_view)
 
 	self.main_window:init()
 end
+
+-- # Track item_grid's last used item_filter
+mod:hook_safe(ItemGridUI, "change_item_filter", function(self, item_filter, change_page)
+    mod.item_filter = item_filter
+end)
 
 --- Create window when opening hero view.
 mod:hook_safe(HeroWindowLoadoutInventory, "on_enter", function(self)

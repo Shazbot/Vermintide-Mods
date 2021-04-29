@@ -320,18 +320,30 @@ mod.create_window = function(self, profile_index, loadout_inv_view)
 	-- 		end
 	-- 	end
 
-	mod.property_names = tablex.pairmap(function(property_key, _)
-		local full_prop_description = UIUtils.get_property_description(property_key, 0)
-		local _, _, prop_description = stringx.partition(full_prop_description, " ")
-		prop_description = stringx.replace(prop_description, "Damage", "Dmg")
-		return property_key, prop_description
-		end, WeaponProperties.properties)
-	mod.sorted_property_names = tablex.pairmap(function(property_key, _)
+	mod.property_names = tablex.pairmap(
+		function(property_key, _)
 			local full_prop_description = UIUtils.get_property_description(property_key, 0)
 			local _, _, prop_description = stringx.partition(full_prop_description, " ")
 			prop_description = stringx.replace(prop_description, "Damage", "Dmg")
+			if property_key == "deus_power_vs_chaos" then
+        prop_description = prop_description.." (CW)"
+			end
+			return property_key, prop_description
+		end,
+		WeaponProperties.properties
+	)
+	mod.sorted_property_names = tablex.pairmap(
+		function(property_key, _)
+			local full_prop_description = UIUtils.get_property_description(property_key, 0)
+			local _, _, prop_description = stringx.partition(full_prop_description, " ")
+			prop_description = stringx.replace(prop_description, "Damage", "Dmg")
+			if property_key == "deus_power_vs_chaos" then
+        prop_description = prop_description.." (CW)"
+			end
 			return prop_description
-			end, WeaponProperties.properties)
+		end,
+		WeaponProperties.properties
+	)
 	table.sort(mod.sorted_property_names)
 	local properties_options = tablex.index_map(mod.sorted_property_names)
 

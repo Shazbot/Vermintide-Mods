@@ -157,9 +157,14 @@ mod:hook_safe(GameModeManager, "server_update", function(self)
 end)
 
 mod:hook_safe(IngameUI, "update", function(self, dt, t, disable_ingame_ui, end_of_level_ui) -- luacheck: no unused
-	local level_transition_handler = Managers.state.game_mode.level_transition_handler
+	local level_transition_handler = Managers.level_transition_handler
 	local level_key = level_transition_handler:get_current_level_keys()
-	local is_in_inn = level_key == "inn_level"
+	if not level_key then return end
+
+	local level_settings = LevelSettings[level_key]
+	if not level_settings then return end
+
+	local is_in_inn = level_settings.game_mode == "inn"
 
 	local in_score_screen = end_of_level_ui ~= nil
 	local end_screen_active = self:end_screen_active()

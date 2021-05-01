@@ -454,6 +454,45 @@ mod:hook("ChatGui", "update", function(func, self, ...)
 	return func(self, ...)
 end)
 
+
+--- Grail Knight quests.
+mod:hook(ChallengeTrackerUI, "_draw", function(func, self, ...)
+	mod:pcall(function()
+		-- position for GK quests
+		local pivot = self._ui_scenegraph.pivot
+		local local_position = pivot.local_position
+
+		local original_local_position = pivot.original_local_position
+		if not original_local_position then
+			original_local_position = table.clone(pivot.local_position)
+			pivot.original_local_position = original_local_position
+		end
+
+		local_position[1] = original_local_position[1] + mod:get(mod.SETTING_NAMES.GK_QUESTS_OFFSET_X)
+		local_position[2] = original_local_position[2] + mod:get(mod.SETTING_NAMES.GK_QUESTS_OFFSET_Y)
+
+		-- alpha for GK quests, 200 is default
+		local alpha = mod:get(mod.SETTING_NAMES.GK_QUESTS_ALPHA)
+		if alpha ~= 200 then
+			for _, widget in pairs(self._data.widgets) do
+				if widget.content.alpha_multiplier and widget.content.alpha_multiplier == 1 then
+					local style = widget.style
+					style.background_lilies.color[1] = alpha
+					style.background_rect.color[1] = math.max(alpha-25, 0)
+					style.lily.color[1] = math.min(255, alpha+55)
+				end
+			end
+		end
+	end)
+
+	return func(self, ...)
+end)
+
+-- show the GK quests UI, works in inn:
+-- local challenge_manager = Managers.venture.challenge
+-- challenge_manager:add_challenge("kill_elites", false, "questing_knight", "markus_questing_knight_passive_power_level", Managers.player:local_player():unique_id(), 5)
+
+
 --- Hide or make less obtrusive the floating mission marker.
 --- Used for "Set Free" on respawned player.
 mod:hook(TutorialUI, "update_mission_tooltip", function(func, self, ...)

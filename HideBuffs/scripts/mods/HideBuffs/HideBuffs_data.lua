@@ -60,6 +60,9 @@ mod.SETTING_NAMES = {
 	UNOBTRUSIVE_MISSION_TOOLTIP = "UNOBTRUSIVE_MISSION_TOOLTIP",
 	CHAT_BG_ALPHA = "CHAT_BG_ALPHA",
 	AMMO_DIVIDER_TEXT = "AMMO_DIVIDER_TEXT",
+	GK_QUESTS_OFFSET_X = "GK_QUESTS_OFFSET_X",
+	GK_QUESTS_OFFSET_Y = "GK_QUESTS_OFFSET_Y",
+	GK_QUESTS_ALPHA = "GK_QUESTS_ALPHA",
 }
 
 mod.sorted_priority_buffs = {
@@ -2376,6 +2379,41 @@ mod.add_option(
 	},
 	"Boss HP Bar Offset Y",
 	"Optionally offset the Boss HP Bar on the y axis.",
+	other_elements_subs
+)
+mod.add_option(
+	"GK_QUESTS_OFFSET_X",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-2000, 2000},
+		["unit_text"] = "px",
+		["default_value"] = 0,
+	},
+	"Grail Knight Quests Offset X",
+	"Optionally offset the Grail Knight Quests on the x axis.",
+	other_elements_subs
+)
+mod.add_option(
+	"GK_QUESTS_OFFSET_Y",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {-2000, 2000},
+		["unit_text"] = "px",
+		["default_value"] = 0,
+	},
+	"Grail Knight Quests Offset Y",
+	"Optionally offset the Grail Knight Quests on the y axis.",
+	other_elements_subs
+)
+mod.add_option(
+	"GK_QUESTS_ALPHA",
+	{
+		["widget_type"] = "numeric",
+		["range"] = {0, 255},
+		["default_value"] = 200,
+	},
+	"Grail Knight Quests Opacity",
+	"Adjust Grail Knight Quests background transparency, 0 is fully transparent.\nDefault is 200.",
 	other_elements_subs
 )
 

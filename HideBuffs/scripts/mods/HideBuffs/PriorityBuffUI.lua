@@ -265,7 +265,7 @@ PriorityBuffUI._add_buff = function (self, buff, infinite, end_time)
 	local active_buffs = self._active_buffs
 	active_buffs[#active_buffs + 1] = data
 
-	self:_set_widget_time_progress(widget, 1, duration, is_cooldown)
+	self:_set_widget_time_progress(widget, 1, duration)
 
 	num_buffs = #self._active_buffs
 	local buff_size_x = BUFF_SIZE[1] + mod:get(mod.SETTING_NAMES.SECOND_BUFF_BAR_SIZE_ADJUST_X)
@@ -515,7 +515,7 @@ PriorityBuffUI._update_buffs = function (self, dt)
 					local time_left = math.max(end_time - t, 0)
 					local progress = 1 - math.min(time_left / duration, 1)
 
-					self:_set_widget_time_progress(widget, progress, time_left, is_cooldown)
+					self:_set_widget_time_progress(widget, progress, time_left)
 				end
 
 				dirty = true
@@ -557,32 +557,16 @@ end
 local floor = math.floor
 local ceil = math.ceil
 
-PriorityBuffUI._set_widget_time_progress = function (self, widget, progress, time_left, is_cooldown)
-	local style = widget.style
+PriorityBuffUI._set_widget_time_progress = function (self, widget, progress, time_left)
 	local content = widget.content
+	content.progress = progress
 
 	if time_left and time_left > 0 then
+		content.set_unsaturated = true
 		content.is_expired = false
-
-		if is_cooldown then
-			style.texture_cooldown.color[1] = 255 * (1 - progress)
-			style.icon_mask.color[1] = 255 * (1 - progress)
-			style.texture_duration.color[1] = 0
-			style.texture_icon.saturated = true
-		else
-			style.texture_duration.color[1] = 255 * (1 - progress)
-		end
 	else
 		content.is_expired = true
-
-		if is_cooldown then
-			style.texture_cooldown.color[1] = 0
-			style.icon_mask.color[1] = 0
-		else
-			style.texture_duration.color[1] = 255
-		end
-
-		style.texture_icon.saturated = false
+		content.set_unsaturated = false
 	end
 
 	self:_set_widget_dirty(widget)

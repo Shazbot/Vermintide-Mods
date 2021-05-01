@@ -721,7 +721,7 @@ mod:hook(DamageUtils, "add_damage_network_player", function(func, ...)
 end)
 
 -- CHECK
--- DamageUtils.add_damage_network = function (attacked_unit, attacker_unit, original_damage_amount, hit_zone_name, damage_type, hit_position, damage_direction, damage_source, hit_ragdoll_actor, damaging_unit, buff_attack_type, hit_react_type, is_critical_strike, added_dot, first_hit, total_hits, backstab_multiplier)
+-- DamageUtils.add_damage_network = function (attacked_unit, attacker_unit, original_damage_amount, hit_zone_name, damage_type, hit_position, damage_direction, damage_source, hit_ragdoll_actor, source_attacker_unit, buff_attack_type, hit_react_type, is_critical_strike, added_dot, first_hit, total_hits, backstab_multiplier)
 mod:hook(DamageUtils, "add_damage_network", function(func, attacked_unit, attacker_unit, original_damage_amount, ...)
 	local dmg = original_damage_amount
 

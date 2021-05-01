@@ -25,7 +25,7 @@ mod:hook(BTPackMasterAttackAction, "attack_success", function(func, ...)
 	return func(...)
 end)
 
-mod:hook(BTCorruptorGrabAction, "grab_player", function(func, self, unit, blackboard)
+mod:hook(BTCorruptorGrabAction, "grab_player", function(func, self, t, unit, blackboard)
 	if mod.are_specials_customized()
 	and mod:get(mod.SETTING_NAMES.CORRUPTORS_ALWAYS_FAIL)
 	then
@@ -33,5 +33,5 @@ mod:hook(BTCorruptorGrabAction, "grab_player", function(func, self, unit, blackb
 		blackboard.attack_aborted = true
 	end
 
-	return func(self, unit, blackboard)
+	return func(self, t, unit, blackboard)
 end)

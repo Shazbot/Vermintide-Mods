@@ -1,7 +1,7 @@
 local mod = get_mod("SpawnTweaks")
 
 -- CHECK
--- GenericHealthExtension.add_damage = function (self, attacker_unit, damage_amount, hit_zone_name, damage_type, hit_position, damage_direction, damage_source_name, hit_ragdoll_actor, damaging_unit, hit_react_type, is_critical_strike, added_dot, first_hit, total_hits, backstab_multiplier)
+-- GenericHealthExtension.add_damage = function (self, attacker_unit, damage_amount, hit_zone_name, damage_type, hit_position, damage_direction, damage_source_name, hit_ragdoll_actor, source_attacker_unit, hit_react_type, is_critical_strike, added_dot, first_hit, total_hits, backstab_multiplier)
 for _, health_ext_obj in ipairs( { GenericHealthExtension, RatOgreHealthExtension } ) do
 	mod:hook(health_ext_obj, "add_damage", function(func, self, attacker_unit, damage_amount, hit_zone_name, damage_type, ...)
 		local self_unit = self.unit

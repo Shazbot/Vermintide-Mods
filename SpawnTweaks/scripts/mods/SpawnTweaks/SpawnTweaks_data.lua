@@ -244,6 +244,12 @@ for i, horde_toggle_widget in ipairs( { custom_horde_toggle_widget, skaven_horde
 	end)()
 end
 
+local special_specials = {
+	beastmen_standard_bearer_crater = true,
+	curse_mutator_sorcerer = true,
+	chaos_mutator_sorcerer = true,
+}
+
 local specials_toggle_widget = {
 	["show_widget_condition"] = {3},
 	["setting_name"] = mod.SETTING_NAMES.SPECIALS_TOGGLE_GROUP,
@@ -254,13 +260,14 @@ local specials_toggle_widget = {
 specials_toggle_widget.sub_widgets = (function()
 	local breed_options = {}
 	for breed_name, breed_data in pairs(mod.specials_breeds) do
+		local default_value = not not special_specials[breed_name]
 		table.insert(breed_options,
 			{
 				["setting_name"] = breed_name.."_toggle",
 				["widget_type"] = "checkbox",
 				["text"] = breed_data.localized_name,
 				["tooltip"] = "Remove "..breed_data.localized_name.." as an elegible spawn.",
-				["default_value"] = false,
+				["default_value"] = default_value,
 			})
 	end
 	return breed_options

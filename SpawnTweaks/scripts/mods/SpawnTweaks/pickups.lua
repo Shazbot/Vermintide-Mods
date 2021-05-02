@@ -25,7 +25,7 @@ mod:hook(Pickups.special.loot_die, "can_spawn_func", function(func, params, is_d
 	return func(params, is_debug_spawn)
 end)
 
-mod:hook(AiBreedSnippets, "reward_boss_kill_loot_die", function(func, unit, blackboard)
+mod:hook(AiBreedSnippets, "reward_boss_kill_loot", function(func, unit, blackboard)
 	if not mod:get(mod.SETTING_NAMES["MAP_PICKUPS_DISABLE_loot_die"]) then
 		return func(unit, blackboard)
 	end
@@ -68,12 +68,12 @@ mod:hook(AiBreedSnippets, "reward_boss_kill_loot_die", function(func, unit, blac
 		NetworkLookup.pickup_spawn_types['dropped']
 	)
 
-	blackboard.rewarded_boss_loot_die = true
+	blackboard.rewarded_boss_loot = true
 end)
 
-mod:hook(AiBreedSnippets, "drop_loot_dice", function(func, num_die, pos, has_physics)
+mod:hook(AiBreedSnippets, "drop_loot", function(func, num_die, pos, ...)
 	if not mod:get(mod.SETTING_NAMES["MAP_PICKUPS_DISABLE_loot_die"]) then
-		return func(num_die, pos, has_physics)
+		return func(num_die, pos, ...)
 	end
 
 	if not mod:get(mod.SETTING_NAMES.MAP_PICKUPS_REPLACE_DISABLED) or #mod.enabled_map_pickups == 0 then

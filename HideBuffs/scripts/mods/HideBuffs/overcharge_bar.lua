@@ -13,8 +13,8 @@ end)
 --- Show ammo in clip using the overcharge bar.
 -- CHECK
 -- OverchargeBarUI._update_overcharge = function (self, player, dt)
-mod:hook(OverchargeBarUI, "_update_overcharge", function(func, self, player, dt)
-	local has_overcharge = func(self, player, dt)
+mod:hook(OverchargeBarUI, "_update_overcharge", function(func, self, player, ...)
+	local has_overcharge = func(self, player, ...)
 
 	-- reset the max pip and the main bar to default size so they're not hidden
 	self.charge_bar.style.max_threshold.size[2] = 10
@@ -90,7 +90,7 @@ mod:hook(OverchargeBarUI, "_update_overcharge", function(func, self, player, dt)
 	    local max_threshold_fraction = 2
 	    -- skip the bar lerp animation
 	    self.charge_bar.content.internal_gradient_threshold = ammo_fraction
-	    self:set_charge_bar_fraction(ammo_fraction, min_threshold_fraction, max_threshold_fraction)
+        self:set_charge_bar_fraction(player, ammo_fraction, min_threshold_fraction, max_threshold_fraction)
 	    self.charge_bar.style.max_threshold.size[2] = 0
 	    if ammo_count == 0 then
 				self.charge_bar.style.bar_1.size[2] = 0

@@ -145,3 +145,23 @@ function()
 		DamageUtils.is_in_inn = false
 	end)
 end)
+
+mod:hook(VolumetricsFlowCallbacks, "unregister_fog_volume",
+function(func, params, ...)
+	local unit = params.unit
+
+	if not unit or not Unit.alive(unit) then
+		return
+	end
+
+	return func(params, ...)
+end)
+
+mod:hook(Unit, "get_data",
+function(func, unit, ...)
+	if not unit then
+		return
+	end
+
+	return func(unit, ...)
+end)

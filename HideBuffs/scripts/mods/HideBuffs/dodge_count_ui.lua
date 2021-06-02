@@ -1,5 +1,6 @@
 local mod = get_mod("HideBuffs")
-local always_on = mod:get("dcui_always_on")
+mod.dcui_always_on = mod:get("dcui_always_on")
+mod.dcui_enabled = mod:get(mod.SETTING_NAMES.DODGE_COUNT)
 
 local SCREEN_WIDTH = 1920
 local SCREEN_HEIGHT = 1080
@@ -63,10 +64,10 @@ local dodge_ui_definition = {
 		retained_mode = false,
 		fade_out_duration = 5,
 		content_check_function = function(content)
-		  if always_on then
-			return true
-		  end
-		  return content.has_dodged
+			if not mod.dcui_enabled then
+				return false
+			end
+		  return mod.dcui_always_on or content.has_dodged
 		end
 	  },
 	  {
@@ -120,28 +121,9 @@ local dodge_ui_definition = {
   },
 }
 
-function mod:on_disabled()
-  mod.ui_renderer = nil
-  mod.ui_scenegraph = nil
-  mod.ui_widget = nil
-end
-
-function mod:on_setting_changed()
-  always_on = mod:get("dcui_always_on")
-  if not mod.ui_widget then
-	return
-  end
-  mod.ui_widget.style.dodge_text.offset[1] = get_x()
-  mod.ui_widget.style.dodge_text.offset[2] = get_y()
-  mod.ui_widget.style.dodge_text.font_size = mod:get("dcui_font_size")
-  mod.ui_widget.style.cooldown_text.offset[1] = get_x()
-  mod.ui_widget.style.cooldown_text.offset[2] = get_y() - mod:get("dcui_font_size")
-  mod.ui_widget.style.cooldown_text.font_size = mod:get("dcui_cd_font_size")
-end
-
-function mod:init()
+function mod:dcui_init()
   if mod.ui_widget then
-	return
+		return
   end
 
   local world = Managers.world:world("top_ingame_view")
@@ -150,11 +132,11 @@ function mod:init()
   mod.ui_widget = UIWidget.init(dodge_ui_definition)
 end
 
-mod:hook_safe(IngameHud, "update", function(self)
+mod:hook_safe(IngameHud, "update", function(self, dt)
   -- If the EquipmentUI isn't visible or the player is dead
   -- then let's not show the Dodge Count UI
   if not self._currently_visible_components.EquipmentUI or self:is_own_player_dead() then
-	return
+		return
   end
 
   local t = Managers.time:time("game")
@@ -162,16 +144,15 @@ mod:hook_safe(IngameHud, "update", function(self)
   local status_system = ScriptUnit.has_extension(player_unit, "status_system")
 
   if not status_system or not player_unit then
-	return
+		return
   end
 
   if not mod.ui_widget then
-	mod.init()
+		mod.dcui_init()
   end
 
-
   if not status_system.is_dodging then
-	status_system:get_dodge_item_data()
+		status_system:get_dodge_item_data()
   end
 
   local current_dodge_count = status_system.dodge_cooldown

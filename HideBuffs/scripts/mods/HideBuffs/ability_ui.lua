@@ -10,8 +10,9 @@ mod.player_ability_input_text_content_check_fun = function()
 end
 
 mod:hook(AbilityUI, "draw", function (func, self, dt)
+	local ability_widget = self._widgets_by_name.ability
 	-- Assign a new content_check_function for hiding the hotkey.
-	for _, pass in ipairs( self._widgets[1].element.passes ) do
+	for _, pass in ipairs( ability_widget.element.passes ) do
 		if pass.style_id == "input_text"
 		or pass.style_id == "input_text_shadow"
 		then
@@ -20,7 +21,7 @@ mod:hook(AbilityUI, "draw", function (func, self, dt)
 	end
 
 	-- Skull opacity.
-	local ability_widget_style = self._widgets[1].style
+	local ability_widget_style = ability_widget.style
 	local skull_opacity = mod:get(mod.SETTING_NAMES.PLAYER_UI_PLAYER_ULT_SKULL_OPACITY)
 	ability_widget_style.ability_effect_top_left.color[1] = skull_opacity
 	ability_widget_style.ability_effect_top_right.color[1] = skull_opacity
@@ -30,7 +31,7 @@ mod:hook(AbilityUI, "draw", function (func, self, dt)
 	if mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET) then
 		self._mod_was_in_mini_hud = true
 
-		for _, pass in ipairs( self._widgets[1].element.passes ) do
+		for _, pass in ipairs( ability_widget.element.passes ) do
 			if pass.style_id == "ability_effect_left"
 				or pass.style_id == "ability_effect_top_left" then
 					pass.content_check_function = mod.player_ability_ability_effect_left_content_check_fun
@@ -38,8 +39,8 @@ mod:hook(AbilityUI, "draw", function (func, self, dt)
 		end
 
 		mod:pcall(function()
-			self.ui_scenegraph.ability_root.position[1] = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
-			self.ui_scenegraph.ability_root.position[2] = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
+			self._ui_scenegraph.ability_root.position[1] = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_X)
+			self._ui_scenegraph.ability_root.position[2] = mod:get(mod.SETTING_NAMES.PLAYER_UI_OFFSET_Y)
 
 			local skull_offsets = { 0, -15 }
 			local hp_bar_width = mod.hp_bar_width
@@ -63,7 +64,7 @@ mod:hook(AbilityUI, "draw", function (func, self, dt)
 			ability_widget_style.ability_effect_top_right.offset[1] = skull_right_offset_x
 			ability_widget_style.ability_effect_top_right.offset[2] = skull_right_offset_y
 
-			local widget_offset = self._widgets[1].offset
+			local widget_offset = ability_widget.offset
 			widget_offset[1] = -1+3
 			widget_offset[2] = 17
 			local using_rect_layout = mod.using_rect_player_layout()
@@ -87,7 +88,7 @@ mod:hook(AbilityUI, "draw", function (func, self, dt)
 		self:_create_ui_elements()
 		self:set_dirty()
 
-		for _, pass in ipairs( self._widgets[1].element.passes ) do
+		for _, pass in ipairs( ability_widget.element.passes ) do
 			if pass.style_id == "ability_effect_left"
 				or pass.style_id == "ability_effect_top_left" then
 					pass.content_check_function = function (content)
@@ -96,7 +97,7 @@ mod:hook(AbilityUI, "draw", function (func, self, dt)
 			end
 		end
 
-		for _, pass in ipairs( self._widgets[1].element.passes ) do
+		for _, pass in ipairs( ability_widget.element.passes ) do
 			if pass.style_id == "input_text"
 			or pass.style_id == "input_text_shadow"
 			then

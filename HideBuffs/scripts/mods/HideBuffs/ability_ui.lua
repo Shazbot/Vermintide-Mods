@@ -21,8 +21,12 @@ mod:hook(AbilityUI, "draw", function (func, self, dt)
 	end
 
 	-- Skull opacity.
+	local player = self:_get_player_unit()
+	local is_cog = player:career_name() == "dr_engineer"
+
+	local skull_opacity = is_cog and 0 or mod:get(mod.SETTING_NAMES.PLAYER_UI_PLAYER_ULT_SKULL_OPACITY)
+
 	local ability_widget_style = ability_widget.style
-	local skull_opacity = mod:get(mod.SETTING_NAMES.PLAYER_UI_PLAYER_ULT_SKULL_OPACITY)
 	ability_widget_style.ability_effect_top_left.color[1] = skull_opacity
 	ability_widget_style.ability_effect_top_right.color[1] = skull_opacity
 	ability_widget_style.ability_effect_left.color[1] = skull_opacity
@@ -86,7 +90,7 @@ mod:hook(AbilityUI, "draw", function (func, self, dt)
 		self:_set_elements_visible(false)
 
 		self:_create_ui_elements()
-		self:set_dirty()
+		self:_smudge()
 
 		for _, pass in ipairs( ability_widget.element.passes ) do
 			if pass.style_id == "ability_effect_left"

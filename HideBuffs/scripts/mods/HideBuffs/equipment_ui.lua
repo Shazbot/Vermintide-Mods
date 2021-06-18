@@ -97,23 +97,30 @@ mod:hook(EquipmentUI, "update", function(func, self, ...)
 		end
 
 		-- reposition the enigneer ult icons
+		local using_mini_hud = mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET)
 		local hp_bar_delta =
-			mod:get(mod.SETTING_NAMES.MINI_HUD_PRESET) and (mod.hp_bar_width - mod.default_hp_bar_width)
+			using_mini_hud and (mod.hp_bar_width - mod.default_hp_bar_width)
 			or 0
 
-		local rect_layout_offset = mod.using_rect_player_layout() and 40 or 0
+		local rect_layout_offset = mod.using_rect_player_layout() and 20 or 0
 		for i = 1, #self._slot_widgets do
 			local slot_widget = self._slot_widgets[i]
 			local slot_widget_style = slot_widget.style
 
 			if slot_widget_style.reload_icon then
-				slot_widget_style.reload_icon.offset[1] = -37 + (hp_bar_delta) + rect_layout_offset
+				slot_widget_style.reload_icon.offset[1] =
+					using_mini_hud and -50 + rect_layout_offset + hp_bar_delta/2
+					or -37
 				slot_widget_style.reload_icon.offset[2] = 21
 
-				slot_widget_style.texture_icon.offset[1] = 28 - (hp_bar_delta) - rect_layout_offset
+				slot_widget_style.texture_icon.offset[1] =
+					using_mini_hud and -68+8 - rect_layout_offset - hp_bar_delta/2
+					or 28
 				slot_widget_style.texture_icon.offset[2] = 19.5
 
-				slot_widget_style.texture_selected.offset[1] = 18 - (hp_bar_delta) - rect_layout_offset
+				slot_widget_style.texture_selected.offset[1] =
+					using_mini_hud and -68 - rect_layout_offset - hp_bar_delta/2
+					or 18
 				slot_widget_style.texture_selected.offset[2] = 9
 
 				break

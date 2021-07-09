@@ -11,9 +11,14 @@ mod:hook(EquipmentUI, "_animate_ammo_counter", mod._animate_ammo_counter_hook)
 mod:hook(GamePadEquipmentUI, "_animate_ammo_counter", mod._animate_ammo_counter_hook)
 
 mod._set_ammo_text_focus_hook = function (func, self, focus)
+	if not self._draw_ammo then
+		return func(self, focus)
+	end
+
 	if mod:get(mod.SETTING_NAMES.PERSISTENT_AMMO_COUNTER) then
 		focus = true
 	end
+
 	return func(self, focus)
 end
 

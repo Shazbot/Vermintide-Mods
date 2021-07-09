@@ -454,6 +454,13 @@ mod:hook("ChatGui", "update", function(func, self, ...)
 	return func(self, ...)
 end)
 
+--- Energy bar position.
+mod:hook("EnergyBarUI", "_apply_crosshair_position", function(func, self, x, y, ...)
+	local x_offset = mod:get(mod.SETTING_NAMES.OTHER_ENERGY_OFFSET_X)
+	local y_offset = mod:get(mod.SETTING_NAMES.OTHER_ENERGY_OFFSET_Y)
+
+	return func(self, x+x_offset, y+y_offset, ...)
+end)
 
 --- Grail Knight quests.
 mod:hook(ChallengeTrackerUI, "_draw", function(func, self, ...)

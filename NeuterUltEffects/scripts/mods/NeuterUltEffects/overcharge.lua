@@ -1,7 +1,21 @@
 local mod = get_mod("NeuterUltEffects")
 
+local other_overcharge_hud_sounds = {
+	["staff_overcharge_warning_low"] = true,
+	["staff_overcharge_warning_med"] = true,
+	["staff_overcharge_warning_high"] = true,
+	["staff_overcharge_warning_critical"] = true,
+	["drakegun_overcharge_warning_low"] = true,
+	["drakegun_overcharge_warning_med"] = true,
+	["drakegun_overcharge_warning_high"] = true,
+	["drakegun_overcharge_warning_critical"] = true,
+	["weapon_life_staff_overcharge_warning_medium"] = true,
+	["weapon_life_staff_overcharge_warning_high"] = true,
+	["weapon_life_staff_overcharge_warning_critical"] = true,
+}
+
 --- Overcharge treshold warning pings.
-mod:hook(PlayerUnitOverchargeExtension, "hud_sound", function(func, self, event, fp_extension)
+mod:hook(PlayerUnitOverchargeExtension, "_trigger_hud_sound", function(func, self, event, fp_extension)
 	if not mod:get(mod.SETTING_NAMES.MUTE_OVERCHARGE_PINGS) then
 		return func(self, event, fp_extension)
 	end
@@ -14,14 +28,7 @@ mod:hook(PlayerUnitOverchargeExtension, "hud_sound", function(func, self, event,
 		and self.overcharge_warning_med_sound_event == event
 	or self.overcharge_warning_high_sound_event
 		and self.overcharge_warning_high_sound_event == event
-	or event == "staff_overcharge_warning_low"
-	or event == "staff_overcharge_warning_med"
-	or event == "staff_overcharge_warning_high"
-	or event == "staff_overcharge_warning_critical"
-	or event == "drakegun_overcharge_warning_low"
-	or event == "drakegun_overcharge_warning_med"
-	or event == "drakegun_overcharge_warning_high"
-	or event == "drakegun_overcharge_warning_critical"
+	or other_overcharge_hud_sounds[event]
 	then
 		return
 	end

@@ -8,6 +8,10 @@ mod.SETTING_NAMES = {
     KNOCKED_DOWN = "knocked_down",
     BLOOD_SPLATTER = "BLOOD_SPLATTER",
     HEALING = "HEALING",
+		HIDE_SIS_RADIANCE_LOOP = "HIDE_SIS_RADIANCE_LOOP",
+		HIDE_SIS_RADIANCE_ENTER = "HIDE_SIS_RADIANCE_ENTER",
+		MUTE_CRANK_GUN_SHOOTING = "MUTE_CRANK_GUN_SHOOTING",
+		MUTE_CRANK_GUN_MAX_RELOAD = "MUTE_CRANK_GUN_MAX_RELOAD",
 }
 
 local mod_data = {
@@ -109,6 +113,48 @@ mod.add_option(
 	},
 	"Mute Enemy Ping Sound",
 	"Mute the sound cue when an enemy gets pinged.",
+	nil
+)
+
+mod.add_option(
+	"HIDE_SIS_RADIANCE_ENTER",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Hide Visual Entering Radiant Inheritance",
+	"Hide visual effects when entering Radiant Inheritance.",
+	nil
+)
+mod.add_option(
+	"HIDE_SIS_RADIANCE_LOOP",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Hide Visual During Radiant Inheritance",
+	"Hide looping visual effect while Radiant Inheritance is active.",
+	nil
+)
+
+mod.add_option(
+	"MUTE_CRANK_GUN_SHOOTING",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Mute Crank Gun Shooting",
+	"Mute firing sound on the Engineer crank gun.",
+	nil
+)
+mod.add_option(
+	"MUTE_CRANK_GUN_MAX_RELOAD",
+	{
+		["widget_type"] = "checkbox",
+		["default_value"] = false,
+	},
+	"Mute Crank Gun Max Reload",
+	"Mute the sound played after reloading the crank gun to maximum.",
 	nil
 )
 

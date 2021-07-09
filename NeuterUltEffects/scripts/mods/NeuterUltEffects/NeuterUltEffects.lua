@@ -24,16 +24,26 @@ mod:hook(World, "create_particles", function(func, world, particle_name, ...)
 	return func(world, particle_name, ...)
 end)
 
+local overcharge_events = {
+	["Play_weapon_staff_overcharge"] = true,
+	["Play_weapon_drakegun_overcharge"] = true,
+	["Play_weapon_life_staff_overcharge"] = true,
+}
+
 --- Mute wizard overcharge noise.
 mod:hook(WwiseWorld, "trigger_event", function(func, wwise_world, sound_event, ...)
-	if (sound_event == "Play_weapon_staff_overcharge"
-		or sound_event == "Play_weapon_drakegun_overcharge")
+	if overcharge_events[sound_event]
 	and mod:get(mod.SETTING_NAMES.MUTE_OVERCHARGE_NOISE) then
 		return
 	end
 
 	if sound_event == "hud_ping_enemy"
 	and mod:get(mod.SETTING_NAMES.MUTE_ENEMY_PING) then
+		return
+	end
+
+	if sound_event == "Play_wpn_steam_minigun_pump_damage"
+	and mod:get(mod.SETTING_NAMES.MUTE_CRANK_GUN_MAX_RELOAD) then
 		return
 	end
 
@@ -84,21 +94,25 @@ end)
 --- Skip ult audio distortions.
 --- Skip potions audio.
 mod.name_to_event = {
-	SLAYER = { "Play_career_ability_bardin_slayer_loop", "Stop_career_ability_bardin_slayer_loop" },
-	HUNTSMAN = { "Play_career_ability_markus_huntsman_loop", "Stop_career_ability_markus_huntsman_loop" },
-	SHADE = { "Play_career_ability_kerillian_shade_loop", "Stop_career_ability_kerillian_shade_loop" },
-	RANGER = { "Play_career_ability_bardin_ranger_loop", "Stop_career_ability_bardin_ranger_loop" },
-	ZEALOT = { "Play_career_ability_victor_zealot_loop", "Stop_career_ability_victor_zealot_loop" },
+	SLAYER_AUDIO = { "Play_career_ability_bardin_slayer_loop", "Stop_career_ability_bardin_slayer_loop" },
+	HUNTSMAN_AUDIO = { "Play_career_ability_markus_huntsman_loop", "Stop_career_ability_markus_huntsman_loop" },
+	SHADE_AUDIO = { "Play_career_ability_kerillian_shade_loop", "Stop_career_ability_kerillian_shade_loop" },
+	RANGER_AUDIO = { "Play_career_ability_bardin_ranger_loop", "Stop_career_ability_bardin_ranger_loop" },
+	ZEALOT_AUDIO = { "Play_career_ability_victor_zealot_loop", "Stop_career_ability_victor_zealot_loop" },
 }
 mod.pot_to_event = {
-	STR_POT = "hud_gameplay_stance_smiter_activate",
-	SPEED_POT = "hud_gameplay_stance_ninjafencer_activate",
-	CDR_POT = "hud_gameplay_stance_ninjafencer_activate",
+	STR_POT_AUDIO = "hud_gameplay_stance_smiter_activate",
+	SPEED_POT_AUDIO = "hud_gameplay_stance_ninjafencer_activate",
+	CDR_POT_AUDIO = "hud_gameplay_stance_ninjafencer_activate",
+}
+mod.crank_gun_firing_sound_events = {
+	["Play_player_engineer_shooting_burst"] = true,
+	["Play_player_engineer_shooting_armor_piercing"] = true,
 }
 mod:hook(PlayerUnitFirstPerson, "play_hud_sound_event", function (func, self, event_name, ...)
 	-- ults
 	for name, event_names in pairs( mod.name_to_event ) do
-		if mod:get(mod.SETTING_NAMES[name.."_AUDIO"]) then
+		if mod:get(mod.SETTING_NAMES[name]) then
 			for _, ult_event_name in ipairs( event_names ) do
 				if ult_event_name == event_name then
 					return
@@ -109,11 +123,13 @@ mod:hook(PlayerUnitFirstPerson, "play_hud_sound_event", function (func, self, ev
 
 	-- potions
 	for name, pot_event in pairs( mod.pot_to_event ) do
-		if mod:get(mod.SETTING_NAMES[name.."_AUDIO"]) then
-			if event_name == pot_event then
-				return
-			end
+		if mod:get(mod.SETTING_NAMES[name]) and event_name == pot_event then
+			return
 		end
+	end
+
+	if mod.crank_gun_firing_sound_events[event_name] and mod:get(mod.SETTING_NAMES.MUTE_CRANK_GUN_SHOOTING) then
+		return
 	end
 
 	return func(self, event_name, ...)
@@ -122,20 +138,20 @@ end)
 --- Skip huntsman, ranger, shade ult swirly screen effect.
 --- Skip potions visuals.
 mod.ult_name_to_fx = {
-	HUNTSMAN = { "fx/screenspace_huntsman_skill_01", "fx/screenspace_huntsman_skill_02" },
-	SHADE = { "fx/screenspace_shade_skill_01", "fx/screenspace_shade_skill_02" },
-	RANGER = { "fx/screenspace_ranger_skill_01", "fx/screenspace_ranger_skill_02" },
-	IRONBREAKER = { "fx/screenspace_potion_03" },
+	HUNTSMAN_VISUAL = { "fx/screenspace_huntsman_skill_01", "fx/screenspace_huntsman_skill_02" },
+	SHADE_VISUAL = { "fx/screenspace_shade_skill_01", "fx/screenspace_shade_skill_02" },
+	RANGER_VISUAL = { "fx/screenspace_ranger_skill_01", "fx/screenspace_ranger_skill_02" },
+	IRONBREAKER_VISUAL = { "fx/screenspace_potion_03" },
 }
 mod.pot_name_to_fx = {
-	STR_POT = "fx/screenspace_potion_01",
-	SPEED_POT = "fx/screenspace_potion_02",
-	CDR_POT = "fx/screenspace_potion_02",
+	STR_POT_VISUAL = "fx/screenspace_potion_01",
+	SPEED_POT_VISUAL = "fx/screenspace_potion_02",
+	CDR_POT_VISUAL = "fx/screenspace_potion_02",
 }
 mod:hook(BuffExtension, "_play_screen_effect", function (func, self, effect)
 	-- ults
 	for name, fxs in pairs( mod.ult_name_to_fx ) do
-		if mod:get(mod.SETTING_NAMES[name.."_VISUAL"]) then
+		if mod:get(mod.SETTING_NAMES[name]) then
 			for _, fx in ipairs( fxs ) do
 				if fx == effect then
 					return
@@ -144,12 +160,18 @@ mod:hook(BuffExtension, "_play_screen_effect", function (func, self, effect)
 		end
 	end
 
+	if effect == "fx/thornsister_avatar_screenspace" and mod:get(mod.SETTING_NAMES.HIDE_SIS_RADIANCE_ENTER) then
+		return
+	end
+
+	if effect == "fx/thornsister_avatar_screenspace_loop" and mod:get(mod.SETTING_NAMES.HIDE_SIS_RADIANCE_LOOP) then
+		return
+	end
+
 	-- potions
 	for name, pot_fx in pairs( mod.pot_name_to_fx ) do
-		if mod:get(mod.SETTING_NAMES[name.."_VISUAL"]) then
-			if effect == pot_fx then
-				return
-			end
+		if mod:get(mod.SETTING_NAMES[name]) and effect == pot_fx then
+			return
 		end
 	end
 

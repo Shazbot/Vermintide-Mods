@@ -41,11 +41,14 @@ mod:hook(EquipmentUI, "update", function(func, self, ...)
 			mod.force_ammo_dirty = false
 		end
 
-		-- ammmo counter bg layer and opacity
-		ammo_widgets[5].offset[3] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_BG_LAYER)
-		ammo_widgets[5].style.texture_id.color[1] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_BG_OPACITY)
-
 		local ammo_widgets_by_name = self._ammo_widgets_by_name
+
+		local widgets_by_name = self._widgets_by_name
+		local ammo_background_widget = widgets_by_name.ammo_background
+
+		-- ammmo counter bg layer and opacity
+		ammo_background_widget.offset[3] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_BG_LAYER)
+		ammo_background_widget.style.texture_id.color[1] = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_BG_OPACITY)
 
 		local ammo_text_clip = ammo_widgets_by_name.ammo_text_clip
 		local ammo_clip_font_size = mod:get(mod.SETTING_NAMES.AMMO_COUNTER_AMMO_CLIP_FONT_SIZE)

@@ -170,23 +170,23 @@ end
 -- either stdin or stdout depending on the mode. Otherwise, check if this is
 -- a file-like object (implements read or write depending)
 local function open_file (f,mode)
-    local opened, err
-    local reading = mode == 'r'
-    if type(f) == 'string' then
-        if f == 'stdin'  then
-            f = io.stdin
-        elseif f == 'stdout'  then
-            f = io.stdout
-        else
-            f,err = io.open(f,mode)
-            if not f then return nil,err end
-            opened = true
-        end
-    end
-    if f and ((reading and not f.read) or (not reading and not f.write)) then
-        return nil, "not a file-like object"
-    end
-    return f,nil,opened
+    -- local opened, err
+    -- local reading = mode == 'r'
+    -- if type(f) == 'string' then
+    --     if f == 'stdin'  then
+    --         f = io.stdin
+    --     elseif f == 'stdout'  then
+    --         f = io.stdout
+    --     else
+    --         f,err = io.open(f,mode)
+    --         if not f then return nil,err end
+    --         opened = true
+    --     end
+    -- end
+    -- if f and ((reading and not f.read) or (not reading and not f.write)) then
+    --     return nil, "not a file-like object"
+    -- end
+    -- return f,nil,opened
 end
 
 local function all_n ()
@@ -657,4 +657,3 @@ function data.filter (Q,infile,outfile,dont_fail)
 end
 
 return data
-

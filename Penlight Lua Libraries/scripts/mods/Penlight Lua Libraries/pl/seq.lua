@@ -278,7 +278,7 @@ end
 -- @param nfields maximum number of values per line (default 7)
 -- @param fmt optional format function for each value
 function seq.printall(iter,sep,nfields,fmt)
-  local write = io.write
+  local write = function(...) end --io.write
   if not sep then sep = ' ' end
   if not nfields then
       if sep == '\n' then nfields = 1e30

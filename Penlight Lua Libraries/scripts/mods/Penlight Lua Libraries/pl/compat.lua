@@ -126,15 +126,15 @@ end
 -- @see path.package_path
 -- @function package.searchpath
 if not package.searchpath then
-    local sep = package.config:sub(1,1)
-    function package.searchpath (mod,path)
-        mod = mod:gsub('%.',sep)
-        for m in path:gmatch('[^;]+') do
-            local nm = m:gsub('?',mod)
-            local f = io.open(nm,'r')
-            if f then f:close(); return nm end
-        end
-    end
+    -- local sep = package.config:sub(1,1)
+    -- function package.searchpath (mod,path)
+    --     mod = mod:gsub('%.',sep)
+    --     for m in path:gmatch('[^;]+') do
+    --         local nm = m:gsub('?',mod)
+    --         local f = io.open(nm,'r')
+    --         if f then f:close(); return nm end
+    --     end
+    -- end
 end
 
 return compat

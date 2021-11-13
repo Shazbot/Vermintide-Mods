@@ -346,7 +346,7 @@ function List:__eq(L)
     return true
 end
 
---- join the elements of a list using a delimiter. 
+--- join the elements of a list using a delimiter.
 -- This method uses tostring on all elements.
 -- @string[opt=''] delim a delimiter string, can be empty.
 -- @return a string
@@ -556,11 +556,10 @@ function List.iterate(seq)
         end
     elseif type(seq) == 'function' then
         return seq
-    elseif type(seq) == 'userdata' and io.type(seq) == 'file' then
-        return seq:lines()
+    -- elseif type(seq) == 'userdata' and io.type(seq) == 'file' then
+    --     return seq:lines()
     end
 end
 iter = List.iterate
 
 return List
-

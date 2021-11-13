@@ -15,7 +15,7 @@ local imap,tmap,reduce,keys,tmap2,tset,index_by = tablex.imap,tablex.map,tablex.
 local remove = table.remove
 local splitv,fprintf,assert_arg = utils.splitv,utils.fprintf,utils.assert_arg
 local byte = string.byte
-local stdout = io.stdout
+local stdout = function(...) end --io.stdout
 
 local array2d = {}
 
@@ -495,5 +495,3 @@ function array2d.new(rows,cols,val)
 end
 
 return array2d
-
-

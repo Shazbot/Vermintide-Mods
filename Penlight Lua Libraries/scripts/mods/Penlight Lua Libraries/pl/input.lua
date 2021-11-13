@@ -70,7 +70,8 @@ function input.create_getter(f)
             return function() return f:read() end
         end
     else
-        return io.read  -- i.e. just read from stdin
+			return
+        -- return io.read  -- i.e. just read from stdin
     end
 end
 
@@ -168,4 +169,3 @@ function input.fields (ids,delim,f,opts)
 end
 
 return input
-

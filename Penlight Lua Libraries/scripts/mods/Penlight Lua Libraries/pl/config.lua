@@ -54,38 +54,38 @@ local config = {}
 -- @return an iterator over the lines, or nil
 -- @return error 'not a file-like object' or 'file is nil'
 function config.lines(file)
-    local f,openf,err
-    local line = ''
-    if type(file) == 'string' then
-        f,err = io.open(file,'r')
-        if not f then return nil,err end
-        openf = true
-    else
-        f = file or io.stdin
-        if not file.read then return nil, 'not a file-like object' end
-    end
-    if not f then return nil, 'file is nil' end
-    return function()
-        local l = f:read()
-        while l do
-            -- only for non-blank lines that don't begin with either ';' or '#'
-            if l:match '%S' and not l:match '^%s*[;#]' then
-                -- does the line end with '\'?
-                local i = l:find '\\%s*$'
-                if i then -- if so,
-                    line = line..l:sub(1,i-1)
-                elseif line == '' then
-                    return l
-                else
-                    l = line..l
-                    line = ''
-                    return l
-                end
-            end
-            l = f:read()
-        end
-        if openf then f:close() end
-    end
+    -- local f,openf,err
+    -- local line = ''
+    -- if type(file) == 'string' then
+    --     f,err = io.open(file,'r')
+    --     if not f then return nil,err end
+    --     openf = true
+    -- else
+    --     f = file or io.stdin
+    --     if not file.read then return nil, 'not a file-like object' end
+    -- end
+    -- if not f then return nil, 'file is nil' end
+    -- return function()
+    --     local l = f:read()
+    --     while l do
+    --         -- only for non-blank lines that don't begin with either ';' or '#'
+    --         if l:match '%S' and not l:match '^%s*[;#]' then
+    --             -- does the line end with '\'?
+    --             local i = l:find '\\%s*$'
+    --             if i then -- if so,
+    --                 line = line..l:sub(1,i-1)
+    --             elseif line == '' then
+    --                 return l
+    --             else
+    --                 l = line..l
+    --                 line = ''
+    --                 return l
+    --             end
+    --         end
+    --         l = f:read()
+    --     end
+    --     if openf then f:close() end
+    -- end
 end
 
 --- read a configuration file into a table

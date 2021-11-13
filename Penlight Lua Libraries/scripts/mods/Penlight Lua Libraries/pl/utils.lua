@@ -6,7 +6,7 @@
 -- @module pl.utils
 local format = string.format
 local compat = require 'pl.compat'
-local stdout = io.stdout
+local stdout = function(...) end
 local append = table.insert
 local unpack = rawget(_G,'unpack') or rawget(table,'unpack')
 
@@ -28,12 +28,12 @@ local utils = {
 -- @see utils.fprintf
 function utils.quit(code,...)
     if type(code) == 'string' then
-        utils.fprintf(io.stderr,code,...)
+        -- utils.fprintf(io.stderr,code,...)
         code = -1
     else
-        utils.fprintf(io.stderr,...)
+        -- utils.fprintf(io.stderr,...)
     end
-    io.stderr:write('\n')
+    -- io.stderr:write('\n')
     os.exit(code)
 end
 
@@ -58,7 +58,7 @@ local function import_symbol(T,k,v,libname)
     local key = rawget(T,k)
     -- warn about collisions!
     if key and k ~= '_M' and k ~= '_NAME' and k ~= '_PACKAGE' and k ~= '_VERSION' then
-        utils.fprintf(io.stderr,"warning: '%s.%s' will not override existing symbol\n",libname,k)
+        -- utils.fprintf(io.stderr,"warning: '%s.%s' will not override existing symbol\n",libname,k)
         return
     end
     rawset(T,k,v)
@@ -121,18 +121,18 @@ local raise
 -- @param is_bin open in binary mode
 -- @return file contents
 function utils.readfile(filename,is_bin)
-    local mode = is_bin and 'b' or ''
-    utils.assert_string(1,filename)
-    local f,open_err = io.open(filename,'r'..mode)
-    if not f then return utils.raise (open_err) end
-    local res,read_err = f:read('*a')
-    f:close()
-    if not res then
-        -- Errors in io.open have "filename: " prefix,
-        -- error in file:read don't, add it.
-        return raise (filename..": "..read_err)
-    end
-    return res
+    -- local mode = is_bin and 'b' or ''
+    -- utils.assert_string(1,filename)
+    -- local f,open_err = io.open(filename,'r'..mode)
+    -- if not f then return utils.raise (open_err) end
+    -- local res,read_err = f:read('*a')
+    -- f:close()
+    -- if not res then
+    --     -- Errors in io.open have "filename: " prefix,
+    --     -- error in file:read don't, add it.
+    --     return raise (filename..": "..read_err)
+    -- end
+    -- return res
 end
 
 --- write a string to a file
@@ -143,14 +143,14 @@ end
 -- @return error message
 -- @raise error if filename or str aren't strings
 function utils.writefile(filename,str,is_bin)
-    local mode = is_bin and 'b' or ''
-    utils.assert_string(1,filename)
-    utils.assert_string(2,str)
-    local f,err = io.open(filename,'w'..mode)
-    if not f then return raise(err) end
-    f:write(str)
-    f:close()
-    return true
+    -- local mode = is_bin and 'b' or ''
+    -- utils.assert_string(1,filename)
+    -- utils.assert_string(2,str)
+    -- local f,err = io.open(filename,'w'..mode)
+    -- if not f then return raise(err) end
+    -- f:write(str)
+    -- f:close()
+    -- return true
 end
 
 --- return the contents of a file as a list of lines
@@ -158,15 +158,15 @@ end
 -- @return file contents as a table
 -- @raise errror if filename is not a string
 function utils.readlines(filename)
-    utils.assert_string(1,filename)
-    local f,err = io.open(filename,'r')
-    if not f then return raise(err) end
-    local res = {}
-    for line in f:lines() do
-        append(res,line)
-    end
-    f:close()
-    return res
+    -- utils.assert_string(1,filename)
+    -- local f,err = io.open(filename,'r')
+    -- if not f then return raise(err) end
+    -- local res = {}
+    -- for line in f:lines() do
+    --     append(res,line)
+    -- end
+    -- f:close()
+    -- return res
 end
 
 --- split a string into a list of strings separated by a delimiter.
@@ -513,5 +513,3 @@ raise = utils.raise
 -- @function utils.execute
 
 return utils
-
-

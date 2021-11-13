@@ -19,8 +19,6 @@ end
 -- @function is_type
 types.is_type = utils.is_type
 
-local fileMT = getmetatable(io.stdout)
-
 --- a string representation of a type.
 -- For tables with metatables, we assume that the metatable has a `_name`
 -- field. Knows about Lua file objects.
@@ -30,9 +28,7 @@ function types.type (obj)
     local t = type(obj)
     if t == 'table' or t == 'userdata' then
         local mt = getmetatable(obj)
-        if mt == fileMT then
-            return 'file'
-        elseif mt == nil then
+        if mt == nil then
             return t
         else
             return mt._name or "unknown "..t

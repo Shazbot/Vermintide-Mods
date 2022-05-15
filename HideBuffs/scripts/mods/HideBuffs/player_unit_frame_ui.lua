@@ -23,10 +23,11 @@ mod.player_unit_frame_update = function(unit_frame_ui)
 			self._hb_mod_cached_character_portrait_texture_size = { 86, 108 }
 		end
 	end
+
+	if not character_portrait.texture_size then
+		character_portrait.texture_size = {}
+	end
 	if mod:get(mod.SETTING_NAMES.TEAM_UI_PORTRAIT_ICONS) ~= mod.PORTRAIT_ICONS.DEFAULT then
-		if not character_portrait.texture_size then
-			character_portrait.texture_size = {}
-		end
 		character_portrait.texture_size[1] = 80
 		character_portrait.texture_size[2] = 80
 	else

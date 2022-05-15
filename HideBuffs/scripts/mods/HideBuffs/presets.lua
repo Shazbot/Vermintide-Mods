@@ -210,7 +210,7 @@ mod.on_chat_gui_update = function(chat_gui)
 		return
 	end
 
-	if Managers.state.game_mode:level_key() ~= "inn_level"
+	if not DamageUtils.is_in_inn
 	and not mod:get(mod.SETTING_NAMES.SHOW_PRESETS_UI_OUTSIDE_KEEP)
 	then
 		mod.destroy_presets_window()
@@ -277,4 +277,3 @@ mod.presets_update_func = function()
 		mod.empty_preset.player_name = "Current"
 	end
 end
-

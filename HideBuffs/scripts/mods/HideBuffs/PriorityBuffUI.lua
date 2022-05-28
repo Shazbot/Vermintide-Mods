@@ -99,6 +99,9 @@ PriorityBuffUI._sync_buffs = function (self)
 				local duration = buff.duration
 				local start_time = buff.start_time
 				local buff_template = buff.template
+				if not buff_template then
+					break
+				end
 				local handle_buff = debug_buffs or buff_template.icon ~= nil
 
 				if handle_buff then
@@ -149,6 +152,9 @@ PriorityBuffUI._sync_buffs = function (self)
 			local duration = buff.duration
 			local start_time = buff.start_time
 			local buff_template = buff.template
+			if not buff_template then
+					break
+				end
 			local handle_buff = debug_buffs or buff_template.icon ~= nil
 
 			if handle_buff then

@@ -2455,18 +2455,6 @@ mod.add_option(
 	show_presets_subs
 )
 
-mod.add_option(
-	"SHOW_PRESETS_ADDED_WELCOME_MSG",
-	{
-		["widget_type"] = "checkbox",
-		["default_value"] = true,
-	},
-	"Show Welcome Message",
-	"Show the welcome message in chat.",
-	nil,
-	1
-)
-
 mod.setting_parents = {}
 mod.setting_names_localized = {}
 mod.get_defaults = function()

@@ -33,7 +33,7 @@ end)
 
 mod.fail_level_to_inn = function()
 	mod:pcall(function()
-		if Managers.state.game_mode:level_key() == "inn_level" then
+		if DamageUtils.is_in_inn then
 			mod:echo("Can't restart in the keep.")
 			return
 		end

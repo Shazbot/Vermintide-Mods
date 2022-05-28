@@ -13,9 +13,7 @@ mod:hook(MutatorHandler, "init", function(func, self, mutators, ...) -- luacheck
 end)
 
 mod:hook(MutatorHandler, "activate_mutators", function(func, self)
-	if Managers.state.game_mode
-	and Managers.state.game_mode:level_key() == "inn_level"
-	then
+	if DamageUtils.is_in_inn then
 		return
 	end
 

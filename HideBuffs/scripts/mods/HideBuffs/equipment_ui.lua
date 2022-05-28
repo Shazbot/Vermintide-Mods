@@ -246,14 +246,14 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 		self.ui_scenegraph.slot.position[1] = 149 + player_ui_offset_x
 		self.ui_scenegraph.slot.position[2] = 44 + player_ui_offset_y
 
-		self.ui_scenegraph.background_panel_cog.position[1] = 0 + player_ui_offset_x
-		self.ui_scenegraph.background_panel_cog.position[2] = 0 + player_ui_offset_y
+		--self.ui_scenegraph.background_panel.position[1] = 0 + player_ui_offset_x
+		--self.ui_scenegraph.background_panel.position[2] = 0 + player_ui_offset_y
 
 		local background_panel_bg_w = self._widgets_by_name["background_panel_bg"]
 		if background_panel_bg_w then
 			background_panel_bg_w.content.visible = true
 		end
-		local background_panel_cog_w = self._widgets_by_name["background_panel_cog"]
+		local background_panel_cog_w = self._widgets_by_name["background_panel"]
 		if background_panel_cog_w then
 			background_panel_cog_w.content.visible = true
 		end
@@ -322,14 +322,14 @@ mod:hook(EquipmentUI, "draw", function(func, self, dt)
 				self.ui_scenegraph.slot.position[1] = 149 + player_ui_offset_x
 				self.ui_scenegraph.slot.position[2] = 44 + 15 + player_ui_offset_y
 
-				self.ui_scenegraph.background_panel_cog.position[1] = 0 + player_ui_offset_x
-				self.ui_scenegraph.background_panel_cog.position[2] = 0 + 10 + player_ui_offset_y
+				--self.ui_scenegraph.background_panel.position[1] = 0 + player_ui_offset_x
+				--self.ui_scenegraph.background_panel.position[2] = 0 + 10 + player_ui_offset_y
 
 				local background_panel_bg_w = self._widgets_by_name["background_panel_bg"]
 				if background_panel_bg_w then
 					background_panel_bg_w.content.visible = false
 				end
-				local background_panel_cog_w = self._widgets_by_name["background_panel_cog"]
+				local background_panel_cog_w = self._widgets_by_name["background_panel"]
 				if background_panel_cog_w then
 					background_panel_cog_w.content.visible = false
 				end

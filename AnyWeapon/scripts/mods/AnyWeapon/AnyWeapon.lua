@@ -121,7 +121,9 @@ local can_wield_all = {
 	"es_knight",
 	"es_mercenary",
 	"es_questingknight",
-	"dr_engineer"
+	"dr_engineer",
+	"we_thornsister",
+	"wh_priest"
 }
 mod.on_game_state_changed = function()
 	if ItemMasterList then

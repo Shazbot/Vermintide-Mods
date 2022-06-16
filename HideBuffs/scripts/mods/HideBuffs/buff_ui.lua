@@ -26,7 +26,7 @@ mod.buff_name_to_setting_name_lookup = {
 --- Moved this hook to custom_buffs.lua
 -- mod:hook(BuffUI, "_add_buff", function (func, self, buff, ...)
 
-local buff_ui_definitions = local_require("scripts/ui/hud_ui/buff_ui_definitions")
+local buff_ui_definitions = local_require("scripts/mods/HideBuffs/buff_ui_definitions")
 local BUFF_SIZE = buff_ui_definitions.BUFF_SIZE
 local BUFF_SPACING = buff_ui_definitions.BUFF_SPACING
 -- CHECK

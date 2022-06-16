@@ -271,7 +271,7 @@ end
 --- But can be used for local_require below
 --- and any other local_require from now on.
 mod:hook("local_require", function(func, full_path, ...)
-	if full_path == "scripts/ui/hud_ui/buff_ui_definitions" then
+	if full_path == "scripts/mods/HideBuffs/buff_ui_definitions" then
 		local buff_ui_definitions = func(full_path, ...)
 		local new_max_buffs = mod:get(mod.SETTING_NAMES.MAX_NUMBER_OF_BUFFS)
 		local orig_MAX_NUMBER_OF_BUFFS = buff_ui_definitions.MAX_NUMBER_OF_BUFFS
@@ -286,7 +286,7 @@ mod:hook("local_require", function(func, full_path, ...)
 	return func(full_path, ...)
 end)
 
-local definitions = local_require("scripts/ui/hud_ui/buff_ui_definitions")
+local definitions = local_require("scripts/mods/HideBuffs/buff_ui_definitions")
 
 --- Need a hook_origin to change MAX_NUMBER_OF_BUFFS.
 --- If upvalues(locals hooking) gets implemented into VMF this can be changed

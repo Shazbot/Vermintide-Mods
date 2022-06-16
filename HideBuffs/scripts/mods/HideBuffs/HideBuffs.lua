@@ -726,6 +726,7 @@ end)
 -- 	mod.was_reloaded = false
 -- end)
 
+mod:dofile("scripts/mods/HideBuffs/buff_ui_reverter")
 mod:dofile("scripts/mods/HideBuffs/mod_data")
 mod:dofile("scripts/mods/HideBuffs/mod_events")
 mod:dofile("scripts/mods/HideBuffs/content_change_functions")

@@ -146,6 +146,12 @@ function()
 	end)
 end)
 
+mod:hook(VolumetricsFlowCallbacks, "unregister_fog_volume", function(func, params, ...)
+    if (Unit.alive(params.unit)) then
+        return func(params, ...)
+    end
+end)
+
 mod:hook(VolumetricsFlowCallbacks, "unregister_fog_volume",
 function(func, params, ...)
 	local unit = params.unit

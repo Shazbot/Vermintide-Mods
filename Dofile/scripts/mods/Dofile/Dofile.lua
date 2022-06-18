@@ -3,13 +3,21 @@ local mod = get_mod("Dofile")
 
 local pl = require'pl.import_into'()
 
+local function readfile(filename,is_bin)
+	local mode = is_bin and 'b' or ''
+	local f,open_err = io.open(filename,'r'..mode)
+	local res,read_err = f:read('*a')
+	f:close()
+	return res
+end
+
 mod.do_exec = function()
 	if not mod:is_enabled() then
 		return
 	end
 
 	mod:pcall(function()
-		loadstring(pl.utils.readfile("../mods/exec.lua"))()
+		loadstring(readfile("../mods/exec.lua"))()
 	end)
 end
 

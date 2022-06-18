@@ -111,16 +111,21 @@ mod.buff_stacks_styling = {
 }
 
 mod.buff_ui_remove_buff_hook = function(func, self, index)
-	if self._active_buffs[index].name == "custom_dps" then
-		mod.custom_dps_buff_id = nil
-	end
-	if self._active_buffs[index].name == "custom_dps_timed" then
-		mod.custom_dps_timed_buff_id = nil
-	end
+	-- if self._active_buffs[index].name == "custom_dps" then
+	-- 	mod.custom_dps_buff_id = nil
+	-- end
+	-- if self._active_buffs[index].name == "custom_dps_timed" then
+	-- 	mod.custom_dps_timed_buff_id = nil
+	-- end
 
 	-- since buff widgets get reused set everything back to defaults
-	if mod.buff_stacks[self._active_buffs[index].name] then
-		local widget = self._active_buffs[index].widget
+	local widget = self._active_buff_widgets[index]
+	if not widget then return end
+
+	local widget_content = widget.content
+	local buff_name = widget_content.name
+	if mod.buff_stacks[buff_name] then
+		local widget = self._active_buff_widgets[index]
 		widget.style.stack_count.text_color = Colors.get_color_table_with_alpha("white", 255)
 		widget.style.texture_duration.color = { 150, 255, 255, 255 }
 		widget.style.stack_count.horizontal_alignment = "right"
@@ -131,7 +136,7 @@ mod.buff_ui_remove_buff_hook = function(func, self, index)
 		widget.style.stack_count_shadow.offset[2] = 0
 	end
 
-	self._active_buffs[index].widget.content._last_stack_count = nil
+	self._active_buff_widgets[index].content._last_stack_count = nil
 
 	return func(self, index)
 end
@@ -139,35 +144,35 @@ end
 -- CHECK
 -- BuffUI._remove_buff = function (self, index)
 mod:hook(BuffUI, "_remove_buff", mod.buff_ui_remove_buff_hook)
-mod:hook(PriorityBuffUI, "_remove_buff", mod.buff_ui_remove_buff_hook)
 
 --- Modify stack_count before drawing, note that it gets reset every time before draw.
 --- Also change widget style.
 --- Already hooking this in buff_ui, calling it there.
 mod.custom_buffs_BuffUI_draw = function(self)
-	for _, buff_data in ipairs( self._active_buffs ) do
-		local buff_name = buff_data.name
+	for _, widget in ipairs(self._active_buff_widgets) do
+		local widget_content = widget.content
+		local buff_name = widget_content.name
+
 		if buff_name
 		and mod.buff_stacks[buff_name]
 		then
-			buff_data.widget.style.stack_count.horizontal_alignment = "center"
-			buff_data.widget.style.stack_count_shadow.horizontal_alignment = "center"
-			buff_data.widget.style.stack_count.offset[1] = 4
-			buff_data.widget.style.stack_count.offset[2] = 5
-			buff_data.widget.style.stack_count_shadow.offset[1] = 6
-			buff_data.widget.style.stack_count_shadow.offset[2] = 3
-			buff_data.widget.style.stack_count.text_color = mod.buff_stacks_styling[buff_name].stack_count_text_color
-			buff_data.widget.style.texture_duration.color = mod.buff_stacks_styling[buff_name].texture_duration_color
+			widget.style.stack_count.horizontal_alignment = "center"
+			widget.style.stack_count_shadow.horizontal_alignment = "center"
+			widget.style.stack_count.offset[1] = 4
+			widget.style.stack_count.offset[2] = 5
+			widget.style.stack_count_shadow.offset[1] = 6
+			widget.style.stack_count_shadow.offset[2] = 3
+			widget.style.stack_count.text_color = mod.buff_stacks_styling[buff_name].stack_count_text_color
+			widget.style.texture_duration.color = mod.buff_stacks_styling[buff_name].texture_duration_color
 
 			local rounded_stacks = mod.buff_stacks[buff_name] and math.round(mod.buff_stacks[buff_name]) or nil -- luacheck: ignore math
-			if buff_data.widget.content.stack_count ~= rounded_stacks
-			or buff_data.widget.content._last_stack_count ~= rounded_stacks then
-				buff_data.stack_count = rounded_stacks
-				buff_data.widget.content.stack_count = rounded_stacks
-				buff_data.widget.content._last_stack_count = rounded_stacks
+			if widget.content.stack_count ~= rounded_stacks
+			or widget.content._last_stack_count ~= rounded_stacks then
+				widget_content.stack_count = rounded_stacks
+				widget.content.stack_count = rounded_stacks
+				widget.content._last_stack_count = rounded_stacks
 
-				self:_set_widget_dirty(buff_data.widget)
-				self:set_dirty()
+				self._dirty = true
 			end
 		end
 	end
@@ -286,14 +291,7 @@ mod:hook("local_require", function(func, full_path, ...)
 	return func(full_path, ...)
 end)
 
-local definitions = local_require("scripts/mods/HideBuffs/buff_ui_definitions")
-
---- Need a hook_origin to change MAX_NUMBER_OF_BUFFS.
---- If upvalues(locals hooking) gets implemented into VMF this can be changed
---- to not use hook_origin.
-local BUFF_SIZE = definitions.BUFF_SIZE
-local BUFF_SPACING = definitions.BUFF_SPACING
-mod:hook_origin(BuffUI, "_add_buff", function(self, buff, infinite, end_time)
+mod:hook(BuffUI, "_add_buff", function(func, self, buff, infinite, end_time)
 	mod.buffs_manager_BuffUI_add_buff(buff)
 
 	if mod.bm.is_priority_buff(buff.buff_type)
@@ -320,103 +318,7 @@ mod:hook_origin(BuffUI, "_add_buff", function(self, buff, infinite, end_time)
 		end
 	end
 
-	local buff_template = buff.template
-	local dormant = buff_template.dormant
-	local buff_id = buff.id
-	local buff_name = buff_template.name
-	local is_cooldown = buff_template.is_cooldown
-	local debuff = buff_template.debuff
-	local duration = buff.duration
-	local already_exists = false
-	local active_buffs = self._active_buffs
-
-	for j = 1, #active_buffs, 1 do
-		local data = active_buffs[j]
-
-		if data.id == buff_id then
-			data.end_time = end_time
-			already_exists = true
-
-			break
-		elseif data.name == buff_name then
-			local stack_count = data.widget.content.stack_count
-			data.end_time = end_time and ((data.end_time < end_time and end_time) or data.end_time)
-			data.widget.content.stack_count = stack_count + 1
-			already_exists = true
-
-			break
-		end
-	end
-
-	local unused_buff_widgets = self._unused_buff_widgets
-	local num_buffs = #self._active_buffs
-
-	local MAX_NUMBER_OF_BUFFS = mod:get(mod.SETTING_NAMES.MAX_NUMBER_OF_BUFFS)
-
-	for i = 1, MAX_NUMBER_OF_BUFFS do
-		if not self._buff_widgets[i] then
-			self._buff_widgets[i] = UIWidget.init(table.clone(definitions.buff_widget_definitions[1]))
-			table.insert(unused_buff_widgets, #unused_buff_widgets + 1, self._buff_widgets[i])
-		end
-	end
-
-	if already_exists or MAX_NUMBER_OF_BUFFS <= num_buffs then
-		return false
-	end
-
-	local widget = table.remove(unused_buff_widgets, 1)
-	local widget_content = widget.content
-	local widget_style = widget.style
-
-	UIRenderer.set_element_visible(self.ui_renderer, widget.element, true)
-
-	widget_content.texture_icon = buff_template.icon or "icons_placeholder"
-	widget_content.is_cooldown = is_cooldown
-	widget_content.is_infinite = infinite
-	widget_style.texture_duration.color = (debuff and {
-		255,
-		255,
-		30,
-		0
-	}) or {
-		255,
-		48,
-		255,
-		0
-	}
-	local data = {
-		id = buff_id,
-		template = buff_template,
-		name = buff_name,
-		widget = widget,
-		end_time = end_time,
-		duration = duration
-	}
-	local active_buffs = self._active_buffs
-	active_buffs[#active_buffs + 1] = data
-
-	self:_set_widget_time_progress(widget, 1, duration, is_cooldown)
-
-	num_buffs = #self._active_buffs
-	local horizontal_spacing = BUFF_SIZE[1] + BUFF_SPACING
-	local total_length = num_buffs * horizontal_spacing - BUFF_SPACING
-	local start_position_x = total_length - horizontal_spacing
-	local widget_offset = widget.offset
-
-	if num_buffs > 1 then
-		local closest_buff_data = active_buffs[num_buffs - 1]
-		local closest_buff_widget = data.widget
-		local closest_buff_offset = closest_buff_widget.offset
-		local target_position = data.target_position
-		local target_distance = data.target_distance
-		widget_offset[1] = closest_buff_offset[1] + horizontal_spacing
-		data.target_position = start_position_x
-		data.target_distance = math.abs(widget_offset[1] - start_position_x)
-	else
-		widget_offset[1] = start_position_x
-	end
-
-	return true
+	return func(self, buff, infinite, end_time)
 end)
 
 mod.reset_dps_buff = function()

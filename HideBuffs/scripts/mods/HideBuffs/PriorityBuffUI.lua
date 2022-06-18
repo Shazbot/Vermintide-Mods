@@ -297,6 +297,33 @@ PriorityBuffUI._add_buff = function (self, buff, infinite, end_time)
 end
 
 PriorityBuffUI._remove_buff = function (self, index)
+	for _, buff_data in ipairs( self._active_buffs ) do
+		local buff_name = buff_data.name
+		if buff_name
+		and mod.buff_stacks[buff_name]
+		then
+			buff_data.widget.style.stack_count.horizontal_alignment = "center"
+			buff_data.widget.style.stack_count_shadow.horizontal_alignment = "center"
+			buff_data.widget.style.stack_count.offset[1] = 4
+			buff_data.widget.style.stack_count.offset[2] = 5
+			buff_data.widget.style.stack_count_shadow.offset[1] = 6
+			buff_data.widget.style.stack_count_shadow.offset[2] = 3
+			buff_data.widget.style.stack_count.text_color = mod.buff_stacks_styling[buff_name].stack_count_text_color
+			buff_data.widget.style.texture_duration.color = mod.buff_stacks_styling[buff_name].texture_duration_color
+
+			local rounded_stacks = mod.buff_stacks[buff_name] and math.round(mod.buff_stacks[buff_name]) or nil -- luacheck: ignore math
+			if buff_data.widget.content.stack_count ~= rounded_stacks
+			or buff_data.widget.content._last_stack_count ~= rounded_stacks then
+				buff_data.stack_count = rounded_stacks
+				buff_data.widget.content.stack_count = rounded_stacks
+				buff_data.widget.content._last_stack_count = rounded_stacks
+
+				self:_set_widget_dirty(buff_data.widget)
+				self:set_dirty()
+			end
+		end
+	end
+
 	local active_buffs = self._active_buffs
 	local data = table.remove(active_buffs, index)
 	local widget = data.widget
@@ -450,7 +477,32 @@ PriorityBuffUI._on_resolution_modified = function (self)
 end
 
 PriorityBuffUI.draw = function (self, dt)
-	mod.custom_buffs_BuffUI_draw(self)
+	for _, buff_data in ipairs( self._active_buffs ) do
+		local buff_name = buff_data.name
+		if buff_name
+		and mod.buff_stacks[buff_name]
+		then
+			buff_data.widget.style.stack_count.horizontal_alignment = "center"
+			buff_data.widget.style.stack_count_shadow.horizontal_alignment = "center"
+			buff_data.widget.style.stack_count.offset[1] = 4
+			buff_data.widget.style.stack_count.offset[2] = 5
+			buff_data.widget.style.stack_count_shadow.offset[1] = 6
+			buff_data.widget.style.stack_count_shadow.offset[2] = 3
+			buff_data.widget.style.stack_count.text_color = mod.buff_stacks_styling[buff_name].stack_count_text_color
+			buff_data.widget.style.texture_duration.color = mod.buff_stacks_styling[buff_name].texture_duration_color
+
+			local rounded_stacks = mod.buff_stacks[buff_name] and math.round(mod.buff_stacks[buff_name]) or nil -- luacheck: ignore math
+			if buff_data.widget.content.stack_count ~= rounded_stacks
+			or buff_data.widget.content._last_stack_count ~= rounded_stacks then
+				buff_data.stack_count = rounded_stacks
+				buff_data.widget.content.stack_count = rounded_stacks
+				buff_data.widget.content._last_stack_count = rounded_stacks
+
+				self:_set_widget_dirty(buff_data.widget)
+				self:set_dirty()
+			end
+		end
+	end
 
 	for _, data in ipairs(self._active_buffs) do
 		local widget = data.widget

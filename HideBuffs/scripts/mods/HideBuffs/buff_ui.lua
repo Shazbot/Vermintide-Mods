@@ -30,8 +30,41 @@ local buff_ui_definitions = local_require("scripts/mods/HideBuffs/buff_ui_defini
 local BUFF_SIZE = buff_ui_definitions.BUFF_SIZE
 local BUFF_SPACING = buff_ui_definitions.BUFF_SPACING
 -- CHECK
--- BuffUI._align_widgets = function (self)
-mod:hook_origin(BuffUI, "_align_widgets", function (self)
+-- BuffUI._sync_buffs = function (self)
+mod:hook(BuffUI, "_sync_buffs", function (func, self)
+	local is_buff_order_preserved = mod:get(mod.SETTING_NAMES.BUFFS_PRESERVE_ORDER)
+
+	local player_unit = (self._is_spectator and self._spectated_player_unit) or self._player.player_unit
+	local buff_extension = ScriptUnit.has_extension(player_unit, "buff_system")
+
+	local buffs = nil
+	if buff_extension then
+		buffs = buff_extension:active_buffs()
+	end
+
+	local before = nil
+	if is_buff_order_preserved and buffs then
+		before = pl.List(self._active_buff_widgets):map(function(widget)
+			local widget_content = widget.content
+			return widget_content.name
+		end)
+	end
+
+	func(self)
+
+	if is_buff_order_preserved and buffs then
+		for _, before_buff in ripairs( before ) do
+			local new_index = pl.tablex.find_if(self._active_buff_widgets, function(widget)
+					local widget_content = widget.content
+					return widget_content.name == before_buff
+				end)
+			if new_index then
+				local shuffled_buff = table.remove(self._active_buff_widgets, new_index)
+				table.insert(self._active_buff_widgets, 1, shuffled_buff)
+			end
+		end
+	end
+
 	local in_reverse = mod:get(mod.SETTING_NAMES.REVERSE_BUFF_DIRECTION)
 	local are_centered = mod:get(mod.SETTING_NAMES.CENTERED_BUFFS)
 
@@ -43,79 +76,32 @@ mod:hook_origin(BuffUI, "_align_widgets", function (self)
 
 	local horizontal_spacing = adjusted_buff_size[1] + adjusted_buff_spacing
 
-	local num_buffs = #self._active_buffs
+	local active_buff_widgets = self._active_buff_widgets
+	local num_buffs = #active_buff_widgets
 	local total_length = num_buffs * horizontal_spacing - adjusted_buff_spacing
 
-	for index, data in ipairs(self._active_buffs) do
-		local widget = data.widget
-		local widget_offset = widget.offset
+	local are_buffs_flowing_vertically = mod:get(mod.SETTING_NAMES.BUFFS_FLOW_VERTICALLY)
+
+	local buff_index = -1
+	for i = #active_buff_widgets, 1, -1 do
+		buff_index = buff_index + 1
+
+		local widget = active_buff_widgets[i]
 		local buffs_direction = in_reverse and -1 or 1
-		local target_position = buffs_direction * (index - 1) * horizontal_spacing
+
+		local widget_offset = widget.offset
+
+		local target_position = buffs_direction * (buff_index - 1) * horizontal_spacing
 		if are_centered then
 			target_position = target_position
 				+ (in_reverse and total_length/2 or -total_length/2)
 		end
-		data.target_position = target_position
-		data.target_distance = math.abs(widget_offset[1] - target_position)
 
-		self:_set_widget_dirty(widget)
+		widget_offset[1] = are_buffs_flowing_vertically and 0 or target_position
+		widget_offset[2] = are_buffs_flowing_vertically and target_position or 0
+		widget.element.dirty = true
+		self._dirty = true
 	end
-
-	self:set_dirty()
-
-	self._alignment_duration = 0
-end)
-
-local ALIGNMENT_DURATION_TIME = 0.3
--- CHECK
--- BuffUI._update_pivot_alignment = function (self, dt)
-mod:hook_origin(BuffUI, "_update_pivot_alignment", function(self, dt)
-	local alignment_duration = self._alignment_duration
-
-	if not alignment_duration then
-		return
-	end
-
-	alignment_duration = math.min(alignment_duration + dt, ALIGNMENT_DURATION_TIME)
-	local progress = alignment_duration / ALIGNMENT_DURATION_TIME
-	if mod:get(mod.SETTING_NAMES.BUFFS_DISABLE_ALIGN_ANIMATION) then
-		progress = 1
-	end
-	local anim_progress = math.easeOutCubic(progress, 0, 1) -- luacheck: ignore
-
-	if progress == 1 then
-		self._alignment_duration = nil
-	else
-		self._alignment_duration = alignment_duration
-	end
-
-	for _, data in ipairs(self._active_buffs) do
-		local widget = data.widget
-		local widget_offset = widget.offset
-		local widget_target_position = data.target_position
-		local widget_target_distance = data.target_distance
-
-		local start_offset_x = self._active_buffs[1] and self._active_buffs[1].widget.offset[1]
-		local start_offset_y = self._active_buffs[1] and self._active_buffs[1].widget.offset[2]
-
-		if widget_target_distance then
-			if mod:get(mod.SETTING_NAMES.BUFFS_FLOW_VERTICALLY) then
-				widget_offset[2] = widget_target_position + widget_target_distance * (1 - anim_progress)
-				if start_offset_x then
-					widget_offset[1] = start_offset_x
-				end
-			else
-				widget_offset[1] = widget_target_position + widget_target_distance * (1 - anim_progress)
-				if start_offset_y then
-					widget_offset[2] = start_offset_y
-				end
-			end
-		end
-
-		self:_set_widget_dirty(widget)
-	end
-
-	self:set_dirty()
 end)
 
 mod:hook(BuffUI, "draw", function(func, self, dt)
@@ -130,25 +116,27 @@ mod:hook(BuffUI, "draw", function(func, self, dt)
 		if mod:get(mod.SETTING_NAMES.CENTERED_BUFFS)
 		and mod:get(mod.SETTING_NAMES.CENTERED_BUFFS_REALIGN)
 		then
-			self.ui_scenegraph.pivot.horizontal_alignment = "center"
+			self._ui_scenegraph.pivot.horizontal_alignment = "center"
 			if mod:get(mod.SETTING_NAMES.REVERSE_BUFF_DIRECTION) then
-				self.ui_scenegraph.pivot.local_position[1] = -66
+				self._ui_scenegraph.pivot.local_position[1] = -66
 			else
-				self.ui_scenegraph.pivot.local_position[1] = 0
+				self._ui_scenegraph.pivot.local_position[1] = 0
 			end
 		else
-			self.ui_scenegraph.pivot.horizontal_alignment = "left"
-			self.ui_scenegraph.pivot.local_position[1] = 150
+			self._ui_scenegraph.pivot.horizontal_alignment = "left"
+			self._ui_scenegraph.pivot.local_position[1] = 150
 		end
 
 		if mod.realign_buff_widgets then
 			mod.realign_buff_widgets = false
-			self:_align_widgets()
+			self._dirty = true
 		end
 
-		for _, data in ipairs(self._active_buffs) do
-			local widget = data.widget
+		local size_adjust_x = mod:get(mod.SETTING_NAMES.BUFFS_SIZE_ADJUST_X)
+		local size_adjust_y = mod:get(mod.SETTING_NAMES.BUFFS_SIZE_ADJUST_Y)
+		local buffs_alpha = mod:get(mod.SETTING_NAMES.BUFFS_ALPHA)
 
+		for _, widget in ipairs(self._active_buff_widgets) do
 			if not widget.cloned then
 				widget.cloned = pl.tablex.pairmap(function(k,v)
 					local parent_temp = v.parent
@@ -160,12 +148,12 @@ mod:hook(BuffUI, "draw", function(func, self, dt)
 
 			for name, style in pairs( widget.style ) do
 				if style.size then
-					style.size[1] = widget.cloned[name].size[1] + mod:get(mod.SETTING_NAMES.BUFFS_SIZE_ADJUST_X)
-					style.size[2] = widget.cloned[name].size[2] + mod:get(mod.SETTING_NAMES.BUFFS_SIZE_ADJUST_Y)
+					style.size[1] = widget.cloned[name].size[1] + size_adjust_x
+					style.size[2] = widget.cloned[name].size[2] + size_adjust_y
 				end
 			end
 
-			local buffs_alpha = mod:get(mod.SETTING_NAMES.BUFFS_ALPHA)
+			local buffs_alpha = buffs_alpha
 			widget.style.texture_icon_bg.color[1] = buffs_alpha
 			widget.style.texture_frame.color[1] = buffs_alpha
 		end
@@ -173,47 +161,23 @@ mod:hook(BuffUI, "draw", function(func, self, dt)
 		local buffs_offset_x = mod:get(mod.SETTING_NAMES.BUFFS_OFFSET_X)
 		local buffs_offset_y = mod:get(mod.SETTING_NAMES.BUFFS_OFFSET_Y)
 
-		if self.ui_scenegraph.buff_pivot.position[1] ~= buffs_offset_x
-		or self.ui_scenegraph.buff_pivot.position[2] ~= buffs_offset_y
+		if self._ui_scenegraph.buff_pivot.position[1] ~= buffs_offset_x
+		or self._ui_scenegraph.buff_pivot.position[2] ~= buffs_offset_y
 		then
-			self.ui_scenegraph.buff_pivot.position[1] = buffs_offset_x
-			self.ui_scenegraph.buff_pivot.position[2] = buffs_offset_y
+			self._ui_scenegraph.buff_pivot.position[1] = buffs_offset_x
+			self._ui_scenegraph.buff_pivot.position[2] = buffs_offset_y
 			mod.reset_buff_widgets = true
 		end
 
 		if mod.reset_buff_widgets then
 			mod.reset_buff_widgets = false
-			self:_on_resolution_modified()
+			self._dirty = true
 		end
 
 		mod.custom_buffs_BuffUI_draw(self)
 		mod.buffs_manager_BuffUI_draw(self)
 	end)
 	return func(self, dt)
-end)
-
-mod:hook(BuffUI, "_sync_buffs", function(func, self, ...)
-	if not mod:get(mod.SETTING_NAMES.BUFFS_PRESERVE_ORDER) then
-		return func(self, ...)
-	end
-
-	local before = pl.List(self._active_buffs):map(function(buff)
-			return buff.template.name
-		end)
-
-	func(self, ...)
-
-	for _, before_buff in ripairs( before ) do
-		local new_index = pl.tablex.find_if(self._active_buffs, function(buff)
-				return buff.template.name == before_buff
-			end)
-		if new_index then
-			local shuffled_buff = table.remove(self._active_buffs, new_index)
-			table.insert(self._active_buffs, 1, shuffled_buff)
-		end
-	end
-
-	self:_align_widgets()
 end)
 
 --- Disable popups some buffs have.

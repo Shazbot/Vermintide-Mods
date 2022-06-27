@@ -36,7 +36,7 @@ mod.buffs_manager_BuffUI_draw = function(self)
 			local uv00_table = texture_settings.uv00
 			local uv11_table = texture_settings.uv11
 			local uv00, uv11 = Vector2(uv00_table[1], uv00_table[2]), Vector2(uv11_table[1], uv11_table[2])
-			Gui.bitmap_uv(self.ui_renderer.gui, texture_settings.material_name, uv00, uv11, Vector3(position2d[1], position2d[2], 900), icon_size, white)
+			Gui.bitmap_uv(self._ui_renderer.gui, texture_settings.material_name, uv00, uv11, Vector3(position2d[1], position2d[2], 900), icon_size, white)
 		end
 	end
 end

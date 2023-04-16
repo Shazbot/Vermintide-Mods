@@ -85,7 +85,7 @@ UITooltipPasses.weapon_kills = {
 
 		return data
 	end,
-	draw = function (data, draw, draw_downwards, ui_renderer, pass_data, ui_scenegraph, pass_definition, ui_style, ui_content, position, size, input_service, dt, ui_style_global, item)
+	draw = function (data, draw, draw_downwards, ui_renderer, pass_data, ui_scenegraph, pass_definition, ui_style, ui_content, position, size, input_service, dt, item)
 		local alpha_multiplier = pass_data.alpha_multiplier
 		local alpha = 255 * alpha_multiplier
 		local start_layer = pass_data.start_layer or DEFAULT_START_LAYER
@@ -118,7 +118,7 @@ UITooltipPasses.weapon_kills = {
 				position[2] = position[2] - text_height + 25
 				text_style.text_color[1] = alpha
 
-				UIPasses.text.draw(ui_renderer, text_pass_data, ui_scenegraph, pass_definition, text_style, content, position, text_size, input_service, dt, ui_style_global)
+				UIPasses.text.draw(ui_renderer, text_pass_data, ui_scenegraph, pass_definition, text_style, content, position, text_size, input_service, dt)
 			end
 
 			position[1] = position_x
@@ -132,8 +132,8 @@ UITooltipPasses.weapon_kills = {
 	end
 }
 
-mod:hook(UIPasses.item_tooltip, "init", function(func, pass_definition, ui_content, ui_style, style_global)
-	local pass_data = func(pass_definition, ui_content, ui_style, style_global)
+mod:hook(UIPasses.item_tooltip, "init", function(func, pass_definition, ui_content, ui_style)
+	local pass_data = func(pass_definition, ui_content, ui_style)
 
 	local index_of_insertion = nil
 	for i, pass in ipairs( pass_data.passes ) do
